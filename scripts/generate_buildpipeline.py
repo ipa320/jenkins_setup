@@ -32,7 +32,7 @@ def main():
                                        info['password'])  # TODO
 
     # get pipeline configs
-    bpl_configs = cob_common.get_buildpipeline_configs(user_name, server_name)
+    bpl_configs = cob_common.get_buildpipeline_configs('__'.join[user_name, server_name])
 
     # create pipeline jobs TODO
     pipe_starter_name = run_jenkins_job_creation.create_pipe_starter()
