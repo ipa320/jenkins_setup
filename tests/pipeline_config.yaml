@@ -1,0 +1,23 @@
+pipeline_github_url: git@github.com/ipa320/jenkins_pipelines/ros_distro_user_name
+pipeline_type: [build, gazebo, hardware, release] # labels for jobs/nodes and server config
+user_name: test_user
+email: test@ipa.fhg.de
+committer: 'false'
+ros_distro: [test_rosdistro] # electric, fuerte, groovy
+
+#prio_distro: natty
+#prio_arch: amd64
+prio_distro_arch:
+    test_rosdistro:
+        ubuntu_distro: natty
+        arch: amd64
+
+repositories:
+    test_repo_1:
+        type : git  # git, hg, svn
+        url: git@github.com/user/repo1
+        version: master
+    test_repo_2:
+        type: git
+        url: git@github.com/user/repo2
+        version: test

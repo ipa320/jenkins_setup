@@ -1,0 +1,45 @@
+'triggers':
+  'none': '<triggers class="vector"/>'
+  'periodic':
+    'continuous': ' <triggers class="vector"> <hudson.triggers.TimerTrigger> <spec>*/5 * * * *</spec> </hudson.triggers.TimerTrigger> </triggers>'
+    'nightly': ' <triggers class="vector"> <hudson.triggers.TimerTrigger> <spec>0 3 * * *</spec> </hudson.triggers.TimerTrigger> </triggers>'
+    'daily': ' <triggers class="vector"> <hudson.triggers.TimerTrigger> <spec>0 13 * * *</spec> </hudson.triggers.TimerTrigger> </triggers>'
+    'weekly': ' <triggers class="vector"> <hudson.triggers.TimerTrigger> <spec>0 2 * * 0</spec> </hudson.triggers.TimerTrigger> </triggers>'
+    'monthly': ' <triggers class="vector"> <hudson.triggers.TimerTrigger> <spec>0 4 1 * *</spec> </hudson.triggers.TimerTrigger> </triggers>'
+  'vcs': '<triggers class="vector"> <hudson.triggers.SCMTrigger> <spec>*/10 * * * *</spec> </hudson.triggers.SCMTrigger> </triggers>'
+  'resulttrigger': '<triggers class="vector"> <org.jenkinsci.plugins.buildresulttrigger.BuildResultTrigger> <spec>* * * * *</spec> <jobsInfo> <org.jenkinsci.plugins.buildresulttrigger.model.BuildResultTriggerInfo> <jobName>@(RESULTTRIGGER)</jobName> <checkedResults> @(RESULTS) </checkedResults> </org.jenkinsci.plugins.buildresulttrigger.model.BuildResultTriggerInfo> </jobsInfo> </org.jenkinsci.plugins.buildresulttrigger.BuildResultTrigger> </triggers>'
+  'resulttrigger_results': '<org.jenkinsci.plugins.buildresulttrigger.model.CheckedResult> <checked>@(RESULT_STATUS)</checked> </org.jenkinsci.plugins.buildresulttrigger.model.CheckedResult>'
+'vcs':
+  'none' : '<scm class="hudson.scm.NullSCM"/>'
+  'svn' : '<scm class="hudson.scm.SubversionSCM"> <locations> <hudson.scm.SubversionSCM_-ModuleLocation> <remote>@(URI)</remote> <local>monitored_vcs</local> </hudson.scm.SubversionSCM_-ModuleLocation> </locations> <useUpdate>false</useUpdate> <doRevert>false</doRevert> <excludedRegions/> <includedRegions/> <excludedUsers/> <excludedRevprop/> <excludedCommitMessages/> </scm>'
+  'hg' : '<scm class="hudson.plugins.mercurial.MercurialSCM"> <source>@(URI)</source> <modules/> <subdir>monitored_vcs</subdir> <clean>false</clean> <forest>false</forest> <branch>@(BRANCH)</branch>
+</scm>'
+  'git':
+    'basic': '<scm class="hudson.plugins.git.GitSCM"> <configVersion>2</configVersion> @(GIT_REPOS) @(GIT_BRANCHES) <disableSubmodules>false</disableSubmodules> <recursiveSubmodules>true</recursiveSubmodules> <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations> <authorOrCommitter>false</authorOrCommitter> <clean>false</clean> <wipeOutWorkspace>false</wipeOutWorkspace> <pruneBranches>false</pruneBranches> <remotePoll>false</remotePoll> <ignoreNotifyCommit>false</ignoreNotifyCommit> <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/> <gitTool>Default</gitTool> <submoduleCfg class="list"/> <relativeTargetDir>monitored_vcs</relativeTargetDir> <reference/> <excludedRegions/> <excludedUsers/> <gitConfigName/> <gitConfigEmail/> <skipTag>false</skipTag> <includedRegions/> <scmName/> </scm>'
+    'repos': '<userRemoteConfigs> @(GIT_REPO) </userRemoteConfigs>'
+    'repo': '<hudson.plugins.git.UserRemoteConfig> <name>origin</name> <refspec>+refs/heads/@(BRANCH):refs/remotes/origin/@(BRANCH)</refspec> <url>@(URI)</url> </hudson.plugins.git.UserRemoteConfig>'
+    'branch': '<branches> <hudson.plugins.git.BranchSpec> <name>@(BRANCH)</name> </hudson.plugins.git.BranchSpec> </branches>'
+
+'parameters':
+  'block': '<hudson.model.ParametersDefinitionProperty> <parameterDefinitions> @(PARAMS) </parameterDefinitions> </hudson.model.ParametersDefinitionProperty>'
+  'param': '<hudson.model.StringParameterDefinition> <name>@(PARAM)</name> <description> </description> <defaultValue> </defaultValue>  </hudson.model.StringParameterDefinition>'
+
+'matrix':
+  'block': '<axes>@(AXIS)<hudson.matrix.LabelAxis> <name>label</name> <values> <string>@(NODE)</string> </values> </hudson.matrix.LabelAxis> </axes> <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl"> <runSequentially>false</runSequentially> </executionStrategy>'
+  'basic': '<axes> @(AXES) </axes>'
+  'axis': '<hudson.matrix.TextAxis> <name>@(NAME)</name> <values> @(VALUES) </values> </hudson.matrix.TextAxis>'
+  'value': '<string>@(VALUE)</string>'
+  'filter': '<combinationFilter>@(FILTER)</combinationFilter>'
+
+'jointrigger': '<join.JoinTrigger> <joinProjects>@(JOIN_PROJECTS)</joinProjects> <joinPublishers/> <evenIfDownstreamUnstable>@(JOIN_UNSTABLE)</evenIfDownstreamUnstable> </join.JoinTrigger>'
+
+'groovypostbuild':
+    'basic': "<org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder> <groovyScript>@(GROOVYPB_SCRIPT)</groovyScript> <behavior>@(GROOVYPB_BEHAVIOR)</behavior> </org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder>"
+    'script':
+        'enable': "if(manager.build.result.isBetterOrEqualTo(hudson.model.Result.FAILURE)) { manager.listener.logger.println('Because this build did not fail:' for (project in @(PROJECT_LIST)) { manager.listener.logger.println(' - ' + project) manager.hudson.getItem(project).enable() } manager.listener.logger.println('will be enabled.'}"
+        'join_enable': 'TODO'
+        'disable': "for (project in @(PROJECT_LIST)) { manager.listener.logger.println('Disable ' + project + ' job') manager.hudson.getItem(project).disable() }"
+
+'postbuildtrigger': '<hudson.tasks.BuildTrigger> <childProjects>@(CHILD_PROJECTS)</childProjects> <threshold> <name>@(THRESHOLD)</name> </threshold> </hudson.tasks.BuildTrigger>'
+
+'pipelinetrigger': '<au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger> <downstreamProjectNames>@(PIPELINETRIGGER_PROJECT)</downstreamProjectNames> </au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger>'
