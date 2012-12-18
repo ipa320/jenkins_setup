@@ -272,16 +272,18 @@ def get_dependencies(source_folder, build_depends=True, test_depends=True):
     return depends
 
 
-def get_buildpipeline_configs(user_name, server_name):
+def get_buildpipeline_configs(pipeline_name):
     """ TODO """
-    github_url = "https://raw.github.com/fmw-jk/jenkins_config/%s__%s/pipeline_config.yaml" % (user_name, server_name)
-    print "Parsing buildpipeline configuration file for %s stored at:\n%s" % (user_name, github_url)
+    github_url = "https://raw.github.com/fmw-jk/jenkins_config/master/%s/ \
+                  pipeline_config.yaml" % pipeline_name  # TODO change to ipa320
+    print "Parsing buildpipeline configuration file for %s stored at:\n%s" % (pipeline_name, github_url)
     try:
         f = urllib2.urlopen(github_url)
         bpl_configs = yaml.load(f.read())
     except Exception as ex:
         print "While downloading and parsing the buildpipeline configuration \
-        file from\n%s\nthe following error occured:\n%s" % (github_url, ex)
+               file from\n%s\nthe following error occured:\n%s" % (github_url, ex)
+        raise ex
 
     return bpl_configs
 
