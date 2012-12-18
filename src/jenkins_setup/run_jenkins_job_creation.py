@@ -174,8 +174,10 @@ class Jenkins_Jobs(object):
 
         #replace script_args in command TODO
         params['SCRIPT'] = 'prio_build_script'
-        #params['SCRIPT_ARGS'] = bpc['pipeline_github_url']
-        #params['COMMAND'] = shell script to start run_chroot_local PRIO_UBUNTU_DISTRO PRIO_ARCH TODO
+        #params['SCRIPT_ARGS'] = bpc['pipeline_github_url'] $ROSDISTRO $REPOLIST
+        #params['COMMAND'] = shell script to start run_chroot_local PRIO_UBUNTU_DISTRO PRIO_ARCH
+        #                               $WORKSPACE params['SCRIPT']
+        #                               params['SCRIPT_ARGS'] TODO
 
         # generate groovy postbuild script
         params['GROOVY_POSTBUILD'] = self.generate_groovypostbuild_param('enable', ['bringup'], 2)
