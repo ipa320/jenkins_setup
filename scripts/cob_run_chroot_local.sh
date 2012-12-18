@@ -6,7 +6,7 @@ fi
 
 # support relative workspace
 export OS_NAME="ubuntu"
-export IMAGETYPE="cob_jenkins_tools"
+export IMAGETYPE="jenkins_setup"
 export IMAGEVERSION="0.1"
 
 # get arguments of run_local

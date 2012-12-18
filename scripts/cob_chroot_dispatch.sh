@@ -23,9 +23,9 @@ if [ -e $WORKSPACE/run_debug_mode ] ; then
   /bin/echo "DEBUG  DEBUG DEBUG  DEBUG DEBUG  DEBUG DEBUG  DEBUG DEBUG  DEBUG DEBUG  DEBUG DEBUG  DEBUG "
   /bin/echo "DEBUG  DEBUG DEBUG  DEBUG DEBUG  DEBUG DEBUG  DEBUG DEBUG  DEBUG DEBUG  DEBUG DEBUG  DEBUG "
 else
-  rm -rf cob_jenkins_setup #cob_jenkins_scripts
-  git clone http://github.com/fmw-jk/cob_jenkins_scripts.git #TODO
-  cd cob_jenkins.git && git log -n 1
+  rm -rf jenkins_setup
+  git clone http://github.com/fmw-jk/jenkins_setup.git #TODO
+  cd jenkins_setup.git && git log -n 1
 fi
 
 cd $WORKSPACE
@@ -51,13 +51,13 @@ if [ -d $WORKSPACE/.subversion ]; then
   chown -R root.root /root/.subversion
 fi
 cd $WORKSPACE
-chmod 755 $WORKSPACE/cob_jenkins_scripts/${SCRIPT}
+chmod 755 $WORKSPACE/jenkins_setup/${SCRIPT}
 
 echo "============================================================"
 echo "==== Begin" $SCRIPT "script.    Ignore the output above ====="
 echo "============================================================"
 
-$WORKSPACE/cob_jenkins_scripts/${SCRIPT} ${SCRIPT_ARGS}
+$WORKSPACE/jenkins_setup/${SCRIPT} ${SCRIPT_ARGS}
 
 echo "============================================================"
 echo "==== End" $SCRIPT "script.    Ignore the output below ====="
@@ -74,7 +74,7 @@ chmod 755 pbuilder-env.sh
 sudo pbuilder execute \
     --basetgz $basetgz \
     --bindmounts "/var/cache/pbuilder/ccache $WORKSPACE" \
-    --inputfile $WORKSPACE/cob_jenkins_scripts/$SCRIPT \
+    --inputfile $WORKSPACE/jenkins_setup/$SCRIPT \
     -- $WORKSPACE/pbuilder-env.sh $SCRIPT
 
 

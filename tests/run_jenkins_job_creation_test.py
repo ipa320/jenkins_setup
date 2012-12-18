@@ -9,7 +9,7 @@ import socket
 import jenkins
 from rospkg import environment
 
-import cob_jenkins_tools
+from jenkins_setup import run_jenkins_job_creation
 
 
 class Job_Generation_Test(unittest.TestCase):
@@ -22,8 +22,8 @@ class Job_Generation_Test(unittest.TestCase):
 
         with open(os.path.join(environment.get_ros_home(), 'catkin-debs', 'server.yaml')) as f:
             info = yaml.load(f)
-        jenkins_instance = jenkins.Jenkins(cob_jenkins_tools.JENKINS_SERVER, info['username'], info['password'])
-        self.jj = cob_jenkins_tools.Jenkins_Jobs(jenkins_instance, self.test_dict)
+        jenkins_instance = jenkins.Jenkins(run_jenkins_job_creation.JENKINS_SERVER, info['username'], info['password'])
+        self.jj = run_jenkins_job_creation.Jenkins_Jobs(jenkins_instance, self.test_dict)
 
         self.jj.PRIO_DISTRO['test_rosdistro'] = 'natty'
         self.jj.TARGET_PLATFORM['test_rosdistro'] = ['natty', 'oneiric', 'precise']

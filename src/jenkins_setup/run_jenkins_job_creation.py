@@ -61,7 +61,7 @@ class Jenkins_Jobs(object):
         self.jenkins_instance = jenkins_instance
         self.pipe_conf = buildpipeline_config
 
-        job_config_params = pkg_resources.resource_string('cob_jenkins_tools', 'templates/job_config_params.yaml')
+        job_config_params = pkg_resources.resource_string('jenkins_setup', 'templates/job_config_params.yaml')
         self.jcp = yaml.load(job_config_params)
 
     ###########################################################################
@@ -72,7 +72,7 @@ class Jenkins_Jobs(object):
         Create new job
         '''
 
-        job_config = pkg_resources.resource_string('cob_jenkins_tools', 'templates/job_config.xml')
+        job_config = pkg_resources.resource_string('jenkins_setup', 'templates/job_config.xml')
 
         params = self.get_common_params(job_type)
 

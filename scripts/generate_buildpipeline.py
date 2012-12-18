@@ -8,7 +8,7 @@ import yaml
 import jenkins
 
 from rospkg import environment
-import cob_jenkins_tools
+from jenkins_setup import run_jenkins_job_creation
 #from jenkins_tools.run_jenkins_job_creation import *
 
 
@@ -28,7 +28,7 @@ def main():
     # create jenkins instance TODO
     with open(os.path.join(environment.get_ros_home(), 'catkin-debs', 'server.yaml')) as f:
         info = yaml.load(f)
-    jenkins_instance = jenkins.Jenkins(cob_jenkins_tools.JENKINS_SERVER, info['username'],
+    jenkins_instance = jenkins.Jenkins(run_jenkins_job_creation.JENKINS_SERVER, info['username'],
                                        info['password'])  # TODO
 
     # parse yaml file
@@ -37,11 +37,11 @@ def main():
     bpl_configs = yaml.load(f.read())  # TODO
 
     # create pipeline jobs TODO
-    pipe_starter_name = cob_jenkins_tools.create_pipe_starter()
+    pipe_starter_name = run_jenkins_job_creation.create_pipe_starter()
 
     # create release job TODO
     if bpl_configs['user_group'] == "admin":
-        cob_jenkins_tools.create_release()
+        run_jenkins_job_creation.create_release()
 
     # start buildpipeline by build pipe starter job TODO
     if options.run:
