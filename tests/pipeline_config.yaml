@@ -1,4 +1,5 @@
-pipeline_github_url: git@github.com/ipa320/jenkins_pipelines/ros_distro_user_name
+pipeline_github_url: git@github.com/ipa320/jenkins_pipelines/user_name__server_name
+pipeline_name: user_name__server_name
 pipeline_type: [build, gazebo, hardware, release] # labels for jobs/nodes and server config
 user_name: test_user
 email: test@ipa.fhg.de
