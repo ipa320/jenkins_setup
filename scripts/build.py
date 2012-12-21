@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
 import optparse
-from jenkins_setup.cob_common import *
+import sys
+import os
+from jenkins_setup import cob_develdistro
+from jenkins_setup import cob_common
 
 
 def main():
@@ -10,7 +13,7 @@ def main():
 
     if len(args) <= 3:
         print "Usage: %s pipeline_name ros_distro repo1 repo2 ..." % sys.argv[0]
-        raise BuildException("Wrong arbuments for build script")
+        raise cob_common.BuildException("Wrong arbuments for build script")
 
     # get arguments
     pipeline_name = args[0]
@@ -25,13 +28,13 @@ def main():
 
     # update and upgrade
     print "\nUpdating chroot enviroment installed packages"
-    call("apt-get update")
-    call("apt-get dist-upgrade -y")
+    cob_common.call("apt-get update")
+    cob_common.call("apt-get dist-upgrade -y")
 
     # clone jenkins_config
     print "\nCloning jenkins_config repository"
-    call("git clone git@github.com:fmw-jk/jenkins_config.git %s/jenkins_config" % workspace)  # TODO change to ipa320
-    call("cp -r %s/jenkins_config/%s %s/pipeline_config_dir" % (workspace, pipeline_name, workspace))
+    cob_common.call("git clone git@github.com:fmw-jk/jenkins_config.git %s/jenkins_config" % workspace)  # TODO change to ipa320
+    cob_common.call("cp -r %s/jenkins_config/%s %s/pipeline_config_dir" % (workspace, pipeline_name, workspace))
 
     # build depending on ros distro
     if ros_distro == "electric":
@@ -54,20 +57,34 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, workspace):
 
     # install Debian packages needed for script
     print "Installing Debian packages we need for running this script"
-    call("apt-get install python-catkin-pkg python-rosinstall python-rosdistro --yes")
+    cob_common.call("apt-get install python-catkin-pkg python-rosinstall python-rosdistro --yes")
 
-    buildpipe_configs = get_buildpipeline_configs(pipeline_name)  # TODO username and server needed
+    buildpipe_configs = cob_common.get_buildpipeline_configs(pipeline_name)  # TODO username and server needed
 
     # download repo_list from source
-    print "Creating rosinstall fiel for repo list"
+    print "Creating rosinstall file for repo list"
+    buildpipe_repos = cob_develdistro.Cob_Distro(ros_distro, buildpipe_configs['repositories'])
     rosinstall = ""
     for repo in repo_list:
         if repo not in buildpipe_configs['repositories']:
-            raise BuildException("Pipeline was triggered by repo %s which is \
-                                 not in pipeline config:\n%s"
-                                 % (repo, buildpipe_configs['repositories']))
+            raise cob_common.BuildException("Pipeline was triggered by repo %s which is \
+                                             not in pipeline config:\n%s"
+                                            % (repo, buildpipe_configs['repositories']))
         else:
-            rosinstall += buildpipe_configs['repositories']  # TODO
+            rosinstall += buildpipe_repos.repositories[repo].get_rosinstall()  # TODO
+
+    print "rosinstall file for all repositories: \n %s" % rosinstall
+    with open(os.path.join(workspace, "repo.rosinstall"), 'w') as f:
+        f.write(rosinstall)
+    print "Install repo list from source"
+    os.makedirs(repo_sourcespace)
+    cob_common.call("rosinstall %s %s/repo.rosinstall --catkin" % (repo_sourcespace, workspace))
+
+    # get the repositories build dependencies TODO
+    print "Get build dependencies of repo list"
+    repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
+    print "Install build dependencies of repo list: %s" % (', '.join(repo_build_dependencies))
+    cob_common.apt_get_install(repo_build_dependencies, rosdep)
 
 
     #TODO used when get dependencies
