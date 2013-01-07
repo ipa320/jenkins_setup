@@ -180,7 +180,7 @@ def put_tarball(ssh, tar_name, from_location, to_location):
                 to_location)
     finally:
         ftp.close()
-    print "Copied succesfully %s to %s" % (tar_name, ssh.get_host_keys().keys()[0])
+    print "Copied successfully %s to %s" % (tar_name, ssh.get_host_keys().keys()[0])
 
 
 def get_tarball(ssh, tar_name, from_location, to_location):
@@ -191,7 +191,7 @@ def get_tarball(ssh, tar_name, from_location, to_location):
                 to_location)
     finally:
         ftp.close()
-    print "Copied succesfully %s from %s" % (tar_name, ssh.get_host_keys().keys()[0])
+    print "Copied successfully %s from %s" % (tar_name, ssh.get_host_keys().keys()[0])
 
 
 def get_existent_tarballs(ssh):
