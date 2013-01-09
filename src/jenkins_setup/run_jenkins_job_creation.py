@@ -8,12 +8,6 @@ import re
 import pkg_resources
 
 
-# different for internal and external Jenkins TODO
-JENKINS_SERVER = 'http://jenkins-test-server:8080'
-#JENKINS_SERVER = 'http://cob-kitchen-server:8080'
-#JENKINS_SERVER = 'http://externjenkins-server:8080'
-
-
 class Jenkins_Jobs(object):
 
     def __init__(self, jenkins_instance, buildpipeline_config):
@@ -24,7 +18,7 @@ class Jenkins_Jobs(object):
         #    for i in yaml.load(f.read()):
         #        self.TARGET_PLATFORM = dict(self.TARGET_PLATFORM.items() + i.items())
         #except:
-        self.TARGET_PLATFORM = {'electric': ['lucid', 'maverick', 'natty', 'oneiric'],
+        self.TARGET_PLATFORM = {'electric': ['lucid', 'natty', 'oneiric'],
                                 'fuerte': ['lucid', 'oneiric', 'precise'],
                                 'groovy': ['oneiric', 'precise', 'quantal']}
         self.TARGET_ARCH = ['i386', 'amd64']
