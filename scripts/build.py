@@ -8,6 +8,7 @@ from jenkins_setup import cob_common
 
 
 def main():
+    # parse parameter values
     parser = optparse.OptionParser()
     (options, args) = parser.parse_args()
 
@@ -18,25 +19,26 @@ def main():
     # get arguments
     pipeline_name = args[0]
     ros_distro = args[1]
-    repo_list = [args[i] for i in range(2, len(args))]
+    repo_list = [args[i] for i in range(2, len(args))]  # repositories to build
     workspace = os.environ['WORKSPACE']
 
+    # (debug) output
     print "\nTesting on ros distro %s" % ros_distro
     print "Testing the following repositories:"
     for repo in repo_list:
         print " - ", repo
 
-    # update and upgrade
+    # update sourcelist and upgrade installed basic packages
     print "\nUpdating chroot enviroment installed packages"
     cob_common.call("apt-get update")
     cob_common.call("apt-get dist-upgrade -y")
 
-    # clone jenkins_config
+    # clone jenkins_config repository
     print "\nCloning jenkins_config repository"
     cob_common.call("git clone git@github.com:fmw-jk/jenkins_config.git %s/jenkins_config" % workspace)  # TODO change to ipa320
     cob_common.call("cp -r %s/jenkins_config/%s %s/pipeline_config_dir" % (workspace, pipeline_name, workspace))
 
-    # build depending on ros distro
+    # build depending on ros_ distro
     if ros_distro == "electric":
         build_electric(pipeline_name, ros_distro, repo_list, workspace)
     else:
@@ -59,6 +61,8 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, workspace):
     print "Installing Debian packages we need for running this script"
     cob_common.call("apt-get install python-catkin-pkg python-rosinstall python-rosdistro --yes")
 
+    # get buildpipeline configurations from yaml file hosted on github repo
+    # jenkins_config
     buildpipe_configs = cob_common.get_buildpipeline_configs(pipeline_name)  # TODO username and server needed
 
     # download repo_list from source
