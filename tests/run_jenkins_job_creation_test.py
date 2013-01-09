@@ -59,7 +59,7 @@ class Job_Generation_Test(unittest.TestCase):
         self.assertEqual(result, [])
 
     def test__generate_job_list__input_dict__raise_exception(self):
-        self.assertRaises(TypeError, self.jj.generate_job_list, {'pipe', 'prio', 'normal'})
+        self.assertRaises(TypeError, self.jj.generate_job_list, ('pipe', 'prio', 'normal'))
 
     # Testing generate_job_list_string
     def test__generate_job_list_string__input_job_list__return_job_names_as_comma_separatet_string(self):
