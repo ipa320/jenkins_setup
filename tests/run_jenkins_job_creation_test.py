@@ -7,7 +7,6 @@ import yaml
 import datetime
 import socket
 import jenkins
-from rospkg import environment
 
 from jenkins_setup import run_jenkins_job_creation
 
@@ -20,9 +19,9 @@ class Job_Generation_Test(unittest.TestCase):
             self.test_dict = yaml.load(f)
         self.job_type_test_list = ['pipe', 'prio', 'normal']
 
-        with open(os.path.join(environment.get_ros_home(), 'catkin-debs', 'server.yaml')) as f:
+        with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
             info = yaml.load(f)
-        jenkins_instance = jenkins.Jenkins(run_jenkins_job_creation.JENKINS_SERVER, info['username'], info['password'])
+        jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'], info['jenkins_pw'])
         self.jj = run_jenkins_job_creation.Jenkins_Jobs(jenkins_instance, self.test_dict)
 
         self.jj.PRIO_DISTRO['test_rosdistro'] = 'natty'
