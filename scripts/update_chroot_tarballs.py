@@ -5,7 +5,7 @@ import os
 import subprocess
 import paramiko
 
-PLATFORMS = {'electric': ['lucid', 'maverick', 'natty', 'oneiric'],
+PLATFORMS = {'electric': ['lucid', 'natty', 'oneiric'],
              'fuerte': ['lucid', 'oneiric', 'precise'],
              'groovy': ['oneiric', 'precise', 'quantal']
              }
