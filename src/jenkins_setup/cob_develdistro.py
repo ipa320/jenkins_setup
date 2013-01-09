@@ -10,15 +10,15 @@ class Cob_Distro(object):
         self.repositories = {}
 
         if not repos_dict:
-            self.url = urllib2.openurl('https://raw.github.com/fmw-jk/jenkins_setup \
-                                        /master/releases/cob_%s.yaml' % name)  # TODO change to ipa320
-            self.repos_dict = yaml.load(self.url.read())['repositories']
+            self.url = 'https://raw.github.com/fmw-jk/jenkins_setup/master/releases/cob_%s.yaml' % name  # TODO change to ipa320
+            self.release_file = urllib2.urlopen(self.url)
+            self.repos_dict = yaml.load(self.release_file.read())['repositories']
         else:
             self.repos_dict = repos_dict
 
         for repo_name, data in self.repos_dict.iteritems():
-            repo = Cob_Distro_Repo(name, data)
-            self.repositories[name] = repo
+            repo = Cob_Distro_Repo(repo_name, data)
+            self.repositories[repo_name] = repo
 
 
 class Cob_Distro_Repo(object):
