@@ -73,6 +73,9 @@ cd ~/jenkins-config
 
 cat > ~/jenkins-config/slave_config.yaml <<DELIM
 master: $master
+master_url: "http://$master:8080"
+jenkins_login: ""
+jenkins_pw: ""
 DELIM
 echo "Configuration file written"
 
