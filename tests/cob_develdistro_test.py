@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 
 import unittest
 from jenkins_setup import cob_develdistro
@@ -42,6 +42,20 @@ class Cob_Distro_Repo_Test(unittest.TestCase):
 
     def setUp(self):
         self.MaxDiff = None
+
+    def test__get_rosinstall__init__return_rosinstall_yaml_string(self):
+        data_test_dict = {'type': 'git', 'url': 'git://github.com/ipa320/test.git', 'version': 'master'}
+        self.cdr = cob_develdistro.Cob_Distro_Repo('test', data_test_dict)
+
+        result = self.cdr.get_rosinstall()
+        self.assertEqual(result, "- git: {local-name: test, uri: 'git://github.com/ipa320/test.git', version: master}\n")
+
+    def test__get_rosinstall__init_without_version__return_rosinstall_yaml_string(self):
+        data_test_dict = {'type': 'git', 'url': 'git://github.com/ipa320/test.git'}
+        self.cdr = cob_develdistro.Cob_Distro_Repo('test', data_test_dict)
+
+        result = self.cdr.get_rosinstall()
+        self.assertEqual(result, "- git: {local-name: test, uri: 'git://github.com/ipa320/test.git'}\n")
 
 
 if __name__ == "__main__":
