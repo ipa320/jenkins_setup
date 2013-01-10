@@ -58,12 +58,12 @@ class RosDepResolver:
 
     def to_ros(self, apt_entry):
         if not self.a2r.has_key(apt_entry):
-            print "Could not find %s in rosdep keys. Rosdep knows about these keys: %s"%(apt_entry, ', '.join(self.a2r.keys()))
+            print "Could not find %s in rosdep keys. Rosdep knows about these keys: %s" % (apt_entry, ', '.join(self.a2r.keys()))
         return self.a2r[apt_entry]
 
     def to_apt(self, ros_entry):
         if not self.r2a.has_key(ros_entry):
-            print "Could not find %s in keys. Have keys %s"%(ros_entry, ', '.join(self.r2a.keys()))
+            print "Could not find %s in keys. Have keys %s" % (ros_entry, ', '.join(self.r2a.keys()))
         return self.r2a[ros_entry]
 
     def has_ros(self, ros_entry):
@@ -90,18 +90,18 @@ class RosDep:
         if r in self.r2a:
             return self.r2a[r]
         else:
-            res = call("rosdep resolve %s"%r, self.env).split('\n')
+            res = call("rosdep resolve %s" % r, self.env).split('\n')
             if len(res) == 1:
                 raise Exception("Could not resolve rosdep")
-            a = call("rosdep resolve %s"%r, self.env).split('\n')[1]
-            print "Rosdep %s resolved into %s"%(r, a)
+            a = call("rosdep resolve %s" % r, self.env).split('\n')[1]
+            print "Rosdep %s resolved into %s" % (r, a)
             self.r2a[r] = a
             self.a2r[a] = r
             return a
 
     def to_stack(self, a):
         if not a in self.a2r:
-            print "%s not in apt-to-rosdep cache"%a
+            print "%s not in apt-to-rosdep cache" % a
         return self.a2r[a]
 
 
@@ -117,7 +117,7 @@ def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):
     count = 0
     for root, dirnames, filenames in os.walk(os.path.join(buildspace, 'test_results')):
         for filename in fnmatch.filter(filenames, '*.xml'):
-            call("cp %s %s/test_results/"%(os.path.join(root, filename), workspace))
+            call("cp %s %s/test_results/" % (os.path.join(root, filename), workspace))
             count += 1
     if count == 0:
         print "No test results, so I'll create a dummy test result xml file, with errors %s" % errors
@@ -130,30 +130,30 @@ def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):
 
 def get_ros_env(setup_file):
     res = os.environ
-    print "Retrieve the ROS build environment by sourcing %s"%setup_file
-    command = ['bash', '-c', 'source %s && env'%setup_file]
-    proc = subprocess.Popen(command, stdout = subprocess.PIPE)
+    print "Retrieve the ROS build environment by sourcing %s" % setup_file
+    command = ['bash', '-c', 'source %s && env' % setup_file]
+    proc = subprocess.Popen(command, stdout=subprocess.PIPE)
     for line in proc.stdout:
         (key, _, value) = line.partition("=")
         res[key] = value.split('\n')[0]
     proc.communicate()
     if proc.returncode != 0:
-        msg = "Failed to source %s"%setup_file
-        print "/!\  %s"%msg
+        msg = "Failed to source %s" % setup_file
+        print "/!\  %s" % msg
         raise BuildException(msg)
     return res
 
 
 def call_with_list(command, envir=None, verbose=True):
-    print "Executing command '%s'"%' '.join(command)
+    print "Executing command '%s'" % ' '.join(command)
     helper = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True, env=envir)
     res, err = helper.communicate()
     if verbose:
         print str(res)
     print str(err)
     if helper.returncode != 0:
-        msg = "Failed to execute command '%s'"%command
-        print "/!\  %s"%msg
+        msg = "Failed to execute command '%s'" % command
+        print "/!\  %s" % msg
         raise BuildException(msg)
     return res
 
@@ -171,17 +171,17 @@ def get_nonlocal_dependencies(catkin_packages, stacks, manifest_packages):
     #First, we build the catkin deps
     for name, path in catkin_packages.iteritems():
         pkg_info = packages.parse_package(path)
-        depends.extend([d.name \
-                        for d in pkg_info.build_depends + pkg_info.test_depends + pkg_info.run_depends \
+        depends.extend([d.name
+                        for d in pkg_info.build_depends + pkg_info.test_depends + pkg_info.run_depends
                         if not d.name in catkin_packages and not d.name in depends])
 
     #Next, we build the manifest deps for stacks
     for name, path in stacks.iteritems():
         stack_manifest = rospkg.parse_manifest_file(path, rospkg.STACK_FILE)
-        depends.extend([d.name \
-                        for d in stack_manifest.depends + stack_manifest.rosdeps \
-                        if not d.name in catkin_packages \
-                        and not d.name in stacks \
+        depends.extend([d.name
+                        for d in stack_manifest.depends + stack_manifest.rosdeps
+                        if not d.name in catkin_packages
+                        and not d.name in stacks
                         and not d.name in depends])
 
     #Next, we build manifest deps for packages
