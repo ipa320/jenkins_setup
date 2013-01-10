@@ -29,6 +29,12 @@ class Cob_Distro_Repo(object):
         self.version = None
         if 'version' in data:
             self.version = data['version']
+        self.poll = None
+        if 'poll' in data:
+            self.poll = data['poll']
+        self.dep = None
+        if 'dep' in data:
+            self.dep = data['dep']
 
     def get_rosinstall(self):
         if self.version:

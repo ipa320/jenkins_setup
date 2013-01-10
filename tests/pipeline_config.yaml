@@ -18,7 +18,11 @@ repositories:
         type : git  # git, hg, svn
         url: git@github.com/user/repo1
         version: master
+        poll: 'true'
+        dep: 'false'
     test_repo_2:
         type: git
         url: git@github.com/user/repo2
         version: test
+        poll: 'false'
+        dep: 'true'
