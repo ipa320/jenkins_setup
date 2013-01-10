@@ -16,93 +16,25 @@ def append_pymodules_if_needed():
         sys.path.append("/usr/lib/pymodules/python2.7")
 
 
-def apt_get_install(pkgs, rosdep):
+def apt_get_update(sudo=False):
+    if not sudo:
+        call("apt-get update")
+    else:
+        call("sudo apt-get update")        
+
+
+def apt_get_install(pkgs, rosdep=None, sudo=False):
+    cmd = "apt-get install --yes "
+    if sudo:
+        cmd = "sudo " + cmd
+
     if len(pkgs) > 0:
-        call("apt-get install --yes %s" % (' '.join(rosdep.to_aptlist(pkgs))))
+        if rosdep:
+            call(cmd + ' '.join(rosdep.to_aptlist(pkgs)))
+        else:
+            call(cmd + ' '.join(pkgs))
     else:
         print "Not installing anything from apt right now."
-
-
-class RosDepResolver:
-    def __init__(self, ros_distro):
-        self.r2a = {}
-        self.a2r = {}
-        self.env = os.environ
-        self.env['ROS_DISTRO'] = ros_distro
-
-        print "Ininitalize rosdep database"
-        call("apt-get install --yes lsb-release python-rosdep")
-        call("rosdep init", self.env)
-        call("rosdep update", self.env)
-
-        print "Building dictionaries from a rosdep's db"
-        raw_db = call("rosdep db", self.env, verbose=False).split('\n')
-
-        for entry in raw_db:
-            split_entry = entry.split(' -> ')
-            if len(split_entry) < 2:
-                continue
-            ros_entry = split_entry[0]
-            apt_entries = split_entry[1].split(' ')
-            self.r2a[ros_entry] = apt_entries
-            for a in apt_entries:
-                self.a2r[a] = ros_entry
-
-    def to_aptlist(self, ros_entries):
-        res = []
-        for r in ros_entries:
-            for a in self.to_apt(r):
-                if not a in res:
-                    res.append(a)
-        return res
-
-    def to_ros(self, apt_entry):
-        if not self.a2r.has_key(apt_entry):
-            print "Could not find %s in rosdep keys. Rosdep knows about these keys: %s" % (apt_entry, ', '.join(self.a2r.keys()))
-        return self.a2r[apt_entry]
-
-    def to_apt(self, ros_entry):
-        if not self.r2a.has_key(ros_entry):
-            print "Could not find %s in keys. Have keys %s" % (ros_entry, ', '.join(self.r2a.keys()))
-        return self.r2a[ros_entry]
-
-    def has_ros(self, ros_entry):
-        return ros_entry in self.r2a
-
-    def has_apt(self, apt_entry):
-        return apt_entry in self.a2r
-
-
-class RosDep:
-    def __init__(self, ros_distro):
-        self.r2a = {}
-        self.a2r = {}
-        self.env = os.environ
-        self.env['ROS_DISTRO'] = ros_distro
-
-        # Initialize rosdep database
-        print "Ininitalize rosdep database"
-        call("apt-get install --yes lsb-release python-rosdep")
-        call("rosdep init", self.env)
-        call("rosdep update", self.env)
-
-    def to_apt(self, r):
-        if r in self.r2a:
-            return self.r2a[r]
-        else:
-            res = call("rosdep resolve %s" % r, self.env).split('\n')
-            if len(res) == 1:
-                raise Exception("Could not resolve rosdep")
-            a = call("rosdep resolve %s" % r, self.env).split('\n')[1]
-            print "Rosdep %s resolved into %s" % (r, a)
-            self.r2a[r] = a
-            self.a2r[a] = r
-            return a
-
-    def to_stack(self, a):
-        if not a in self.a2r:
-            print "%s not in apt-to-rosdep cache" % a
-        return self.a2r[a]
 
 
 def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):
@@ -147,10 +79,18 @@ def get_ros_env(setup_file):
 def call_with_list(command, envir=None, verbose=True):
     print "Executing command '%s'" % ' '.join(command)
     helper = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True, env=envir)
-    res, err = helper.communicate()
+    res = ""
+    while helper.poll() is None:
+        output = helper.stdout.readline()
+        res += output
+        time.sleep(0.1) # TODO What is a good value here? Without this delay it's busy looping
+
+    #make sure to capture the last line(s)
+    output = helper.stdout.read()
+    res += output
+    
     if verbose:
-        print str(res)
-    print str(err)
+        print res
     if helper.returncode != 0:
         msg = "Failed to execute command '%s'" % command
         print "/!\  %s" % msg
@@ -161,6 +101,13 @@ def call_with_list(command, envir=None, verbose=True):
 def call(command, envir=None, verbose=True):
     return call_with_list(command.split(' '), envir, verbose)
 
+def get_catkin_stack_deps(xml_path):
+    import xml.etree.ElementTree as ET
+    tree = ET.parse(xml_path)
+    root = tree.getroot()
+    return list(set([d.text for d in root.findall('depends')] \
+                 + [d.text for d in root.findall('build_depends')] \
+                 + [d.text for d in root.findall('run_depends')]))
 
 def get_nonlocal_dependencies(catkin_packages, stacks, manifest_packages):
     append_pymodules_if_needed()
@@ -171,18 +118,21 @@ def get_nonlocal_dependencies(catkin_packages, stacks, manifest_packages):
     #First, we build the catkin deps
     for name, path in catkin_packages.iteritems():
         pkg_info = packages.parse_package(path)
-        depends.extend([d.name
-                        for d in pkg_info.build_depends + pkg_info.test_depends + pkg_info.run_depends
+        depends.extend([d.name \
+                        for d in pkg_info.buildtool_depends + pkg_info.build_depends + pkg_info.test_depends + pkg_info.run_depends \
                         if not d.name in catkin_packages and not d.name in depends])
 
     #Next, we build the manifest deps for stacks
     for name, path in stacks.iteritems():
         stack_manifest = rospkg.parse_manifest_file(path, rospkg.STACK_FILE)
-        depends.extend([d.name
-                        for d in stack_manifest.depends + stack_manifest.rosdeps
-                        if not d.name in catkin_packages
-                        and not d.name in stacks
-                        and not d.name in depends])
+        if stack_manifest.is_catkin:
+            depends.extend(get_catkin_stack_deps(os.path.join(path, 'stack.xml')))
+        else:
+            depends.extend([d.name \
+                            for d in stack_manifest.depends + stack_manifest.rosdeps \
+                            if not d.name in catkin_packages \
+                            and not d.name in stacks \
+                            and not d.name in depends])
 
     #Next, we build manifest deps for packages
     for name, path in manifest_packages.iteritems():
@@ -207,7 +157,7 @@ def build_local_dependency_graph(catkin_packages, manifest_packages):
     for name, path in catkin_packages.iteritems():
         depends[name] = []
         pkg_info = packages.parse_package(path)
-        for d in pkg_info.build_depends + pkg_info.test_depends + pkg_info.run_depends:
+        for d in pkg_info.buildtool_depends + pkg_info.build_depends + pkg_info.test_depends + pkg_info.run_depends:
             if d.name in catkin_packages and d.name != name:
                 depends[name].append(d.name)
 
@@ -252,7 +202,7 @@ def get_dependencies(source_folder, build_depends=True, test_depends=True):
     append_pymodules_if_needed()
     from catkin_pkg import packages
     pkgs = packages.find_packages(source_folder)
-    local_packages = pkgs.keys()
+    local_packages = [p.name for p in pkgs.values()]
     if len(pkgs) > 0:
         print "In folder %s, found packages %s" % (source_folder, ', '.join(local_packages))
     else:
@@ -265,7 +215,7 @@ def get_dependencies(source_folder, build_depends=True, test_depends=True):
                 if not d.name in depends and not d.name in local_packages:
                     depends.append(d.name)
         if test_depends:
-            for d in pkg.test_depends:
+            for d in pkg.test_depends + pkg.run_depends:
                 if not d.name in depends and not d.name in local_packages:
                     depends.append(d.name)
 
