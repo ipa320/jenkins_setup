@@ -152,9 +152,11 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, w
     # TODO handle dry stacks
     print "Get build dependencies of repo list"
     repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
+    print "Found dependencies:\n%s" % '- ' + '\n- '.join(repo_build_dependencies)
     # install user-defined dependencies from source
     rosinstall = ''
     for name, data in buildpipe_repos.repositories.iteritems():
+        print name, '\n', data
         if data.dep:
             if name in repo_build_dependencies:
                 # check if repo is private
