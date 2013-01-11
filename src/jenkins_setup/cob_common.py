@@ -5,7 +5,7 @@ import sys
 import fnmatch
 import yaml
 #import threading
-#import time
+import time
 #from Queue import Queue
 #from threading import Thread
 
@@ -20,7 +20,7 @@ def apt_get_update(sudo=False):
     if not sudo:
         call("apt-get update")
     else:
-        call("sudo apt-get update")        
+        call("sudo apt-get update")
 
 
 def apt_get_install(pkgs, rosdep=None, sudo=False):
@@ -83,12 +83,12 @@ def call_with_list(command, envir=None, verbose=True):
     while helper.poll() is None:
         output = helper.stdout.readline()
         res += output
-        time.sleep(0.1) # TODO What is a good value here? Without this delay it's busy looping
+        time.sleep(0.1)  # TODO What is a good value here? Without this delay it's busy looping
 
     #make sure to capture the last line(s)
     output = helper.stdout.read()
     res += output
-    
+
     if verbose:
         print res
     if helper.returncode != 0:
@@ -101,13 +101,15 @@ def call_with_list(command, envir=None, verbose=True):
 def call(command, envir=None, verbose=True):
     return call_with_list(command.split(' '), envir, verbose)
 
+
 def get_catkin_stack_deps(xml_path):
     import xml.etree.ElementTree as ET
     tree = ET.parse(xml_path)
     root = tree.getroot()
-    return list(set([d.text for d in root.findall('depends')] \
-                 + [d.text for d in root.findall('build_depends')] \
-                 + [d.text for d in root.findall('run_depends')]))
+    return list(set([d.text for d in root.findall('depends')]
+                    + [d.text for d in root.findall('build_depends')]
+                    + [d.text for d in root.findall('run_depends')]))
+
 
 def get_nonlocal_dependencies(catkin_packages, stacks, manifest_packages):
     append_pymodules_if_needed()
@@ -118,8 +120,8 @@ def get_nonlocal_dependencies(catkin_packages, stacks, manifest_packages):
     #First, we build the catkin deps
     for name, path in catkin_packages.iteritems():
         pkg_info = packages.parse_package(path)
-        depends.extend([d.name \
-                        for d in pkg_info.buildtool_depends + pkg_info.build_depends + pkg_info.test_depends + pkg_info.run_depends \
+        depends.extend([d.name
+                        for d in pkg_info.buildtool_depends + pkg_info.build_depends + pkg_info.test_depends + pkg_info.run_depends
                         if not d.name in catkin_packages and not d.name in depends])
 
     #Next, we build the manifest deps for stacks
@@ -128,10 +130,10 @@ def get_nonlocal_dependencies(catkin_packages, stacks, manifest_packages):
         if stack_manifest.is_catkin:
             depends.extend(get_catkin_stack_deps(os.path.join(path, 'stack.xml')))
         else:
-            depends.extend([d.name \
-                            for d in stack_manifest.depends + stack_manifest.rosdeps \
-                            if not d.name in catkin_packages \
-                            and not d.name in stacks \
+            depends.extend([d.name
+                            for d in stack_manifest.depends + stack_manifest.rosdeps
+                            if not d.name in catkin_packages
+                            and not d.name in stacks
                             and not d.name in depends])
 
     #Next, we build manifest deps for packages
