@@ -156,7 +156,7 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, w
     # install user-defined dependencies from source
     rosinstall = ''
     for name, data in buildpipe_repos.repositories.iteritems():
-        print name, '\n', data
+        print name, '\n', data, '\n', data.url, '\n', data.dep, '\n', data.private
         if data.dep:
             if name in repo_build_dependencies:
                 # check if repo is private
