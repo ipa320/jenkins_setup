@@ -55,9 +55,9 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, workspace):
     # set up directories variables
     tmpdir = os.path.join('/tmp', 'test_repositories')
     repo_sourcespace = os.path.join(tmpdir, 'src_repository')
-    dependson_sourcespace = os.path.join(tmpdir, 'src_depends_on')
+    #dependson_sourcespace = os.path.join(tmpdir, 'src_depends_on')
     repo_buildspace = os.path.join(tmpdir, 'build_repository')
-    dependson_buildspace = os.path.join(tmpdir, 'build_depend_on')
+    #dependson_buildspace = os.path.join(tmpdir, 'build_depend_on')
 
     # install Debian packages needed for script
     print "Installing Debian packages we need for running this script"
@@ -137,6 +137,16 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, workspace):
     print "Build repo list"
     cob_common.call("make", ros_env)
     cob_common.call("make tests", ros_env)
+
+    # get the repositories test and run dependencies
+    print "Get test and run dependencies of repo list"
+    repo_test_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=False, test_depends=True)
+    print "Install test and run dependencies of repo list: %s" % (', '.join(repo_test_dependencies))
+    cob_common.apt_get_install(repo_test_dependencies, rosdep_resolver)
+
+    # run tests
+    print "Test repo list"
+    cob_common.call("make run_tests", ros_env)
 
 #    #TODO used when get dependencies
 #    import rosdistro
