@@ -225,7 +225,14 @@ def get_dependencies(source_folder, build_depends=True, test_depends=True):
 
 
 def get_buildpipeline_configs(pipeline_name):
-    """ TODO """
+    """
+    Get buildpipeline configuration
+
+    :param pipeline_name: name of buildpipeline, ``str``
+
+    :returns: return :dict: with configurations
+    :raises: :exec:`Exception`
+    """
     github_url = "https://raw.github.com/fmw-jk/jenkins_config/master/%s/pipeline_config.yaml" % pipeline_name  # TODO change to ipa320
     print "Parsing buildpipeline configuration file for %s stored at:\n%s" % (pipeline_name, github_url)
     try:
