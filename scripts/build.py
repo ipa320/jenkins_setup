@@ -70,7 +70,7 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, workspace):
     buildpipe_repos = cob_develdistro.Cob_Distro(ros_distro, buildpipe_configs['repositories'])
     rosinstall = ""
     for repo in repo_list:
-        if repo in buildpipe_configs['repositories']:
+        if repo in buildpipe_repos.repositories and buildpipe_repos.repositories[repo].poll:
             rosinstall += buildpipe_repos.repositories[repo].get_rosinstall()  # TODO
         else:
             raise cob_common.BuildException("Pipeline was triggered by repo %s which is \
