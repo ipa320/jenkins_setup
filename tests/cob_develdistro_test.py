@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 
 import unittest
 from jenkins_setup import cob_develdistro
@@ -20,7 +20,8 @@ class Cob_Distro_Test(unittest.TestCase):
     def test__init__input_rosdistro_and_repo_distro__check_repo(self):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git', 'version': 'master'}}
         cd = cob_develdistro.Cob_Distro('test', repo_test_dict)
-        self.assertIn('cob_extern', cd.repositories)
+        self.assertTrue('cob_extern' in cd.repositories)
+#        self.assertIn('cob_extern', cd.repositories)
 
     def test__init__input_rosdistro_and_repo_distro__check_repo_url(self):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git', 'version': 'master'}}
