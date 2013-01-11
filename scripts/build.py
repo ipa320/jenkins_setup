@@ -37,7 +37,7 @@ def main():
 
     # clone jenkins_config repository
     print "\nCloning jenkins_config repository"
-    cob_common.call("git clone git@github.com:fmw-jk/jenkins_config.git %s/jenkins_config" % workspace)  # TODO change to ipa320
+    cob_common.call("git clone git://github.com/fmw-jk/jenkins_config.git %s/jenkins_config" % workspace)  # TODO change to ipa320
     cob_common.call("cp -r %s/jenkins_config/%s %s/pipeline_config_dir" % (workspace, pipeline_name, workspace))
 
     # build depending on ros_ distro
