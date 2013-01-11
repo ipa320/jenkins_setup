@@ -4,9 +4,7 @@ import optparse
 import sys
 import os
 
-import rosdep
-import cob_develdistro
-import cob_common
+from jenkins_setup import cob_common, cob_develdistro, rosdep
 
 
 def main():
