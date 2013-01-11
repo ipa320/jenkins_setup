@@ -52,6 +52,50 @@ def main():
 
 def build_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, workspace):
     # set up directories variables
+    tmpdir = os.path.join('/tmp', 'test_repositories')
+    repo_sourcespace = os.path.join(tmpdir, 'src_repository')
+
+    # install Debian packages needed for script TODO ??
+    print "Installing Debian packages we need for running this script"
+    #cob_common.call("apt-get install python-catkin-pkg python-rosinstall python-rosdistro --yes")
+
+    # download repo_list from source
+    print "Installing repository list from source:"
+    print "rosinstall public and clone private repositories"
+    rosinstall = ""
+    for repo in repo_list:
+        # check if triggering repo is defined in buildpipe config and polled
+        if repo in buildpipe_repos.repositories and buildpipe_repos.repositories[repo].poll:
+            # check if repo is private
+            if buildpipe_repos.repositories[repo].private:
+                cob_common.call("git clone %s %s"
+                                % (buildpipe_repos.repositories[repo].url,
+                                   repo_sourcespace))
+                print "Cloning private repository %s from %s"
+                       % (repo, buildpipe_repos.repositories[repo].url)
+            else:
+                rosinstall += buildpipe_repos.repositories[repo].get_rosinstall()
+        else:
+            poll_repos = [name for name in buildpipe_repos.repositories.keys()
+                          if buildpipe_repos.repositories[name].poll]
+            raise cob_common.BuildException("Pipeline was triggered by repo %s which is \
+                                             not in pipeline config:\n%s"
+                                            % (repo,
+                                               '- ' + '\n- '.join(poll_repos)))
+
+    if rosinstall != '':
+        print "Rosinstall file for public repositories: \n %s" % rosinstall
+        # write .rosinstall file
+        with open(os.path.join(workspace, "repo.rosinstall"), 'w') as f:
+            f.write(rosinstall)
+        print "Install public repositories from source"
+        # create repo sourcespace directory 'src_repository'
+        os.makedirs(repo_sourcespace)
+        # rosinstall repos
+        # TODO handle private repos
+        # TODO handle dry stacks
+        cob_common.call("rosinstall %s %s/repo.rosinstall"
+                        % (repo_sourcespace, workspace))
 
     pass
 
@@ -69,11 +113,21 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, w
     cob_common.call("apt-get install python-catkin-pkg python-rosinstall python-rosdistro --yes")
 
     # download repo_list from source
-    print "Creating rosinstall file for repo list"
+    print "Installing repository list from source:"
+    print "rosinstall public and clone private repositories"
     rosinstall = ""
     for repo in repo_list:
+        # check if triggering repo is defined in buildpipe config and polled
         if repo in buildpipe_repos.repositories and buildpipe_repos.repositories[repo].poll:
-            rosinstall += buildpipe_repos.repositories[repo].get_rosinstall()  # TODO
+            # check if repo is private
+            if buildpipe_repos.repositories[repo].private:
+                cob_common.call("git clone %s %s"
+                                % (buildpipe_repos.repositories[repo].url,
+                                   repo_sourcespace))
+                print "Cloning private repository %s from %s"
+                       % (repo, buildpipe_repos.repositories[repo].url)
+            else:
+                rosinstall += buildpipe_repos.repositories[repo].get_rosinstall()
         else:
             poll_repos = [name for name in buildpipe_repos.repositories.keys()
                           if buildpipe_repos.repositories[name].poll]
@@ -82,18 +136,19 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, w
                                             % (repo,
                                                '- ' + '\n- '.join(poll_repos)))
 
-    print "Rosinstall file for all repositories: \n %s" % rosinstall
-    # write .rosinstall file
-    with open(os.path.join(workspace, "repo.rosinstall"), 'w') as f:
-        f.write(rosinstall)
-    print "Install repository list from source"
-    # create repo sourcespace directory 'src_repository'
-    os.makedirs(repo_sourcespace)
-    # rosinstall repos
-    # TODO handle private repos
-    # TODO handle dry stacks
-    cob_common.call("rosinstall %s %s/repo.rosinstall --catkin"
-                    % (repo_sourcespace, workspace))
+    if rosinstall != '':
+        print "Rosinstall file for public repositories: \n %s" % rosinstall
+        # write .rosinstall file
+        with open(os.path.join(workspace, "repo.rosinstall"), 'w') as f:
+            f.write(rosinstall)
+        print "Install public repositories from source"
+        # create repo sourcespace directory 'src_repository'
+        os.makedirs(repo_sourcespace)
+        # rosinstall repos
+        # TODO handle private repos
+        # TODO handle dry stacks
+        cob_common.call("rosinstall %s %s/repo.rosinstall --catkin"
+                        % (repo_sourcespace, workspace))
 
     # get the repositories build dependencies
     # TODO handle dry stacks
