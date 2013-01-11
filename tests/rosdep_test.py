@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import unittest
-import rosdep
+import jenkins_setup.rosdep
 
 
 class Rosdep_Test(unittest.TestCase):
