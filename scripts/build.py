@@ -14,9 +14,9 @@ def main():
     parser = optparse.OptionParser()
     (options, args) = parser.parse_args()
 
-    if len(args) <= 3:
+    if len(args) < 3:
         print "Usage: %s pipeline_name ros_distro repo1 repo2 ..." % sys.argv[0]
-        raise cob_common.BuildException("Wrong arbuments for build script")
+        raise cob_common.BuildException("Wrong arguments for build script")
 
     # get arguments
     pipeline_name = args[0]
