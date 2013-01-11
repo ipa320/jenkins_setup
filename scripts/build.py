@@ -71,8 +71,7 @@ def build_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, worksp
                 cob_common.call("git clone %s %s"
                                 % (buildpipe_repos.repositories[repo].url,
                                    repo_sourcespace))
-                print "Cloning private repository %s from %s"
-                       % (repo, buildpipe_repos.repositories[repo].url)
+                print "Cloning private repository %s from %s" % (repo, buildpipe_repos.repositories[repo].url)
             else:
                 rosinstall += buildpipe_repos.repositories[repo].get_rosinstall()
         else:
@@ -124,8 +123,7 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, w
                 cob_common.call("git clone %s %s"
                                 % (buildpipe_repos.repositories[repo].url,
                                    repo_sourcespace))
-                print "Cloning private repository %s from %s"
-                       % (repo, buildpipe_repos.repositories[repo].url)
+                print "Cloning private repository %s from %s" % (repo, buildpipe_repos.repositories[repo].url)
             else:
                 rosinstall += buildpipe_repos.repositories[repo].get_rosinstall()
         else:
@@ -159,7 +157,14 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, w
     for name, data in buildpipe_repos.repositories.iteritems():
         if data.dep:
             if name in repo_build_dependencies:
-                rosinstall += buildpipe_repos.repositories[name].get_rosinstall()
+                # check if repo is private
+                if data.private:
+                    cob_common.call("git clone %s %s"
+                                    % (buildpipe_repos.repositories[name].url,
+                                    repo_sourcespace))
+                    print "Cloning private repository %s from %s" % (name, buildpipe_repos.repositories[name].url)
+                else:
+                    rosinstall += buildpipe_repos.repositories[name].get_rosinstall()
                 repo_build_dependencies.remove(name)
     if rosinstall != '':
         print "Rosinstall file for user-defined build dependencies: \n %s" % rosinstall
