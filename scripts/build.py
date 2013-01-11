@@ -38,18 +38,25 @@ def main():
     cob_common.call("git clone git://github.com/fmw-jk/jenkins_config.git %s/jenkins_config" % workspace)  # TODO change to ipa320
     cob_common.call("cp -r %s/jenkins_config/%s %s/pipeline_config_dir" % (workspace, pipeline_name, workspace))
 
+    # get buildpipeline configurations from yaml file hosted on github repo
+    # jenkins_config
+    buildpipe_configs = cob_common.get_buildpipeline_configs(pipeline_name)  # TODO username and server needed ??
+    buildpipe_repos = cob_develdistro.Cob_Distro(ros_distro, buildpipe_configs['repositories'])
+
     # build depending on ros_ distro
     if ros_distro == "electric":
-        build_electric(pipeline_name, ros_distro, repo_list, workspace)
+        build_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, workspace)
     else:
-        build_post_electric(pipeline_name, ros_distro, repo_list, workspace)
+        build_post_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, workspace)
 
 
-def build_electric(pipeline_name, ros_distro, repo_list, workspace):
+def build_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, workspace):
+    # set up directories variables
+
     pass
 
 
-def build_post_electric(pipeline_name, ros_distro, repo_list, workspace):
+def build_post_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, workspace):
     # set up directories variables
     tmpdir = os.path.join('/tmp', 'test_repositories')
     repo_sourcespace = os.path.join(tmpdir, 'src_repository')
@@ -59,23 +66,22 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, workspace):
 
     # install Debian packages needed for script
     print "Installing Debian packages we need for running this script"
-    cob_common.call("apt-get install python-catkin-pkg python-rosinstall python-rosdistro --yes")
-
-    # get buildpipeline configurations from yaml file hosted on github repo
-    # jenkins_config
-    buildpipe_configs = cob_common.get_buildpipeline_configs(pipeline_name)  # TODO username and server needed ??
+    cob_common.call("apt-get install python-catkin-pkg \
+                     python-rosinstall python-rosdistro --yes")
 
     # download repo_list from source
     print "Creating rosinstall file for repo list"
-    buildpipe_repos = cob_develdistro.Cob_Distro(ros_distro, buildpipe_configs['repositories'])
     rosinstall = ""
     for repo in repo_list:
         if repo in buildpipe_repos.repositories and buildpipe_repos.repositories[repo].poll:
             rosinstall += buildpipe_repos.repositories[repo].get_rosinstall()  # TODO
         else:
+            poll_repos = [name for name in buildpipe_repos.repositories.keys()
+                          if buildpipe_repos.repositories[name].poll]
             raise cob_common.BuildException("Pipeline was triggered by repo %s which is \
                                              not in pipeline config:\n%s"
-                                            % (repo, buildpipe_configs['repositories']))
+                                            % (repo,
+                                               '- ' + '\n- '.join(poll_repos)))
 
     print "Rosinstall file for all repositories: \n %s" % rosinstall
     # write .rosinstall file
