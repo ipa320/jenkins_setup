@@ -148,6 +148,9 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, workspace):
     print "Test repo list"
     cob_common.call("make run_tests", ros_env)
 
+    # copy test results
+    cob_common.copy_test_results(workspace, repo_buildspace)
+
 #    #TODO used when get dependencies
 #    import rosdistro
 #    from jenkins_setup import cob_rosdistro
