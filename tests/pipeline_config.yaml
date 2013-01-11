@@ -20,9 +20,11 @@ repositories:
         version: master
         poll: 'true'
         dep: 'false'
+        private: 'false'
     test_repo_2:
         type: git
         url: git@github.com/user/repo2
         version: test
         poll: 'false'
         dep: 'true'
+        private: 'false'

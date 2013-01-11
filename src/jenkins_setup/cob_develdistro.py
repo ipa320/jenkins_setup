@@ -35,6 +35,9 @@ class Cob_Distro_Repo(object):
         self.dep = None
         if 'dep' in data:
             self.dep = data['dep']
+        self.private = None
+        if 'private' in data:
+            self.private = data['private']
 
     def get_rosinstall(self):
         if self.version:
