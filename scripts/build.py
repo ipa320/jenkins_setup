@@ -33,6 +33,9 @@ def main():
     cob_common.call("apt-get update")
     cob_common.call("apt-get dist-upgrade -y")
 
+    print "\nUpdating rosinstall"
+    cob_common.call("pip install -U rosinstall")
+
     # clone jenkins_config repository
     print "\nCloning jenkins_config repository"  # TODO necessary??
     cob_common.call("git clone git://github.com/fmw-jk/jenkins_config.git %s/jenkins_config" % workspace)  # TODO change to ipa320
@@ -57,8 +60,6 @@ def build_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, worksp
 
     # install Debian packages needed for script TODO ??
     print "Installing Debian packages we need for running this script"
-    #cob_common.call("apt-get install python-rosinstall --yes")
-    cob_common.call("pip install -U rosinstall")
     #cob_common.call("apt-get install python-catkin-pkg python-rosinstall python-rosdistro --yes")
 
     # download repo_list from source
@@ -92,8 +93,6 @@ def build_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, worksp
         with open(os.path.join(workspace, "repo.rosinstall"), 'w') as f:
             f.write(rosinstall)
         print "Install public repositories from source"
-        cob_common.call("ls -lah %s" % workspace)
-        cob_common.call("ls -lah %s" % repo_sourcespace)
         # rosinstall repos
         # TODO handle private repos
         # TODO handle dry stacks
@@ -113,7 +112,7 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, w
 
     # install Debian packages needed for script
     print "Installing Debian packages we need for running this script"
-    cob_common.call("apt-get install python-catkin-pkg python-rosinstall python-rosdistro --yes")
+    cob_common.call("apt-get install python-catkin-pkg python-rosdistro --yes")
 
     # download repo_list from source
     print "Installing repository list from source:"
