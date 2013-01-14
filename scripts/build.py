@@ -34,7 +34,7 @@ def main():
     cob_common.call("apt-get dist-upgrade -y")
 
     # clone jenkins_config repository
-    print "\nCloning jenkins_config repository"
+    print "\nCloning jenkins_config repository"  # TODO necessary??
     cob_common.call("git clone git://github.com/fmw-jk/jenkins_config.git %s/jenkins_config" % workspace)  # TODO change to ipa320
     cob_common.call("cp -r %s/jenkins_config/%s %s/pipeline_config_dir" % (workspace, pipeline_name, workspace))
 
@@ -57,7 +57,8 @@ def build_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, worksp
 
     # install Debian packages needed for script TODO ??
     print "Installing Debian packages we need for running this script"
-    cob_common.call("apt-get install python-rosinstall --yes")
+    #cob_common.call("apt-get install python-rosinstall --yes")
+    cob_common.call("pip install python-rosinstall")
     #cob_common.call("apt-get install python-catkin-pkg python-rosinstall python-rosdistro --yes")
 
     # download repo_list from source
@@ -94,8 +95,8 @@ def build_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, worksp
         # rosinstall repos
         # TODO handle private repos
         # TODO handle dry stacks
-        cob_common.call("rosinstall %s %s/repo.rosinstall"
-                        % (repo_sourcespace, workspace))
+        cob_common.call("rosinstall %s %s/repo.rosinstall /opt/ros/%s"
+                        % (repo_sourcespace, workspace, ros_distro))
 
     pass
 
