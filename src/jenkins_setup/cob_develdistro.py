@@ -5,7 +5,14 @@ import yaml
 
 
 class Cob_Distro(object):
+    """
+    TODO
+    """
+
     def __init__(self, name, repos_dict=None):
+        """
+        TODO
+        """
 
         self.repositories = {}
 
@@ -22,7 +29,15 @@ class Cob_Distro(object):
 
 
 class Cob_Distro_Repo(object):
+    """
+    Object containing repository information
+    """
     def __init__(self, name, data):
+        """
+        :param name: repository name, ``str``
+        :param data: repository information, e.g. from a rosdistro file, ``dict``
+        """
+
         self.name = name
         self.type = data['type']
         self.url = data['url']
@@ -40,6 +55,12 @@ class Cob_Distro_Repo(object):
             self.private = data['private']
 
     def get_rosinstall(self):
+        """
+        Generate a rosinstall file entry with the stored information.
+
+        :returns: return rosinstall file entry, ``str``
+        """
+
         if self.version:
             return yaml.dump([{self.type: {'local-name': self.name,
                                            'uri': '%s' % self.url,
