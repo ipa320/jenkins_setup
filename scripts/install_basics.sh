@@ -23,3 +23,5 @@ echo "\n***UPDATE***"
 apt-get update
 echo "\n***INSTALL ROS***"
 apt-get install -y ros-$2-ros
+echo "\n***INSTALL ROSINSTALL***"
+pip install -U rosinstall
