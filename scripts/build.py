@@ -65,6 +65,8 @@ def build_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, worksp
     print "Installing repository list from source:"
     print "rosinstall public and clone private repositories"
     rosinstall = ""
+    # create repo sourcespace directory 'src_repository'
+    os.makedirs(repo_sourcespace)
     for repo in repo_list:
         # check if triggering repo is defined in buildpipe config and polled
         if repo in buildpipe_repos.repositories and buildpipe_repos.repositories[repo].poll:
@@ -90,8 +92,8 @@ def build_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, worksp
         with open(os.path.join(workspace, "repo.rosinstall"), 'w') as f:
             f.write(rosinstall)
         print "Install public repositories from source"
-        # create repo sourcespace directory 'src_repository'
-        os.makedirs(repo_sourcespace)
+        cob_common.call("ls -lah %s" % workspace)
+        cob_common.call("ls -lah %s" % repo_sourcespace)
         # rosinstall repos
         # TODO handle private repos
         # TODO handle dry stacks
@@ -117,6 +119,8 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, w
     print "Installing repository list from source:"
     print "rosinstall public and clone private repositories"
     rosinstall = ""
+    # create repo sourcespace directory 'src_repository'
+    os.makedirs(repo_sourcespace)
     for repo in repo_list:
         # check if triggering repo is defined in buildpipe config and polled
         if repo in buildpipe_repos.repositories and buildpipe_repos.repositories[repo].poll:
@@ -142,8 +146,6 @@ def build_post_electric(pipeline_name, ros_distro, repo_list, buildpipe_repos, w
         with open(os.path.join(workspace, "repo.rosinstall"), 'w') as f:
             f.write(rosinstall)
         print "Install public repositories from source"
-        # create repo sourcespace directory 'src_repository'
-        os.makedirs(repo_sourcespace)
         # rosinstall repos
         # TODO handle private repos
         # TODO handle dry stacks
