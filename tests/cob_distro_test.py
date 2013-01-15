@@ -130,7 +130,8 @@ class Cob_Distro_Pipe_Repo_Test(unittest.TestCase):
                           'matrix_ubuntu_arch': None, 'jobs': None,
                           'dependencies': dep_test_dict}
         cdpr = cob_distro.Cob_Distro_Pipe_Repo('test', data_test_dict)
-        self.assertIsInstance(cdpr.dependencies['dep_1'], cob_distro.Cob_Distro_Repo)
+        self.assertTrue(isinstance(cdpr.dependencies['dep_1'], cob_distro.Cob_Distro_Repo))
+#        self.assertIsInstance(cdpr.dependencies['dep_1'], cob_distro.Cob_Distro_Repo)
 
     def test__init__input_name_str_pipeconf_dict__check_additional_dependencies2(self):
         dep_test_dict = {'dep_1': {'type': 'git', 'url': 'git://github.com/ipa320/dep_1.git',
