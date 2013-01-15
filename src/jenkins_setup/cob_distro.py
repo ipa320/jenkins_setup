@@ -9,7 +9,7 @@ class Cob_Distro(object):
     TODO
     """
 
-    def __init__(self, name, repos_dict=None):
+    def __init__(self, name, repos_dict=None, pipeconfig=False):
         """
         TODO
         """
@@ -24,7 +24,10 @@ class Cob_Distro(object):
             self.repos_dict = repos_dict
 
         for repo_name, data in self.repos_dict.iteritems():
-            repo = Cob_Distro_Repo(repo_name, data)
+            if pipeconfig:
+                repo = Cob_Distro_Pipe_Repo(repo_name, data)
+            else:
+                repo = Cob_Distro_Repo(repo_name, data)
             self.repositories[repo_name] = repo
 
 
@@ -44,15 +47,10 @@ class Cob_Distro_Repo(object):
         self.version = None
         if 'version' in data:
             self.version = data['version']
+
         self.poll = None
         if 'poll' in data:
             self.poll = data['poll']
-        self.dep = None
-        if 'dep' in data:
-            self.dep = data['dep']
-        self.private = None
-        if 'private' in data:
-            self.private = data['private']
 
     def get_rosinstall(self):
         """
@@ -70,3 +68,37 @@ class Cob_Distro_Repo(object):
             return yaml.dump([{self.type: {'local-name': self.name,
                                            'uri': '%s' % self.url}}],
                              default_style=False)
+
+
+class Cob_Distro_Pipe_Repo(Cob_Distro_Repo):
+    """
+    Object containing repository information and additional information for
+    the buildpipeline
+    """
+    def __init__(self, name, data):
+        """
+        :param name: repository name, ``str``
+        :param data: repository and dependency information from pipeline_config
+        file, ``dict``
+        """
+
+        super(Cob_Distro_Pipe_Repo, self).__init__(name, data)
+
+        self.poll = True  # first level repos are always polled
+        self.ros_distro = data['ros_distro']
+        self.prio_ubuntu_distro = data['prio_ubuntu_distro']
+        self.prio_arch = data['prio_arch']
+
+        if data['matrix_ubuntu_arch']:
+            self.matrix_ubuntu_arch = data['matrix_ubuntu_arch']  # TODO ??
+
+        self.dependencies = None
+        if data['dependencies']:
+            self.dependencies = {}
+            for dep_name, dep_data in data['dependencies'].iteritems():
+                dep = Cob_Distro_Repo(dep_name, dep_data)
+                self.dependencies[dep_name] = dep
+            #self.dependencies = Cob_Distro('deps', repos_dict=data['dependencies'])
+
+        if data['jobs']:
+            self.jobs = data['jobs']
