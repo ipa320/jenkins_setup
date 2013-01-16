@@ -136,9 +136,8 @@ class Cob_Distro_Pipe_Repo(Cob_Distro_Repo):
         if data['matrix_distro_arch']:
             self.matrix_distro_arch = data['matrix_distro_arch']  # TODO ??
 
-        self.dependencies = None
+        self.dependencies = {}
         if data['dependencies']:
-            self.dependencies = {}
             for dep_name, dep_data in data['dependencies'].iteritems():
                 dep = Cob_Distro_Repo(dep_name, dep_data)
                 self.dependencies[dep_name] = dep
