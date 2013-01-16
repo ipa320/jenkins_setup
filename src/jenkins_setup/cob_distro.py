@@ -3,32 +3,76 @@
 import urllib2
 import yaml
 
+from jenkins_setup import cob_common
+
 
 class Cob_Distro(object):
     """
     TODO
     """
 
-    def __init__(self, name, repos_dict=None, pipeconfig=False):
+    def __init__(self, name, url=None):
         """
         TODO
         """
 
         self.repositories = {}
 
-        if not repos_dict:
-            self.url = 'https://raw.github.com/fmw-jk/jenkins_setup/master/releases/cob_%s.yaml' % name  # TODO change to ipa320
+        if url:
+            self.url = url
             self.release_file = urllib2.urlopen(self.url)
             self.repos_dict = yaml.load(self.release_file.read())['repositories']
         else:
-            self.repos_dict = repos_dict
+            self.url = 'https://raw.github.com/fmw-jk/jenkins_setup/master/releases/cob_%s.yaml' % name  # TODO change to ipa320
+            self.release_file = urllib2.urlopen(self.url)
+            self.repos_dict = yaml.load(self.release_file.read())['repositories']
 
         for repo_name, data in self.repos_dict.iteritems():
-            if pipeconfig:
-                repo = Cob_Distro_Pipe_Repo(repo_name, data)
-            else:
-                repo = Cob_Distro_Repo(repo_name, data)
+            repo = Cob_Distro_Repo(repo_name, data)
             self.repositories[repo_name] = repo
+
+
+class Cob_Distro_Pipe(object):
+    """
+    TODO
+    """
+
+    def load_from_dict(self, repos_dict):
+        """
+        TODO
+        """
+
+        self.repositories = {}
+        self.repos_dict = repos_dict
+
+        for repo_name, data in self.repos_dict.iteritems():
+            repo = Cob_Distro_Pipe_Repo(repo_name, data)
+            self.repositories[repo_name] = repo
+
+    def load_from_url(self, server_name, user_name):
+        buildpipe_conf_dict = cob_common.get_buildpipeline_configs(server_name, user_name)
+        self.load_from_dict(buildpipe_conf_dict['repositories'])
+
+    def get_custom_dependencies(self):
+        """
+        Get a :dict: with dependencies and corresponding repository.
+
+        :returns: return :dict: with dependencies as keys and the corresponding
+        repositories (in a list) as value, ``dict``
+        """
+
+        #deps = {dep: repo for dep, repo in self.repositories[repo].dependencies.keys()
+                #for repo in self.repositories.keys()}
+
+        deps = {}
+        for repo in self.repositories.keys():
+            for dep in self.repositories[repo].dependencies.keys():
+                if dep in deps:
+                    deps[dep].append(repo)
+                else:
+                    deps[dep] = [repo]
+
+        return deps
 
 
 class Cob_Distro_Repo(object):
@@ -89,8 +133,8 @@ class Cob_Distro_Pipe_Repo(Cob_Distro_Repo):
         self.prio_ubuntu_distro = data['prio_ubuntu_distro']
         self.prio_arch = data['prio_arch']
 
-        if data['matrix_ubuntu_arch']:
-            self.matrix_ubuntu_arch = data['matrix_ubuntu_arch']  # TODO ??
+        if data['matrix_distro_arch']:
+            self.matrix_distro_arch = data['matrix_distro_arch']  # TODO ??
 
         self.dependencies = None
         if data['dependencies']:
