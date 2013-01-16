@@ -30,10 +30,9 @@ def main():
     for repo in repo_list:
         print " - ", repo
 
-    # get buildpipeline configurations from yaml file hosted on github repo
-    # jenkins_config
-    buildpipe_configs = cob_common.get_buildpipeline_configs('/'.join([server_name, user_name]))  # TODO
-    buildpipe_repos = cob_distro.Cob_Distro_Pipe(buildpipe_configs['repositories'])
+    # cob_distro_pipe object
+    cdp_instance = cob_distro.Cob_Distro_Pipe()
+    buildpipe_repos = cdp_instance.load_from_url(server_name, user_name)
 
     repos_to_trigger = []
     for repo in repo_list:
