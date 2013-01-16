@@ -42,7 +42,8 @@ def main():
 
     # cob_distro_pipe object
     cdp_instance = cob_distro.Cob_Distro_Pipe()
-    buildpipe_repos = cdp_instance.load_from_url(server_name, user_name)
+    cdp_instance.load_from_url(server_name, user_name)
+    buildpipe_repos = cdp_instance.repositories
 
     # build depending on ros_ distro
     if ros_distro == "electric":
@@ -63,8 +64,8 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     # download build_repo from source
     print "Creating rosinstall file for repo"
     rosinstall = ""
-    if build_repo in buildpipe_repos.repositories:
-        rosinstall += buildpipe_repos.repositories[build_repo].get_rosinstall()
+    if build_repo in buildpipe_repos:
+        rosinstall += buildpipe_repos[build_repo].get_rosinstall()
     else:
         raise cob_common.BuildException("Pipeline was triggered by repo %s which is \
                                          not in pipeline config!" % build_repo)
@@ -101,8 +102,8 @@ def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     rosinstall = ""
     # check if triggering repo is defined in buildpipe config
     # TODO
-    if build_repo in buildpipe_repos.repositories:
-        rosinstall += buildpipe_repos.repositories[build_repo].get_rosinstall()
+    if build_repo in buildpipe_repos:
+        rosinstall += buildpipe_repos[build_repo].get_rosinstall()
     else:
         raise cob_common.BuildException("Pipeline was triggered by repo %s which is \
                                          not in pipeline config!" % build_repo)
@@ -127,10 +128,10 @@ def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     # install user-defined/customized dependencies from source
     rosinstall = ''
     for dep in repo_build_dependencies:
-        if dep in buildpipe_repos.repositories[build_repo].dependenies:
-            if buildpipe_repos.repositories[build_repo].dependenies[dep].poll:
+        if dep in buildpipe_repos[build_repo].dependencies:
+            if buildpipe_repos[build_repo].dependencies[dep].poll:
                 print "Install user-defined build dependency %s from source" % dep
-                rosinstall += buildpipe_repos.repositories[build_repo].dependenies[dep].get_rosinstall()
+                rosinstall += buildpipe_repos[build_repo].dependencies[dep].get_rosinstall()
                 repo_build_dependencies.remove(dep)
 
     if rosinstall != '':
