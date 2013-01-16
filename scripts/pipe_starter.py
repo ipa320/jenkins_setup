@@ -16,12 +16,12 @@ def main():
     (options, args) = parser.parse_args()
 
     if len(args) < 3:
-        print "Usage: %s user_name server_name repo1 repo2 ..." % sys.argv[0]
+        print "Usage: %s server_name user_name repo1 repo2 ..." % sys.argv[0]
         raise cob_common.BuildException("Wrong arguments for pipe_starter script")
 
     # get arguments
-    user_name = args[0]
-    server_name = args[1]
+    server_name = args[0]
+    user_name = args[1]
     # repositories with source code changes
     repo_list = [args[i] for i in range(2, len(args))]
 
