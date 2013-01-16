@@ -224,17 +224,18 @@ def get_dependencies(source_folder, build_depends=True, test_depends=True):
     return depends
 
 
-def get_buildpipeline_configs(pipeline_name):
+def get_buildpipeline_configs(server_name, user_name):
     """
     Get buildpipeline configuration
 
-    :param pipeline_name: name of buildpipeline, ``str``
+    :param server_name: name of jenkins master, ``str``
+    :param user_name: name of user, ``str``
 
     :returns: return :dict: with configurations
     :raises: :exec:`Exception`
     """
-    github_url = "https://raw.github.com/fmw-jk/jenkins_config/master/%s/pipeline_config.yaml" % pipeline_name  # TODO change to ipa320
-    print "Parsing buildpipeline configuration file for %s stored at:\n%s" % (pipeline_name, github_url)
+    github_url = "https://raw.github.com/fmw-jk/jenkins_config/master/%s/%s/pipeline_config.yaml" % (server_name, user_name)  # TODO change to ipa320
+    print "Parsing buildpipeline configuration file for %s stored at:\n%s" % (user_name, github_url)
     try:
         f = urllib2.urlopen(github_url)
         bpl_configs = yaml.load(f.read())
