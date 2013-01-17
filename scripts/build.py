@@ -118,12 +118,10 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
         cob_common.call("rosinstall %s %s/repo.rosinstall --catkin"
                         % (repo_sourcespace, workspace))
 
-    # Create rosdep object
-    print "Create rosdep object"
-    rosdep_resolver = rosdep.RosDepResolver(ros_distro)
+    repo_build_dependencies_apt = ['ros-electric-' + dep.replace('_', '-') for dep in repo_build_dependencies]
 
     print "Install build dependencies of repo list: %s" % (', '.join(repo_build_dependencies))
-    cob_common.apt_get_install(repo_build_dependencies, rosdep_resolver)
+    cob_common.apt_get_install(repo_build_dependencies_apt)
 
 
 def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
