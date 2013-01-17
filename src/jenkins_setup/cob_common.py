@@ -149,6 +149,34 @@ def get_nonlocal_dependencies(catkin_packages, stacks, manifest_packages):
     return depends
 
 
+def get_dry_packages(source_folder):
+    """
+    """
+
+    catkin_packages, stacks, manifest_packages = get_all_packages(source_folder)
+    return (stacks, manifest_packages)
+
+
+def get_all_packages(source_folder):
+    # TODO param catkin to avoid dry on wet dependencies
+    """
+    """
+    import rospkg
+
+    catkin_packages = {}
+    stacks = {}
+    manifest_packages = {}
+
+    rospkg.list_by_path('package.xml', source_folder, catkin_packages)
+    rospkg.list_by_path('stack.xml', source_folder, stacks)
+    rospkg.list_by_path('manifest.xml', source_folder, manifest_packages)
+
+    # if repo has package.xml and stack.xml/manifest.xml
+    # remove stack/manifest entries TODO
+
+    return (catkin_packages, stacks, manifest_packages)
+
+
 def build_local_dependency_graph(catkin_packages, manifest_packages):
     append_pymodules_if_needed()
     from catkin_pkg import packages
