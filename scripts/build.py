@@ -95,6 +95,35 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     print "Found wet dependencies:\n%s" % '- ' + '\n- '.join(repo_build_wet_dependencies)
     repo_build_dry_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, manifest_packages)
     print "Found dry dependencies:\n%s" % '- ' + '\n- '.join(repo_build_dry_dependencies)
+    repo_build_stack_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, {})
+    print "Found stack dependencies:\n%s" % '- ' + '\n- '.join(repo_build_stack_dependencies)
+    repo_build_dependencies = repo_build_stack_dependencies
+    # install user-defined/customized dependencies from source
+    rosinstall = ''
+    for dep in repo_build_dependencies:
+        if dep in buildpipe_repos[build_repo].dependencies:
+            if buildpipe_repos[build_repo].dependencies[dep].poll:
+                print "Install user-defined build dependency %s from source" % dep
+                rosinstall += buildpipe_repos[build_repo].dependencies[dep].get_rosinstall()
+                repo_build_dependencies.remove(dep)
+
+    if rosinstall != '':
+        print "Rosinstall file for user-defined build dependencies: \n %s" % rosinstall
+        # write .rosinstall file
+        with open(os.path.join(workspace, "repo.rosinstall"), 'w') as f:
+            f.write(rosinstall)
+        print "Install user-defined build dependencies from source"
+        # rosinstall depends
+        # TODO handle dry stacks
+        cob_common.call("rosinstall %s %s/repo.rosinstall --catkin"
+                        % (repo_sourcespace, workspace))
+
+    # Create rosdep object
+    print "Create rosdep object"
+    rosdep_resolver = rosdep.RosDepResolver(ros_distro)
+
+    print "Install build dependencies of repo list: %s" % (', '.join(repo_build_dependencies))
+    cob_common.apt_get_install(repo_build_dependencies, rosdep_resolver)
 
 
 def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
