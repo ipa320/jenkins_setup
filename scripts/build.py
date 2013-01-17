@@ -36,9 +36,9 @@ def main():
     cob_common.call("pip install -U rosinstall")
 
     # clone jenkins_config repository
-    print "\nCloning jenkins_config repository"  # TODO necessary??
-    cob_common.call("git clone git://github.com/fmw-jk/jenkins_config.git %s/jenkins_config" % workspace)  # TODO change to ipa320
-    cob_common.call("cp -r %s/jenkins_config/%s/%s %s/pipeline_config_dir" % (workspace, server_name, user_name, workspace))
+    #print "\nCloning jenkins_config repository"  # TODO necessary??
+    #cob_common.call("git clone git://github.com/fmw-jk/jenkins_config.git %s/jenkins_config" % workspace)  # TODO change to ipa320
+    #cob_common.call("cp -r %s/jenkins_config/%s/%s %s/pipeline_config_dir" % (workspace, server_name, user_name, workspace))
 
     # cob_distro_pipe object
     cdp_instance = cob_distro.Cob_Distro_Pipe()
@@ -83,6 +83,11 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
                     % (repo_sourcespace, workspace, ros_distro))
 
     # TODO get deps, build and test
+    # get the repositories build dependencies
+    # TODO handle dry stacks
+    print "Get build dependencies of repo"
+    repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
+    print "Found dependencies:\n%s" % '- ' + '\n- '.join(repo_build_dependencies)
 
 
 def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
@@ -122,7 +127,7 @@ def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
 
     # get the repositories build dependencies
     # TODO handle dry stacks
-    print "Get build dependencies of repo list"
+    print "Get build dependencies of repo"
     repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
     print "Found dependencies:\n%s" % '- ' + '\n- '.join(repo_build_dependencies)
     # install user-defined/customized dependencies from source
