@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo "\n***APT-PROXY***"
+sh -c 'echo "Acquire::http { Proxy "http://cob-kitchen-server:3142"; };" > /etc/apt/apt.conf.d/proxy'
 echo "\n***UPDATE***"
 cat /etc/apt/sources.list
 apt-get update
