@@ -24,8 +24,10 @@ def main():
     workspace = os.environ['WORKSPACE']
 
     # (debug) output
-    print "\nTesting on ros distro %s" % ros_distro
-    print "Testing the following repository: %s" % build_repo
+    print "\n", 50 * 'X'
+    print "\nTesting on ros distro: %s" % ros_distro
+    print "Testing the repository: %s" % build_repo
+    print "\n", 50 * 'X'
 
     # update sourcelist and upgrade installed basic packages
     print "\nUpdating chroot enviroment installed packages"
