@@ -90,7 +90,7 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     print "Get build dependencies of repo"
     #repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
     #print "Found dependencies:\n%s" % '- ' + '\n- '.join(repo_build_dependencies)
-    (catkin_packages, stacks, manifest_packages) = cob_common.get_dry_packages(repo_sourcespace)
+    (catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace)
     repo_build_dry_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, stacks, manifest_packages)
     print "Found dry dependencies:\n%s" % '- ' + '\n- '.join(repo_build_dry_dependencies)
 
