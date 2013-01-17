@@ -100,12 +100,14 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     repo_build_dependencies = repo_build_stack_dependencies
     # install user-defined/customized dependencies from source
     rosinstall = ''
+    fulfilled_deps = []
     for dep in repo_build_dependencies:
         if dep in buildpipe_repos[build_repo].dependencies:
             if buildpipe_repos[build_repo].dependencies[dep].poll:
                 print "Install user-defined build dependency %s from source" % dep
                 rosinstall += buildpipe_repos[build_repo].dependencies[dep].get_rosinstall()
                 repo_build_dependencies.remove(dep)
+                fulfilled_deps.append(dep)
 
     if rosinstall != '':
         print "Rosinstall file for user-defined build dependencies: \n %s" % rosinstall
@@ -118,10 +120,20 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
         cob_common.call("rosinstall %s %s/repo.rosinstall --catkin"
                         % (repo_sourcespace, workspace))
 
+        # get also deps of just installed user-defined/customized dependencies
+        (catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace)
+        repo_build_stack_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, {})
+        repo_build_dependencies = [dep for dep in repo_build_stack_dependencies if dep not in fulfilled_deps]
+
     repo_build_dependencies_apt = ['ros-electric-' + dep.replace('_', '-') for dep in repo_build_dependencies]
 
     print "Install build dependencies of repo list: %s" % (', '.join(repo_build_dependencies))
     cob_common.apt_get_install(repo_build_dependencies_apt)
+
+    print "Rosdep"
+    cob_common.call("rosmake rosdep")
+    for stack in stacks.keys():
+        cob_common.call("rosdep install -y %s" % stack)
 
 
 def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
