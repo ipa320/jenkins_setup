@@ -111,7 +111,7 @@ def get_catkin_stack_deps(xml_path):
                     + [d.text for d in root.findall('run_depends')]))
 
 
-def get_nonlocal_dependencies(catkin_packages, stacks, manifest_packages):
+def get_nonlocal_dependencies(catkin_packages, stacks, manifest_packages, build_depends=True, test_depends=True):
     append_pymodules_if_needed()
     from catkin_pkg import packages
     import rospkg
@@ -120,9 +120,14 @@ def get_nonlocal_dependencies(catkin_packages, stacks, manifest_packages):
     #First, we build the catkin deps
     for name, path in catkin_packages.iteritems():
         pkg_info = packages.parse_package(path)
-        depends.extend([d.name
-                        for d in pkg_info.buildtool_depends + pkg_info.build_depends + pkg_info.test_depends + pkg_info.run_depends
-                        if not d.name in catkin_packages and not d.name in depends])
+        if build_depends:
+            depends.extend([d.name
+                            for d in pkg_info.buildtool_depends + pkg_info.build_depends
+                            if not d.name in catkin_packages and not d.name in depends])
+        if test_depends:
+            depends.extend([d.name
+                            for d in pkg_info.test_depends + pkg_info.run_depends
+                            if not d.name in catkin_packages and not d.name in depends])
 
     #Next, we build the manifest deps for stacks
     for name, path in stacks.iteritems():
@@ -157,8 +162,7 @@ def get_dry_packages(source_folder):
     return (stacks, manifest_packages)
 
 
-def get_all_packages(source_folder):
-    # TODO param catkin to avoid dry on wet dependencies
+def get_all_packages(source_folder, filter=True):
     """
     """
     import rospkg
@@ -172,7 +176,13 @@ def get_all_packages(source_folder):
     rospkg.list_by_path('manifest.xml', source_folder, manifest_packages)
 
     # if repo has package.xml and stack.xml/manifest.xml
-    # remove stack/manifest entries TODO
+    # remove stack/manifest entries
+    if filter:
+        for name, path in catkin_packages.iteritems():
+            if name in stacks:
+                del stacks[name]
+            if name in manifest_packages:
+                del manifest_packages[name]
 
     return (catkin_packages, stacks, manifest_packages)
 
