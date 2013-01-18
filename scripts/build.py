@@ -152,7 +152,6 @@ def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     print "Creating rosinstall file for repo"
     rosinstall = ""
     # check if triggering repo is defined in buildpipe config
-    # TODO
     if build_repo in buildpipe_repos:
         rosinstall += buildpipe_repos[build_repo].get_rosinstall()
     else:
@@ -174,37 +173,55 @@ def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     # get the repositories build dependencies
     # TODO handle dry stacks
     print "Get build dependencies of repo"
-    #repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
-    #print "Found dependencies:\n%s" % '- ' + '\n- '.join(repo_build_dependencies)
-    repo_build_wet_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
-    print "Found wet dependencies:\n%s" % '- ' + '\n- '.join(repo_build_wet_dependencies)
-    repo_build_dependencies = repo_build_wet_dependencies
+
+    ### DEBUG ###
+    # get deps directly for catkin like willow
+    repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
+    print "Found wet build dependencies:\n%s" % '- ' + '\n- '.join(repo_build_dependencies)
+    # all packages in sourcespace
     (catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace)
     print catkin_packages
     print stacks
     print manifest_packages
-    repo_build_wet_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {})
-    print "Found wet dependencies:\n%s" % '- ' + '\n- '.join(repo_build_wet_dependencies)
-    repo_build_dry_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, manifest_packages)
-    print "Found dry dependencies:\n%s" % '- ' + '\n- '.join(repo_build_dry_dependencies)
-    wet_build_repo = True
-    if catkin_packages == {}:
-        wet_build_repo = False
+    # deps catkin
+    repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {})
+    print "Found wet dependencies:\n%s" % '- ' + '\n- '.join(repo_build_dependencies)
+    # deps stacks
+    repo_build_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, {})
+    print "Found dry dependencies:\n%s" % '- ' + '\n- '.join(repo_build_dependencies)
+
+    # check if build_repo is wet or dry and take corresponding deps
+    if build_repo in catkin_packages:
+        catkin_build_repo = True
+        #repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {})
+        repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
+    elif build_repo in stacks:
+        catkin_build_repo = False
+        repo_build_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, {})
+    else:
+        # build_repo is neither wet nor dry
+        raise cob_common.BuildException("Repository to build not found in sourcespace")
 
     # install user-defined/customized dependencies from source
     rosinstall = ''
     fulfilled_deps = []
     for dep in repo_build_dependencies:
         if dep in buildpipe_repos[build_repo].dependencies:
-            if buildpipe_repos[build_repo].dependencies[dep].poll:
-                print "Install user-defined build dependency %s from source" % dep
-                rosinstall += buildpipe_repos[build_repo].dependencies[dep].get_rosinstall()
-                repo_build_dependencies.remove(dep)
-                fulfilled_deps.append(dep)
+            print "Install user-defined build dependency %s from source" % dep
+            rosinstall += buildpipe_repos[build_repo].dependencies[dep].get_rosinstall()
+            repo_build_dependencies.remove(dep)
+            fulfilled_deps.append(dep)
+
+    # check if all user-defined/customized dependencies are satisfied
+    if sorted(fulfilled_deps) != sorted(buildpipe_repos[build_repo].dependencies):
+        print "Not all user-defined build dependencies are fulfilled"
+        print "User-defined build dependencies:\n%s" % '- ' + '\n- '.join(buildpipe_repos[build_repo].dependencies)
+        print "Fulfilled dependencies:\n%s" % '- ' + '\n- '.join(fulfilled_deps)
+        raise cob_common.BuildException("Not all user-defined build dependencies are fulfilled")
 
     if rosinstall != '':
-        print "Rosinstall file for user-defined build dependencies: \n %s" % rosinstall
         # write .rosinstall file
+        print "Rosinstall file for user-defined build dependencies: \n %s" % rosinstall
         with open(os.path.join(workspace, "repo.rosinstall"), 'w') as f:
             f.write(rosinstall)
         print "Install user-defined build dependencies from source"
@@ -213,22 +230,19 @@ def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
         cob_common.call("rosinstall %s %s/repo.rosinstall --catkin"
                         % (repo_sourcespace, workspace))
 
-        # get also deps of just installed user-defined/customized dependencies
+        # get all deps also of just installed user-defined/customized dependencies
         (catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace)
-        if wet_build_repo:
+        if catkin_build_repo:
             if stacks != {}:
-                for stack in stacks:
-                    if stack not in catkin_packages:
-                        raise cob_common.BuildException("Wet package %s depends on dry stack %s" % (build_repo, stack))
+                raise cob_common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
+                                                % (build_repo, '- ' + '\n- '.join(stacks)))
             # take only wet packages
-            repo_build_catkin_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {})
-            repo_build_dependencies = [dep for dep in repo_build_catkin_dependencies if dep not in fulfilled_deps]
-        else:
-            repo_build_all_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, stacks, {})
-            repo_build_dependencies = []
-            for dep in [dep for dep in repo_build_all_dependencies if dep not in fulfilled_deps]:
-                if dep not in repo_build_dependencies:
-                    repo_build_dependencies.append(dep)
+            #repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {})
+            repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
+        else:  # dry build repo
+            # take all packages
+            repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, stacks, {})
+        repo_build_dependencies = [dep for dep in repo_build_dependencies if dep not in fulfilled_deps]
 
     # Create rosdep object
     print "Create rosdep object"
