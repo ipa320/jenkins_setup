@@ -129,10 +129,14 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     print "Install build dependencies of repo list: %s" % (', '.join(repo_build_dependencies))
     cob_common.apt_get_install(repo_build_dependencies_apt)
 
+    # TODO
     print "Rosdep"
-    cob_common.call("rosmake rosdep")
+    ros_env = cob_common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
+    cob_common.call("rosmake rosdep", ros_env)
     for stack in stacks.keys():
         cob_common.call("rosdep install -y %s" % stack)
+
+    # TODO build (like in hudson_helper)
 
 
 def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
