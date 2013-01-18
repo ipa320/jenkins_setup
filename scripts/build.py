@@ -141,6 +141,9 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     print "Build repo"
     cob_common.call("rosmake %s" % build_repo, ros_env)
     cob_common.call("rosmake --test-only %s" % build_repo, ros_env)
+    # TODO output dir ??
+    # copy test results
+    cob_common.copy_test_results(workspace, repo_sourcespace)
 
 
 def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
