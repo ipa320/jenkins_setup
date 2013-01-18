@@ -176,8 +176,11 @@ def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
 
     ### DEBUG ###
     # get deps directly for catkin like willow
-    repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
-    print "Found wet build dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
+    try:
+        repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
+        print "Found wet build dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
+    except:
+        pass
     # all packages in sourcespace
     (catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace)
     print catkin_packages
@@ -269,6 +272,9 @@ def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
 
     # get the repositories test and run dependencies
     print "Get test and run dependencies of repo list"
+    # TODO
+    #(catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace)
+    #repo_test_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=False, test_depends=True)
     repo_test_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=False, test_depends=True)
     print "Install test and run dependencies of repo list: %s" % (', '.join(repo_test_dependencies))
     cob_common.apt_get_install(repo_test_dependencies, rosdep_resolver)
