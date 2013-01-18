@@ -177,24 +177,24 @@ def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     ### DEBUG ###
     # get deps directly for catkin like willow
     repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
-    print "Found wet build dependencies:\n%s" % '- ' + '\n- '.join(repo_build_dependencies)
+    print "Found wet build dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
     # all packages in sourcespace
     (catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace)
     print catkin_packages
     print stacks
     print manifest_packages
     # deps catkin
-    repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {})
-    print "Found wet dependencies:\n%s" % '- ' + '\n- '.join(repo_build_dependencies)
+    repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
+    print "Found wet dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
     # deps stacks
     repo_build_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, {})
-    print "Found dry dependencies:\n%s" % '- ' + '\n- '.join(repo_build_dependencies)
+    print "Found dry dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
 
     # check if build_repo is wet or dry and take corresponding deps
     if build_repo in catkin_packages:
         catkin_build_repo = True
-        #repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {})
-        repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
+        repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
+        #repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
     elif build_repo in stacks:
         catkin_build_repo = False
         repo_build_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, {})
@@ -237,11 +237,11 @@ def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
                 raise cob_common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
                                                 % (build_repo, '- ' + '\n- '.join(stacks)))
             # take only wet packages
-            #repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {})
-            repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
+            repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
+            #repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
         else:  # dry build repo
             # take all packages
-            repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, stacks, {})
+            repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, stacks, {}, build_depends=True, test_depends=False)
         repo_build_dependencies = [dep for dep in repo_build_dependencies if dep not in fulfilled_deps]
 
     # Create rosdep object
