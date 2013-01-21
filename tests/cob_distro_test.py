@@ -63,7 +63,7 @@ class Cob_Distro_Pipe_Test(unittest.TestCase):
         self.assertEqual(self.cdp.repositories['cob_extern'].version, 'master')
 
     def test__load_from_url__input_repo_dict__check_repo(self):
-        self.cdp.load_from_url('jenkins_test_server', 'test_user')
+        self.cdp.load_from_url('jenkins-test-server', 'test-user')
         self.assertTrue('test_repo_1' in self.cdp.repositories)
 
     def test__get_custom_dependencies__return_dependency_dict(self):

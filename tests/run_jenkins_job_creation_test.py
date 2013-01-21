@@ -204,7 +204,7 @@ class Job_Generation_Test(unittest.TestCase):
 
     # Testing common_params
     def test__get_common_params__input_job_type_string__return_common_job_config_dict(self):
-        common_job_config_dict = {'USERNAME': 'test_user',
+        common_job_config_dict = {'USERNAME': 'test-user',
                                   'EMAIL': 'test@ipa.fhg.de',
                                   'EMAIL_COMMITTER': 'false',
                                   'JOB_TYPE_NAME': 'pipe_starter',
