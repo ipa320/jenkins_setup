@@ -130,10 +130,10 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     cob_common.apt_get_install(repo_build_dependencies_apt)
 
     # TODO
-    print "Env"
-    cob_common.call("env", ros_env)
     print "Rosdep"
     ros_env = cob_common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
+    print "Env"
+    cob_common.call("env", ros_env)
     cob_common.call("rosmake rosdep", ros_env)
     for stack in stacks.keys():
         cob_common.call("rosdep install -y %s" % stack, ros_env)
