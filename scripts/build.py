@@ -133,13 +133,13 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     print "Rosdep"
     ros_env = cob_common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
     cob_common.call("rosmake rosdep", ros_env)
-    for stack in stacks.keys():
-        cob_common.call("rosdep install -y %s" % stack, ros_env)
+    #for stack in stacks.keys():
+    #    cob_common.call("rosdep install -y %s" % stack, ros_env)
 
     # TODO build (like in hudson_helper)
     # build repositories and tests
     print "Build repo"
-    cob_common.call("rosmake %s" % build_repo, ros_env)
+    cob_common.call("rosmake --rosdep-install %s" % build_repo, ros_env)
     cob_common.call("rosmake --test-only %s" % build_repo, ros_env)
     # TODO output dir ??
     # copy test results
