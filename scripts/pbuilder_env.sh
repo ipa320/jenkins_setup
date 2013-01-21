@@ -1,9 +1,12 @@
 #!/bin/bash -ex
+WORKSPACE=$1
+echo $WORKSPACE
+
 env
 
 cd
 ls -lah
-cd workspace
+cd $WORKSPACE 
 ls -lah
 
 . ./env_vars.sh
