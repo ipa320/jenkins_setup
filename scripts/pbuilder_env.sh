@@ -8,7 +8,7 @@ env
 
 export PATH=$PATH:/usr/local/bin
 . /opt/ros/$ROSDISTRO/setup.sh
-export ROS_PACKAGE_PATH=/tmp/test_repositories/src_repository
+export ROS_PACKAGE_PATH=/tmp/test_repositories/src_repository:$ROS_PACKAGE_PATH
 export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
 
 env
