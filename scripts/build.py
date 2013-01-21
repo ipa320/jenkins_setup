@@ -145,7 +145,6 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     # build repositories and tests
     print "Build repo"
     cob_common.call("rosmake --pjobs=8 --output=%s %s" % (test_results_dir, build_repo), ros_env)
-    os.makedirs(test_results_dir)
     cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (test_results_dir, build_repo), ros_env)
     # TODO output dir ??
     # copy test results
