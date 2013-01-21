@@ -2,8 +2,6 @@
 export WORKSPACE=$1
 echo $WORKSPACE
 
-env
-
 . $WORKSPACE/env_vars.sh
 
 export PATH=$PATH:/usr/local/bin
@@ -11,20 +9,14 @@ export PATH=$PATH:/usr/local/bin
 export ROS_PACKAGE_PATH=/tmp/test_repositories/src_repository:$ROS_PACKAGE_PATH
 export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
 
-env
-
 cp $WORKSPACE/.gitconfig ~/.gitconfig
 cp -a $WORKSPACE/.ssh /root
 chown -R root.root /root/.ssh
 
-ls -lah
+apt-get update
+apt-get upgrade -y
+apt-get install python-catkin-pkg python-rosdistro -y
 
-echo "Test"
+pip install -U rosinstall
 
-cd
-
-ls -lah
-
-cd $WORKSPACE
-
-ls -lah
+$WORKSPACE/jenkins_setup/scripts/build.py $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
