@@ -34,3 +34,8 @@ $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $JENKINS_MASTER $JENKINS_USER $RO
 echo "============================================================"
 echo "==== End" $SCRIPT "script.    Ignore the output below ======"
 echo "============================================================"
+
+apt-get install tree
+tree $WORKSPACE
+
+tree /tmp/test_repositories
