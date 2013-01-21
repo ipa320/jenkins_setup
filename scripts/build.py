@@ -132,6 +132,7 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
 
     # TODO
     print "Env"
+    cob_common.call("export ROS_TEST_RESULTS_DIR=%s" % test_results_dir)
     ros_env = cob_common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
     cob_common.call("env", ros_env)
     ros_env_repo = cob_common.get_ros_env('/tmp/test_repositories/src_repository/setup.bash')
@@ -149,6 +150,7 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     cob_common.call("rosmake --test-only --output=%s %s" % (test_results_dir, build_repo), ros_env)
     # TODO output dir ??
     # copy test results
+    cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
     cob_common.copy_test_results(workspace, repo_sourcespace)
 
 
