@@ -58,6 +58,7 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     # set up directories variables
     tmpdir = os.path.join('/tmp', 'test_repositories')
     repo_sourcespace = os.path.join(tmpdir, 'src_repository')
+    test_results_dir = os.path.join(repo_sourcespace, 'test_results')
 
     # install Debian packages needed for script TODO ??
     #print "Installing Debian packages we need for running this script"
@@ -144,7 +145,8 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     # build repositories and tests
     print "Build repo"
     cob_common.call("rosmake %s" % build_repo, ros_env)
-    cob_common.call("rosmake --test-only %s" % build_repo, ros_env)
+    os.makedirs(test_results_dir)
+    cob_common.call("rosmake --test-only --output=%s %s" % (test_results_dir, build_repo), ros_env)
     # TODO output dir ??
     # copy test results
     cob_common.copy_test_results(workspace, repo_sourcespace)
