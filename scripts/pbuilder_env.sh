@@ -35,6 +35,12 @@ echo "============================================================"
 echo "==== End" $SCRIPT "script.    Ignore the output below ======"
 echo "============================================================"
 
+rospack list
+
+echo "============================================================"
+
+rosstack list
+
 apt-get install tree
 tree $WORKSPACE
 
