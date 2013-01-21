@@ -133,7 +133,7 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     print "Env"
     ros_env = cob_common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
     cob_common.call("env", ros_env)
-    ros_env_repo = cob_common.get_ros_env('/tmp/test_repositories/src_repository/setup.bash' % ros_distro)
+    ros_env_repo = cob_common.get_ros_env('/tmp/test_repositories/src_repository/setup.bash')
     cob_common.call("env", ros_env_repo)
     print "Rosdep"
     cob_common.call("rosmake rosdep", ros_env)
