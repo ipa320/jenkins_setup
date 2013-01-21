@@ -1,7 +1,8 @@
 #!/bin/bash -ex
 env
 
-cd 
+cd
+cd workspace
 
 . ./env_vars.sh
 
