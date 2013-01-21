@@ -2,7 +2,9 @@
 env
 
 cd
+ls -lah
 cd workspace
+ls -lah
 
 . ./env_vars.sh
 
