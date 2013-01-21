@@ -130,13 +130,15 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     cob_common.apt_get_install(repo_build_dependencies_apt)
 
     # TODO
-    print "Rosdep"
-    ros_env = cob_common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
     print "Env"
+    ros_env = cob_common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
     cob_common.call("env", ros_env)
+    ros_env_repo = cob_common.get_ros_env('/tmp/test_repositories/src_repository/setup.bash' % ros_distro)
+    cob_common.call("env", ros_env_repo)
+    print "Rosdep"
     cob_common.call("rosmake rosdep", ros_env)
     for stack in stacks.keys():
-        cob_common.call("rosdep install -y %s" % stack, ros_env)
+        cob_common.call("rosdep install -y %s" % stack, ros_env_repo)
 
     # TODO build (like in hudson_helper)
     # build repositories and tests
