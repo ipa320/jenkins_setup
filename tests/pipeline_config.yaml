@@ -1,30 +1,37 @@
-pipeline_github_url: git@github.com/ipa320/jenkins_pipelines/user_name__server_name
-pipeline_name: user_name__server_name
-pipeline_type: [build, gazebo, hardware, release] # labels for jobs/nodes and server config
-user_name: test_user
+pipeline_github_url: git@github.com/fmw-jk/jenkins_pipelines/jenkins-test-server/test-user  # git@github.com/ipa320/jenkins_pipelines/server_name/user_name
+user_name: test-user
+server_name: jenkins-test-server
 email: test@ipa.fhg.de
 committer: 'false'
-ros_distro: [test_rosdistro] # electric, fuerte, groovy
-
-#prio_distro: natty
-#prio_arch: amd64
-prio_distro_arch:
-    test_rosdistro:
-        ubuntu_distro: natty
-        arch: amd64
 
 repositories:
     test_repo_1:
-        type : git  # git, hg, svn
+        type: git  # git, hg, svn
         url: git@github.com/user/repo1
         version: master
-        poll: 'true'
-        dep: 'false'
-        private: 'false'
+        poll: true  # for first level repos always true
+        ros_distro: [test_rosdistro, test_rosdistro_2]  # electric, fuerte,...
+        prio_ubuntu_distro: oneiric
+        prio_arch: amd64
+        matrix_distro_arch:
+            oneiric: [i386]
+            lucid: [amd64, i386]
+        dependencies:
+            dep_repo_1:
+                type: git  # git, hg, svn
+                url: git@github.com/user_x/dep_repo_1
+                version: master
+                poll: true
+        jobs: [normal, sim, db, down, app, hw, release]
+
     test_repo_2:
         type: git
         url: git@github.com/user/repo2
         version: test
-        poll: 'false'
-        dep: 'true'
-        private: 'false'
+        poll: true
+        ros_distro: [test_rosdistro]
+        prio_ubuntu_distro: natty
+        prio_arch: amd64
+        matrix_distro_arch:
+        dependencies:
+        jobs: []
