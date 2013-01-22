@@ -8,12 +8,16 @@ from jenkins_setup import cob_common
 
 class Cob_Distro(object):
     """
-    TODO
+    Object containing distro information
     """
 
     def __init__(self, name, url=None):
         """
-        TODO
+        Initializes the distro object and sets up all repositories derived
+        from the given distro yaml file
+
+        :param name: name of distro, ``str``
+        :param url: optional url where to get the distro file from, ``str``
         """
 
         self.repositories = {}
@@ -34,12 +38,14 @@ class Cob_Distro(object):
 
 class Cob_Distro_Pipe(object):
     """
-    TODO
+    Object containing buildpipeline information
     """
 
     def load_from_dict(self, repos_dict):
         """
-        TODO
+        Sets up a pipeline object derived from the given dictionary
+
+        :param repos_dict: containing all buildpipeline configurations, ``str``
         """
 
         self.repositories = {}
@@ -50,6 +56,14 @@ class Cob_Distro_Pipe(object):
             self.repositories[repo_name] = repo
 
     def load_from_url(self, server_name, user_name):
+        """
+        Gets the buildpipeline configuration by the given server and user name
+        and sets up the pipeline object
+
+        :param server_name: name of server, ``str``
+        :param user_name: name of user, ``str``
+        """
+
         buildpipe_conf_dict = cob_common.get_buildpipeline_configs(server_name, user_name)
         self.load_from_dict(buildpipe_conf_dict['repositories'])
 
@@ -60,9 +74,6 @@ class Cob_Distro_Pipe(object):
         :returns: return :dict: with dependencies as keys and the corresponding
         repositories (in a list) as value, ``dict``
         """
-
-        #deps = {dep: repo for dep, repo in self.repositories[repo].dependencies.keys()
-                #for repo in self.repositories.keys()}
 
         deps = {}
         for repo in self.repositories.keys():
@@ -133,6 +144,7 @@ class Cob_Distro_Pipe_Repo(Cob_Distro_Repo):
         self.prio_ubuntu_distro = data['prio_ubuntu_distro']
         self.prio_arch = data['prio_arch']
 
+        self.matrix_distro_arch = {}
         if data['matrix_distro_arch']:
             self.matrix_distro_arch = data['matrix_distro_arch']  # TODO ??
 
@@ -143,5 +155,6 @@ class Cob_Distro_Pipe_Repo(Cob_Distro_Repo):
                 self.dependencies[dep_name] = dep
             #self.dependencies = Cob_Distro('deps', repos_dict=data['dependencies'])
 
+        self.jobs = []
         if data['jobs']:
             self.jobs = data['jobs']
