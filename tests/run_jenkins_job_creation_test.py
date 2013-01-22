@@ -8,15 +8,16 @@ import datetime
 import socket
 import jenkins
 
-from jenkins_setup import run_jenkins_job_creation
+from jenkins_setup import run_jenkins_job_creation, cob_common
 
 
 class Job_Generation_Test(unittest.TestCase):
 
     def setUp(self):
         self.maxDiff = None
-        with open('pipeline_config.yaml') as f:
-            self.test_dict = yaml.load(f)
+        self.test_dict = cob_common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
+        #with open('pipeline_config.yaml') as f:
+        #    self.test_dict = yaml.load(f)
         self.job_type_test_list = ['pipe', 'prio', 'normal']
 
         with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:

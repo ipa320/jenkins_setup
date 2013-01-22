@@ -7,6 +7,8 @@ import datetime
 import re
 import pkg_resources
 
+from jenkins_setup import cob_distro
+
 
 class Jenkins_Jobs(object):
 
@@ -54,6 +56,8 @@ class Jenkins_Jobs(object):
 
         self.jenkins_instance = jenkins_instance
         self.pipe_conf = buildpipeline_config
+        self.pipe_instance = cob_distro.Cob_Distro_Pipe()
+        self.pipe_instance.load_from_dict(self.pipe_conf)
 
         job_config_params = pkg_resources.resource_string('jenkins_setup', 'templates/job_config_params.yaml')
         self.jcp = yaml.load(job_config_params)
@@ -135,7 +139,15 @@ class Jenkins_Jobs(object):
         return self.JOB_TYPE_PARAMS[self.JOB_TYPE_NAMES[job_type]](params)
 
     def pipe_starter_params(self, params):
-        ''' TODO '''
+        '''
+        Generates a pipe starter job configuration by setting the specific
+        parameters defined in pipeline_config.yaml
+
+        :param params: dictionary with all available configuration parameters,
+        ``dict``
+        :returns: set up configuration parameters, ``dict``
+        '''
+
         params['NODE_LABEL'] = 'master'
         params['PROJECT'] = 'project'
 
