@@ -150,23 +150,30 @@ class Jenkins_Job(object):
         return ', '.join(self.generate_job_list(job_type_list))
 
     def generate_matrix_filter(self, config, negation=False):
-        '''
-        '''
+        """
+        Returns a groovy combination filter
 
+        :param config: couples of names and values which have to be met, ``dict``
+        :param negation: negates the resulting filter, ``bool``
+        :returns: matrix config, ``str``
+        """
+
+        filter = '(%s)' % ' || '.join(['(%s)' % ' && '.join(['%s == %s' % (key, value)
+                                                             for key, value in i.iteritems()])
+                                       for i in config])
         if negation:
-            filter = '!(%s)' % ' || '.join(['(%s)' % ' && '.join(['%s == %s' % (key, value)
-                                                                  for key, value in i.iteritems()])
-                                            for i in config])
-        else:
-            filter = '(%s)' % ' || '.join(['(%s)' % ' && '.join(['%s == %s' % (key, value)
-                                                                 for key, value in i.iteritems()])
-                                           for i in config])
+            filter = '!' + filter
 
         return filter
 
     def generate_matrix_axis(self, axis_name, value_list):
-        '''
-        '''
+        """
+        Returns matrix axis config for given list of values
+
+        :param axis_name: name of axis, ``str``
+        :param value_list: list with value, ``list``
+        :returns: axis config, ``str``
+        """
 
         if axis_name == '':
             raise Exception('No proper name given')
@@ -179,8 +186,13 @@ class Jenkins_Job(object):
         return axis
 
     def generate_matrix_param(self, name_value_dict, filter=None):
-        '''
-        '''
+        """
+        Returns matrix config for given dictionary containing names and values
+
+        :param name_value_dict: matrix parameter config, ``dict``
+        :param filter: combination filter, ``str``
+        :returns: matrix config, ``str``
+        """
 
         axes = ''
         if name_value_dict == {}:
