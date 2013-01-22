@@ -35,13 +35,6 @@ class Jenkins_Job(object):
         self.job_config_params = yaml.load(self.job_config_params)
         self.job_config = pkg_resources.resource_string('jenkins_setup', 'templates/job_config.xml')
 
-    def create_job(self):
-        """
-        Configurates the job by replacing the templates placeholder
-        """
-
-        self.get_common_params()
-
     def schedule_job(self):
         """
         Create new or reconfigure existent job
@@ -103,19 +96,18 @@ class Jenkins_Job(object):
     ###########################################################################
     # helper methods - parameter generation
     ###########################################################################
-    def replace_placeholder(self, job_config, params):
+    def replace_placeholder(self):
         '''
         replace placeholder in template with params
         '''
 
-        for key, value in params.iteritems():
-            if "@(%s)" % key not in job_config:
+        for key, value in self.params.iteritems():
+            if "@(%s)" % key not in self.job_config:
                 raise KeyError("Parameter %s could not be replaced, because it is not existent" % key)
-            job_config = job_config.replace("@(%s)" % key, value)
-        not_replaced_keys = re.findall('@\(([A-Z0-9_]+)\)', job_config)
+            self.job_config = self.job_config.replace("@(%s)" % key, value)
+        not_replaced_keys = re.findall('@\(([A-Z0-9_]+)\)', self.job_config)
         if not_replaced_keys != []:
             raise KeyError("The keys %s were not replaced, because the parameters where missing" % (str(not_replaced_keys)))
-        return job_config
 
     def generate_job_name(self, job_type, suffix=''):
         '''
@@ -262,8 +254,29 @@ class Pipe_Starter_Job(Jenkins_Job):
     """
     Object representation of Pipe Starter Job
     """
-    def __init__(self, jenkins_instance):
+    def __init__(self, jenkins_instance, pipeline_config, repo, poll=None):
         """
+        :param jenkins_instance: object of Jenkins server
+        :param pipeline_config: config dict, ``dict``
+        :param repo: name of repository after change, ``str``
+        :param poll: name of repository to monitor for changes, ``str``
         """
 
-        super(Jenkins_Job, self).__init__(jenkins_instance)
+        super(Jenkins_Job, self).__init__(jenkins_instance, pipeline_config)
+
+        self.job_type = 'pipe'
+        self.job_name = self.generate_job_name()
+
+        self.repo = repo
+        self.poll = repo
+        if poll:
+            self.poll = poll
+
+        self.get_common_params()
+
+        self.replace_placeholder()
+
+        self.schedule_job()
+
+    def get_job_type_params(self):
+        pass

@@ -92,23 +92,27 @@ class Jenkins_Job_Test(unittest.TestCase):
         self.assertRaises(Exception, self.jj.get_common_params)
 
     # Testing replace_placeholder
-    def test__replace_placeholder__input_config_string_and_params_dict__resturn_config_string(self):
-        to_replace = '@(TEST_1) and @(TEST_2) should be replaced'
-        result = self.jj.replace_placeholder(to_replace, {'TEST_1': 'THIS', 'TEST_2': 'THAT'})
-        self.assertEqual(result, 'THIS and THAT should be replaced')
+    def test__replace_placeholder__set_config_string_and_params_dict__check_config_string(self):
+        self.jj.job_config = '@(TEST_1) and @(TEST_2) should be replaced'
+        self.jj.params = {'TEST_1': 'THIS', 'TEST_2': 'THAT'}
+        self.jj.replace_placeholder()
+        self.assertEqual(self.jj.job_config, 'THIS and THAT should be replaced')
 
-    def test__replace_placeholder__input_not_existent_key__raise_exception(self):
-        to_replace = '@(TEST_1) and @(TEST_2) should be replaced'
-        self.assertRaises(KeyError, self.jj.replace_placeholder, to_replace, {'WRONG': 'THIS', 'TEST_2': 'THAT'})
+    def test__replace_placeholder__set_not_existent_key__raise_exception(self):
+        self.jj.job_config = '@(TEST_1) and @(TEST_2) should be replaced'
+        self.jj.params = {'WRONG': 'THIS', 'TEST_2': 'THAT'}
+        self.assertRaises(KeyError, self.jj.replace_placeholder)
 
     def test__replace_placeholder__missing_parameter__raise_exception(self):
-        to_replace = '@(TEST_1) and @(TEST_2) should be replaced'
-        self.assertRaises(KeyError, self.jj.replace_placeholder, to_replace, {'TEST_1': 'THIS'})
+        self.jj.job_config = '@(TEST_1) and @(TEST_2) should be replaced'
+        self.jj.params = {'TEST_1': 'THIS'}
+        self.assertRaises(KeyError, self.jj.replace_placeholder)
 
     def test__replace_placeholder__missing_parameter__raise_exception2(self):
-        to_replace = '@(TEST_1) and @(TEST_2) should be @( replaced'
-        result = self.jj.replace_placeholder(to_replace, {'TEST_1': 'THIS', 'TEST_2': 'THAT'})
-        self.assertEqual(result, 'THIS and THAT should be @( replaced')
+        self.jj.job_config = '@(TEST_1) and @(TEST_2) should be @( replaced'
+        self.jj.params = {'TEST_1': 'THIS', 'TEST_2': 'THAT'}
+        self.jj.replace_placeholder()
+        self.assertEqual(self.jj.job_config, 'THIS and THAT should be @( replaced')
 
     # Testing generate_job_name
     def test__generate_job_name__input_job_string__return_job_name_string(self):
