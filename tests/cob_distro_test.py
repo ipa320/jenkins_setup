@@ -99,6 +99,25 @@ class Cob_Distro_Pipe_Test(unittest.TestCase):
         result = self.cdp.get_custom_dependencies()
         self.assertEqual(result, {'dep_1': ['cob_extern', 'cob_driver'], 'dep_2': ['cob_extern', 'cob_driver']})
 
+    def test__get_custom_dependencies__input_polled_only_True__return_only_polled_dependencies_dict(self):
+        dep_test_dict = {'dep_1': {'type': 'git', 'url': 'git://github.com/ipa320/dep_1.git',
+                                   'poll': True},
+                         'dep_2': {'type': 'git', 'url': 'git://github.com/ipa320/dep_2.git',
+                                   'poll': False}}
+        repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
+                                         'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
+                                         'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
+                                         'matrix_distro_arch': None, 'dependencies': dep_test_dict,
+                                         'jobs': None},
+                          'cob_driver': {'type': 'git', 'url': 'git://github.com/ipa320/cob_driver.git',
+                                         'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
+                                         'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
+                                         'matrix_distro_arch': None, 'dependencies': dep_test_dict,
+                                         'jobs': None}}
+        self.cdp.load_from_dict(repo_test_dict)
+        result = self.cdp.get_custom_dependencies(polled_only=True)
+        self.assertEqual(result, {'dep_1': ['cob_extern', 'cob_driver']})
+
 
 class Cob_Distro_Repo_Test(unittest.TestCase):
 

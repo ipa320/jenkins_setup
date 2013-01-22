@@ -67,10 +67,12 @@ class Cob_Distro_Pipe(object):
         buildpipe_conf_dict = cob_common.get_buildpipeline_configs(server_name, user_name)
         self.load_from_dict(buildpipe_conf_dict['repositories'])
 
-    def get_custom_dependencies(self):
+    def get_custom_dependencies(self, polled_only=False):
         """
-        Get a :dict: with dependencies and corresponding repository.
+        Generates a :dict: with dependencies and corresponding repository.
 
+        :param polled_only: if set only polled dependencies will be considered,
+        ``bool``
         :returns: return :dict: with dependencies as keys and the corresponding
         repositories (in a list) as value, ``dict``
         """
@@ -78,6 +80,9 @@ class Cob_Distro_Pipe(object):
         deps = {}
         for repo in self.repositories.keys():
             for dep in self.repositories[repo].dependencies.keys():
+                if polled_only:
+                    if not self.repositories[repo].dependencies[dep].poll:
+                        continue
                 if dep in deps:
                     deps[dep].append(repo)
                 else:
