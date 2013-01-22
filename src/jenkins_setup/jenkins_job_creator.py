@@ -61,7 +61,7 @@ class Jenkins_Job(object):
             except:
                 return 'creation failed'
 
-    def delete_job(self, job_name):
+    def delete_job(self):
         """
         Deletes the job defined by the job name
 
@@ -69,9 +69,9 @@ class Jenkins_Job(object):
         :returns: return message, ``str``
         """
 
-        if self.jenkins_instance.job_exists(job_name):
+        if self.jenkins_instance.job_exists(self.job_name):
             try:
-                self.jenkins_instance.delete_job(job_name)
+                self.jenkins_instance.delete_job(self.job_name)
             except:
                 return 'deletion failed'  # Exception ??
             return 'deleted'
