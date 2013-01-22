@@ -6,6 +6,8 @@ import pkg_resources
 import yaml
 import re
 
+from jenkins_setup import cob_distro
+
 
 class Jenkins_Job(object):
     """
@@ -34,6 +36,9 @@ class Jenkins_Job(object):
         self.job_config_params = pkg_resources.resource_string('jenkins_setup', 'templates/job_config_params.yaml')
         self.job_config_params = yaml.load(self.job_config_params)
         self.job_config = pkg_resources.resource_string('jenkins_setup', 'templates/job_config.xml')
+
+        self.pipe_inst = cob_distro.Cob_Distro_Pipe()
+        self.pipe_inst.load_from_dict(self.pipe_conf)
 
     def schedule_job(self):
         """
@@ -268,7 +273,7 @@ class Pipe_Starter_Job(Jenkins_Job):
         self.job_name = self.generate_job_name()
 
         self.repo = repo
-        self.poll = repo
+        self.poll = None
         if poll:
             self.poll = poll
 
@@ -279,4 +284,30 @@ class Pipe_Starter_Job(Jenkins_Job):
         self.schedule_job()
 
     def get_job_type_params(self):
-        pass
+        """
+        Generates pipe starter specific job configuration parameters
+        """
+
+        self.params['NODE_LABEL'] = 'master'
+        self.params['PROJECT'] = 'project'
+
+        self.params['TRIGGER'] = self.job_config_params['triggers']['vcs']
+
+        if self.poll:
+            git_poll_repo = self.job_config_params['vcs']['git']['repo']
+            git_poll_repo = git_poll_repo.replace('@(URI)', self.pipe_inst.repositories[self.repo].dependencies[self.poll].url)
+            git_poll_repo = git_poll_repo.replace('@(BRANCH)', self.pipe_inst.repositories[self.repo].dependencies[self.poll].version)
+        else:
+            git_poll_repo = self.job_config_params['vcs']['git']['repo']
+            git_poll_repo = git_poll_repo.replace('@(URI)', self.pipe_inst.repositories[self.repo].url)
+            git_poll_repo = git_poll_repo.replace('@(BRANCH)', self.pipe_inst.repositories[self.repo].version)
+
+        git_branch = self.job_config_params['vcs']['git']['branch'].replace('@(BRANCH)', '')  # TODO check if thats right
+        self.params['VCS'] = (self.job_config_params['vcs']['git']['basic'].replace('@(GIT_REPOS)', git_poll_repo)
+                              .replace('@(GIT_BRANCHES)', git_branch))
+
+        # generate groovy postbuild script
+        self.params['GROOVY_POSTBUILD'] = self.generate_groovypostbuild_param('disable', ['bringup', 'hilevel', 'release'], 2)
+
+        # generate postbuild trigger
+        self.params['POSTBUILD_TRIGGER'] = self.generate_postbuildtrigger_param(['prio'], 'SUCCESS')
