@@ -93,7 +93,6 @@ class Jenkins_Job(object):
         self.params['NODE_LABEL'] = self.job_type
         self.params['TIME'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M')
         self.params['HOSTNAME'] = socket.gethostname()
-        self.params['ROSDISTRO'] = self.pipe_conf['ros_distro']
         self.params['PROJECT'] = 'matrix-project'
         self.params['TRIGGER'] = self.job_config_params['triggers']['none']
         self.params['VCS'] = self.job_config_params['vcs']['none']
@@ -105,7 +104,10 @@ class Jenkins_Job(object):
     # helper methods - parameter generation
     ###########################################################################
     def replace_placeholder(self, job_config, params):
-        '''replace placeholder in template with params'''
+        '''
+        replace placeholder in template with params
+        '''
+
         for key, value in params.iteritems():
             if "@(%s)" % key not in job_config:
                 raise KeyError("Parameter %s could not be replaced, because it is not existent" % key)
@@ -132,45 +134,25 @@ class Jenkins_Job(object):
                               self.JOB_TYPE_NAMES[job_type]])
 
     def generate_job_list(self, job_type_list):
-        '''returns a list of job_names generated from a list of job_types'''
+        '''
+        returns a list of job_names generated from a list of job_types
+        '''
+
         if type(job_type_list) != list:
             raise TypeError("Input type is not type 'list'")
         return [self.generate_job_name(job_type) for job_type in job_type_list]
 
     def generate_job_list_string(self, job_type_list):
-        '''returns a string of comma separated job_names generated from a list of job_types'''
+        '''
+        returns a string of comma separated job_names generated from a list of job_types
+        '''
+
         return ', '.join(self.generate_job_list(job_type_list))
 
-    def generate_distro_arch_field(self):
-        '''TODO'''
-        result = {}
-        result['ros_distro'] = self.pipe_conf['ros_distro']
-        result['ubuntu_distro'] = []
-        for ros_distro in result['ros_distro']:
-            for ubuntu_distro in self.TARGET_PLATFORM[ros_distro]:
-                if ubuntu_distro not in result['ubuntu_distro']:
-                    result['ubuntu_distro'].append(ubuntu_distro)
-        result['arch'] = self.TARGET_ARCH
-        return result
-
-    def generate_prio_distro_arch(self):
-        '''TODO'''
-        result = []
-        for ros_distro in self.pipe_conf['ros_distro']:
-            entry = {}
-            entry['ros_distro'] = ros_distro
-            entry['ubuntu_distro'] = self.PRIO_DISTRO[ros_distro]
-            entry['arch'] = self.PRIO_ARCH
-            if ros_distro in self.pipe_conf['prio_distro_arch']:
-                entry['ubuntu_distro'] = self.pipe_conf['prio_distro_arch'][ros_distro]['ubuntu_distro']
-                entry['arch'] = self.pipe_conf['prio_distro_arch'][ros_distro]['arch']
-
-            result.append(entry)
-
-        return result
-
     def generate_matrix_filter(self, config, negation=False):
-        '''TODO'''
+        '''
+        '''
+
         if negation:
             filter = '!(%s)' % ' || '.join(['(%s)' % ' && '.join(['%s == %s' % (key, value)
                                                                   for key, value in i.iteritems()])
@@ -183,7 +165,8 @@ class Jenkins_Job(object):
         return filter
 
     def generate_matrix_axis(self, axis_name, value_list):
-        ''' TODO '''
+        '''
+        '''
 
         if axis_name == '':
             raise Exception('No proper name given')
@@ -196,7 +179,8 @@ class Jenkins_Job(object):
         return axis
 
     def generate_matrix_param(self, name_value_dict, filter=None):
-        ''' TODO '''
+        '''
+        '''
 
         axes = ''
         if name_value_dict == {}:
@@ -211,7 +195,9 @@ class Jenkins_Job(object):
         return matrix
 
     def generate_jointrigger_param(self, job_type_list, unstable_behavior):
-        ''' TODO '''
+        '''
+        '''
+
         if job_type_list == []:
             return ''
         elif unstable_behavior == '':
@@ -224,7 +210,9 @@ class Jenkins_Job(object):
         return jointrigger.replace('@(JOIN_UNSTABLE)', str(unstable_behavior))
 
     def generate_postbuildtrigger_param(self, job_type_list, threshold_name):
-        ''' TODO '''
+        '''
+        '''
+
         if job_type_list == []:
             return ''
         elif threshold_name == '':
@@ -237,14 +225,18 @@ class Jenkins_Job(object):
         return postbuildtrigger.replace('@(THRESHOLD)', threshold_name)
 
     def generate_pipelinetrigger_param(self, job_type_list):
-        ''' TODO '''
+        '''
+        '''
+
         if job_type_list == []:
             return ''
         return self.job_config_params['pipelinetrigger'].replace('@(PIPELINETRIGGER_PROJECT)',
                                                                  self.generate_job_list_string(job_type_list))
 
     def generate_groovypostbuild_param(self, script_type, project_list, behavior):
-        ''' TODO '''
+        '''
+        '''
+
         if project_list == []:
             raise Exception('No project is given')
         if behavior > 2 or behavior < 0 or type(behavior) != int:

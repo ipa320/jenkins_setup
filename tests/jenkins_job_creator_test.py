@@ -3,6 +3,8 @@
 import unittest
 
 import os
+import datetime
+import socket
 import yaml
 import jenkins
 
@@ -26,6 +28,40 @@ class Jenkins_Job_Test(unittest.TestCase):
         jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'], info['jenkins_pw'])
 
         self.jj = jenkins_job_creator.Jenkins_Job(jenkins_instance, self.test_dict)
+
+
+
+    # Testing common_params
+    def test__get_common_params__return_common_job_config_dict(self):
+        self.jj.job_type = 'pipe'
+        common_job_config_dict = {'USERNAME': 'test-user',
+                                  'EMAIL': 'test@ipa.fhg.de',
+                                  'EMAIL_COMMITTER': 'false',
+                                  'JOB_TYPE_NAME': 'pipe_starter',
+                                  'SCRIPT': 'pipe_starter',
+                                  'NODE_LABEL': 'pipe',
+                                  'TIME': datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M'),
+                                  'HOSTNAME': socket.gethostname(),
+                                  'PROJECT': 'matrix-project',
+                                  'TRIGGER': '<triggers class="vector"/>',
+                                  'VCS': '<scm class="hudson.scm.NullSCM"/>',
+                                  'MATRIX': '',
+                                  'PARAMETERS': '',
+                                  'POSTBUILD_TRIGGER': '',
+                                  'JOIN_TRIGGER': '',
+                                  'PIPELINE_TRIGGER': '',
+                                  'GROOVY_POSTBUILD': ''
+                                  }
+        self.jj.get_common_params()
+        self.assertEqual(self.jj.params, common_job_config_dict)
+
+    def test__get_common_params__empty_job_type_string__raise_exception(self):
+        self.jj.job_type = ''
+        self.assertRaises(Exception, self.jj.get_common_params)
+
+    def test__get_common_params__invalid_job_type_string__raise_exception(self):
+        self.jj.job_type = 'invalid'
+        self.assertRaises(Exception, self.jj.get_common_params)
 
     # Testing replace_placeholder
     def test__replace_placeholder__input_config_string_and_params_dict__resturn_config_string(self):
@@ -87,6 +123,35 @@ class Jenkins_Job_Test(unittest.TestCase):
     def test__generate_job_list_string__input_empty_list__return_empty_string(self):
         result = self.jj.generate_job_list_string([])
         self.assertEqual(result, '')
+
+    # Testing generate_matrix_filter
+    def test__generate_matrix_filter__input_dict_list_and_negation_boolean_return_filter_string(self):
+        test_dict = [{'ros_distro': 'test_rosdistro',
+                      'ubuntu_distro': 'natty',
+                      'arch': 'amd64'}]
+        result = self.jj.generate_matrix_filter(test_dict, False)
+        self.assertEqual(result, '((ubuntu_distro == natty && arch == amd64 && ros_distro == test_rosdistro))')
+
+    def test__generate_matrix_filter__input_dict_list_and_negation_boolean_return_filter_string2(self):
+        test_dict = [{'ros_distro': 'test_rosdistro',
+                      'ubuntu_distro': 'natty',
+                      'arch': 'amd64'}]
+        result = self.jj.generate_matrix_filter(test_dict, True)
+        self.assertEqual(result, '!((ubuntu_distro == natty && arch == amd64 && ros_distro == test_rosdistro))')
+
+    def test__generate_matrix_filter__input_dict_list_and_negation_boolean_return_filter_string3(self):
+        test_dict = [{'ros_distro': 'test_rosdistro'},
+                     {'ubuntu_distro': 'natty',
+                      'arch': 'amd64'}]
+        result = self.jj.generate_matrix_filter(test_dict, False)
+        self.assertEqual(result, '((ros_distro == test_rosdistro) || (ubuntu_distro == natty && arch == amd64))')
+
+    def test__generate_matrix_filter__input_dict_list_and_negation_boolean_return_filter_string4(self):
+        test_dict = [{'ros_distro': 'test_rosdistro'},
+                     {'ubuntu_distro': 'natty',
+                      'arch': 'amd64'}]
+        result = self.jj.generate_matrix_filter(test_dict, True)
+        self.assertEqual(result, '!((ros_distro == test_rosdistro) || (ubuntu_distro == natty && arch == amd64))')
 
     # Testing generate_matrix_axis
     def test__generate_matrix_axis__input_name_string_and_value_list__return_axis_config_string(self):
