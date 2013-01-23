@@ -23,6 +23,14 @@
   'block': '<hudson.model.ParametersDefinitionProperty> <parameterDefinitions> @(PARAMS) </parameterDefinitions> </hudson.model.ParametersDefinitionProperty>'
   'param': '<hudson.model.StringParameterDefinition> <name>@(PARAM)</name> <description> </description> <defaultValue> </defaultValue>  </hudson.model.StringParameterDefinition>'
 
+'parameterizedtrigger':
+  'basic':
+    '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs> @(CONFIGS) </configs> <projects> @(PROJECTLIST) </projects> <condition>@(CONDITION)</condition> <triggerWithNoParameters>@(NOPARAM)</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>'
+  'matrix_subset':
+    '<hudson.plugins.parameterizedtrigger.matrix.MatrixSubsetBuildParameters> <filter>@(FILTER)</filter> </hudson.plugins.parameterizedtrigger.matrix.MatrixSubsetBuildParameters>'
+  'predef_param':
+    '<hudson.plugins.parameterizedtrigger.PredefinedBuildParameters> <properties>@(PARAMETER)</properties> </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>'
+
 'matrix':
   'block': '<axes>@(AXIS)<hudson.matrix.LabelAxis> <name>label</name> <values> <string>@(NODE)</string> </values> </hudson.matrix.LabelAxis> </axes> <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl"> <runSequentially>false</runSequentially> </executionStrategy>'
   'basic': '<axes> @(AXES) </axes>'

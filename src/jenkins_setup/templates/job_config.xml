@@ -35,6 +35,7 @@
     @(PIPELINETRIGGER)
     @(JOINTRIGGER)
     @(POSTBUILDTRIGGER)
+    @(PARAMETERIZEDTRIGGER)
     <hudson.tasks.junit.JUnitResultArchiver>
       <testResults>test_results/*.xml</testResults>
       <keepLongStdio>false</keepLongStdio>
