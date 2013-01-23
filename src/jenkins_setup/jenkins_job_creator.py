@@ -96,7 +96,11 @@ class Jenkins_Job(object):
         self.params['VCS'] = self.job_config_params['vcs']['none']
         self.params['MATRIX'] = ''
         self.params['PARAMETERS'] = ''
-        self.params['POSTBUILD_TRIGGER'] = self.params['JOIN_TRIGGER'] = self.params['PIPELINE_TRIGGER'] = self.params['GROOVY_POSTBUILD'] = ''
+        self.params['POSTBUILD_TRIGGER'] = ''
+        self.params['JOIN_TRIGGER'] = ''
+        self.params['PIPELINE_TRIGGER'] = ''
+        self.params['GROOVY_POSTBUILD'] = ''
+        self.params['PARAMETERIZEDTRIGGER'] = ''
 
     ###########################################################################
     # helper methods - parameter generation
@@ -281,11 +285,11 @@ class Jenkins_Job(object):
                                                                                           str(self.generate_job_list(project_list)))
         return self.job_config_params['groovypostbuild']['basic'].replace('@(GROOVYPB_SCRIPT)', script).replace('@(GROOVYPB_BEHAVIOR)', str(behavior))
 
-    def generate_parameterizedtrigger_param(self, project_list, condition='SUCCESS', predefined_param='', subset_filter='', no_param=False):
+    def generate_parameterizedtrigger_param(self, job_type_list, condition='SUCCESS', predefined_param='', subset_filter='', no_param=False):
         """
         Generates config for parameterizedtrigger plugin
 
-        :param project_list: list with names of projects to trigger, ``list``
+        :param job_type_list: list with job types (short) to trigger, ``list``
         :param condition: when to trigger, ``str``
         :param predefined_param: parameter to pass to downstream project, ``str``
         :param subset_filter: combination filter for matrix projects, ``str``
@@ -306,7 +310,7 @@ class Jenkins_Job(object):
 
         param_trigger = self.job_config_params['parameterizedtrigger']['basic']
         param_trigger = param_trigger.replace('@(CONFIGS)', predef_param + matrix_subset)
-        param_trigger = param_trigger.replace('@(PROJECTLIST)', ', '.join(project_list))
+        param_trigger = param_trigger.replace('@(PROJECTLIST)', self.generate_job_list_string(job_type_list))
         param_trigger = param_trigger.replace('@(CONDITION)', condition)
 
         if no_param:
@@ -372,4 +376,7 @@ class Pipe_Starter_Job(Jenkins_Job):
         self.params['GROOVY_POSTBUILD'] = self.generate_groovypostbuild_param('disable', ['bringup', 'hilevel', 'release'], 2)
 
         # generate postbuild trigger
-        self.params['POSTBUILD_TRIGGER'] = self.generate_postbuildtrigger_param(['prio'], 'SUCCESS')
+        #self.params['POSTBUILD_TRIGGER'] = self.generate_postbuildtrigger_param(['prio'], 'SUCCESS')
+
+        # generate parameterized trigger
+        self.params['PARAMETERIZEDTRIGGER'] = self.generate_parameterizedtrigger_param(['prio'])
