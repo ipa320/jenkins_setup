@@ -328,11 +328,11 @@ class Pipe_Starter_Job(Jenkins_Job):
     """
     Object representation of Pipe Starter Job
     """
-    def __init__(self, jenkins_instance, pipeline_config, repo, poll=None):
+    def __init__(self, jenkins_instance, pipeline_config, repo_list, poll):
         """
         :param jenkins_instance: object of Jenkins server
         :param pipeline_config: config dict, ``dict``
-        :param repo: name of repository after change, ``str``
+        :param repo_list: list of names of repository to trigger after change, ``list``
         :param poll: name of repository to monitor for changes, ``str``
         """
 
@@ -341,9 +341,9 @@ class Pipe_Starter_Job(Jenkins_Job):
         self.job_type = 'pipe'
         self.job_name = self.generate_job_name(self.job_type, suffix=poll)
 
-        self.repo = repo
-        self.poll = repo
-        if poll:
+        self.repo_list = repo_list
+        self.poll = repo_list[0]
+        if poll != repo_list[0]:
             self.poll = poll
 
         self.get_common_params()
@@ -369,14 +369,14 @@ class Pipe_Starter_Job(Jenkins_Job):
 
         self.params['TRIGGER'] = self.job_config_params['triggers']['vcs']
 
-        if self.poll != self.repo:
+        if self.poll != self.repo_list[0]:
             git_poll_repo = self.job_config_params['vcs']['git']['repo']
-            git_poll_repo = git_poll_repo.replace('@(URI)', self.pipe_inst.repositories[self.repo].dependencies[self.poll].url)
-            git_poll_repo = git_poll_repo.replace('@(BRANCH)', self.pipe_inst.repositories[self.repo].dependencies[self.poll].version)
+            git_poll_repo = git_poll_repo.replace('@(URI)', self.pipe_inst.repositories[self.repo_list[0]].dependencies[self.poll].url)
+            git_poll_repo = git_poll_repo.replace('@(BRANCH)', self.pipe_inst.repositories[self.repo_list[0]].dependencies[self.poll].version)
         else:
             git_poll_repo = self.job_config_params['vcs']['git']['repo']
-            git_poll_repo = git_poll_repo.replace('@(URI)', self.pipe_inst.repositories[self.repo].url)
-            git_poll_repo = git_poll_repo.replace('@(BRANCH)', self.pipe_inst.repositories[self.repo].version)
+            git_poll_repo = git_poll_repo.replace('@(URI)', self.pipe_inst.repositories[self.repo_list[0]].url)
+            git_poll_repo = git_poll_repo.replace('@(BRANCH)', self.pipe_inst.repositories[self.repo_list[0]].version)
 
         git_branch = self.job_config_params['vcs']['git']['branch'].replace('@(BRANCH)', '')  # TODO check if thats right
         self.params['VCS'] = (self.job_config_params['vcs']['git']['basic'].replace('@(GIT_REPOS)', git_poll_repo)
@@ -396,11 +396,13 @@ class Pipe_Starter_Job(Jenkins_Job):
         """
 
         subset_filter_input = []
-        for rosdistro in self.pipe_inst.repositories[self.repo].ros_distro:
-            subset_filter_input_entry = {}
-            subset_filter_input_entry['ros_distro'] = rosdistro
-            subset_filter_input_entry['ubuntu_distro'] = self.pipe_inst.repositories[self.repo].prio_ubuntu_distro
-            subset_filter_input_entry['arch'] = self.pipe_inst.repositories[self.repo].prio_arch
-            subset_filter_input.append(subset_filter_input_entry)
+        for repo in self.repo_list:
+            for rosdistro in self.pipe_inst.repositories[repo].ros_distro:
+                subset_filter_input_entry = {}
+                subset_filter_input_entry['repository'] = repo
+                subset_filter_input_entry['ros_distro'] = rosdistro
+                subset_filter_input_entry['ubuntu_distro'] = self.pipe_inst.repositories[repo].prio_ubuntu_distro
+                subset_filter_input_entry['arch'] = self.pipe_inst.repositories[repo].prio_arch
+                subset_filter_input.append(subset_filter_input_entry)
 
         return subset_filter_input

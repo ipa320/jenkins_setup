@@ -343,7 +343,14 @@ class Pipe_Starter_Job_Test(unittest.TestCase):
         self.jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'], info['jenkins_pw'])
 
     def test__get_prio_subset_filter__result_filter_input_dict(self):
-        self.jj = jenkins_job_creator.Pipe_Starter_Job(self.jenkins_instance, self.test_dict, 'test_repo_1', 'dep_repo_1')
+        self.jj = jenkins_job_creator.Pipe_Starter_Job(self.jenkins_instance, self.test_dict, ['test_repo_1'], 'dep_repo_1')
         result = self.jj.get_prio_subset_filter()
-        self.assertEqual(result, [{'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
-                                  {'ros_distro': 'test_rosdistro_2', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'}])
+        self.assertEqual(result, [{'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
+                                  {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro_2', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'}])
+
+    def test__get_prio_subset_filter__result_filter_input_dict2(self):
+        self.jj = jenkins_job_creator.Pipe_Starter_Job(self.jenkins_instance, self.test_dict, ['test_repo_1', 'test_repo_2'], 'dep_repo_1')
+        result = self.jj.get_prio_subset_filter()
+        self.assertEqual(result, [{'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
+                                  {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro_2', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
+                                  {'repository': 'test_repo_2', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'natty', 'arch': 'amd64'}])
