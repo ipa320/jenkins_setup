@@ -272,6 +272,7 @@ def get_buildpipeline_configs(server_name, user_name):
     :returns: return :dict: with configurations
     :raises: :exec:`Exception`
     """
+
     github_url = "https://raw.github.com/fmw-jk/jenkins_config/master/%s/%s/pipeline_config.yaml" % (server_name, user_name)  # TODO change to ipa320
     print "Parsing buildpipeline configuration file for %s stored at:\n%s" % (user_name, github_url)
     try:
