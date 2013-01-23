@@ -38,7 +38,7 @@ class Jenkins_Job(object):
         self.job_config = pkg_resources.resource_string('jenkins_setup', 'templates/job_config.xml')
 
         self.pipe_inst = cob_distro.Cob_Distro_Pipe()
-        self.pipe_inst.load_from_dict(self.pipe_conf)
+        self.pipe_inst.load_from_dict(self.pipe_conf['repositories'])
 
     def schedule_job(self):
         """
@@ -254,6 +254,33 @@ class Jenkins_Job(object):
                                                                                           str(self.generate_job_list(project_list)))
         return self.job_config_params['groovypostbuild']['basic'].replace('@(GROOVYPB_SCRIPT)', script).replace('@(GROOVYPB_BEHAVIOR)', str(behavior))
 
+    def generate_parameterizedtrigger_param(self, project_list, condition='SUCCESS', predefined_param='', subset_filter='', no_param=False):
+        """
+        Generates config for parameterizedtrigger plugin
+        """
+
+        matrix_subset = ''
+        if subset_filter != '':
+            matrix_subset = self.job_config_params['parameterizedtrigger']['matrix_subset']
+            matrix_subset = matrix_subset.replace('@(FILTER)', subset_filter)
+
+        predef_param = ''
+        if predefined_param != '':
+            predef_param = self.job_config_params['parameterizedtrigger']['predef_param']
+            predef_param = predef_param.replace('@(PARAMETER)', predefined_param)
+
+        param_trigger = self.job_config_params['parameterizedtrigger']['basic']
+        param_trigger = param_trigger.replace('@(CONFIGS)', predef_param + matrix_subset)
+        param_trigger = param_trigger.replace('@(PROJECTLIST)', ', '.join(project_list))
+        param_trigger = param_trigger.replace('@(CONDITION)', condition)
+
+        if no_param:
+            param_trigger = param_trigger.replace('@(NOPARAM)', 'true')
+        else:
+            param_trigger = param_trigger.replace('@(NOPARAM)', 'false')
+
+        return param_trigger
+
 
 class Pipe_Starter_Job(Jenkins_Job):
     """
@@ -267,7 +294,7 @@ class Pipe_Starter_Job(Jenkins_Job):
         :param poll: name of repository to monitor for changes, ``str``
         """
 
-        super(Jenkins_Job, self).__init__(jenkins_instance, pipeline_config)
+        super(Pipe_Starter_Job, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'pipe'
         self.job_name = self.generate_job_name()
