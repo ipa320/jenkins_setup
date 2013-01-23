@@ -62,10 +62,11 @@ class Jenkins_Job_Test(unittest.TestCase):
     # Testing common_params
     def test__get_common_params__return_common_job_config_dict(self):
         self.jj.job_type = 'pipe'
-        common_job_config_dict = {'USERNAME': 'test-user',
+        common_job_config_dict = {'COMMAND': '',
+                                  'USERNAME': 'test-user',
                                   'EMAIL': 'test@ipa.fhg.de',
                                   'EMAIL_COMMITTER': 'false',
-                                  'JOB_TYPE_NAME': 'pipe_starter',
+                                  #'JOB_TYPE_NAME': 'pipe_starter',
                                   'SCRIPT': 'pipe_starter',
                                   'NODE_LABEL': 'pipe',
                                   'TIME': datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M'),
@@ -79,7 +80,7 @@ class Jenkins_Job_Test(unittest.TestCase):
                                   'JOIN_TRIGGER': '',
                                   'PIPELINE_TRIGGER': '',
                                   'GROOVY_POSTBUILD': '',
-                                  'PARAMETERIZEDTRIGGER': ''
+                                  'PARAMETERIZED_TRIGGER': ''
                                   }
         self.jj.get_common_params()
         self.assertEqual(self.jj.params, common_job_config_dict)
@@ -323,3 +324,26 @@ class Jenkins_Job_Test(unittest.TestCase):
     def test__generate_parameterizedtrigger_param__input_job_type_list_and_no_param_bool__result_config_str(self):
         result = self.jj.generate_parameterizedtrigger_param(self.job_type_test_list, no_param=True)
         self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>true</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
+
+
+class Pipe_Starter_Job_Test(unittest.TestCase):
+    """
+    Tests Pipe Starter jobs
+    """
+
+    def setUp(self):
+        self.maxDiff = None
+
+        self.test_dict = cob_common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
+
+        self.job_type_test_list = ['pipe', 'prio', 'normal']
+
+        with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
+            info = yaml.load(f)
+        self.jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'], info['jenkins_pw'])
+
+    def test__get_prio_subset_filter__result_filter_input_dict(self):
+        self.jj = jenkins_job_creator.Pipe_Starter_Job(self.jenkins_instance, self.test_dict, 'test_repo_1', 'dep_repo_1')
+        result = self.jj.get_prio_subset_filter()
+        self.assertEqual(result, [{'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
+                                  {'ros_distro': 'test_rosdistro_2', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'}])

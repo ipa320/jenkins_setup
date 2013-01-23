@@ -86,13 +86,14 @@ class Jenkins_Job(object):
         self.params['USERNAME'] = self.pipe_conf['user_name']
         self.params['EMAIL'] = self.pipe_conf['email']
         self.params['EMAIL_COMMITTER'] = self.pipe_conf['committer']
-        self.params['JOB_TYPE_NAME'] = self.JOB_TYPE_NAMES[self.job_type]
+        #self.params['JOB_TYPE_NAME'] = self.JOB_TYPE_NAMES[self.job_type]
         self.params['SCRIPT'] = self.JOB_TYPE_NAMES[self.job_type]
         self.params['NODE_LABEL'] = self.job_type
         self.params['TIME'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M')
         self.params['HOSTNAME'] = socket.gethostname()
         self.params['PROJECT'] = 'matrix-project'
         self.params['TRIGGER'] = self.job_config_params['triggers']['none']
+        self.params['COMMAND'] = ''
         self.params['VCS'] = self.job_config_params['vcs']['none']
         self.params['MATRIX'] = ''
         self.params['PARAMETERS'] = ''
@@ -100,7 +101,7 @@ class Jenkins_Job(object):
         self.params['JOIN_TRIGGER'] = ''
         self.params['PIPELINE_TRIGGER'] = ''
         self.params['GROOVY_POSTBUILD'] = ''
-        self.params['PARAMETERIZEDTRIGGER'] = ''
+        self.params['PARAMETERIZED_TRIGGER'] = ''
 
     ###########################################################################
     # helper methods - parameter generation
@@ -336,10 +337,10 @@ class Pipe_Starter_Job(Jenkins_Job):
         super(Pipe_Starter_Job, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'pipe'
-        self.job_name = self.generate_job_name()
+        self.job_name = self.generate_job_name(self.job_type, suffix=poll)
 
         self.repo = repo
-        self.poll = None
+        self.poll = repo
         if poll:
             self.poll = poll
 
@@ -359,7 +360,7 @@ class Pipe_Starter_Job(Jenkins_Job):
 
         self.params['TRIGGER'] = self.job_config_params['triggers']['vcs']
 
-        if self.poll:
+        if self.poll != self.repo:
             git_poll_repo = self.job_config_params['vcs']['git']['repo']
             git_poll_repo = git_poll_repo.replace('@(URI)', self.pipe_inst.repositories[self.repo].dependencies[self.poll].url)
             git_poll_repo = git_poll_repo.replace('@(BRANCH)', self.pipe_inst.repositories[self.repo].dependencies[self.poll].version)
@@ -379,4 +380,21 @@ class Pipe_Starter_Job(Jenkins_Job):
         #self.params['POSTBUILD_TRIGGER'] = self.generate_postbuildtrigger_param(['prio'], 'SUCCESS')
 
         # generate parameterized trigger
-        self.params['PARAMETERIZEDTRIGGER'] = self.generate_parameterizedtrigger_param(['prio'])
+        self.params['PARAMETERIZEDTRIGGER'] = self.generate_parameterizedtrigger_param(['prio'],
+                                                                                       subset_filter=self.generate_matrix_filter(),
+                                                                                       predefined_param='POLL=' + self.poll)
+
+    def get_prio_subset_filter(self):
+        """
+        Gets subset filter for priority build
+        """
+
+        subset_filter_input = []
+        for rosdistro in self.pipe_inst.repositories[self.repo].ros_distro:
+            subset_filter_input_entry = {}
+            subset_filter_input_entry['ros_distro'] = rosdistro
+            subset_filter_input_entry['ubuntu_distro'] = self.pipe_inst.repositories[self.repo].prio_ubuntu_distro
+            subset_filter_input_entry['arch'] = self.pipe_inst.repositories[self.repo].prio_arch
+            subset_filter_input.append(subset_filter_input_entry)
+
+        return subset_filter_input
