@@ -57,7 +57,7 @@ class Jenkins_Jobs(object):
         self.jenkins_instance = jenkins_instance
         self.pipe_conf = buildpipeline_config
         self.pipe_instance = cob_distro.Cob_Distro_Pipe()
-        self.pipe_instance.load_from_dict(self.pipe_conf['repositoties'])
+        self.pipe_instance.load_from_dict(self.pipe_conf['repositories'])
 
         job_config_params = pkg_resources.resource_string('jenkins_setup', 'templates/job_config_params.yaml')
         self.jcp = yaml.load(job_config_params)
