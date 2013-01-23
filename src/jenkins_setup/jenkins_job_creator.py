@@ -324,7 +324,71 @@ class Jenkins_Job(object):
         return param_trigger
 
 
-class Pipe_Starter_Job(Jenkins_Job):
+class Pipe_Starter_General_Job(Jenkins_Job):
+    """
+    Object representation of a general Pipe Starter Job
+    """
+    def __init__(self, jenkins_instance, pipeline_config, repo_list):
+        """
+        :param jenkins_instance: object of Jenkins server
+        :param pipeline_config: config dict, ``dict``
+        :param repo_list: list of names of repository to trigger after change, ``list``
+        """
+
+        super(Pipe_Starter_General_Job, self).__init__(jenkins_instance, pipeline_config)
+
+        self.job_type = 'pipe'
+        self.job_name = self.generate_job_name(self.job_type, suffix='general')
+
+        self.repo_list = repo_list
+
+    def create_job(self):
+        """
+        Gets job specific parameter, sets up the job config and creates job
+        on jenkins instance
+        """
+
+        self.get_common_params()
+
+        self.get_job_type_params()
+
+        self.replace_placeholder()
+        print self.schedule_job()
+
+    def get_prio_subset_filter(self):
+        """
+        Gets subset filter for priority build
+        """
+
+        subset_filter_input = []
+        for repo in self.repo_list:
+            for rosdistro in self.pipe_inst.repositories[repo].ros_distro:
+                subset_filter_input_entry = {}
+                subset_filter_input_entry['repository'] = repo
+                subset_filter_input_entry['ros_distro'] = rosdistro
+                subset_filter_input_entry['ubuntu_distro'] = self.pipe_inst.repositories[repo].prio_ubuntu_distro
+                subset_filter_input_entry['arch'] = self.pipe_inst.repositories[repo].prio_arch
+                subset_filter_input.append(subset_filter_input_entry)
+
+        return subset_filter_input
+
+    def get_job_type_params(self):
+        """
+        Generates pipe starter specific job configuration parameters
+        """
+
+        self.params['NODE_LABEL'] = 'master'
+        self.params['PROJECT'] = 'project'
+
+        # generate groovy postbuild script
+        self.params['GROOVY_POSTBUILD'] = self.generate_groovypostbuild_param('disable', ['bringup', 'hilevel', 'release'], 2)
+
+        # generate parameterized trigger
+        self.params['PARAMETERIZED_TRIGGER'] = self.generate_parameterizedtrigger_param(['prio'],
+                                                                                        subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()))
+
+
+class Pipe_Starter_Job(Pipe_Starter_General_Job):
     """
     Object representation of Pipe Starter Job
     """
@@ -336,7 +400,7 @@ class Pipe_Starter_Job(Jenkins_Job):
         :param poll: name of repository to monitor for changes, ``str``
         """
 
-        super(Pipe_Starter_Job, self).__init__(jenkins_instance, pipeline_config)
+        super(Pipe_Starter_Job, self).__init__(jenkins_instance, pipeline_config, repo_list)
 
         self.job_type = 'pipe'
         self.job_name = self.generate_job_name(self.job_type, suffix=poll)
@@ -345,19 +409,6 @@ class Pipe_Starter_Job(Jenkins_Job):
         self.poll = repo_list[0]
         if poll != repo_list[0]:
             self.poll = poll
-
-        self.get_common_params()
-
-    def create_job(self):
-        """
-        Gets job specific parameter, sets up the job config and creates job
-        on jenkins instance
-        """
-
-        self.get_job_type_params()
-
-        self.replace_placeholder()
-        print self.schedule_job()
 
     def get_job_type_params(self):
         """
@@ -389,20 +440,3 @@ class Pipe_Starter_Job(Jenkins_Job):
         self.params['PARAMETERIZED_TRIGGER'] = self.generate_parameterizedtrigger_param(['prio'],
                                                                                         subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()),
                                                                                         predefined_param='POLL=' + self.poll)
-
-    def get_prio_subset_filter(self):
-        """
-        Gets subset filter for priority build
-        """
-
-        subset_filter_input = []
-        for repo in self.repo_list:
-            for rosdistro in self.pipe_inst.repositories[repo].ros_distro:
-                subset_filter_input_entry = {}
-                subset_filter_input_entry['repository'] = repo
-                subset_filter_input_entry['ros_distro'] = rosdistro
-                subset_filter_input_entry['ubuntu_distro'] = self.pipe_inst.repositories[repo].prio_ubuntu_distro
-                subset_filter_input_entry['arch'] = self.pipe_inst.repositories[repo].prio_arch
-                subset_filter_input.append(subset_filter_input_entry)
-
-        return subset_filter_input
