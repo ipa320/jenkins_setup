@@ -49,15 +49,17 @@ class Jenkins_Job(object):
                 self.jenkins_instance.reconfig_job(self.job_name, self.job_config)
                 print "Reconfigured job %s" % self.job_name
                 return 'reconfigured'
-            except:
-                return 'reconfiguration failed'
+            except Exception as ex:
+                print ex
+                return 'reconfiguration failed: %s' % ex
         else:
             try:
                 self.jenkins_instance.create_job(self.job_name, self.job_config)
                 print "Created job %s" % self.job_name
                 return 'created'
-            except:
-                return 'creation failed'
+            except Exception as ex:
+                print ex
+                return 'creation failed: %s' % ex
 
     def delete_job(self):
         """
@@ -70,8 +72,8 @@ class Jenkins_Job(object):
         if self.jenkins_instance.job_exists(self.job_name):
             try:
                 self.jenkins_instance.delete_job(self.job_name)
-            except:
-                return 'deletion failed'  # Exception ??
+            except Exception as ex:
+                return 'deletion failed: %s' % ex
             return 'deleted'
         else:
             return 'not existent'
@@ -346,9 +348,16 @@ class Pipe_Starter_Job(Jenkins_Job):
 
         self.get_common_params()
 
-        self.replace_placeholder()
+    def create_job(self):
+        """
+        Gets job specific parameter, sets up the job config and creates job
+        on jenkins instance
+        """
 
-        self.schedule_job()
+        self.get_job_type_params()
+
+        self.replace_placeholder()
+        print self.schedule_job()
 
     def get_job_type_params(self):
         """
@@ -376,13 +385,10 @@ class Pipe_Starter_Job(Jenkins_Job):
         # generate groovy postbuild script
         self.params['GROOVY_POSTBUILD'] = self.generate_groovypostbuild_param('disable', ['bringup', 'hilevel', 'release'], 2)
 
-        # generate postbuild trigger
-        #self.params['POSTBUILD_TRIGGER'] = self.generate_postbuildtrigger_param(['prio'], 'SUCCESS')
-
         # generate parameterized trigger
-        self.params['PARAMETERIZEDTRIGGER'] = self.generate_parameterizedtrigger_param(['prio'],
-                                                                                       subset_filter=self.generate_matrix_filter(),
-                                                                                       predefined_param='POLL=' + self.poll)
+        self.params['PARAMETERIZED_TRIGGER'] = self.generate_parameterizedtrigger_param(['prio'],
+                                                                                        subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()),
+                                                                                        predefined_param='POLL=' + self.poll)
 
     def get_prio_subset_filter(self):
         """
