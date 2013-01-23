@@ -31,11 +31,11 @@
     </hudson.tasks.Shell>
   </builders>
   <publishers>
-    @(GROOVYPOSTBUILD)
-    @(PIPELINETRIGGER)
-    @(JOINTRIGGER)
-    @(POSTBUILDTRIGGER)
-    @(PARAMETERIZEDTRIGGER)
+    @(GROOVY_POSTBUILD)
+    @(PIPELINE_TRIGGER)
+    @(JOIN_TRIGGER)
+    @(POSTBUILD_TRIGGER)
+    @(PARAMETERIZED_TRIGGER)
     <hudson.tasks.junit.JUnitResultArchiver>
       <testResults>test_results/*.xml</testResults>
       <keepLongStdio>false</keepLongStdio>
