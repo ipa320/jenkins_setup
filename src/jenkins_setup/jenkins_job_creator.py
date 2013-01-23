@@ -244,6 +244,13 @@ class Jenkins_Job(object):
 
     def generate_groovypostbuild_param(self, script_type, project_list, behavior):
         '''
+        Generates config for groovypostbuild plugin
+
+        :param script_type: enable, join_enable, disable, ``str``
+        :param project_list: list with names of projects, ``list``
+        :param behavior: when to execute script (0, 1, 2), ``int``
+
+        :returns: configuration of groovypostbuild plugin, ``str``
         '''
 
         if project_list == []:
@@ -257,6 +264,14 @@ class Jenkins_Job(object):
     def generate_parameterizedtrigger_param(self, project_list, condition='SUCCESS', predefined_param='', subset_filter='', no_param=False):
         """
         Generates config for parameterizedtrigger plugin
+
+        :param project_list: list with names of projects to trigger, ``list``
+        :param condition: when to trigger, ``str``
+        :param predefined_param: parameter to pass to downstream project, ``str``
+        :param subset_filter: combination filter for matrix projects, ``str``
+        :param no_param: trigger build without parameters, ``bool``
+
+        :returns: configuration of parameterizedtrigger plugin, ``str``
         """
 
         matrix_subset = ''
