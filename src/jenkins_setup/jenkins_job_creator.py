@@ -203,24 +203,39 @@ class Jenkins_Job(object):
 
         return matrix
 
-    def generate_jointrigger_param(self, job_type_list, unstable_behavior):
-        '''
-        '''
+    def generate_jointrigger_param(self, job_type_list, unstable_behavior=False):
+        """
+        Generates config for jointrigger plugin
+
+        :param job_type_list: list with job types (short) to join, ``list``
+        :param unstable_behavior: execute join project even if upstream projects
+        where unstable, ``bool``
+
+        :returns: configuration of jointrigger plugin, ``str``
+        """
 
         if job_type_list == []:
             return ''
-        elif unstable_behavior == '':
-            raise Exception('No behavior for unstable job result')
-        elif not (unstable_behavior == 'true' or unstable_behavior == 'false'):
-            raise Exception("Behavior argument has to be 'true' or 'false'")
+        elif type(unstable_behavior) != bool:
+            raise Exception("Behavior argument for unstable job result has to be a boolean")
 
         jointrigger = self.job_config_params['jointrigger'].replace('@(JOIN_PROJECTS)',
                                                                     self.generate_job_list_string(job_type_list))
-        return jointrigger.replace('@(JOIN_UNSTABLE)', str(unstable_behavior))
+        if unstable_behavior:
+            jointrigger = jointrigger.replace('@(JOIN_UNSTABLE)', 'true')
+        else:
+            jointrigger = jointrigger.replace('@(JOIN_UNSTABLE)', 'false')
+        return jointrigger
 
     def generate_postbuildtrigger_param(self, job_type_list, threshold_name):
-        '''
-        '''
+        """
+        Generates config for postbuildtrigger plugin
+
+        :param job_type_list: list with job types (short) to trigger, ``list``
+        :param threshold_name: when to trigger projects, ``str``
+
+        :returns: configuration of postbuildtrigger plugin, ``str``
+        """
 
         if job_type_list == []:
             return ''
@@ -234,8 +249,13 @@ class Jenkins_Job(object):
         return postbuildtrigger.replace('@(THRESHOLD)', threshold_name)
 
     def generate_pipelinetrigger_param(self, job_type_list):
-        '''
-        '''
+        """
+        Generates config for pipelinetrigger plugin
+
+        :param job_type_list: list with job types (short) to trigger, ``list``
+
+        :returns: configuration of pipelinetrigger plugin, ``str``
+        """
 
         if job_type_list == []:
             return ''
@@ -243,7 +263,7 @@ class Jenkins_Job(object):
                                                                  self.generate_job_list_string(job_type_list))
 
     def generate_groovypostbuild_param(self, script_type, project_list, behavior):
-        '''
+        """
         Generates config for groovypostbuild plugin
 
         :param script_type: enable, join_enable, disable, ``str``
@@ -251,7 +271,7 @@ class Jenkins_Job(object):
         :param behavior: when to execute script (0, 1, 2), ``int``
 
         :returns: configuration of groovypostbuild plugin, ``str``
-        '''
+        """
 
         if project_list == []:
             raise Exception('No project is given')

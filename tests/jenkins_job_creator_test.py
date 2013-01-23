@@ -221,21 +221,26 @@ class Jenkins_Job_Test(unittest.TestCase):
         self.assertTrue('combinationFilter' not in self.jj.generate_matrix_param(name_value_test_dict))
 
     # Testing generate_jointtrigger_param
-    def test__generate_jointrigger_param__input_job_type_list_and_unstable_behavior_string__return_jointrigger_config_string(self):
-        unstable_behavior_test = 'true'
+    def test__generate_jointrigger_param__input_job_type_list_and_unstable_behavior_bool__return_jointrigger_config_string(self):
+        unstable_behavior_test = True
         result = self.jj.generate_jointrigger_param(self.job_type_test_list, unstable_behavior_test)
         self.assertEqual(result, '<join.JoinTrigger> <joinProjects>test-user__pipe_starter, test-user__prio_build, test-user__normal_build</joinProjects> <joinPublishers/> <evenIfDownstreamUnstable>true</evenIfDownstreamUnstable> </join.JoinTrigger>')
 
+    def test__generate_jointrigger_param__input_job_type_list_and_unstable_behavior_bool__return_jointrigger_config_string2(self):
+        unstable_behavior_test = False
+        result = self.jj.generate_jointrigger_param(self.job_type_test_list, unstable_behavior_test)
+        self.assertEqual(result, '<join.JoinTrigger> <joinProjects>test-user__pipe_starter, test-user__prio_build, test-user__normal_build</joinProjects> <joinPublishers/> <evenIfDownstreamUnstable>false</evenIfDownstreamUnstable> </join.JoinTrigger>')
+
     def test__generate_jointrigger_param__input_empty_job_type_list__return_empty_string(self):
-        self.assertEqual(self.jj.generate_jointrigger_param([], 'true'), '')
+        self.assertEqual(self.jj.generate_jointrigger_param([], True), '')
 
     def test__generate_jointrigger_param__input_empty_job_type_list__return_empty_string2(self):
         self.assertEqual(self.jj.generate_jointrigger_param([], ''), '')
 
-    def test__generate_jointrigger_param__input_empty_unstable_behavior_string__raise_exception(self):
+    def test__generate_jointrigger_param__input_no_unstable_behavior_bool__raise_exception(self):
         self.assertRaises(Exception, self.jj.generate_jointrigger_param, self.job_type_test_list, '')
 
-    def test__generate_jointrigger_param__input_invalid_unstable_behavior_string__raise_exception(self):
+    def test__generate_jointrigger_param__input_invalid_unstable_behavior_bool__raise_exception(self):
         self.assertRaises(Exception, self.jj.generate_jointrigger_param, self.job_type_test_list, 'invalid')
 
     # Testing generate_postbuildtrigger_param
