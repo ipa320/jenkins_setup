@@ -40,6 +40,8 @@ class Jenkins_Job(object):
         self.pipe_inst = cob_distro.Cob_Distro_Pipe()
         self.pipe_inst.load_from_dict(self.pipe_conf['repositories'])
 
+        self.params = {}
+
         self.job_name = None
         self.job_type = None
         self.poll = None
@@ -70,13 +72,13 @@ class Jenkins_Job(object):
 
     def create_job(self):
         """
-        Gets job specific parameter, sets up the job config and creates job
+        Sets job specific parameter, sets up the job config and creates job
         on Jenkins instance
         """
 
-        self.get_common_params()
+        self.set_common_params()
 
-        self.get_job_type_params()
+        self.set_job_type_params()
 
         self.replace_placeholder()
         print self.schedule_job()
@@ -104,8 +106,6 @@ class Jenkins_Job(object):
         """
         Sets all parameters which have to be defined for every job type
         """
-
-        self.params = {}
 
         self.params['USERNAME'] = self.pipe_conf['user_name']
         #self.params['JOB_TYPE_NAME'] = self.JOB_TYPE_NAMES[self.job_type]
@@ -211,26 +211,61 @@ class Jenkins_Job(object):
 
         return axis
 
-    def generate_matrix_param(self, name_value_dict, filter=None):
+    def set_matrix_param(self, name_value_dict_list, filter=None):
         """
         Returns matrix config for given dictionary containing names and values
 
-        :param name_value_dict: matrix parameter config, ``dict``
-        :param filter: combination filter, ``str``
-        :returns: matrix config, ``str``
+        @param name_value_dict_list: matrix parameter config
+        @type  name_value_dict_list: list
+        @param filter: combination filter
+        @type  filter: str
         """
 
         axes = ''
-        if name_value_dict == {}:
+        if name_value_dict_list == []:
             return ''
-        axes += ' '.join([self.generate_matrix_axis(axis_name, axis_values)
-                          for axis_name, axis_values in name_value_dict.iteritems()])
+        for name_value_dict in name_value_dict_list:
+            axes += ' '.join([self.generate_matrix_axis(axis_name, axis_values)
+                              for axis_name, axis_values in name_value_dict.iteritems()])
+        if axes == '':
+            return ''
 
         matrix = self.job_config_params['matrix']['basic'].replace('@(AXES)', axes)
         if filter:
             matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', filter)
 
-        return matrix
+        self.params['MATRIX'] = matrix
+
+    def get_matrix_entries(self):
+        """
+        Gets all repository, ros_distro, ubuntu_distro and arch entries of
+        pipeline configuration
+
+        @return type: list of dicts
+        """
+        dict_list = []
+        dict_list.append({'repository': self.pipe_inst.repositories.keys()})
+        ros_distros = []
+        ubuntu_distros = []
+        archs = []
+        for repo_name, repo_data, in self.pipe_inst.repositories.iteritems():
+            for ros_distro in repo_data.ros_distro:
+                if ros_distro not in ros_distros:
+                    ros_distros.append(ros_distro)
+            if repo_data.prio_ubuntu_distro not in ubuntu_distros:
+                ubuntu_distros.append(repo_data.prio_ubuntu_distro)
+            for ubuntu_distro, repo_archs in repo_data.matrix_distro_arch.iteritems():
+                if ubuntu_distro not in ubuntu_distros:
+                    ubuntu_distros.append(ubuntu_distro)
+                for arch in repo_archs:
+                    if arch not in archs:
+                        archs.append(arch)
+
+        dict_list.append({'ros_distro': ros_distros})
+        dict_list.append({'ubuntu_distro': ubuntu_distros})
+        dict_list.append({'arch': archs})
+
+        return dict_list
 
     def generate_jointrigger_param(self, job_type_list, unstable_behavior=False):
         """
@@ -256,14 +291,12 @@ class Jenkins_Job(object):
             jointrigger = jointrigger.replace('@(JOIN_UNSTABLE)', 'false')
         return jointrigger
 
-    def generate_postbuildtrigger_param(self, job_type_list, threshold_name):
+    def set_postbuildtrigger_param(self, job_type_list, threshold_name):
         """
-        Generates config for postbuildtrigger plugin
+        Sets config for postbuildtrigger plugin
 
         :param job_type_list: list with job types (short) to trigger, ``list``
         :param threshold_name: when to trigger projects, ``str``
-
-        :returns: configuration of postbuildtrigger plugin, ``str``
         """
 
         if job_type_list == []:
@@ -275,31 +308,27 @@ class Jenkins_Job(object):
 
         postbuildtrigger = self.job_config_params['postbuildtrigger'].replace('@(CHILD_PROJECTS)',
                                                                               self.generate_job_list_string(job_type_list))
-        return postbuildtrigger.replace('@(THRESHOLD)', threshold_name)
+        self.params['POSTBUILD_TRIGGER'] = postbuildtrigger.replace('@(THRESHOLD)', threshold_name)
 
-    def generate_pipelinetrigger_param(self, job_type_list):
+    def set_pipelinetrigger_param(self, job_type_list):
         """
-        Generates config for pipelinetrigger plugin
+        Sets config for pipelinetrigger plugin
 
         :param job_type_list: list with job types (short) to trigger, ``list``
-
-        :returns: configuration of pipelinetrigger plugin, ``str``
         """
 
         if job_type_list == []:
             return ''
-        return self.job_config_params['pipelinetrigger'].replace('@(PIPELINETRIGGER_PROJECT)',
-                                                                 self.generate_job_list_string(job_type_list))
+        self.params['PIPELINE_TRIGGER'] = self.job_config_params['pipelinetrigger'].replace('@(PIPELINETRIGGER_PROJECT)',
+                                                                                            self.generate_job_list_string(job_type_list))
 
-    def generate_groovypostbuild_param(self, script_type, project_list, behavior):
+    def set_groovypostbuild_param(self, script_type, project_list, behavior):
         """
-        Generates config for groovypostbuild plugin
+        Sets config for groovypostbuild plugin
 
         :param script_type: enable, join_enable, disable, ``str``
         :param project_list: list with names of projects, ``list``
         :param behavior: when to execute script (0, 1, 2), ``int``
-
-        :returns: configuration of groovypostbuild plugin, ``str``
         """
 
         if project_list == []:
@@ -308,7 +337,7 @@ class Jenkins_Job(object):
             raise Exception('Invalid behavior number given')
         script = self.job_config_params['groovypostbuild']['script'][script_type].replace('@(PROJECT_LIST)',
                                                                                           str(self.generate_job_list(project_list)))
-        return self.job_config_params['groovypostbuild']['basic'].replace('@(GROOVYPB_SCRIPT)', script).replace('@(GROOVYPB_BEHAVIOR)', str(behavior))
+        self.params['GROOVY_POSTBUILD'] = self.job_config_params['groovypostbuild']['basic'].replace('@(GROOVYPB_SCRIPT)', script).replace('@(GROOVYPB_BEHAVIOR)', str(behavior))
 
     def set_parameterizedtrigger_param(self, job_type_list, condition='SUCCESS', predefined_param='', subset_filter='', no_param=False):
         """
@@ -433,20 +462,19 @@ class Pipe_Starter_General_Job(Jenkins_Job):
 
         return subset_filter_input
 
-    def get_job_type_params(self):
+    def set_job_type_params(self):
         """
-        Generates pipe starter specific job configuration parameters
+        Sets pipe starter specific job configuration parameters
         """
 
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
 
-        # generate groovy postbuild script
-        self.params['GROOVY_POSTBUILD'] = self.generate_groovypostbuild_param('disable', ['bringup', 'hilevel', 'release'], 2)
+        # set groovy postbuild script
+        self.set_groovypostbuild_param('disable', ['bringup', 'hilevel', 'release'], 2)
 
-        # generate parameterized trigger
-        self.params['PARAMETERIZED_TRIGGER'] = self.generate_parameterizedtrigger_param(['prio'],
-                                                                                        subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()))
+        # set parameterized trigger
+        self.set_parameterizedtrigger_param(['prio'], subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()))
 
 
 class Pipe_Starter_Job(Pipe_Starter_General_Job):
@@ -471,9 +499,9 @@ class Pipe_Starter_Job(Pipe_Starter_General_Job):
         if poll != repo_list[0]:
             self.poll = poll
 
-    def get_job_type_params(self):
+    def set_job_type_params(self):
         """
-        Generates pipe starter job specific job configuration parameters
+        Sets pipe starter job specific job configuration parameters
         """
 
         self.params['NODE_LABEL'] = 'master'
@@ -481,13 +509,12 @@ class Pipe_Starter_Job(Pipe_Starter_General_Job):
 
         self.set_trigger_param('vcs')
 
-        # generate groovy postbuild script
-        self.params['GROOVY_POSTBUILD'] = self.generate_groovypostbuild_param('disable', ['bringup', 'hilevel', 'release'], 2)
+        # set groovy postbuild script
+        self.set_groovypostbuild_param('disable', ['bringup', 'hilevel', 'release'], 2)
 
         # generate parameterized trigger
-        self.params['PARAMETERIZED_TRIGGER'] = self.generate_parameterizedtrigger_param(['prio'],
-                                                                                        subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()),
-                                                                                        predefined_param='POLL=' + self.poll)
+        self.set_parameterizedtrigger_param(['prio'], subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()),
+                                            predefined_param='POLL=' + self.poll)
 
 
 class Build_Job(Jenkins_Job):
@@ -508,16 +535,18 @@ class Build_Job(Jenkins_Job):
 
         self.job_type = 'build'
 
-    def get_job_type_params(self):
+    def set_job_type_params(self):
         """
-        Generates build job specific job configuration parameters
+        Sets build job specific job configuration parameters
         """
 
         self.params['NODE_LABEL'] = 'build'  # TODO check labels
         self.set_mailer_param()
         self.set_junit_testresults_param()
 
-        # TODO matrix
+        # set matrix TODO
+        matrix_entries_dict_list = self.get_matrix_entries()
+        self.set_matrix_param(matrix_entries_dict_list)
 
 
 class Priority_Build_Job(Build_Job):
@@ -534,18 +563,27 @@ class Priority_Build_Job(Build_Job):
         @type  pipeline_config: dict
         """
 
-        super(Build_Job, self).__init__(jenkins_instance, pipeline_config)
+        super(Priority_Build_Job, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'prio'
         self.job_name = self.generate_job_name(self.job_type)
 
-    def get_job_type_params(self):
+    def set_job_type_params(self):
         """
-        Generates priority build job specific job configuration parameters
+        Sets priority build job specific job configuration parameters
         """
+
+        super(Priority_Build_Job, self).set_job_type_params()
 
         self.params['NODE_LABEL'] = 'prio_build'  # TODO check labels
 
-        # TODO groovyscript, pipelinetrigger,
+        # set groovy postbuild script
+        self.set_groovypostbuild_param('enable', ['bringup'], 2)
+
+        # set postbuild trigger
+        self.set_postbuildtrigger_param(['down'], 'SUCCESS')
+
+        # set pipeline trigger
+        self.set_pipelinetrigger_param(['bringup'])
 
 # TODO classes: test jobs, hardware jobs, release
