@@ -102,8 +102,6 @@ class Jenkins_Job(object):
         self.params = {}
 
         self.params['USERNAME'] = self.pipe_conf['user_name']
-        self.params['EMAIL'] = self.pipe_conf['email']
-        self.params['EMAIL_COMMITTER'] = self.pipe_conf['committer']
         #self.params['JOB_TYPE_NAME'] = self.JOB_TYPE_NAMES[self.job_type]
         self.params['SCRIPT'] = self.JOB_TYPE_NAMES[self.job_type]
         self.params['NODE_LABEL'] = self.job_type
@@ -120,6 +118,8 @@ class Jenkins_Job(object):
         self.params['PIPELINE_TRIGGER'] = ''
         self.params['GROOVY_POSTBUILD'] = ''
         self.params['PARAMETERIZED_TRIGGER'] = ''
+        self.params['JUNIT_TESTRESULTS'] = ''
+        self.params['MAILER'] = ''
 
     ###########################################################################
     # helper methods - parameter generation
@@ -339,6 +339,27 @@ class Jenkins_Job(object):
 
         return param_trigger
 
+    def set_mailer_param(self):
+        """
+        Sets config for mailer
+        """
+
+        mailer = self.job_config_params['mailer']
+        mailer = mailer.replace('@(EMAIL)', self.pipe_conf['email'])
+        if self.pipe_conf['committer']:
+            mailer = mailer.replace('@(EMAIL_COMMITTER)', 'true')
+        else:
+            mailer = mailer.replace('@(EMAIL_COMMITTER)', 'false')
+
+        self.params['MAILER'] = mailer
+
+    def set_junit_testresults_param(self):
+        """
+        Sets config for junit test result report
+        """
+
+        self.params['JUNIT_TESTRESULTS'] = self.job_config_params['junit_testresults']
+
 
 class Pipe_Starter_General_Job(Jenkins_Job):
     """
@@ -469,6 +490,8 @@ class Build_Job(Jenkins_Job):
         """
 
         self.params['NODE_LABEL'] = 'build'  # TODO check labels
+        self.set_mailer_param()
+        self.set_junit_testresults_param()
 
         # TODO matrix
 

@@ -64,8 +64,6 @@ class Jenkins_Job_Test(unittest.TestCase):
         self.jj.job_type = 'pipe'
         common_job_config_dict = {'COMMAND': '',
                                   'USERNAME': 'test-user',
-                                  'EMAIL': 'test@ipa.fhg.de',
-                                  'EMAIL_COMMITTER': 'false',
                                   #'JOB_TYPE_NAME': 'pipe_starter',
                                   'SCRIPT': 'pipe_starter',
                                   'NODE_LABEL': 'pipe',
@@ -80,7 +78,9 @@ class Jenkins_Job_Test(unittest.TestCase):
                                   'JOIN_TRIGGER': '',
                                   'PIPELINE_TRIGGER': '',
                                   'GROOVY_POSTBUILD': '',
-                                  'PARAMETERIZED_TRIGGER': ''
+                                  'PARAMETERIZED_TRIGGER': '',
+                                  'JUNIT_TESTRESULTS': '',
+                                  'MAILER': ''
                                   }
         self.jj.get_common_params()
         self.assertEqual(self.jj.params, common_job_config_dict)
@@ -324,6 +324,16 @@ class Jenkins_Job_Test(unittest.TestCase):
     def test__generate_parameterizedtrigger_param__input_job_type_list_and_no_param_bool__result_config_str(self):
         result = self.jj.generate_parameterizedtrigger_param(self.job_type_test_list, no_param=True)
         self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>true</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
+
+    def test__set_mailer_param__check_set_param(self):
+        self.jj.params = {}
+        self.jj.set_mailer_param()
+        self.assertEqual(self.jj.params['MAILER'], '<hudson.tasks.Mailer> <recipients>test@ipa.fhg.de</recipients> <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild> <sendToIndividuals>false</sendToIndividuals> </hudson.tasks.Mailer>')
+
+    def test__set_junit_testresults__check_set_param(self):
+        self.jj.params = {}
+        self.jj.set_junit_testresults_param()
+        self.assertEqual(self.jj.params['JUNIT_TESTRESULTS'], '<hudson.tasks.junit.JUnitResultArchiver> <testResults>test_results/*.xml</testResults> <keepLongStdio>false</keepLongStdio> <testDataPublishers/> </hudson.tasks.junit.JUnitResultArchiver>')
 
 
 class Pipe_Starter_Job_Test(unittest.TestCase):
