@@ -83,17 +83,19 @@ class Jenkins_Job(object):
         """
         Deletes the job defined by the job name
 
-        :param job_name: name of the job to delete, ``str`` TODO
         :returns: return message, ``str``
         """
 
         if self.jenkins_instance.job_exists(self.job_name):
             try:
                 self.jenkins_instance.delete_job(self.job_name)
+                print "Deleted job %s" % self.job_name
             except Exception as ex:
+                print "Deletion of job %s failed: " % (self.job_name, ex)
                 return 'deletion failed: %s' % ex
             return 'deleted'
         else:
+            print "Did not delete job %s, because not job did not exist" % self.job_name
             return 'not existent'
 
     def get_common_params(self):
