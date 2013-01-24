@@ -23,13 +23,7 @@
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   @(TRIGGER)
   <concurrentBuild>true</concurrentBuild>
-  <builders>
-    <hudson.tasks.Shell>
-     <command>
-      @(COMMAND)
-     </command>
-    </hudson.tasks.Shell>
-  </builders>
+  @(SHELL)
   <publishers>
     @(GROOVY_POSTBUILD)
     @(PIPELINE_TRIGGER)
