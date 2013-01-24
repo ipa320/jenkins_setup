@@ -360,6 +360,39 @@ class Jenkins_Job(object):
 
         self.params['JUNIT_TESTRESULTS'] = self.job_config_params['junit_testresults']
 
+    def set_trigger_param(self, trigger_type):
+        """
+        Sets config for trigger parameter
+
+        @param trigger_type: name of trigger type
+        @type  trigger_type: str
+        """
+
+        self.params['TRIGGER'] = self.job_config_params['triggers'][trigger_type]
+
+        if trigger_type == 'resulttrigger':
+            pass  # TODO
+        if trigger_type == 'vcs':
+            self.set_vcs_param()
+
+    def set_vcs_param(self):
+        """
+        Sets config for vcs parameter
+        """
+
+        if self.poll != self.repo_list[0]:
+            vcs_config = self.job_config_params['vcs'][self.pipe_inst.repositories[self.repo_list[0]].dependencies[self.poll].type]
+            vcs_config = vcs_config.replace('@(URI)', self.pipe_inst.repositories[self.repo_list[0]].dependencies[self.poll].url)
+            if self.pipe_inst.repositories[self.repo_list[0]].dependencies[self.poll].type != 'svn':
+                vcs_config = vcs_config.replace('@(BRANCH)', self.pipe_inst.repositories[self.repo_list[0]].dependencies[self.poll].version)
+        else:
+            vcs_config = self.job_config_params['vcs'][self.pipe_inst.repositories[self.repo_list[0]].type]
+            vcs_config = vcs_config.replace('@(URI)', self.pipe_inst.repositories[self.repo_list[0]].url)
+            if self.pipe_inst.repositories[self.repo_list[0]].type != 'svn':
+                vcs_config = vcs_config.replace('@(BRANCH)', self.pipe_inst.repositories[self.repo_list[0]].version)
+
+        self.params['VCS'] = vcs_config
+
 
 class Pipe_Starter_General_Job(Jenkins_Job):
     """
@@ -442,20 +475,7 @@ class Pipe_Starter_Job(Pipe_Starter_General_Job):
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
 
-        self.params['TRIGGER'] = self.job_config_params['triggers']['vcs']
-
-        if self.poll != self.repo_list[0]:
-            git_poll_repo = self.job_config_params['vcs']['git']['repo']
-            git_poll_repo = git_poll_repo.replace('@(URI)', self.pipe_inst.repositories[self.repo_list[0]].dependencies[self.poll].url)
-            git_poll_repo = git_poll_repo.replace('@(BRANCH)', self.pipe_inst.repositories[self.repo_list[0]].dependencies[self.poll].version)
-        else:
-            git_poll_repo = self.job_config_params['vcs']['git']['repo']
-            git_poll_repo = git_poll_repo.replace('@(URI)', self.pipe_inst.repositories[self.repo_list[0]].url)
-            git_poll_repo = git_poll_repo.replace('@(BRANCH)', self.pipe_inst.repositories[self.repo_list[0]].version)
-
-        git_branch = self.job_config_params['vcs']['git']['branch'].replace('@(BRANCH)', '')  # TODO check if thats right
-        self.params['VCS'] = (self.job_config_params['vcs']['git']['basic'].replace('@(GIT_REPOS)', git_poll_repo)
-                              .replace('@(GIT_BRANCHES)', git_branch))
+        self.set_trigger_param('vcs')
 
         # generate groovy postbuild script
         self.params['GROOVY_POSTBUILD'] = self.generate_groovypostbuild_param('disable', ['bringup', 'hilevel', 'release'], 2)

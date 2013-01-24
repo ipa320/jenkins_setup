@@ -335,6 +335,61 @@ class Jenkins_Job_Test(unittest.TestCase):
         self.jj.set_junit_testresults_param()
         self.assertEqual(self.jj.params['JUNIT_TESTRESULTS'], '<hudson.tasks.junit.JUnitResultArchiver> <testResults>test_results/*.xml</testResults> <keepLongStdio>false</keepLongStdio> <testDataPublishers/> </hudson.tasks.junit.JUnitResultArchiver>')
 
+    def test__set_trigger_param_input_vcs__check_set_param(self):
+        self.jj.params = {}
+        self.jj.params['VCS'] = ''
+        self.jj.repo_list = ['test_repo_2']
+        self.jj.poll = self.jj.repo_list[0]
+        self.jj.set_trigger_param('vcs')
+        self.assertEqual(self.jj.params['TRIGGER'], '<triggers class="vector"> <hudson.triggers.SCMTrigger> <spec>*/10 * * * *</spec> </hudson.triggers.SCMTrigger> </triggers>')
+        self.assertTrue(self.jj.params['VCS'] != '')
+
+    def test__set_trigger_param_input_resulttrigger__check_set_param(self):
+        # TODO
+        pass
+
+    def test__set_vcs_param__check_git(self):
+        self.jj.params = {}
+        self.jj.repo_list = ['test_repo_2']
+        self.jj.poll = self.jj.repo_list[0]
+        self.jj.set_vcs_param()
+        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.plugins.git.GitSCM"> <configVersion>2</configVersion> <userRemoteConfigs> <hudson.plugins.git.UserRemoteConfig> <name>origin</name> <refspec>+refs/heads/test:refs/remotes/origin/test</refspec> <url>git@github.com/user/repo2</url> </hudson.plugins.git.UserRemoteConfig> </userRemoteConfigs> <branches> <hudson.plugins.git.BranchSpec> <name>test</name> </hudson.plugins.git.BranchSpec> </branches> <disableSubmodules>false</disableSubmodules> <recursiveSubmodules>true</recursiveSubmodules> <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations> <authorOrCommitter>false</authorOrCommitter> <clean>false</clean> <wipeOutWorkspace>false</wipeOutWorkspace> <pruneBranches>false</pruneBranches> <remotePoll>false</remotePoll> <ignoreNotifyCommit>false</ignoreNotifyCommit> <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/> <gitTool>Default</gitTool> <submoduleCfg class="list"/> <relativeTargetDir>monitored_vcs</relativeTargetDir> <reference/> <excludedRegions/> <excludedUsers/> <gitConfigName/> <gitConfigEmail/> <skipTag>false</skipTag> <includedRegions/> <scmName/> </scm>')
+
+    def test__set_vcs_param__check_git2(self):
+        self.jj.params = {}
+        self.jj.poll = 'dep_repo_1'
+        self.jj.repo_list = ['test_repo_2']
+        self.jj.set_vcs_param()
+        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.plugins.git.GitSCM"> <configVersion>2</configVersion> <userRemoteConfigs> <hudson.plugins.git.UserRemoteConfig> <name>origin</name> <refspec>+refs/heads/master:refs/remotes/origin/master</refspec> <url>git@github.com/user_x/dep_repo_1</url> </hudson.plugins.git.UserRemoteConfig> </userRemoteConfigs> <branches> <hudson.plugins.git.BranchSpec> <name>master</name> </hudson.plugins.git.BranchSpec> </branches> <disableSubmodules>false</disableSubmodules> <recursiveSubmodules>true</recursiveSubmodules> <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations> <authorOrCommitter>false</authorOrCommitter> <clean>false</clean> <wipeOutWorkspace>false</wipeOutWorkspace> <pruneBranches>false</pruneBranches> <remotePoll>false</remotePoll> <ignoreNotifyCommit>false</ignoreNotifyCommit> <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/> <gitTool>Default</gitTool> <submoduleCfg class="list"/> <relativeTargetDir>monitored_vcs</relativeTargetDir> <reference/> <excludedRegions/> <excludedUsers/> <gitConfigName/> <gitConfigEmail/> <skipTag>false</skipTag> <includedRegions/> <scmName/> </scm>')
+
+    def test__set_vcs_param__check_hg(self):
+        self.jj.params = {}
+        self.jj.repo_list = ['test_repo_3']
+        self.jj.poll = self.jj.repo_list[0]
+        self.jj.set_vcs_param()
+        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.plugins.mercurial.MercurialSCM"> <source>https://kforge.ros.org/test/test_repo_3</source> <modules/> <subdir>monitored_vcs</subdir> <clean>false</clean> <forest>false</forest> <branch>master</branch> </scm>')
+
+    def test__set_vcs_param__check_hg2(self):
+        self.jj.params = {}
+        self.jj.poll = 'dep_repo_4'
+        self.jj.repo_list = ['test_repo_2']
+        self.jj.set_vcs_param()
+        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.plugins.mercurial.MercurialSCM"> <source>https://kforge.ros.org/test/dep_repo_4</source> <modules/> <subdir>monitored_vcs</subdir> <clean>false</clean> <forest>false</forest> <branch>master</branch> </scm>')
+
+    def test__set_vcs_param__check_svn(self):
+        self.jj.params = {}
+        self.jj.repo_list = ['test_repo_4']
+        self.jj.poll = self.jj.repo_list[0]
+        self.jj.set_vcs_param()
+        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.scm.SubversionSCM"> <locations> <hudson.scm.SubversionSCM_-ModuleLocation> <remote>https://code.test.org/svn/test/stacks/test_repo_4</remote> <local>monitored_vcs</local> </hudson.scm.SubversionSCM_-ModuleLocation> </locations> <useUpdate>false</useUpdate> <doRevert>false</doRevert> <excludedRegions/> <includedRegions/> <excludedUsers/> <excludedRevprop/> <excludedCommitMessages/> </scm>')
+
+    def test__set_vcs_param__check_svn2(self):
+        self.jj.params = {}
+        self.jj.poll = 'dep_repo_5'
+        self.jj.repo_list = ['test_repo_2']
+        self.jj.set_vcs_param()
+        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.scm.SubversionSCM"> <locations> <hudson.scm.SubversionSCM_-ModuleLocation> <remote>https://code.test.org/svn/test/stacks/dep_repo_5</remote> <local>monitored_vcs</local> </hudson.scm.SubversionSCM_-ModuleLocation> </locations> <useUpdate>false</useUpdate> <doRevert>false</doRevert> <excludedRegions/> <includedRegions/> <excludedUsers/> <excludedRevprop/> <excludedCommitMessages/> </scm>')
+
 
 class Pipe_Starter_Job_Test(unittest.TestCase):
     """
