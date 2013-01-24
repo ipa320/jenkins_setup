@@ -11,7 +11,7 @@ from jenkins_setup import cob_distro
 
 class Jenkins_Job(object):
     """
-    Object representation of Jenkins job
+    Jenkins job creation class
     """
     def __init__(self, jenkins_instance, pipeline_config):
         """
@@ -47,7 +47,9 @@ class Jenkins_Job(object):
 
     def schedule_job(self):
         """
-        Create new or reconfigure existent job
+        Creates new or reconfigure existent job
+
+        @return: return message, ``str``
         """
         if self.jenkins_instance.job_exists(self.job_name):
             try:
@@ -83,7 +85,7 @@ class Jenkins_Job(object):
         """
         Deletes the job defined by the job name
 
-        :returns: return message, ``str``
+        @return: return message, ``str``
         """
 
         if self.jenkins_instance.job_exists(self.job_name):
@@ -98,9 +100,9 @@ class Jenkins_Job(object):
             print "Did not delete job %s, because not job did not exist" % self.job_name
             return 'not existent'
 
-    def get_common_params(self):
+    def set_common_params(self):
         """
-        Gets all parameters which have to be defined for every job type
+        Sets all parameters which have to be defined for every job type
         """
 
         self.params = {}
@@ -129,9 +131,9 @@ class Jenkins_Job(object):
     # helper methods - parameter generation
     ###########################################################################
     def replace_placeholder(self):
-        '''
-        replace placeholder in template with params
-        '''
+        """
+        Replaces placeholder in template with parameters
+        """
 
         for key, value in self.params.iteritems():
             if "@(%s)" % key not in self.job_config:
@@ -308,17 +310,15 @@ class Jenkins_Job(object):
                                                                                           str(self.generate_job_list(project_list)))
         return self.job_config_params['groovypostbuild']['basic'].replace('@(GROOVYPB_SCRIPT)', script).replace('@(GROOVYPB_BEHAVIOR)', str(behavior))
 
-    def generate_parameterizedtrigger_param(self, job_type_list, condition='SUCCESS', predefined_param='', subset_filter='', no_param=False):
+    def set_parameterizedtrigger_param(self, job_type_list, condition='SUCCESS', predefined_param='', subset_filter='', no_param=False):
         """
-        Generates config for parameterizedtrigger plugin
+        Sets config for parameterizedtrigger plugin
 
         :param job_type_list: list with job types (short) to trigger, ``list``
         :param condition: when to trigger, ``str``
         :param predefined_param: parameter to pass to downstream project, ``str``
         :param subset_filter: combination filter for matrix projects, ``str``
         :param no_param: trigger build without parameters, ``bool``
-
-        :returns: configuration of parameterizedtrigger plugin, ``str``
         """
 
         matrix_subset = ''
@@ -341,7 +341,7 @@ class Jenkins_Job(object):
         else:
             param_trigger = param_trigger.replace('@(NOPARAM)', 'false')
 
-        return param_trigger
+        self.params['PARAMETERIZED_TRIGGER'] = param_trigger
 
     def set_mailer_param(self):
         """
@@ -547,3 +547,5 @@ class Priority_Build_Job(Build_Job):
         self.params['NODE_LABEL'] = 'prio_build'  # TODO check labels
 
         # TODO groovyscript, pipelinetrigger,
+
+# TODO classes: test jobs, hardware jobs, release

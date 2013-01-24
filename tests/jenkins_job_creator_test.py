@@ -60,7 +60,7 @@ class Jenkins_Job_Test(unittest.TestCase):
         self.assertEqual(result, 'not existent')
 
     # Testing common_params
-    def test__get_common_params__return_common_job_config_dict(self):
+    def test__set_common_params__return_common_job_config_dict(self):
         self.jj.job_type = 'pipe'
         common_job_config_dict = {'COMMAND': '',
                                   'USERNAME': 'test-user',
@@ -82,16 +82,16 @@ class Jenkins_Job_Test(unittest.TestCase):
                                   'JUNIT_TESTRESULTS': '',
                                   'MAILER': ''
                                   }
-        self.jj.get_common_params()
+        self.jj.set_common_params()
         self.assertEqual(self.jj.params, common_job_config_dict)
 
-    def test__get_common_params__empty_job_type_string__raise_exception(self):
+    def test__set_common_params__empty_job_type_string__raise_exception(self):
         self.jj.job_type = ''
-        self.assertRaises(Exception, self.jj.get_common_params)
+        self.assertRaises(Exception, self.jj.set_common_params)
 
-    def test__get_common_params__invalid_job_type_string__raise_exception(self):
+    def test__set_common_params__invalid_job_type_string__raise_exception(self):
         self.jj.job_type = 'invalid'
-        self.assertRaises(Exception, self.jj.get_common_params)
+        self.assertRaises(Exception, self.jj.set_common_params)
 
     # Testing replace_placeholder
     def test__replace_placeholder__set_config_string_and_params_dict__check_config_string(self):
@@ -305,25 +305,30 @@ class Jenkins_Job_Test(unittest.TestCase):
     def test__generate_groovypostbuild_param__input_invalid_behavior__raise_exception3(self):
         self.assertRaises(Exception, self.jj.generate_groovypostbuild_param, 'enable', self.job_type_test_list, '1')
 
-    def test__generate_parameterizedtrigger_param__input_job_type_list__result_config_str(self):
-        result = self.jj.generate_parameterizedtrigger_param(self.job_type_test_list)
-        self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
+    def test__set_parameterizedtrigger_param__input_job_type_list__result_config_str(self):
+        self.jj.params = {}
+        self.jj.set_parameterizedtrigger_param(self.job_type_test_list)
+        self.assertEqual(self.jj.params['PARAMETERIZED_TRIGGER'], '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
 
-    def test__generate_parameterizedtrigger_param__input_job_type_list_and_subset_filter_str__result_config_str(self):
-        result = self.jj.generate_parameterizedtrigger_param(self.job_type_test_list, subset_filter='test==filter')
-        self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs> <hudson.plugins.parameterizedtrigger.matrix.MatrixSubsetBuildParameters> <filter>test==filter</filter> </hudson.plugins.parameterizedtrigger.matrix.MatrixSubsetBuildParameters> </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
+    def test__set_parameterizedtrigger_param__input_job_type_list_and_subset_filter_str__result_config_str(self):
+        self.jj.params = {}
+        self.jj.set_parameterizedtrigger_param(self.job_type_test_list, subset_filter='test==filter')
+        self.assertEqual(self.jj.params['PARAMETERIZED_TRIGGER'], '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs> <hudson.plugins.parameterizedtrigger.matrix.MatrixSubsetBuildParameters> <filter>test==filter</filter> </hudson.plugins.parameterizedtrigger.matrix.MatrixSubsetBuildParameters> </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
 
-    def test__generate_parameterizedtrigger_param__input_job_type_list_and_subset_filter_str__result_config_str_predef_param_str__result_config_str(self):
-        result = self.jj.generate_parameterizedtrigger_param(self.job_type_test_list, predefined_param='PARAM=value')
-        self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs> <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters> <properties>PARAM=value</properties> </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters> </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
+    def test__set_parameterizedtrigger_param__input_job_type_list_and_subset_filter_str__result_config_str_predef_param_str__result_config_str(self):
+        self.jj.params = {}
+        self.jj.set_parameterizedtrigger_param(self.job_type_test_list, predefined_param='PARAM=value')
+        self.assertEqual(self.jj.params['PARAMETERIZED_TRIGGER'], '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs> <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters> <properties>PARAM=value</properties> </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters> </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
 
-    def test__generate_parameterizedtrigger_param__input_job_type_list_and_condition_str__result_config_str(self):
-        result = self.jj.generate_parameterizedtrigger_param(self.job_type_test_list, condition='FAILURE')
-        self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>FAILURE</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
+    def test__set_parameterizedtrigger_param__input_job_type_list_and_condition_str__result_config_str(self):
+        self.jj.params = {}
+        self.jj.set_parameterizedtrigger_param(self.job_type_test_list, condition='FAILURE')
+        self.assertEqual(self.jj.params['PARAMETERIZED_TRIGGER'], '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>FAILURE</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
 
-    def test__generate_parameterizedtrigger_param__input_job_type_list_and_no_param_bool__result_config_str(self):
-        result = self.jj.generate_parameterizedtrigger_param(self.job_type_test_list, no_param=True)
-        self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>true</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
+    def test__set_parameterizedtrigger_param__input_job_type_list_and_no_param_bool__result_config_str(self):
+        self.jj.params = {}
+        self.jj.set_parameterizedtrigger_param(self.job_type_test_list, no_param=True)
+        self.assertEqual(self.jj.params['PARAMETERIZED_TRIGGER'], '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>true</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
 
     def test__set_mailer_param__check_set_param(self):
         self.jj.params = {}
