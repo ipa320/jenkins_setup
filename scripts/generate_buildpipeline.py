@@ -11,12 +11,19 @@ from jenkins_setup import jenkins_job_creator, cob_common, cob_distro
 
 # schedule cob buildpipeline jobs
 def main():
+    """
+    Create a build and test pipeline on a Jenkins CI server.
+    Starting point is the pipeline coniguration file (pipeline_config.yaml) of
+    the given user stored on github. For this configuration a set of Jenkins
+    projects/jobs will be generated.
+    """
+
     # parse options
     parser = optparse.OptionParser()
-    parser.add_option("--run", action="store_true", default=False)  # TODO
+    parser.add_option("--delete", action="store_true", default=False)
     (options, args) = parser.parse_args()
 
-    if len(args) != 1:  # TODO
+    if len(args) != 1:
         print "Usage: %s username" % (sys.argv[0])
         sys.exit()
 
@@ -31,36 +38,52 @@ def main():
                                        info['jenkins_pw'])
 
     # get pipeline configs
-    bpl_configs = cob_common.get_buildpipeline_configs(info['master'], user_name)
+    pl_configs = cob_common.get_buildpipeline_configs(info['master'], user_name)
     # get pipeline configs object and load configs from bpl_configs dict
-    bplc_instance = cob_distro.Cob_Distro_Pipe()
-    bplc_instance.load_from_dict(bpl_configs['repositories'])
+    plc_instance = cob_distro.Cob_Distro_Pipe()
+    plc_instance.load_from_dict(pl_configs['repositories'])
 
     #job_creator_instance = jenkins_job_creator.Jenkins_Jobs(jenkins_instance, bpl_configs)
 
-    # create pipeline jobs TODO
-    # pipe starter
-    polls_dict = bplc_instance.get_custom_dependencies(polled_only=True)
-    print polls_dict
+    ### create pipeline jobs TODO
+    ### pipe starter
+    # for each repository and each polled user-defined dependency a pipe
+    # starter job will be generated
+    polls_dict = plc_instance.get_custom_dependencies(polled_only=True)
     for poll, repo_list in polls_dict.iteritems():
-        print poll, repo_list
-        job_creator_instance = jenkins_job_creator.Pipe_Starter_Job(jenkins_instance, bpl_configs, repo_list, poll)
+        job_creator_instance = jenkins_job_creator.Pipe_Starter_Job(jenkins_instance, pl_configs, repo_list, poll)
+        if options.delete:
+            job_creator_instance.delete_job()
+        else:
+            job_creator_instance.create_job()
+    for repo in plc_instance.repositories.keys():
+        job_creator_instance = jenkins_job_creator.Pipe_Starter_Job(jenkins_instance, pl_configs, [repo], repo)
+        if options.delete:
+            job_creator_instance.delete_job()
+        else:
+            job_creator_instance.create_job()
+
+    ### general pipe starter
+    # this pipe starter job won't poll any repository; it has to be started
+    # manually. It triggers the priority build job with all defined
+    # repositories as parameters
+    job_creator_instance = jenkins_job_creator.Pipe_Starter_General_Job(jenkins_instance, pl_configs,
+                                                                        plc_instance.repositories.keys())
+    if options.delete:
+        job_creator_instance.delete_job()
+    else:
         job_creator_instance.create_job()
-    for repo in bplc_instance.repositories.keys():
-        print repo
-        job_creator_instance = jenkins_job_creator.Pipe_Starter_Job(jenkins_instance, bpl_configs, [repo], repo)
+
+    ### priority build
+    job_creator_instance = jenkins_job_creator.Priority_Build_Job(jenkins_instance, pl_configs)
+    if options.delete:
+        job_creator_instance.delete_job()
+    else:
         job_creator_instance.create_job()
 
-    # general pipe starter
-    job_creator_instance = jenkins_job_creator.Pipe_Starter_General_Job(jenkins_instance, bpl_configs,
-                                                                        bplc_instance.repositories.keys())
-    job_creator_instance.create_job()
-
-    # priority build
-
-    # create release job TODO
-    if bpl_configs['user_group'] == "admin":
-        pass
+    ### create release job
+    if pl_configs['user_group'] == "admin":
+        pass  # TODO
 
     # start buildpipeline by build pipe starter job TODO
     #if options.run:
