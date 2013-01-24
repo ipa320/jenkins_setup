@@ -19,6 +19,10 @@
     'repo': '<userRemoteConfigs> <hudson.plugins.git.UserRemoteConfig> <name>origin</name> <refspec>+refs/heads/@(BRANCH):refs/remotes/origin/@(BRANCH)</refspec> <url>@(URI)</url> </hudson.plugins.git.UserRemoteConfig> </userRemoteConfigs>'
     'branch': '<branches> <hudson.plugins.git.BranchSpec> <name>@(BRANCH)</name> </hudson.plugins.git.BranchSpec> </branches>'
 
+'junit_testresults': '<hudson.tasks.junit.JUnitResultArchiver> <testResults>test_results/*.xml</testResults> <keepLongStdio>false</keepLongStdio> <testDataPublishers/> </hudson.tasks.junit.JUnitResultArchiver>'
+
+'mailer': '<hudson.tasks.Mailer> <recipients>@(EMAIL)</recipients> <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild> <sendToIndividuals>@(EMAIL_COMMITTER)</sendToIndividuals> </hudson.tasks.Mailer>'
+
 'parameters':
   'block': '<hudson.model.ParametersDefinitionProperty> <parameterDefinitions> @(PARAMS) </parameterDefinitions> </hudson.model.ParametersDefinitionProperty>'
   'param': '<hudson.model.StringParameterDefinition> <name>@(PARAM)</name> <description> </description> <defaultValue> </defaultValue>  </hudson.model.StringParameterDefinition>'

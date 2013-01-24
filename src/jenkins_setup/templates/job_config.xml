@@ -13,7 +13,7 @@
   <properties>
     @(PARAMETERS)
     <hudson.plugins.trac.TracProjectProperty>
-      <tracWebsite>http://code.ros.org/trac/ros/</tracWebsite>
+        <tracWebsite>http://www.care-o-bot-research.org/trac</tracWebsite>
     </hudson.plugins.trac.TracProjectProperty>
   </properties>
   @(VCS)
@@ -36,16 +36,8 @@
     @(JOIN_TRIGGER)
     @(POSTBUILD_TRIGGER)
     @(PARAMETERIZED_TRIGGER)
-    <hudson.tasks.junit.JUnitResultArchiver>
-      <testResults>test_results/*.xml</testResults>
-      <keepLongStdio>false</keepLongStdio>
-      <testDataPublishers/>
-    </hudson.tasks.junit.JUnitResultArchiver>
-    <hudson.tasks.Mailer><!--TODO-->
-      <recipients>@(EMAIL)</recipients>
-      <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
-      <sendToIndividuals>@(EMAIL_COMMITTER)</sendToIndividuals>
-    </hudson.tasks.Mailer>
+    @(JUNIT_TESTRESULTS)
+    @(MAILER)
   </publishers>
   <buildWrappers/>
 </@(PROJECT)>
