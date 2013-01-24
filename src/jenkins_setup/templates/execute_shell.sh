@@ -34,6 +34,6 @@ echo "*********please be patient*********"
 sudo pbuilder execute --basetgz $WORKSPACE/../aux/$basetgz --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 echo "*******CLEANUP WORKSPACE*******"
-
+# TODO option to delete tarball or otherwise move it to the server
 sudo mv $WORKSPACE/../aux/$basetgz $WORKSPACE/
 sudo rm -rf $WORKSPACE/../aux
