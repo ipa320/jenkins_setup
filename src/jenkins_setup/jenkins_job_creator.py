@@ -61,11 +61,24 @@ class Jenkins_Job(object):
                 print ex
                 return 'creation failed: %s' % ex
 
+    def create_job(self):
+        """
+        Gets job specific parameter, sets up the job config and creates job
+        on Jenkins instance
+        """
+
+        self.get_common_params()
+
+        self.get_job_type_params()
+
+        self.replace_placeholder()
+        print self.schedule_job()
+
     def delete_job(self):
         """
         Deletes the job defined by the job name
 
-        :param job_name: name of the job to delete, ``str``
+        :param job_name: name of the job to delete, ``str`` TODO
         :returns: return message, ``str``
         """
 
@@ -162,8 +175,8 @@ class Jenkins_Job(object):
         :returns: matrix config, ``str``
         """
 
-        filter = '(%s)' % ' || '.join(['(%s)' % ' && '.join(['%s == %s' % (key, value)
-                                                             for key, value in i.iteritems()])
+        filter = '(%s)' % ' || '.join(['(%s)' % ' &amp;&amp; '.join(['%s == %s' % (key, value)
+                                                                     for key, value in i.iteritems()])
                                        for i in config])
         if negation:
             filter = '!' + filter
@@ -342,19 +355,6 @@ class Pipe_Starter_General_Job(Jenkins_Job):
 
         self.repo_list = repo_list
 
-    def create_job(self):
-        """
-        Gets job specific parameter, sets up the job config and creates job
-        on jenkins instance
-        """
-
-        self.get_common_params()
-
-        self.get_job_type_params()
-
-        self.replace_placeholder()
-        print self.schedule_job()
-
     def get_prio_subset_filter(self):
         """
         Gets subset filter for priority build
@@ -412,7 +412,7 @@ class Pipe_Starter_Job(Pipe_Starter_General_Job):
 
     def get_job_type_params(self):
         """
-        Generates pipe starter specific job configuration parameters
+        Generates pipe starter job specific job configuration parameters
         """
 
         self.params['NODE_LABEL'] = 'master'
@@ -440,3 +440,60 @@ class Pipe_Starter_Job(Pipe_Starter_General_Job):
         self.params['PARAMETERIZED_TRIGGER'] = self.generate_parameterizedtrigger_param(['prio'],
                                                                                         subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()),
                                                                                         predefined_param='POLL=' + self.poll)
+
+
+class Build_Job(Jenkins_Job):
+    """
+    Class for build jobs
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        """
+        Creates a build job instance
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(Build_Job, self).__init__(jenkins_instance, pipeline_config)
+
+        self.job_type = 'build'
+
+    def get_job_type_params(self):
+        """
+        Generates build job specific job configuration parameters
+        """
+
+        self.params['NODE_LABEL'] = 'build'  # TODO check labels
+
+        # TODO matrix
+
+
+class Priority_Build_Job(Build_Job):
+    """
+    Class for priority build jobs
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        """
+        Creates a priority build job instance
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(Build_Job, self).__init__(jenkins_instance, pipeline_config)
+
+        self.job_type = 'prio'
+        self.job_name = self.generate_job_name(self.job_type)
+
+    def get_job_type_params(self):
+        """
+        Generates priority build job specific job configuration parameters
+        """
+
+        self.params['NODE_LABEL'] = 'prio_build'  # TODO check labels
+
+        # TODO groovyscript, pipelinetrigger,
