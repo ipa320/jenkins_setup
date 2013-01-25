@@ -42,7 +42,7 @@ class Jenkins_Job(object):
             self.network_config = yaml.load(f)
 
         self.pipe_inst = cob_distro.Cob_Distro_Pipe()
-        self.pipe_inst.load_from_dict(self.pipe_conf['repositories'])
+        self.pipe_inst.load_config_from_dict(self.pipe_conf['repositories'])
 
         self.params = {}
 

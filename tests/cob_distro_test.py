@@ -25,45 +25,45 @@ class Cob_Distro_Pipe_Test(unittest.TestCase):
 
         self.cdp = cob_distro.Cob_Distro_Pipe()
 
-    def test__load_from_dict__input_repo_dict__check_repo(self):
+    def test__load_config_from_dict__input_repo_dict__check_repo(self):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
                                          'matrix_distro_arch': None, 'dependencies': None,
                                          'jobs': None}}
-        self.cdp.load_from_dict(repo_test_dict)
+        self.cdp.load_config_from_dict(repo_test_dict)
         self.assertTrue('cob_extern' in self.cdp.repositories)
 #        self.assertIn('cob_extern', cd.repositories)
 
-    def test__load_from_dict__input_repo_dict__check_repo_url(self):
+    def test__load_config_from_dict__input_repo_dict__check_repo_url(self):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
                                          'matrix_distro_arch': None, 'dependencies': None,
                                          'jobs': None}}
-        self.cdp.load_from_dict(repo_test_dict)
+        self.cdp.load_config_from_dict(repo_test_dict)
         self.assertEqual(self.cdp.repositories['cob_extern'].url, 'git://github.com/ipa320/cob_extern.git')
 
-    def test__load_from_dict__input_repo_dict__check_repo_type(self):
+    def test__load_config_from_dict__input_repo_dict__check_repo_type(self):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
                                          'matrix_distro_arch': None, 'dependencies': None,
                                          'jobs': None}}
-        self.cdp.load_from_dict(repo_test_dict)
+        self.cdp.load_config_from_dict(repo_test_dict)
         self.assertEqual(self.cdp.repositories['cob_extern'].type, 'git')
 
-    def test__load_from_dict__input_repo_dict__check_repo_version(self):
+    def test__load_config_from_dict__input_repo_dict__check_repo_version(self):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
                                          'matrix_distro_arch': None, 'dependencies': None,
                                          'jobs': None}}
-        self.cdp.load_from_dict(repo_test_dict)
+        self.cdp.load_config_from_dict(repo_test_dict)
         self.assertEqual(self.cdp.repositories['cob_extern'].version, 'master')
 
-    def test__load_from_url__input_repo_dict__check_repo(self):
-        self.cdp.load_from_url('jenkins-test-server', 'test-user')
+    def test__load_config_from_url__input_repo_dict__check_repo(self):
+        self.cdp.load_config_from_url('jenkins-test-server', 'test-user')
         self.assertTrue('test_repo_1' in self.cdp.repositories)
 
     def test__get_custom_dependencies__return_dependency_dict(self):
@@ -76,7 +76,7 @@ class Cob_Distro_Pipe_Test(unittest.TestCase):
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
                                          'matrix_distro_arch': None, 'dependencies': dep_test_dict,
                                          'jobs': None}}
-        self.cdp.load_from_dict(repo_test_dict)
+        self.cdp.load_config_from_dict(repo_test_dict)
         result = self.cdp.get_custom_dependencies()
         self.assertEqual(result, {'dep_1': ['cob_extern'], 'dep_2': ['cob_extern']})
 
@@ -95,7 +95,7 @@ class Cob_Distro_Pipe_Test(unittest.TestCase):
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
                                          'matrix_distro_arch': None, 'dependencies': dep_test_dict,
                                          'jobs': None}}
-        self.cdp.load_from_dict(repo_test_dict)
+        self.cdp.load_config_from_dict(repo_test_dict)
         result = self.cdp.get_custom_dependencies()
         self.assertEqual(result, {'dep_1': ['cob_extern', 'cob_driver'], 'dep_2': ['cob_extern', 'cob_driver']})
 
@@ -114,7 +114,7 @@ class Cob_Distro_Pipe_Test(unittest.TestCase):
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
                                          'matrix_distro_arch': None, 'dependencies': dep_test_dict,
                                          'jobs': None}}
-        self.cdp.load_from_dict(repo_test_dict)
+        self.cdp.load_config_from_dict(repo_test_dict)
         result = self.cdp.get_custom_dependencies(polled_only=True)
         self.assertEqual(result, {'dep_1': ['cob_extern', 'cob_driver']})
 

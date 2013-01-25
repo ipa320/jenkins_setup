@@ -41,7 +41,7 @@ class Cob_Distro_Pipe(object):
     Object containing buildpipeline information
     """
 
-    def load_from_dict(self, repos_dict):
+    def load_config_from_dict(self, repos_dict):
         """
         Sets up a pipeline object derived from the given dictionary
 
@@ -55,7 +55,7 @@ class Cob_Distro_Pipe(object):
             repo = Cob_Distro_Pipe_Repo(repo_name, data)
             self.repositories[repo_name] = repo
 
-    def load_from_url(self, server_name, user_name):
+    def load_config_from_url(self, server_name, user_name):
         """
         Gets the buildpipeline configuration by the given server and user name
         and sets up the pipeline object
@@ -65,7 +65,7 @@ class Cob_Distro_Pipe(object):
         """
 
         buildpipe_conf_dict = cob_common.get_buildpipeline_configs(server_name, user_name)
-        self.load_from_dict(buildpipe_conf_dict['repositories'])
+        self.load_config_from_dict(buildpipe_conf_dict['repositories'])
 
     def get_custom_dependencies(self, polled_only=False):
         """
