@@ -52,12 +52,12 @@ class Jenkins_Job_Test(unittest.TestCase):
         self.jj.job_config = jenkins.EMPTY_CONFIG_XML
         self.jj.schedule_job()
         result = self.jj.delete_job()
-        self.assertEqual(result, 'deleted')
+        self.assertEqual(result, 'test_job')
 
     def test__delete_job__job_name_string__return_action_string2(self):
         self.jj.job_name = 'test_job'
         result = self.jj.delete_job()
-        self.assertEqual(result, 'not existent')
+        self.assertEqual(result, '')
 
     # Testing common_params
     def test__set_common_params__return_common_job_config_dict(self):
@@ -414,14 +414,14 @@ class Jenkins_Job_Test(unittest.TestCase):
         self.assertRaises(Exception, self.jj.set_shell_param, 2)
 
     def test__get_shell_script__result_shell_script_str(self):
-        self.jj.job_type = 'pipe'
+        self.jj.job_type = 'prio'
         result = self.jj.get_shell_script()
-        self.assertEqual(result, '#!/bin/bash -e\nbasetgz=${ubuntu_distro}__${arch}__${ros_distro}\nsudo rm -rf $WORKSPACE/*\nmkdir $WORKSPACE/../aux\nscp jenkins@jenkins-test-server:~/chroot_tarballs/$basetgz $WORKSPACE/../aux/test-user__${basetgz} scp jenkins@jenkins-test-server:~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig scp -r jenkins@jenkins-test-server:~/jenkins-config/.ssh $WORKSPACE/.ssh ls -lah $WORKSPACE\ngit clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup ls -lah $WORKSPACE\ncat > $WORKSPACE/env_vars.sh <<DELIM JOBNAME=$JOB_NAME ROSDISTRO=$ros_distro REPOSITORY=$repository UBUNTUDISTRO=$ubuntu_distro ARCH=$arch #TODO JENKINS_MASTER=jenkins-test-server JENKINS_USER=test-user JOBTYPE=pipe export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO DELIM\nls -lah $WORKSPACE\necho "***********ENTER CHROOT************" echo "*********please be patient*********" sudo pbuilder execute --basetgz $WORKSPACE/../aux/test-user__${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\necho "*******CLEANUP WORKSPACE*******" echo "STORING CHROOT TARBALL ON SERVER" scp $WORKSPACE/../aux/$basetgz jenkins@jenkins-test-server:~/chroot_tarballs/in_use/ sudo rm -rf $WORKSPACE/../aux')
+        self.assertEqual(result, '#!/bin/bash -e\\n\nbasetgz=${ubuntu_distro}__${arch}__${ros_distro}\\n\nsudo rm -rf $WORKSPACE/*\\n\nmkdir $WORKSPACE/../aux\\n\nscp jenkins@jenkins-test-server:~/chroot_tarballs/$basetgz $WORKSPACE/../aux/test-user__${basetgz}\\n scp jenkins@jenkins-test-server:~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig\\n scp -r jenkins@jenkins-test-server:~/jenkins-config/.ssh $WORKSPACE/.ssh\\n ls -lah $WORKSPACE\\n\ngit clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup\\n ls -lah $WORKSPACE\ncat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM\\n JOBNAME=$JOB_NAME\\n ROSDISTRO=$ros_distro\\n REPOSITORY=$repository\\n UBUNTUDISTRO=$ubuntu_distro\\n ARCH=$arch\\n #TODO\\n JENKINS_MASTER=jenkins-test-server\\n JENKINS_USER=test-user\\n JOBTYPE=prio\\n export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO\\n DELIM\\n\nls -lah $WORKSPACE\\n\necho "***********ENTER CHROOT************"\\n echo "*********please be patient*********"\\n sudo pbuilder execute --basetgz $WORKSPACE/../aux/test-user__${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\\n\necho "*******CLEANUP WORKSPACE*******"\\n echo "STORING CHROOT TARBALL ON SERVER"\\n scp $WORKSPACE/../aux/test-user__${basetgz} jenkins@jenkins-test-server:~/chroot_tarballs/in_use/\\n sudo rm -rf $WORKSPACE/../aux\\n')
 
     def test__get_shell_script__result_shell_script_str2(self):
         self.jj.job_type = 'normal'
         result = self.jj.get_shell_script()
-        self.assertEqual(result, '#!/bin/bash -e\nbasetgz=${ubuntu_distro}__${arch}__${ros_distro}\nsudo rm -rf $WORKSPACE/*\nmkdir $WORKSPACE/../aux\nscp jenkins@jenkins-test-server:~/chroot_tarballs/in_use/test-user__$basetgz $WORKSPACE/../aux/test-user__${basetgz} scp jenkins@jenkins-test-server:~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig scp -r jenkins@jenkins-test-server:~/jenkins-config/.ssh $WORKSPACE/.ssh ls -lah $WORKSPACE\ngit clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup ls -lah $WORKSPACE\ncat > $WORKSPACE/env_vars.sh <<DELIM JOBNAME=$JOB_NAME ROSDISTRO=$ros_distro REPOSITORY=$repository UBUNTUDISTRO=$ubuntu_distro ARCH=$arch #TODO JENKINS_MASTER=jenkins-test-server JENKINS_USER=test-user JOBTYPE=normal export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO DELIM\nls -lah $WORKSPACE\necho "***********ENTER CHROOT************" echo "*********please be patient*********" sudo pbuilder execute --basetgz $WORKSPACE/../aux/test-user__${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\necho "*******CLEANUP WORKSPACE*******" sudo rm -rf $WORKSPACE/../aux')
+        self.assertEqual(result, '#!/bin/bash -e\\n\nbasetgz=${ubuntu_distro}__${arch}__${ros_distro}\\n\nsudo rm -rf $WORKSPACE/*\\n\nmkdir $WORKSPACE/../aux\\n\nscp jenkins@jenkins-test-server:~/chroot_tarballs/in_use/test-user__$basetgz $WORKSPACE/../aux/test-user__${basetgz}\\n scp jenkins@jenkins-test-server:~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig\\n scp -r jenkins@jenkins-test-server:~/jenkins-config/.ssh $WORKSPACE/.ssh\\n ls -lah $WORKSPACE\\n\ngit clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup\\n ls -lah $WORKSPACE\\n\ncat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM\\n JOBNAME=$JOB_NAME\\n ROSDISTRO=$ros_distro\\n REPOSITORY=$repository\\n UBUNTUDISTRO=$ubuntu_distro\\n ARCH=$arch\\n #TODO\\n JENKINS_MASTER=jenkins-test-server\\n JENKINS_USER=test-user\\n JOBTYPE=normal\\n export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO\\n DELIM\\n\nls -lah $WORKSPACE\\n\necho "***********ENTER CHROOT************"\\n echo "*********please be patient*********"\\n sudo pbuilder execute --basetgz $WORKSPACE/../aux/test-user__${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\\n\necho "*******CLEANUP WORKSPACE*******"\\n sudo rm -rf $WORKSPACE/../aux\\n')
 
 
 class Pipe_Starter_Job_Test(unittest.TestCase):
