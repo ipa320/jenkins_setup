@@ -2,6 +2,7 @@
 
 import datetime
 import socket
+import os
 import pkg_resources
 import yaml
 import re
@@ -36,6 +37,9 @@ class Jenkins_Job(object):
         self.job_config_params = pkg_resources.resource_string('jenkins_setup', 'templates/job_config_params.yaml')
         self.job_config_params = yaml.load(self.job_config_params)
         self.job_config = pkg_resources.resource_string('jenkins_setup', 'templates/job_config.xml')
+
+        with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
+            self.network_config = yaml.load(f)
 
         self.pipe_inst = cob_distro.Cob_Distro_Pipe()
         self.pipe_inst.load_from_dict(self.pipe_conf['repositories'])
@@ -443,6 +447,21 @@ class Jenkins_Job(object):
 
         self.params['SHELL'] = shell_config
 
+    def get_shell_script(self):
+        """
+        Gets and sets up execute shell script template
+        """
+
+        shell_temp = pkg_resources.resource_string('jenkins_setup', 'templates/execute_shell.yaml')
+        shell_temp = yaml.load(shell_temp)
+        shell_script = shell_temp[self.job_type]
+        shell_script = shell_script.replace('@(SERVERNAME)', self.pipe_conf['server_name'])
+        shell_script = shell_script.replace('@(STORAGE)', self.network_config['storage'])
+        shell_script = shell_script.replace('@(USERNAME)', self.pipe_conf['user_name'])
+        shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.job_type)
+
+        return shell_script
+
 
 class Pipe_Starter_General_Job(Jenkins_Job):
     """
@@ -561,7 +580,7 @@ class Build_Job(Jenkins_Job):
         self.set_mailer_param()
         self.set_junit_testresults_param()
 
-        # set matrix TODO
+        # set matrix
         matrix_entries_dict_list = self.get_matrix_entries()
         self.set_matrix_param(matrix_entries_dict_list)
 
@@ -595,7 +614,8 @@ class Priority_Build_Job(Build_Job):
         self.params['NODE_LABEL'] = 'prio_build'  # TODO check labels
 
         # set execute shell TODO
-        self.set_shell_param()
+        shell_script = self.get_shell_script()
+        self.set_shell_param(shell_script)
 
         # set groovy postbuild script
         self.set_groovypostbuild_param('enable', ['bringup'], 2)
