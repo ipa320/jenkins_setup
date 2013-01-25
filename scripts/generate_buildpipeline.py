@@ -49,7 +49,7 @@ def main():
     pl_configs = cob_common.get_buildpipeline_configs(info['master'], user_name)
     # get pipeline configs object and load configs from bpl_configs dict
     plc_instance = cob_distro.Cob_Distro_Pipe()
-    plc_instance.load_from_dict(pl_configs['repositories'])
+    plc_instance.load_config_from_dict(pl_configs['repositories'])
 
     ### create pipeline jobs TODO
     ### pipe starter
