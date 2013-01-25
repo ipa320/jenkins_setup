@@ -571,14 +571,11 @@ class Build_Job(Jenkins_Job):
 
         super(Build_Job, self).__init__(jenkins_instance, pipeline_config)
 
-        self.job_type = 'build'
-
     def set_job_type_params(self):
         """
         Sets build job specific job configuration parameters
         """
 
-        self.params['NODE_LABEL'] = 'build'  # TODO check labels
         self.set_mailer_param()
         self.set_junit_testresults_param()
 
@@ -625,7 +622,38 @@ class Priority_Build_Job(Build_Job):
         # set postbuild trigger
         self.set_postbuildtrigger_param(['down'], 'SUCCESS')
 
+        # trigger normal with resulttrigger or parameterized trigger ???
+
         # set pipeline trigger
         self.set_pipelinetrigger_param(['bringup'])
+
+
+class Normal_Build_Job(Build_Job):
+    """
+    Class for normal build jobs
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        """
+        Creates a normal  build job instance
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(Normal_Build_Job, self).__init__(jenkins_instance, pipeline_config)
+
+        self.job_type = 'normal'
+        self.job_name = self.generate_job_name(self.job_type)
+
+    def set_job_type_params(self):
+        """
+        Sets normal build job specific job configuration parameters
+        """
+
+        super(Normal_Build_Job, self).set_job_type_params()
+
+        self.params['NODE_LABEL'] = 'normal_build'  # TODO check labels
 
 # TODO classes: test jobs, hardware jobs, release
