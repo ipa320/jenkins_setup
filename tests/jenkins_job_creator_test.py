@@ -62,7 +62,7 @@ class Jenkins_Job_Test(unittest.TestCase):
     # Testing common_params
     def test__set_common_params__return_common_job_config_dict(self):
         self.jj.job_type = 'pipe'
-        common_job_config_dict = {'COMMAND': '',
+        common_job_config_dict = {'SHELL': '',
                                   'USERNAME': 'test-user',
                                   #'JOB_TYPE_NAME': 'pipe_starter',
                                   'SCRIPT': 'pipe_starter',
@@ -402,6 +402,16 @@ class Jenkins_Job_Test(unittest.TestCase):
         self.jj.repo_list = ['test_repo_2']
         self.jj.set_vcs_param()
         self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.scm.SubversionSCM"> <locations> <hudson.scm.SubversionSCM_-ModuleLocation> <remote>https://code.test.org/svn/test/stacks/dep_repo_5</remote> <local>monitored_vcs</local> </hudson.scm.SubversionSCM_-ModuleLocation> </locations> <useUpdate>false</useUpdate> <doRevert>false</doRevert> <excludedRegions/> <includedRegions/> <excludedUsers/> <excludedRevprop/> <excludedCommitMessages/> </scm>')
+
+    def test__set_shell_param__input_shell_script_str_check_param(self):
+        self.jj.set_shell_param('echo test')
+        self.assertEqual(self.jj.params['SHELL'], '<builders> <hudson.tasks.Shell> <command> echo test </command> </hudson.tasks.Shell> </builders>')
+
+    def test__set_shell_param__input_empty_str_raise_exception(self):
+        self.assertRaises(Exception, self.jj.set_shell_param, '')
+
+    def test__set_shell_param__input_wrong_type_raise_exception(self):
+        self.assertRaises(Exception, self.jj.set_shell_param, 2)
 
 
 class Pipe_Starter_Job_Test(unittest.TestCase):

@@ -115,7 +115,7 @@ class Jenkins_Job(object):
         self.params['HOSTNAME'] = socket.gethostname()
         self.params['PROJECT'] = 'matrix-project'
         self.params['TRIGGER'] = self.job_config_params['triggers']['none']
-        self.params['COMMAND'] = ''
+        self.params['SHELL'] = ''
         self.params['VCS'] = self.job_config_params['vcs']['none']
         self.params['MATRIX'] = ''
         self.params['PARAMETERS'] = ''
@@ -426,6 +426,23 @@ class Jenkins_Job(object):
 
         self.params['VCS'] = vcs_config
 
+    def set_shell_param(self, shell_script):
+        """
+        Sets config for execute shell parameter
+
+        @param shell_script: shell commands to execute
+        @type  shell_script: str
+        """
+
+        if shell_script == '':
+            raise Exception("No shell script is given")
+
+        shell_config = self.job_config_params['execute_shell']
+
+        shell_config = shell_config.replace('@(COMMAND)', shell_script)
+
+        self.params['SHELL'] = shell_config
+
 
 class Pipe_Starter_General_Job(Jenkins_Job):
     """
@@ -576,6 +593,9 @@ class Priority_Build_Job(Build_Job):
         super(Priority_Build_Job, self).set_job_type_params()
 
         self.params['NODE_LABEL'] = 'prio_build'  # TODO check labels
+
+        # set execute shell TODO
+        self.set_shell_param()
 
         # set groovy postbuild script
         self.set_groovypostbuild_param('enable', ['bringup'], 2)
