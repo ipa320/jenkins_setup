@@ -87,6 +87,8 @@ class Jenkins_Job(object):
         self.replace_placeholder()
         print self.schedule_job()
 
+        return self.job_name
+
     def delete_job(self):
         """
         Deletes the job defined by the job name
@@ -100,11 +102,11 @@ class Jenkins_Job(object):
                 print "Deleted job %s" % self.job_name
             except Exception as ex:
                 print "Deletion of job %s failed: " % (self.job_name, ex)
-                return 'deletion failed: %s' % ex
-            return 'deleted'
+                return ''
+            return self.job_name
         else:
             print "Did not delete job %s, because not job did not exist" % self.job_name
-            return 'not existent'
+            return ''
 
     def set_common_params(self):
         """

@@ -37,13 +37,19 @@ def main():
     jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'],
                                        info['jenkins_pw'])
 
+    # get all existent jobs for user
+    existent_user_jobs = []
+    for job in jenkins_instance.get_jobs():
+        job_owner = job['name'].split('__')
+        if user_name == job_owner:
+            existent_user_jobs.append(job['name'])
+    modified_jobs = []
+
     # get pipeline configs
     pl_configs = cob_common.get_buildpipeline_configs(info['master'], user_name)
     # get pipeline configs object and load configs from bpl_configs dict
     plc_instance = cob_distro.Cob_Distro_Pipe()
     plc_instance.load_from_dict(pl_configs['repositories'])
-
-    #job_creator_instance = jenkins_job_creator.Jenkins_Jobs(jenkins_instance, bpl_configs)
 
     ### create pipeline jobs TODO
     ### pipe starter
@@ -53,15 +59,15 @@ def main():
     for poll, repo_list in polls_dict.iteritems():
         job_creator_instance = jenkins_job_creator.Pipe_Starter_Job(jenkins_instance, pl_configs, repo_list, poll)
         if options.delete:
-            job_creator_instance.delete_job()
+            modified_jobs.append(job_creator_instance.delete_job())
         else:
-            job_creator_instance.create_job()
+            modified_jobs.append(job_creator_instance.create_job())
     for repo in plc_instance.repositories.keys():
         job_creator_instance = jenkins_job_creator.Pipe_Starter_Job(jenkins_instance, pl_configs, [repo], repo)
         if options.delete:
-            job_creator_instance.delete_job()
+            modified_jobs.append(job_creator_instance.delete_job())
         else:
-            job_creator_instance.create_job()
+            modified_jobs.append(job_creator_instance.create_job())
 
     ### general pipe starter
     # this pipe starter job won't poll any repository; it has to be started
@@ -70,24 +76,31 @@ def main():
     job_creator_instance = jenkins_job_creator.Pipe_Starter_General_Job(jenkins_instance, pl_configs,
                                                                         plc_instance.repositories.keys())
     if options.delete:
-        job_creator_instance.delete_job()
+        modified_jobs.append(job_creator_instance.delete_job())
     else:
-        job_creator_instance.create_job()
+        general_pipe_starter_name = job_creator_instance.create_job()
+        modified_jobs.append(general_pipe_starter_name)
 
     ### priority build
     job_creator_instance = jenkins_job_creator.Priority_Build_Job(jenkins_instance, pl_configs)
     if options.delete:
-        job_creator_instance.delete_job()
+        modified_jobs.append(job_creator_instance.delete_job())
     else:
-        job_creator_instance.create_job()
+        modified_jobs.append(job_creator_instance.create_job())
 
     ### create release job
     if pl_configs['user_group'] == "admin":
         pass  # TODO
 
-    # start buildpipeline by build pipe starter job TODO
+    # delete old and no more required jobs
+    print "Delete old and no more required jobs:"
+    for job in [job for job in existent_user_jobs if job not in modified_jobs]:
+        jenkins_instance.build_job(job)
+        print "- %s" % job
+
+    # start buildpipeline by general starter job
     #if options.run:
-    #    jenkins_instance.build_job(pipe_starter_name)
+    #    jenkins_instance.build_job(general_pipe_starter_name)
 
 if __name__ == "__main__":
     main()
