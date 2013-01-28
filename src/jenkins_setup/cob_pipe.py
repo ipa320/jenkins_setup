@@ -42,12 +42,16 @@ class Cob_Pipe(cob_distro.Cob_Distro_Pipe):
 
     def get_jobs_to_create(self):
         """
-        Gets a list of all job types to create
+        Gets a dict of all job types to create and the repositories which will
+        use them
         """
 
-        job_types = {}
+        job_type_dict = {}
         for repo in self.repositories.keys():
             for job in self.repositories[repo].jobs:
-                job_types[job] = 1
+                if job in job_type_dict:
+                    job_type_dict[job].append(repo)
+                else:
+                    job_type_dict[job] = [repo]
 
-        return job_types.keys()
+        return job_type_dict
