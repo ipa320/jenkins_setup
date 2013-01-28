@@ -26,7 +26,9 @@
 
 'parameterizedtrigger':
   'basic':
-    '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs> @(CONFIGS) </configs> <projects> @(PROJECTLIST) </projects> <condition>@(CONDITION)</condition> <triggerWithNoParameters>@(NOPARAM)</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>'
+    '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> @(TRIGGERS) </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>'
+  'trigger':
+    '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs> @(CONFIGS) </configs> <projects> @(PROJECTLIST) </projects> <condition>@(CONDITION)</condition> <triggerWithNoParameters>@(NOPARAM)</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>'
   'matrix_subset':
     '<hudson.plugins.parameterizedtrigger.matrix.MatrixSubsetBuildParameters> <filter>@(FILTER)</filter> </hudson.plugins.parameterizedtrigger.matrix.MatrixSubsetBuildParameters>'
   'predef_param':

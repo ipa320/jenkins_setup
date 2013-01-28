@@ -260,6 +260,8 @@ class Jenkins_Job(object):
                     ros_distros.append(ros_distro)
             if repo_data.prio_ubuntu_distro not in ubuntu_distros:
                 ubuntu_distros.append(repo_data.prio_ubuntu_distro)
+            if repo_data.prio_arch not in archs:
+                archs.append(repo_data.prio_arch)
             for ubuntu_distro, repo_archs in repo_data.matrix_distro_arch.iteritems():
                 if ubuntu_distro not in ubuntu_distros:
                     ubuntu_distros.append(ubuntu_distro)
@@ -345,9 +347,9 @@ class Jenkins_Job(object):
                                                                                           str(self.generate_job_list(project_list)))
         self.params['GROOVY_POSTBUILD'] = self.job_config_params['groovypostbuild']['basic'].replace('@(GROOVYPB_SCRIPT)', script).replace('@(GROOVYPB_BEHAVIOR)', str(behavior))
 
-    def set_parameterizedtrigger_param(self, job_type_list, condition='SUCCESS', predefined_param='', subset_filter='', no_param=False):
+    def get_single_parameterizedtrigger(self, job_type_list, condition='SUCCESS', predefined_param='', subset_filter='', no_param=False):
         """
-        Sets config for parameterizedtrigger plugin
+        Gets config for one parameterized trigger
 
         :param job_type_list: list with job types (short) to trigger, ``list``
         :param condition: when to trigger, ``str``
@@ -366,7 +368,7 @@ class Jenkins_Job(object):
             predef_param = self.job_config_params['parameterizedtrigger']['predef_param']
             predef_param = predef_param.replace('@(PARAMETER)', predefined_param)
 
-        param_trigger = self.job_config_params['parameterizedtrigger']['basic']
+        param_trigger = self.job_config_params['parameterizedtrigger']['trigger']
         param_trigger = param_trigger.replace('@(CONFIGS)', predef_param + matrix_subset)
         param_trigger = param_trigger.replace('@(PROJECTLIST)', self.generate_job_list_string(job_type_list))
         param_trigger = param_trigger.replace('@(CONDITION)', condition)
@@ -375,6 +377,21 @@ class Jenkins_Job(object):
             param_trigger = param_trigger.replace('@(NOPARAM)', 'true')
         else:
             param_trigger = param_trigger.replace('@(NOPARAM)', 'false')
+
+        return param_trigger
+
+    def set_parameterizedtrigger_param(self, trigger_list):
+        """
+        Sets config for parameterized trigger plugin
+
+        @param trigger_list: strings of trigger config
+        @type  trigger_list: list
+        """
+
+        if trigger_list == []:
+            raise Exception("No trigger config given")
+        param_trigger = self.job_config_params['parameterizedtrigger']['basic']
+        param_trigger = param_trigger.replace('@(TRIGGERS)', ' '.join(trigger_list))
 
         self.params['PARAMETERIZED_TRIGGER'] = param_trigger
 
@@ -512,7 +529,8 @@ class Pipe_Starter_General_Job(Jenkins_Job):
         self.set_groovypostbuild_param('disable', ['bringup', 'hilevel', 'release'], 2)
 
         # set parameterized trigger
-        self.set_parameterizedtrigger_param(['prio'], subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()))
+        prio_trigger = self.get_single_parameterizedtrigger(['prio'], subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()))
+        self.set_parameterizedtrigger_param([prio_trigger])
 
 
 class Pipe_Starter_Job(Pipe_Starter_General_Job):
@@ -536,6 +554,8 @@ class Pipe_Starter_Job(Pipe_Starter_General_Job):
         self.poll = repo_list[0]
         if poll != repo_list[0]:
             self.poll = poll
+            if poll in self.pipe_inst.repositories.keys():
+                self.repo_list.append(poll)
 
     def set_job_type_params(self):
         """
@@ -547,12 +567,10 @@ class Pipe_Starter_Job(Pipe_Starter_General_Job):
 
         self.set_trigger_param('vcs')
 
-        # set groovy postbuild script
-        self.set_groovypostbuild_param('disable', ['bringup', 'hilevel', 'release'], 2)
-
         # generate parameterized trigger
-        self.set_parameterizedtrigger_param(['prio'], subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()),
-                                            predefined_param='POLL=' + self.poll)
+        prio_trigger = self.get_single_parameterizedtrigger(['prio'], subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()),
+                                                            predefined_param='POLL=' + self.poll + '\nREPOSITORIES=%s' % ' '.join(self.repo_list) + '\nREPOSITORIES_FILTER=%s' % ' || '.join(['repository=="%s"' % repo for repo in self.repo_list]))
+        self.set_parameterizedtrigger_param([prio_trigger])
 
 
 class Build_Job(Jenkins_Job):
@@ -622,10 +640,32 @@ class Priority_Build_Job(Build_Job):
         # set postbuild trigger
         self.set_postbuildtrigger_param(['down'], 'SUCCESS')
 
-        # trigger normal with resulttrigger or parameterized trigger ???
-
         # set pipeline trigger
         self.set_pipelinetrigger_param(['bringup'])
+
+        # set parameterized trigger (for normal)
+        normal_trigger = self.get_single_parameterizedtrigger(['normal'], subset_filter='($REPOSITORIES_FILTER) &amp;&amp; ' + self.generate_matrix_filter(self.get_normal_subset_filter()))
+        down_trigger = self.get_single_parameterizedtrigger(['down'], predefined_param='REPOSITORIES=$REPOSITORIES')
+        self.set_parameterizedtrigger_param([normal_trigger, down_trigger])
+
+    def get_normal_subset_filter(self):
+        """
+        Gets subset filter for normal build
+        """
+
+        subset_filter_input = []
+        for repo in self.pipe_inst.repositories.keys():
+            for rosdistro in self.pipe_inst.repositories[repo].ros_distro:
+                for ubuntu_distro, repo_archs in self.pipe_inst.repositories[repo].matrix_distro_arch.iteritems():
+                    for repo_arch in repo_archs:
+                        subset_filter_input_entry = {}
+                        subset_filter_input_entry['repository'] = repo
+                        subset_filter_input_entry['ros_distro'] = rosdistro
+                        subset_filter_input_entry['ubuntu_distro'] = ubuntu_distro
+                        subset_filter_input_entry['arch'] = repo_arch
+                        subset_filter_input.append(subset_filter_input_entry)
+
+        return subset_filter_input
 
 
 class Normal_Build_Job(Build_Job):
@@ -655,5 +695,69 @@ class Normal_Build_Job(Build_Job):
         super(Normal_Build_Job, self).set_job_type_params()
 
         self.params['NODE_LABEL'] = 'normal_build'  # TODO check labels
+
+        # set execute shell TODO
+        shell_script = self.get_shell_script()
+        self.set_shell_param(shell_script)
+
+
+class Test_Job(Jenkins_Job):
+    """
+    Class for test jobs
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        """
+        Creates a test job instance
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(Test_Job, self).__init__(jenkins_instance, pipeline_config)
+
+    def set_job_type_params(self):
+        """
+        Sets test job specific job configuration parameters
+        """
+
+        self.params['PROJECT'] = 'project'
+
+        self.set_junit_testresults_param()
+
+
+class Downstream_Job(Test_Job):
+    """
+    Class for downstream job
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        """
+        Creates a downstream job instance
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(Downstream_Job, self).__init__(jenkins_instance, pipeline_config)
+
+        self.job_type = 'down'
+        self.job_name = self.generate_job_name(self.job_type)
+
+    def set_job_type_params(self):
+        """
+        Sets downstream job specific job configuration parameters
+        """
+
+        super(Downstream_Job, self).set_job_type_params()
+
+        self.params['NODE_LABEL'] = 'downstream_build'  # TODO check labels
+
+        # set execute shell TODO
+        shell_script = self.get_shell_script()
+        self.set_shell_param(shell_script)
+
 
 # TODO classes: test jobs, hardware jobs, release
