@@ -39,3 +39,15 @@ class Cob_Pipe(cob_distro.Cob_Distro_Pipe):
 
         pipeline_config = cob_common.get_buildpipeline_configs(server_name, user_name)
         self.load_config_from_dict(pipeline_config)
+
+    def get_jobs_to_create(self):
+        """
+        Gets a list of all job types to create
+        """
+
+        job_types = {}
+        for repo in self.repositories.keys():
+            for job in self.repositories[repo].jobs:
+                job_types[job] = 1
+
+        return job_types.keys()

@@ -29,3 +29,6 @@ class Cob_Pipe_Test(unittest.TestCase):
 
     def test__load_config_from_url__check_committer(self):
         self.assertEqual(self.cp.committer, False)
+
+    def test__get_jobs_to_create__result_job_list(self):
+        self.assertEqual(sorted(self.cp.get_jobs_to_create()), sorted(['normal', 'sim', 'db', 'down', 'app', 'bringup', 'highlevel', 'release']))
