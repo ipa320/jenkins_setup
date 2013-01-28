@@ -122,7 +122,7 @@ class Jenkins_Job_Test(unittest.TestCase):
         self.assertEqual(result, 'test-user__pipe_starter')
 
     def test__generate_job_name__input_job_string__return_job_name_string2(self):
-        result = self.jj.generate_job_name('hilevel')
+        result = self.jj.generate_job_name('highlevel')
         self.assertEqual(result, 'test-user__highlevel_hardware_test')
 
     def test__generate_job_name__input_job_and_suffix_string__return_job_name_string(self):
