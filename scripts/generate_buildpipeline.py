@@ -56,13 +56,16 @@ def main():
     # for each repository and each polled user-defined dependency a pipe
     # starter job will be generated
     polls_dict = plc_instance.get_custom_dependencies(polled_only=True)
-    for poll, repo_list in polls_dict.iteritems():
-        job_creator_instance = jenkins_job_creator.Pipe_Starter_Job(jenkins_instance, pl_configs, repo_list, poll)
+    pipe_repo_list = plc_instance.repositories.keys()
+    for poll, starts_repo_list in polls_dict.iteritems():
+        if poll in pipe_repo_list:
+            pipe_repo_list.remove(poll)
+        job_creator_instance = jenkins_job_creator.Pipe_Starter_Job(jenkins_instance, pl_configs, starts_repo_list, poll)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
             modified_jobs.append(job_creator_instance.create_job())
-    for repo in plc_instance.repositories.keys():
+    for repo in pipe_repo_list:
         job_creator_instance = jenkins_job_creator.Pipe_Starter_Job(jenkins_instance, pl_configs, [repo], repo)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
@@ -83,6 +86,20 @@ def main():
 
     ### priority build
     job_creator_instance = jenkins_job_creator.Priority_Build_Job(jenkins_instance, pl_configs)
+    if options.delete:
+        modified_jobs.append(job_creator_instance.delete_job())
+    else:
+        modified_jobs.append(job_creator_instance.create_job())
+
+    ### normal build
+    job_creator_instance = jenkins_job_creator.Normal_Build_Job(jenkins_instance, pl_configs)
+    if options.delete:
+        modified_jobs.append(job_creator_instance.delete_job())
+    else:
+        modified_jobs.append(job_creator_instance.create_job())
+
+    ### downstream build
+    job_creator_instance = jenkins_job_creator.Downstream_Job(jenkins_instance, pl_configs)
     if options.delete:
         modified_jobs.append(job_creator_instance.delete_job())
     else:
