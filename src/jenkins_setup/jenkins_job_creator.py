@@ -77,7 +77,7 @@ class Jenkins_Job(object):
 
         self.set_common_params()
 
-        self.set_job_type_params()
+        self.__set_job_type_params()
 
         self.replace_placeholder()
         print self.schedule_job()
@@ -512,7 +512,7 @@ class Pipe_Starter_General_Job(Jenkins_Job):
 
         return subset_filter_input
 
-    def set_job_type_params(self):
+    def __set_job_type_params(self):
         """
         Sets pipe starter specific job configuration parameters
         """
@@ -552,12 +552,12 @@ class Pipe_Starter_Job(Pipe_Starter_General_Job):
             if poll in self.pipe_inst.repositories.keys():
                 self.repo_list.append(poll)
 
-    def set_job_type_params(self):
+    def __set_job_type_params(self):
         """
         Sets pipe starter job specific job configuration parameters
         """
 
-        super(Pipe_Starter_Job, self).set_job_type_params()
+        super(Pipe_Starter_Job, self).__set_job_type_params()
 
         self.set_trigger_param('vcs')
 
@@ -583,7 +583,7 @@ class Build_Job(Jenkins_Job):
 
         super(Build_Job, self).__init__(jenkins_instance, pipeline_config)
 
-    def set_job_type_params(self):
+    def __set_job_type_params(self):
         """
         Sets build job specific job configuration parameters
         """
@@ -615,12 +615,12 @@ class Priority_Build_Job(Build_Job):
         self.job_type = 'prio'
         self.job_name = self.generate_job_name(self.job_type)
 
-    def set_job_type_params(self):
+    def __set_job_type_params(self):
         """
         Sets priority build job specific job configuration parameters
         """
 
-        super(Priority_Build_Job, self).set_job_type_params()
+        super(Priority_Build_Job, self).__set_job_type_params()
 
         self.params['NODE_LABEL'] = 'prio_build'  # TODO check labels
 
@@ -681,12 +681,12 @@ class Normal_Build_Job(Build_Job):
         self.job_type = 'normal'
         self.job_name = self.generate_job_name(self.job_type)
 
-    def set_job_type_params(self):
+    def __set_job_type_params(self):
         """
         Sets normal build job specific job configuration parameters
         """
 
-        super(Normal_Build_Job, self).set_job_type_params()
+        super(Normal_Build_Job, self).__set_job_type_params()
 
         self.params['NODE_LABEL'] = 'normal_build'  # TODO check labels
 
@@ -711,7 +711,7 @@ class Test_Job(Jenkins_Job):
 
         super(Test_Job, self).__init__(jenkins_instance, pipeline_config)
 
-    def set_job_type_params(self):
+    def __set_job_type_params(self):
         """
         Sets test job specific job configuration parameters
         """
@@ -740,12 +740,12 @@ class Downstream_Job(Test_Job):
         self.job_type = 'down'
         self.job_name = self.generate_job_name(self.job_type)
 
-    def set_job_type_params(self):
+    def __set_job_type_params(self):
         """
         Sets downstream job specific job configuration parameters
         """
 
-        super(Downstream_Job, self).set_job_type_params()
+        super(Downstream_Job, self).__set_job_type_params()
 
         self.params['NODE_LABEL'] = 'downstream_build'  # TODO check labels
 
@@ -773,12 +773,12 @@ class Database_Test_Job(Test_Job):
         self.job_type = 'db'
         self.job_name = self.generate_job_name(self.job_type)
 
-    def set_job_type_params(self):
+    def __set_job_type_params(self):
         """
         Sets database test job specific job configuration parameters
         """
 
-        super(Database_Test_Job, self).set_job_type_params()
+        super(Database_Test_Job, self).__set_job_type_params()
 
         self.params['NODE_LABEL'] = 'database_test'  # TODO check labels
 
@@ -804,12 +804,12 @@ class Simulation_Test_Job(Test_Job):
         self.job_type = 'sim'
         self.job_name = self.generate_job_name(self.job_type)
 
-    def set_job_type_params(self):
+    def __set_job_type_params(self):
         """
         Sets simulation test job specific job configuration parameters
         """
 
-        super(Simulation_Test_Job, self).set_job_type_params()
+        super(Simulation_Test_Job, self).__set_job_type_params()
 
         self.params['NODE_LABEL'] = 'simulation_test'  # TODO check labels
 
@@ -835,12 +835,12 @@ class Application_Test_Job(Test_Job):
         self.job_type = 'app'
         self.job_name = self.generate_job_name(self.job_type)
 
-    def set_job_type_params(self):
+    def __set_job_type_params(self):
         """
         Sets application test job specific job configuration parameters
         """
 
-        super(Application_Test_Job, self).set_job_type_params()
+        super(Application_Test_Job, self).__set_job_type_params()
 
         self.params['NODE_LABEL'] = 'application_test'  # TODO check labels
 
@@ -863,7 +863,7 @@ class Hardware_Job(Jenkins_Job):
 
         super(Hardware_Job, self).__init__(jenkins_instance, pipeline_config)
 
-    def set_job_type_params(self):
+    def __set_job_type_params(self):
         """
         Sets hardware job specific job configuration parameters
         """
@@ -887,14 +887,14 @@ class Bringup_Hardware_Job(Hardware_Job):
         @type  pipeline_config: dict
         """
 
-        super(Hardware_Job, self).__init__(jenkins_instance, pipeline_config)
+        super(Bringup_Hardware_Job, self).__init__(jenkins_instance, pipeline_config)
 
-    def set_job_type_params(self):
+    def __set_job_type_params(self):
         """
         Sets bringup hardware job specific job configuration parameters
         """
 
-        super(Hardware_Job, self).set_job_type_params()
+        super(Bringup_Hardware_Job, self).__set_job_type_params()
 
 
 class Highlevel_Hardware_Job(Hardware_Job):
@@ -911,14 +911,14 @@ class Highlevel_Hardware_Job(Hardware_Job):
         @type  pipeline_config: dict
         """
 
-        super(Hardware_Job, self).__init__(jenkins_instance, pipeline_config)
+        super(Highlevel_Hardware_Job, self).__init__(jenkins_instance, pipeline_config)
 
-    def set_job_type_params(self):
+    def __set_job_type_params(self):
         """
         Sets high-level hardware job specific job configuration parameters
         """
 
-        super(Hardware_Job, self).set_job_type_params()
+        super(Highlevel_Hardware_Job, self).__set_job_type_params()
 
 
 class Release_Job(Jenkins_Job):
@@ -937,7 +937,7 @@ class Release_Job(Jenkins_Job):
 
         super(Release_Job, self).__init__(jenkins_instance, pipeline_config)
 
-    def set_job_type_params(self):
+    def __set_job_type_params(self):
         """
         Sets release job specific job configuration parameters
         """
@@ -963,7 +963,7 @@ class Clean_Up_Job(Jenkins_Job):
 
         super(Clean_Up_Job, self).__init__(jenkins_instance, pipeline_config)
 
-    def set_job_type_params(self):
+    def __set_job_type_params(self):
         """
         Sets clean up job specific job configuration parameters
         """
