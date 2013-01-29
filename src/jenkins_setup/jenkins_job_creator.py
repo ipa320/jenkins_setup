@@ -7,14 +7,12 @@ import pkg_resources
 import yaml
 import re
 
-from jenkins_setup import cob_distro
-
 
 class Jenkins_Job(object):
     """
     Jenkins job creation class
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_instance):
         """
         Sets up Jenkins job object
         """
@@ -26,13 +24,13 @@ class Jenkins_Job(object):
                                'db': 'database_test',
                                'sim': 'simulation_test',
                                'app': 'application_test',
-                               'clean': 'cleanup',
+                               'clean': 'clean_up',
                                'bringup': 'bringup_hardware_test',
-                               'hilevel': 'highlevel_hardware_test',
+                               'highlevel': 'highlevel_hardware_test',
                                'release': 'release_params'}
 
         self.jenkins_instance = jenkins_instance
-        self.pipe_conf = pipeline_config
+        self.pipe_inst = pipeline_instance
 
         self.job_config_params = pkg_resources.resource_string('jenkins_setup', 'templates/job_config_params.yaml')
         self.job_config_params = yaml.load(self.job_config_params)
@@ -40,9 +38,6 @@ class Jenkins_Job(object):
 
         with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
             self.network_config = yaml.load(f)
-
-        self.pipe_inst = cob_distro.Cob_Distro_Pipe()
-        self.pipe_inst.load_config_from_dict(self.pipe_conf['repositories'])
 
         self.params = {}
 
@@ -113,7 +108,7 @@ class Jenkins_Job(object):
         Sets all parameters which have to be defined for every job type
         """
 
-        self.params['USERNAME'] = self.pipe_conf['user_name']
+        self.params['USERNAME'] = self.pipe_inst.user_name
         #self.params['JOB_TYPE_NAME'] = self.JOB_TYPE_NAMES[self.job_type]
         self.params['SCRIPT'] = self.JOB_TYPE_NAMES[self.job_type]
         self.params['NODE_LABEL'] = self.job_type
@@ -158,11 +153,11 @@ class Jenkins_Job(object):
         '''
 
         if suffix != '':
-            return '__'.join([self.pipe_conf['user_name'],
+            return '__'.join([self.pipe_inst.user_name,
                               self.JOB_TYPE_NAMES[job_type],
                               suffix])
         else:
-            return '__'.join([self.pipe_conf['user_name'],
+            return '__'.join([self.pipe_inst.user_name,
                               self.JOB_TYPE_NAMES[job_type]])
 
     def generate_job_list(self, job_type_list):
@@ -401,8 +396,8 @@ class Jenkins_Job(object):
         """
 
         mailer = self.job_config_params['mailer']
-        mailer = mailer.replace('@(EMAIL)', self.pipe_conf['email'])
-        if self.pipe_conf['committer']:
+        mailer = mailer.replace('@(EMAIL)', self.pipe_inst.email)
+        if self.pipe_inst.committer:
             mailer = mailer.replace('@(EMAIL_COMMITTER)', 'true')
         else:
             mailer = mailer.replace('@(EMAIL_COMMITTER)', 'false')
@@ -474,9 +469,9 @@ class Jenkins_Job(object):
         shell_temp = pkg_resources.resource_string('jenkins_setup', 'templates/execute_shell.yaml')
         shell_temp = yaml.load(shell_temp)
         shell_script = shell_temp[self.job_type]
-        shell_script = shell_script.replace('@(SERVERNAME)', self.pipe_conf['server_name'])
+        shell_script = shell_script.replace('@(SERVERNAME)', self.pipe_inst.server_name)
         shell_script = shell_script.replace('@(STORAGE)', self.network_config['storage'])
-        shell_script = shell_script.replace('@(USERNAME)', self.pipe_conf['user_name'])
+        shell_script = shell_script.replace('@(USERNAME)', self.pipe_inst.user_name)
         shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.job_type)
 
         return shell_script
@@ -526,7 +521,7 @@ class Pipe_Starter_General_Job(Jenkins_Job):
         self.params['PROJECT'] = 'project'
 
         # set groovy postbuild script
-        self.set_groovypostbuild_param('disable', ['bringup', 'hilevel', 'release'], 2)
+        self.set_groovypostbuild_param('disable', ['bringup', 'highlevel', 'release'], 2)
 
         # set parameterized trigger
         prio_trigger = self.get_single_parameterizedtrigger(['prio'], subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()))
@@ -562,8 +557,7 @@ class Pipe_Starter_Job(Pipe_Starter_General_Job):
         Sets pipe starter job specific job configuration parameters
         """
 
-        self.params['NODE_LABEL'] = 'master'
-        self.params['PROJECT'] = 'project'
+        super(Pipe_Starter_Job, self).set_job_type_params()
 
         self.set_trigger_param('vcs')
 
@@ -759,5 +753,223 @@ class Downstream_Job(Test_Job):
         shell_script = self.get_shell_script()
         self.set_shell_param(shell_script)
 
+
+class Database_Test_Job(Test_Job):
+    """
+    Class for database test job
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        """
+        Creates a database test job instance
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(Database_Test_Job, self).__init__(jenkins_instance, pipeline_config)
+
+        self.job_type = 'db'
+        self.job_name = self.generate_job_name(self.job_type)
+
+    def set_job_type_params(self):
+        """
+        Sets database test job specific job configuration parameters
+        """
+
+        super(Database_Test_Job, self).set_job_type_params()
+
+        self.params['NODE_LABEL'] = 'database_test'  # TODO check labels
+
+        # set execute shell TODO
+
+
+class Simulation_Test_Job(Test_Job):
+    """
+    Class for simulation test job
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        """
+        Creates a simulation test job instance
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(Simulation_Test_Job, self).__init__(jenkins_instance, pipeline_config)
+
+        self.job_type = 'sim'
+        self.job_name = self.generate_job_name(self.job_type)
+
+    def set_job_type_params(self):
+        """
+        Sets simulation test job specific job configuration parameters
+        """
+
+        super(Simulation_Test_Job, self).set_job_type_params()
+
+        self.params['NODE_LABEL'] = 'simulation_test'  # TODO check labels
+
+        # set execute shell TODO
+
+
+class Application_Test_Job(Test_Job):
+    """
+    Class for application test job
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        """
+        Creates a application test job instance
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(Application_Test_Job, self).__init__(jenkins_instance, pipeline_config)
+
+        self.job_type = 'app'
+        self.job_name = self.generate_job_name(self.job_type)
+
+    def set_job_type_params(self):
+        """
+        Sets application test job specific job configuration parameters
+        """
+
+        super(Application_Test_Job, self).set_job_type_params()
+
+        self.params['NODE_LABEL'] = 'application_test'  # TODO check labels
+
+        # set execute shell TODO
+
+
+class Hardware_Job(Jenkins_Job):
+    """
+    Class for hardware jobs
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        """
+        Creates a hardware test job
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(Hardware_Job, self).__init__(jenkins_instance, pipeline_config)
+
+    def set_job_type_params(self):
+        """
+        Sets hardware job specific job configuration parameters
+        """
+
+        self.params['PROJECT'] = 'matrix-project'
+
+        self.set_junit_testresults_param()
+
+
+class Bringup_Hardware_Job(Hardware_Job):
+    """
+    Class for bringup hardware jobs
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        """
+        Creates a bringup hardware test job
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(Hardware_Job, self).__init__(jenkins_instance, pipeline_config)
+
+    def set_job_type_params(self):
+        """
+        Sets bringup hardware job specific job configuration parameters
+        """
+
+        super(Hardware_Job, self).set_job_type_params()
+
+
+class Highlevel_Hardware_Job(Hardware_Job):
+    """
+    Class for high-level hardware jobs
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        """
+        Creates a high-level hardware test job
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(Hardware_Job, self).__init__(jenkins_instance, pipeline_config)
+
+    def set_job_type_params(self):
+        """
+        Sets high-level hardware job specific job configuration parameters
+        """
+
+        super(Hardware_Job, self).set_job_type_params()
+
+
+class Release_Job(Jenkins_Job):
+    """
+    Class for release jobs
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        """
+        Creates a release job
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(Release_Job, self).__init__(jenkins_instance, pipeline_config)
+
+    def set_job_type_params(self):
+        """
+        Sets release job specific job configuration parameters
+        """
+
+        self.params['PROJECT'] = 'project'
+
+        self.params['NODE_LABEL'] = 'release'
+
+
+class Clean_Up_Job(Jenkins_Job):
+    """
+    Class for clean up jobs
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        """
+        Creates a clean up job
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(Clean_Up_Job, self).__init__(jenkins_instance, pipeline_config)
+
+    def set_job_type_params(self):
+        """
+        Sets clean up job specific job configuration parameters
+        """
+
+        self.params['PROJECT'] = 'project'
+
+        self.params['NODE_LABEL'] = 'clean_up'
 
 # TODO classes: test jobs, hardware jobs, release

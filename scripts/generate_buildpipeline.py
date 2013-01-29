@@ -6,7 +6,7 @@ import optparse
 import yaml
 import jenkins
 
-from jenkins_setup import jenkins_job_creator, cob_common, cob_distro
+from jenkins_setup import jenkins_job_creator, cob_pipe
 
 
 # schedule cob buildpipeline jobs
@@ -45,11 +45,12 @@ def main():
             existent_user_jobs.append(job['name'])
     modified_jobs = []
 
-    # get pipeline configs
-    pl_configs = cob_common.get_buildpipeline_configs(info['master'], user_name)
-    # get pipeline configs object and load configs from bpl_configs dict
-    plc_instance = cob_distro.Cob_Distro_Pipe()
-    plc_instance.load_config_from_dict(pl_configs['repositories'])
+    # get pipeline configs object from url
+    plc_instance = cob_pipe.Cob_Pipe()
+    plc_instance.load_config_from_url(info['master'], user_name)
+
+    # get jobs to create
+    job_type_dict = plc_instance.get_jobs_to_create()
 
     ### create pipeline jobs TODO
     ### pipe starter
@@ -60,13 +61,13 @@ def main():
     for poll, starts_repo_list in polls_dict.iteritems():
         if poll in pipe_repo_list:
             pipe_repo_list.remove(poll)
-        job_creator_instance = jenkins_job_creator.Pipe_Starter_Job(jenkins_instance, pl_configs, starts_repo_list, poll)
+        job_creator_instance = jenkins_job_creator.Pipe_Starter_Job(jenkins_instance, plc_instance, starts_repo_list, poll)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
             modified_jobs.append(job_creator_instance.create_job())
     for repo in pipe_repo_list:
-        job_creator_instance = jenkins_job_creator.Pipe_Starter_Job(jenkins_instance, pl_configs, [repo], repo)
+        job_creator_instance = jenkins_job_creator.Pipe_Starter_Job(jenkins_instance, plc_instance, [repo], repo)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -76,7 +77,7 @@ def main():
     # this pipe starter job won't poll any repository; it has to be started
     # manually. It triggers the priority build job with all defined
     # repositories as parameters
-    job_creator_instance = jenkins_job_creator.Pipe_Starter_General_Job(jenkins_instance, pl_configs,
+    job_creator_instance = jenkins_job_creator.Pipe_Starter_General_Job(jenkins_instance, plc_instance,
                                                                         plc_instance.repositories.keys())
     if options.delete:
         modified_jobs.append(job_creator_instance.delete_job())
@@ -85,29 +86,42 @@ def main():
         modified_jobs.append(general_pipe_starter_name)
 
     ### priority build
-    job_creator_instance = jenkins_job_creator.Priority_Build_Job(jenkins_instance, pl_configs)
+    job_creator_instance = jenkins_job_creator.Priority_Build_Job(jenkins_instance, plc_instance)
     if options.delete:
         modified_jobs.append(job_creator_instance.delete_job())
     else:
         modified_jobs.append(job_creator_instance.create_job())
 
     ### normal build
-    job_creator_instance = jenkins_job_creator.Normal_Build_Job(jenkins_instance, pl_configs)
-    if options.delete:
-        modified_jobs.append(job_creator_instance.delete_job())
-    else:
-        modified_jobs.append(job_creator_instance.create_job())
+    if 'normal' in job_type_dict:
+        job_creator_instance = jenkins_job_creator.Normal_Build_Job(jenkins_instance, plc_instance)
+        if options.delete:
+            modified_jobs.append(job_creator_instance.delete_job())
+        else:
+            modified_jobs.append(job_creator_instance.create_job())
 
     ### downstream build
-    job_creator_instance = jenkins_job_creator.Downstream_Job(jenkins_instance, pl_configs)
+    job_creator_instance = jenkins_job_creator.Downstream_Job(jenkins_instance, plc_instance)
     if options.delete:
         modified_jobs.append(job_creator_instance.delete_job())
     else:
         modified_jobs.append(job_creator_instance.create_job())
 
-    ### create release job
-    if pl_configs['user_group'] == "admin":
+    ### database test
+
+    ### simulation test
+
+    ### application test
+
+    ### bringup hardware test
+
+    ### high-level hardware test
+
+    ### release job
+    if plc_instance.user_group == "admin":
         pass  # TODO
+
+    ### clean up
 
     # delete old and no more required jobs
     print "Delete old and no more required jobs:"

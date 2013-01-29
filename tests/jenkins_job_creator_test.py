@@ -8,7 +8,7 @@ import socket
 import yaml
 import jenkins
 
-from jenkins_setup import jenkins_job_creator, cob_common
+from jenkins_setup import jenkins_job_creator, cob_pipe
 
 
 class Jenkins_Job_Test(unittest.TestCase):
@@ -19,7 +19,9 @@ class Jenkins_Job_Test(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
 
-        self.test_dict = cob_common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
+        #self.test_dict = cob_common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
+        self.test_pipe_inst = cob_pipe.Cob_Pipe()
+        self.test_pipe_inst.load_config_from_url('jenkins-test-server', 'test-user')
 
         self.job_type_test_list = ['pipe', 'prio', 'normal']
 
@@ -27,7 +29,7 @@ class Jenkins_Job_Test(unittest.TestCase):
             info = yaml.load(f)
         jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'], info['jenkins_pw'])
 
-        self.jj = jenkins_job_creator.Jenkins_Job(jenkins_instance, self.test_dict)
+        self.jj = jenkins_job_creator.Jenkins_Job(jenkins_instance, self.test_pipe_inst)
 
     # Testing schedule_job
     def test__schedule_job__job_name_string_and_job_config_string__return_action_string(self):
@@ -449,7 +451,9 @@ class Pipe_Starter_Job_Test(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
 
-        self.test_dict = cob_common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
+        #self.test_dict = cob_common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
+        self.test_pipe_inst = cob_pipe.Cob_Pipe()
+        self.test_pipe_inst.load_config_from_url('jenkins-test-server', 'test-user')
 
         self.job_type_test_list = ['pipe', 'prio', 'normal']
 
@@ -458,13 +462,13 @@ class Pipe_Starter_Job_Test(unittest.TestCase):
         self.jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'], info['jenkins_pw'])
 
     def test__get_prio_subset_filter__result_filter_input_dict(self):
-        self.jj = jenkins_job_creator.Pipe_Starter_Job(self.jenkins_instance, self.test_dict, ['test_repo_1'], 'dep_repo_1')
+        self.jj = jenkins_job_creator.Pipe_Starter_Job(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1'], 'dep_repo_1')
         result = self.jj.get_prio_subset_filter()
         self.assertEqual(result, [{'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
                                   {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro_2', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'}])
 
     def test__get_prio_subset_filter__result_filter_input_dict2(self):
-        self.jj = jenkins_job_creator.Pipe_Starter_Job(self.jenkins_instance, self.test_dict, ['test_repo_1', 'test_repo_2'], 'dep_repo_1')
+        self.jj = jenkins_job_creator.Pipe_Starter_Job(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1', 'test_repo_2'], 'dep_repo_1')
         result = self.jj.get_prio_subset_filter()
         self.assertEqual(result, [{'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
                                   {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro_2', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
@@ -479,7 +483,9 @@ class Priority_Build_Job_Test(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
 
-        self.test_dict = cob_common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
+        #self.test_dict = cob_common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
+        self.test_pipe_inst = cob_pipe.Cob_Pipe()
+        self.test_pipe_inst.load_config_from_url('jenkins-test-server', 'test-user')
 
         self.job_type_test_list = ['pipe', 'prio', 'normal']
 
@@ -487,8 +493,9 @@ class Priority_Build_Job_Test(unittest.TestCase):
             info = yaml.load(f)
         self.jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'], info['jenkins_pw'])
 
+        self.jj = jenkins_job_creator.Priority_Build_Job(self.jenkins_instance, self.test_pipe_inst)
+
     def test__get_normal_subset_filter__result_filter_input_dict(self):
-        self.jj = jenkins_job_creator.Priority_Build_Job(self.jenkins_instance, self.test_dict)
         result = self.jj.get_normal_subset_filter()
         self.assertEqual(result, [{'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'lucid', 'arch': 'amd64'},
                                   {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'lucid', 'arch': 'i386'},
