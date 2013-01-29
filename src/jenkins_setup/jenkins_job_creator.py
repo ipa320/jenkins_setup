@@ -695,37 +695,11 @@ class Normal_Build_Job(Build_Job):
         self.set_shell_param(shell_script)
 
 
-class Test_Job(Jenkins_Job):
-    """
-    Class for test jobs
-    """
-    def __init__(self, jenkins_instance, pipeline_config):
-        """
-        Creates a test job instance
-
-        @param jenkins_instance: Jenkins instance
-        @type  jenkins_instance: jenkins.Jenkins
-        @param pipeline_config: pipeline configuration
-        @type  pipeline_config: dict
-        """
-
-        super(Test_Job, self).__init__(jenkins_instance, pipeline_config)
-
-    def set_job_type_params(self):
-        """
-        Sets test job specific job configuration parameters
-        """
-
-        self.params['PROJECT'] = 'project'
-
-        self.set_junit_testresults_param()
-
-
-class Downstream_Job(Test_Job):
+class Downstream_Build_Job(Build_Job):
     """
     Class for downstream job
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, repo_list):
         """
         Creates a downstream job instance
 
@@ -733,9 +707,11 @@ class Downstream_Job(Test_Job):
         @type  jenkins_instance: jenkins.Jenkins
         @param pipeline_config: pipeline configuration
         @type  pipeline_config: dict
+        @param repo_list: repositories this job will build
+        @typo  repo_list: list
         """
 
-        super(Downstream_Job, self).__init__(jenkins_instance, pipeline_config)
+        super(Downstream_Build_Job, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'down'
         self.job_name = self.generate_job_name(self.job_type)
@@ -745,7 +721,7 @@ class Downstream_Job(Test_Job):
         Sets downstream job specific job configuration parameters
         """
 
-        super(Downstream_Job, self).set_job_type_params()
+        super(Downstream_Build_Job, self).set_job_type_params()
 
         self.params['NODE_LABEL'] = 'downstream_build'  # TODO check labels
 
@@ -754,7 +730,7 @@ class Downstream_Job(Test_Job):
         self.set_shell_param(shell_script)
 
 
-class Database_Test_Job(Test_Job):
+class Database_Test_Job(Build_Job):
     """
     Class for database test job
     """
@@ -785,7 +761,7 @@ class Database_Test_Job(Test_Job):
         # set execute shell TODO
 
 
-class Simulation_Test_Job(Test_Job):
+class Simulation_Test_Job(Build_Job):
     """
     Class for simulation test job
     """
@@ -816,7 +792,7 @@ class Simulation_Test_Job(Test_Job):
         # set execute shell TODO
 
 
-class Application_Test_Job(Test_Job):
+class Application_Test_Job(Build_Job):
     """
     Class for application test job
     """

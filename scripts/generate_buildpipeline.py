@@ -101,21 +101,32 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### downstream build
-    job_creator_instance = jenkins_job_creator.Downstream_Job(jenkins_instance, plc_instance)
-    if options.delete:
-        modified_jobs.append(job_creator_instance.delete_job())
-    else:
-        modified_jobs.append(job_creator_instance.create_job())
+    if 'down' in job_type_dict:
+        job_creator_instance = jenkins_job_creator.Downstream_Build_Job(jenkins_instance, plc_instance, job_type_dict['down'])
+        if options.delete:
+            modified_jobs.append(job_creator_instance.delete_job())
+        else:
+            modified_jobs.append(job_creator_instance.create_job())
 
     ### database test
+    if 'db' in job_type_dict:
+        pass
 
     ### simulation test
+    if 'sim' in job_type_dict:
+        pass
 
     ### application test
+    if 'app' in job_type_dict:
+        pass
 
     ### bringup hardware test
+    if 'bringup' in job_type_dict:
+        pass
 
     ### high-level hardware test
+    if 'highlevel' in job_type_dict:
+        pass
 
     ### release job
     if plc_instance.user_group == "admin":
