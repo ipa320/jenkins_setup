@@ -270,19 +270,21 @@ class Jenkins_Job(object):
 
         return dict_list
 
-    def generate_jointrigger_param(self, job_type_list, unstable_behavior=False):
+    def set_jointrigger_param(self, job_type_list, unstable_behavior=False, parameterized_trigger=None):
         """
-        Generates config for jointrigger plugin
+        Sets config for jointrigger plugin
 
-        :param job_type_list: list with job types (short) to join, ``list``
-        :param unstable_behavior: execute join project even if upstream projects
-        where unstable, ``bool``
-
-        :returns: configuration of jointrigger plugin, ``str``
+        @param job_type_list: job types (short) to join
+        @type  job_type_list: list
+        @param unstable_behavior: execute join project even if upstream projects
+        where unstable
+        @type  unstable_behavior: bool
+        @param parameterized_trigger: parameterized trigger configuration
+        @type  parameterized_trigger: str
         """
 
-        if job_type_list == []:
-            return ''
+        if job_type_list == [] and not parameterized_trigger:
+            raise Exception("Neither jobs trigger nor parameterized trigger configuration given")
         elif type(unstable_behavior) != bool:
             raise Exception("Behavior argument for unstable job result has to be a boolean")
 
@@ -292,7 +294,15 @@ class Jenkins_Job(object):
             jointrigger = jointrigger.replace('@(JOIN_UNSTABLE)', 'true')
         else:
             jointrigger = jointrigger.replace('@(JOIN_UNSTABLE)', 'false')
-        return jointrigger
+
+        if parameterized_trigger:
+            if parameterized_trigger == '':
+                raise Exception("Parameterized trigger configuration string is empty")
+            jointrigger = jointrigger.replace('@(PARAMETERIZED_TRIGGER)', parameterized_trigger)
+        else:
+            jointrigger = jointrigger.replace('@(PARAMETERIZED_TRIGGER)', '')
+
+        self.params['JOIN_TRIGGER'] = jointrigger
 
     def set_postbuildtrigger_param(self, job_type_list, threshold_name):
         """
@@ -375,9 +385,9 @@ class Jenkins_Job(object):
 
         return param_trigger
 
-    def set_parameterizedtrigger_param(self, trigger_list):
+    def get_parameterizedtrigger_param(self, trigger_list):
         """
-        Sets config for parameterized trigger plugin
+        Gets config for parameterized trigger plugin
 
         @param trigger_list: strings of trigger config
         @type  trigger_list: list
@@ -388,7 +398,17 @@ class Jenkins_Job(object):
         param_trigger = self.job_config_params['parameterizedtrigger']['basic']
         param_trigger = param_trigger.replace('@(TRIGGERS)', ' '.join(trigger_list))
 
-        self.params['PARAMETERIZED_TRIGGER'] = param_trigger
+        return param_trigger
+
+    def set_parameterizedtrigger_param(self, trigger_list):
+        """
+        Sets config for parameterized trigger plugin
+
+        @param trigger_list: strings of trigger config
+        @type  trigger_list: list
+        """
+
+        self.params['PARAMETERIZED_TRIGGER'] = self.get_parameterizedtrigger_param(trigger_list)
 
     def set_mailer_param(self):
         """
@@ -476,6 +496,23 @@ class Jenkins_Job(object):
 
         return shell_script
 
+    def get_prio_subset_filter(self):
+        """
+        Gets subset filter for priority build
+        """
+
+        subset_filter_input = []
+        for repo in self.repo_list:
+            for rosdistro in self.pipe_inst.repositories[repo].ros_distro:
+                subset_filter_input_entry = {}
+                subset_filter_input_entry['repository'] = repo
+                subset_filter_input_entry['ros_distro'] = rosdistro
+                subset_filter_input_entry['ubuntu_distro'] = self.pipe_inst.repositories[repo].prio_ubuntu_distro
+                subset_filter_input_entry['arch'] = self.pipe_inst.repositories[repo].prio_arch
+                subset_filter_input.append(subset_filter_input_entry)
+
+        return subset_filter_input
+
 
 class Pipe_Starter_General_Job(Jenkins_Job):
     """
@@ -494,23 +531,6 @@ class Pipe_Starter_General_Job(Jenkins_Job):
         self.job_name = self.generate_job_name(self.job_type, suffix='general')
 
         self.repo_list = repo_list
-
-    def get_prio_subset_filter(self):
-        """
-        Gets subset filter for priority build
-        """
-
-        subset_filter_input = []
-        for repo in self.repo_list:
-            for rosdistro in self.pipe_inst.repositories[repo].ros_distro:
-                subset_filter_input_entry = {}
-                subset_filter_input_entry['repository'] = repo
-                subset_filter_input_entry['ros_distro'] = rosdistro
-                subset_filter_input_entry['ubuntu_distro'] = self.pipe_inst.repositories[repo].prio_ubuntu_distro
-                subset_filter_input_entry['arch'] = self.pipe_inst.repositories[repo].prio_arch
-                subset_filter_input.append(subset_filter_input_entry)
-
-        return subset_filter_input
 
     def set_job_type_params(self):
         """
@@ -638,15 +658,12 @@ class Priority_Build_Job(Build_Job):
         # set groovy postbuild script
         self.set_groovypostbuild_param('enable', ['bringup'], 2)
 
-        # set postbuild trigger
-        self.set_postbuildtrigger_param(['down'], 'SUCCESS')
-
         # set pipeline trigger
         self.set_pipelinetrigger_param(['bringup'])
 
-        # set parameterized trigger (for normal)
-        normal_trigger = self.get_single_parameterizedtrigger(['normal'], subset_filter='($REPOSITORY_FILTER) &amp;&amp; ' + self.generate_matrix_filter(self.get_normal_subset_filter()))
-        down_trigger = self.get_single_parameterizedtrigger(['down'], predefined_param='REPOSITORY=$REPOSITORY')
+        # set parameterized triggers
+        normal_trigger = self.get_single_parameterizedtrigger(['normal'], subset_filter='(repository=="$REPOSITORY") &amp;&amp; ' + self.generate_matrix_filter(self.get_normal_subset_filter()))
+        down_trigger = self.get_single_parameterizedtrigger(['down'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
         self.set_parameterizedtrigger_param([normal_trigger, down_trigger])
 
     def get_normal_subset_filter(self):
@@ -720,7 +737,7 @@ class Downstream_Build_Job(Build_Job):
 
         super(Downstream_Build_Job, self).__init__(jenkins_instance, pipeline_config)
 
-        self.execute_repo_list = execute_repo_list
+        self.repo_list = execute_repo_list
 
         self.job_type = 'down'
         self.job_name = self.generate_job_name(self.job_type)
@@ -730,7 +747,7 @@ class Downstream_Build_Job(Build_Job):
         Sets downstream job specific job configuration parameters
         """
 
-        matrix_filter = self.generate_matrix_filter([{'repository': execute_repo} for execute_repo in self.execute_repo_list])
+        matrix_filter = self.generate_matrix_filter(self.get_prio_subset_filter())
 
         super(Downstream_Build_Job, self).set_job_type_params(matrix_filter)
 
@@ -739,6 +756,15 @@ class Downstream_Build_Job(Build_Job):
         # set execute shell TODO
         shell_script = self.get_shell_script()
         self.set_shell_param(shell_script)
+
+        # set parameterized triggers
+        db_trigger = self.get_single_parameterizedtrigger(['db'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
+        sim_trigger = self.get_single_parameterizedtrigger(['sim'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
+        self.set_parameterizedtrigger_param([db_trigger, sim_trigger])
+
+        # set join trigger
+        app_trigger = self.get_single_parameterizedtrigger(['app'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
+        self.set_jointrigger_param([], False, self.get_parameterizedtrigger_param([app_trigger]))  # TODO check unstable behavior
 
 
 class Test_Job(Jenkins_Job):
@@ -759,7 +785,7 @@ class Test_Job(Jenkins_Job):
 
         super(Test_Job, self).__init__(jenkins_instance, pipeline_config)
 
-        self.execute_repo_list = execute_repo_list
+        self.repo_list = execute_repo_list
 
         self.job_type = 'down'
         self.job_name = self.generate_job_name(self.job_type)
@@ -772,11 +798,11 @@ class Test_Job(Jenkins_Job):
         self.set_mailer_param()
         #self.set_junit_testresults_param()  TODO
 
-        matrix_filter = self.generate_matrix_filter([{'repository': execute_repo} for execute_repo in self.execute_repo_list])
+        matrix_filter = self.generate_matrix_filter(self.get_prio_subset_filter())
 
-        super(Test_Job, self).set_job_type_params(matrix_filter)
-
-        self.params['NODE_LABEL'] = 'test'  # TODO check labels
+        # set matrix
+        matrix_entries_dict_list = self.get_matrix_entries()
+        self.set_matrix_param(matrix_entries_dict_list, matrix_filter)
 
 
 class Database_Test_Job(Test_Job):
@@ -812,7 +838,7 @@ class Database_Test_Job(Test_Job):
         self.set_shell_param(shell_script)
 
 
-class Simulation_Test_Job(Build_Job):
+class Simulation_Test_Job(Test_Job):
     """
     Class for simulation test job
     """
@@ -845,7 +871,7 @@ class Simulation_Test_Job(Build_Job):
         self.set_shell_param(shell_script)
 
 
-class Application_Test_Job(Build_Job):
+class Application_Test_Job(Test_Job):
     """
     Class for application test job
     """
@@ -901,7 +927,7 @@ class Hardware_Job(Jenkins_Job):
 
         self.params['PROJECT'] = 'matrix-project'
 
-        self.set_junit_testresults_param()
+        #self.set_junit_testresults_param()  # TODO
 
 
 class Bringup_Hardware_Job(Hardware_Job):

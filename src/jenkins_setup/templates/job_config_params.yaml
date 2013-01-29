@@ -41,7 +41,7 @@
   'value': '<string>@(VALUE)</string>'
   'filter': '<combinationFilter>@(FILTER)</combinationFilter>'
 
-'jointrigger': '<join.JoinTrigger> <joinProjects>@(JOIN_PROJECTS)</joinProjects> <joinPublishers/> <evenIfDownstreamUnstable>@(JOIN_UNSTABLE)</evenIfDownstreamUnstable> </join.JoinTrigger>'
+'jointrigger': '<join.JoinTrigger> <joinProjects>@(JOIN_PROJECTS)</joinProjects> <joinPublishers> @(PARAMETERIZED_TRIGGER) </joinPublishers> <evenIfDownstreamUnstable>@(JOIN_UNSTABLE)</evenIfDownstreamUnstable> </join.JoinTrigger>'
 
 'groovypostbuild':
     'basic': "<org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder> <groovyScript>@(GROOVYPB_SCRIPT)</groovyScript> <behavior>@(GROOVYPB_BEHAVIOR)</behavior> </org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder>"
