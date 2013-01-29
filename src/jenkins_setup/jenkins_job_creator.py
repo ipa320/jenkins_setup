@@ -524,8 +524,12 @@ class Pipe_Starter_General_Job(Jenkins_Job):
         self.set_groovypostbuild_param('disable', ['bringup', 'highlevel', 'release'], 2)
 
         # set parameterized trigger
-        prio_trigger = self.get_single_parameterizedtrigger(['prio'], subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()))
-        self.set_parameterizedtrigger_param([prio_trigger])
+        prio_triggers = []
+        for repo in self.repo_list:
+            prio_triggers.append(self.get_single_parameterizedtrigger(['prio'],
+                                                                      subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()),
+                                                                      predefined_param='POLL=manually triggered' + '\nREPOSITORY=%s' % repo + '\nREPOSITORY_FILTER=repository=="%s"' % repo))
+        self.set_parameterizedtrigger_param(prio_triggers)
 
 
 class Pipe_Starter_Job(Pipe_Starter_General_Job):
@@ -561,10 +565,13 @@ class Pipe_Starter_Job(Pipe_Starter_General_Job):
 
         self.set_trigger_param('vcs')
 
-        # generate parameterized trigger
-        prio_trigger = self.get_single_parameterizedtrigger(['prio'], subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()),
-                                                            predefined_param='POLL=' + self.poll + '\nREPOSITORIES=%s' % ' '.join(self.repo_list) + '\nREPOSITORIES_FILTER=%s' % ' || '.join(['repository=="%s"' % repo for repo in self.repo_list]))
-        self.set_parameterizedtrigger_param([prio_trigger])
+        # generate parameterized triggers
+        prio_triggers = []
+        for repo in self.repo_list:
+            prio_triggers.append(self.get_single_parameterizedtrigger(['prio'],
+                                                                      subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()),
+                                                                      predefined_param='POLL=' + self.poll + '\nREPOSITORY=%s' % repo + '\nREPOSITORY_FILTER=repository=="%s"' % repo))
+        self.set_parameterizedtrigger_param(prio_triggers)
 
 
 class Build_Job(Jenkins_Job):
@@ -638,8 +645,8 @@ class Priority_Build_Job(Build_Job):
         self.set_pipelinetrigger_param(['bringup'])
 
         # set parameterized trigger (for normal)
-        normal_trigger = self.get_single_parameterizedtrigger(['normal'], subset_filter='($REPOSITORIES_FILTER) &amp;&amp; ' + self.generate_matrix_filter(self.get_normal_subset_filter()))
-        down_trigger = self.get_single_parameterizedtrigger(['down'], predefined_param='REPOSITORIES=$REPOSITORIES')
+        normal_trigger = self.get_single_parameterizedtrigger(['normal'], subset_filter='($REPOSITORY_FILTER) &amp;&amp; ' + self.generate_matrix_filter(self.get_normal_subset_filter()))
+        down_trigger = self.get_single_parameterizedtrigger(['down'], predefined_param='REPOSITORY=$REPOSITORY')
         self.set_parameterizedtrigger_param([normal_trigger, down_trigger])
 
     def get_normal_subset_filter(self):
