@@ -185,11 +185,11 @@ class Jenkins_Job(object):
         :returns: matrix config, ``str``
         """
 
-        filter = '(%s)' % ' || '.join(['(%s)' % ' &amp;&amp; '.join(['%s == %s' % (key, value)
-                                                                     for key, value in i.iteritems()])
-                                       for i in config])
+        filter = '%s' % ' || '.join(['(%s)' % ' &amp;&amp; '.join(['%s=="%s"' % (key, value)
+                                                                   for key, value in i.iteritems()])
+                                     for i in config])
         if negation:
-            filter = '!' + filter
+            filter = '!(%s)' % filter
 
         return filter
 
@@ -583,7 +583,7 @@ class Build_Job(Jenkins_Job):
 
         super(Build_Job, self).__init__(jenkins_instance, pipeline_config)
 
-    def set_job_type_params(self):
+    def set_job_type_params(self, matrix_filter=None):
         """
         Sets build job specific job configuration parameters
         """
@@ -593,7 +593,7 @@ class Build_Job(Jenkins_Job):
 
         # set matrix
         matrix_entries_dict_list = self.get_matrix_entries()
-        self.set_matrix_param(matrix_entries_dict_list)
+        self.set_matrix_param(matrix_entries_dict_list, matrix_filter)
 
 
 class Priority_Build_Job(Build_Job):
@@ -699,7 +699,7 @@ class Downstream_Build_Job(Build_Job):
     """
     Class for downstream job
     """
-    def __init__(self, jenkins_instance, pipeline_config, repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
         Creates a downstream job instance
 
@@ -713,6 +713,8 @@ class Downstream_Build_Job(Build_Job):
 
         super(Downstream_Build_Job, self).__init__(jenkins_instance, pipeline_config)
 
+        self.execute_repo_list = execute_repo_list
+
         self.job_type = 'down'
         self.job_name = self.generate_job_name(self.job_type)
 
@@ -721,7 +723,9 @@ class Downstream_Build_Job(Build_Job):
         Sets downstream job specific job configuration parameters
         """
 
-        super(Downstream_Build_Job, self).set_job_type_params()
+        matrix_filter = self.generate_matrix_filter([{'repository': execute_repo} for execute_repo in self.execute_repo_list])
+
+        super(Downstream_Build_Job, self).set_job_type_params(matrix_filter)
 
         self.params['NODE_LABEL'] = 'downstream_build'  # TODO check labels
 

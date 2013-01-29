@@ -166,28 +166,28 @@ class Jenkins_Job_Test(unittest.TestCase):
                       'ubuntu_distro': 'natty',
                       'arch': 'amd64'}]
         result = self.jj.generate_matrix_filter(test_dict, False)
-        self.assertEqual(result, '((ubuntu_distro == natty &amp;&amp; arch == amd64 &amp;&amp; ros_distro == test_rosdistro))')
+        self.assertEqual(result, '(ubuntu_distro=="natty" &amp;&amp; arch=="amd64" &amp;&amp; ros_distro=="test_rosdistro")')
 
     def test__generate_matrix_filter__input_dict_list_and_negation_boolean_return_filter_string2(self):
         test_dict = [{'ros_distro': 'test_rosdistro',
                       'ubuntu_distro': 'natty',
                       'arch': 'amd64'}]
         result = self.jj.generate_matrix_filter(test_dict, True)
-        self.assertEqual(result, '!((ubuntu_distro == natty &amp;&amp; arch == amd64 &amp;&amp; ros_distro == test_rosdistro))')
+        self.assertEqual(result, '!((ubuntu_distro=="natty" &amp;&amp; arch=="amd64" &amp;&amp; ros_distro=="test_rosdistro"))')
 
     def test__generate_matrix_filter__input_dict_list_and_negation_boolean_return_filter_string3(self):
         test_dict = [{'ros_distro': 'test_rosdistro'},
                      {'ubuntu_distro': 'natty',
                       'arch': 'amd64'}]
         result = self.jj.generate_matrix_filter(test_dict, False)
-        self.assertEqual(result, '((ros_distro == test_rosdistro) || (ubuntu_distro == natty &amp;&amp; arch == amd64))')
+        self.assertEqual(result, '(ros_distro=="test_rosdistro") || (ubuntu_distro=="natty" &amp;&amp; arch=="amd64")')
 
     def test__generate_matrix_filter__input_dict_list_and_negation_boolean_return_filter_string4(self):
         test_dict = [{'ros_distro': 'test_rosdistro'},
                      {'ubuntu_distro': 'natty',
                       'arch': 'amd64'}]
         result = self.jj.generate_matrix_filter(test_dict, True)
-        self.assertEqual(result, '!((ros_distro == test_rosdistro) || (ubuntu_distro == natty &amp;&amp; arch == amd64))')
+        self.assertEqual(result, '!((ros_distro=="test_rosdistro") || (ubuntu_distro=="natty" &amp;&amp; arch=="amd64"))')
 
     # Testing generate_matrix_axis
     def test__generate_matrix_axis__input_name_string_and_value_list__return_axis_config_string(self):
