@@ -741,11 +741,49 @@ class Downstream_Build_Job(Build_Job):
         self.set_shell_param(shell_script)
 
 
-class Database_Test_Job(Build_Job):
+class Test_Job(Jenkins_Job):
+    """
+    Class for test jobs
+    """
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
+        """
+        Creates a test job instance
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        @param repo_list: repositories this job will build
+        @typo  repo_list: list
+        """
+
+        super(Test_Job, self).__init__(jenkins_instance, pipeline_config)
+
+        self.execute_repo_list = execute_repo_list
+
+        self.job_type = 'down'
+        self.job_name = self.generate_job_name(self.job_type)
+
+    def set_job_type_params(self):
+        """
+        Sets test job specific job configuration parameters
+        """
+
+        self.set_mailer_param()
+        #self.set_junit_testresults_param()  TODO
+
+        matrix_filter = self.generate_matrix_filter([{'repository': execute_repo} for execute_repo in self.execute_repo_list])
+
+        super(Test_Job, self).set_job_type_params(matrix_filter)
+
+        self.params['NODE_LABEL'] = 'test'  # TODO check labels
+
+
+class Database_Test_Job(Test_Job):
     """
     Class for database test job
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
         Creates a database test job instance
 
@@ -755,7 +793,7 @@ class Database_Test_Job(Build_Job):
         @type  pipeline_config: dict
         """
 
-        super(Database_Test_Job, self).__init__(jenkins_instance, pipeline_config)
+        super(Database_Test_Job, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
 
         self.job_type = 'db'
         self.job_name = self.generate_job_name(self.job_type)
@@ -770,13 +808,15 @@ class Database_Test_Job(Build_Job):
         self.params['NODE_LABEL'] = 'database_test'  # TODO check labels
 
         # set execute shell TODO
+        shell_script = self.get_shell_script()
+        self.set_shell_param(shell_script)
 
 
 class Simulation_Test_Job(Build_Job):
     """
     Class for simulation test job
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
         Creates a simulation test job instance
 
@@ -786,7 +826,7 @@ class Simulation_Test_Job(Build_Job):
         @type  pipeline_config: dict
         """
 
-        super(Simulation_Test_Job, self).__init__(jenkins_instance, pipeline_config)
+        super(Simulation_Test_Job, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
 
         self.job_type = 'sim'
         self.job_name = self.generate_job_name(self.job_type)
@@ -801,13 +841,15 @@ class Simulation_Test_Job(Build_Job):
         self.params['NODE_LABEL'] = 'simulation_test'  # TODO check labels
 
         # set execute shell TODO
+        shell_script = self.get_shell_script()
+        self.set_shell_param(shell_script)
 
 
 class Application_Test_Job(Build_Job):
     """
     Class for application test job
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
         Creates a application test job instance
 
@@ -817,7 +859,7 @@ class Application_Test_Job(Build_Job):
         @type  pipeline_config: dict
         """
 
-        super(Application_Test_Job, self).__init__(jenkins_instance, pipeline_config)
+        super(Application_Test_Job, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
 
         self.job_type = 'app'
         self.job_name = self.generate_job_name(self.job_type)
@@ -832,6 +874,8 @@ class Application_Test_Job(Build_Job):
         self.params['NODE_LABEL'] = 'application_test'  # TODO check labels
 
         # set execute shell TODO
+        shell_script = self.get_shell_script()
+        self.set_shell_param(shell_script)
 
 
 class Hardware_Job(Jenkins_Job):
