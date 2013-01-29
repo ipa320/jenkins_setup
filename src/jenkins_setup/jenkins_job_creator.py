@@ -96,7 +96,7 @@ class Jenkins_Job(object):
                 self.jenkins_instance.delete_job(self.job_name)
                 print "Deleted job %s" % self.job_name
             except Exception as ex:
-                print "Deletion of job %s failed: " % (self.job_name, ex)
+                print "Deletion of job %s failed: %s" % (self.job_name, ex)
                 return ''
             return self.job_name
         else:
@@ -127,6 +127,11 @@ class Jenkins_Job(object):
         self.params['PARAMETERIZED_TRIGGER'] = ''
         self.params['JUNIT_TESTRESULTS'] = ''
         self.params['MAILER'] = ''
+
+    def __set_job_type_params(self):
+        """
+        Sets job_type specific job configuration parameters
+        """
 
     ###########################################################################
     # helper methods - parameter generation
@@ -517,6 +522,8 @@ class Pipe_Starter_General_Job(Jenkins_Job):
         Sets pipe starter specific job configuration parameters
         """
 
+        super(Pipe_Starter_General_Job, self).__set_job_type_params()
+
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
 
@@ -587,6 +594,8 @@ class Build_Job(Jenkins_Job):
         """
         Sets build job specific job configuration parameters
         """
+
+        super(Build_Job, self).__set_job_type_params()
 
         self.set_mailer_param()
         self.set_junit_testresults_param()
@@ -715,6 +724,8 @@ class Test_Job(Jenkins_Job):
         """
         Sets test job specific job configuration parameters
         """
+
+        super(Test_Job, self).__set_job_type_params()
 
         self.params['PROJECT'] = 'project'
 
@@ -868,6 +879,8 @@ class Hardware_Job(Jenkins_Job):
         Sets hardware job specific job configuration parameters
         """
 
+        super(Hardware_Job, self).__set_job_type_params()
+
         self.params['PROJECT'] = 'matrix-project'
 
         self.set_junit_testresults_param()
@@ -942,6 +955,8 @@ class Release_Job(Jenkins_Job):
         Sets release job specific job configuration parameters
         """
 
+        super(Release_Job, self).__set_job_type_params()
+
         self.params['PROJECT'] = 'project'
 
         self.params['NODE_LABEL'] = 'release'
@@ -967,6 +982,8 @@ class Clean_Up_Job(Jenkins_Job):
         """
         Sets clean up job specific job configuration parameters
         """
+
+        super(Clean_Up_Job, self).__set_job_type_params()
 
         self.params['PROJECT'] = 'project'
 
