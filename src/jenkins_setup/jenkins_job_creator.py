@@ -492,14 +492,14 @@ class Jenkins_Job(object):
 
         shell_temp = pkg_resources.resource_string('jenkins_setup', 'templates/execute_shell.yaml')
         shell_temp = yaml.load(shell_temp)
-        shell_script = shell_temp[self.job_type]
+        if script_type:
+            shell_script = shell_temp[script_type]
+        else:
+            shell_script = shell_temp[self.job_type]
         shell_script = shell_script.replace('@(SERVERNAME)', self.pipe_inst.server_name)
         shell_script = shell_script.replace('@(STORAGE)', self.network_config['storage'])
         shell_script = shell_script.replace('@(USERNAME)', self.pipe_inst.user_name)
-        if script_type:
-            shell_script = shell_script.replace('@(JOB_TYPE_NAME)', script_type)
-        else:
-            shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.JOB_TYPE_NAMES[self.job_type])
+        shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.JOB_TYPE_NAMES[self.job_type])
 
         return shell_script
 
