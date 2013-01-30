@@ -113,7 +113,7 @@ if [ $update == True ]; then
     cat > ~/jenkins-config/slave_config.yaml <<DELIM
 master: $HOST
 master_url: "http://$HOST:8080"
-storage: $storage
+storage: ${storage%/}
 jenkins_login: $jenkins_login
 jenkins_pw: $jenkins_pw
 DELIM
