@@ -3,6 +3,7 @@
 echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 echo "This script will help you set up the configuration of the master."
 echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+echo "Please run this script only on the Jenkins master"
 echo ""
 
 echo "Setting up master configuration"
@@ -13,7 +14,7 @@ if [ -d ~/jenkins-config ]; then
             ;;
         No|no|N|n) echo "'jenkins-config'-folder will not be updated!"
             read -p "Do you want to execute 'ssh-copy-id' for each entry in 'slavelist'? [y|n] " resp
-            case "$resp" in 
+            case "$resp" in
                 Yes|yes|Y|y|"")
                     echo "Installing public key of master on each entry in 'slavelist' via ssh-copy-id to enable password-free communication"
                     while read line; do
@@ -85,5 +86,38 @@ if [ -f ~/jenkins-config/slavelist ]; then
     done <~/jenkins-config/slavelist
 else
     touch ~/jenkins-config/slavelist
-    echo "'slavelist' did not exist and was created."
+    echo "'slavelist' did not exist. A empty one was created."
 fi
+
+update=False
+if [ -f ~/jenkins-config/slave_config.yaml ]; then
+    read -p "'slave_config.yaml' already exists! Do you want it to update? [y|n] " resp
+    case "$resp" in
+        Yes|yes|Y|y|"") update=True
+            ;;
+        No|no|N|n)  echo "'slave_config.yaml' will not be updated"
+            ;;
+        *) echo "Unknown parameter! '.ssh/' will not be updated"
+            ;;
+    esac
+else
+    echo "No 'slave_config.yaml' found!"
+    update=True
+fi
+if [ $update == True ]; then
+    echo "As Jenkins master the PC this script runs on will be set: "${HOST}
+    read -p "Enter location where the chroot tarballs should be stored (e.g. jenkins@jenkinsmaster:~/chroot_tarballs): " storage
+    read -p "Enter Jenkins admin user name: " jenkins_login
+    read -p "Enter Jenkins admin password: " jenkins_pw
+
+    cat > ~/jenkins-config/slave_config.yaml <<DELIM
+master: $HOST
+master_url: "http://$HOST:8080"
+storage: $storage
+jenkins_login: $jenkins_login
+jenkins_pw: $jenkins_pw
+DELIM
+    echo "Configuration file written"
+fi
+
+echo "Master setup complete"

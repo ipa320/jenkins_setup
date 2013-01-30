@@ -70,12 +70,6 @@ echo "Creating 'jenkins-config'-folder"
 mkdir ~/jenkins-config
 
 cd ~/jenkins-config
+scp jenkins@"$master":~/jenkins-config/slave_config.yaml .
 
-cat > ~/jenkins-config/slave_config.yaml <<DELIM
-master: $master
-master_url: "http://$master:8080"
-jenkins_login: ""
-jenkins_pw: ""
-DELIM
-echo "Configuration file written"
-
+echo "Configuration file copied from Jenkins master"
