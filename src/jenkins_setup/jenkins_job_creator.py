@@ -619,8 +619,10 @@ class Build_Job(Jenkins_Job):
         Sets build job specific job configuration parameters
         """
 
+        self.params['NODE_LABEL'] = 'master'
+
         self.set_mailer_param()
-        #self.set_junit_testresults_param()  TODO
+        self.set_junit_testresults_param()
 
         # set matrix
         matrix_entries_dict_list = self.get_matrix_entries()
@@ -657,8 +659,6 @@ class Priority_Build_Job(Build_Job):
 
         super(Priority_Build_Job, self).set_job_type_params(matrix_filter)
 
-        self.params['NODE_LABEL'] = 'prio_build'  # TODO check labels
-
         # set execute shell TODO
         shell_script = self.get_shell_script()
         self.set_shell_param(shell_script)
@@ -670,7 +670,7 @@ class Priority_Build_Job(Build_Job):
         self.set_pipelinetrigger_param(['bringup'])
 
         # set parameterized triggers
-        normal_trigger = self.get_single_parameterizedtrigger(['normal'], subset_filter='(repository=="$REPOSITORY")')
+        normal_trigger = self.get_single_parameterizedtrigger(['normal'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
         down_trigger = self.get_single_parameterizedtrigger(['down'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
         self.set_parameterizedtrigger_param([normal_trigger, down_trigger])
 
@@ -702,8 +702,6 @@ class Normal_Build_Job(Build_Job):
         matrix_filter = self.generate_matrix_filter(self.get_normal_subset_filter())
 
         super(Normal_Build_Job, self).set_job_type_params(matrix_filter)
-
-        self.params['NODE_LABEL'] = 'normal_build'  # TODO check labels
 
         # set execute shell TODO
         shell_script = self.get_shell_script()
@@ -761,7 +759,8 @@ class Downstream_Build_Job(Build_Job):
 
         super(Downstream_Build_Job, self).set_job_type_params(matrix_filter)
 
-        self.params['NODE_LABEL'] = 'downstream_build'  # TODO check labels
+        # TODO remove
+        self.params['JUNIT_TESTRESULTS'] = ''
 
         # set execute shell TODO
         shell_script = self.get_shell_script()
