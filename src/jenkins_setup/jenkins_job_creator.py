@@ -231,7 +231,11 @@ class Jenkins_Job(object):
         if axes == '':
             return ''
 
-        matrix = self.job_config_params['matrix']['basic'].replace('@(AXES)', axes)
+        #matrix = self.job_config_params['matrix']['basic'].replace('@(AXES)', axes)
+
+        matrix = self.job_config_params['matrix']['basic']
+        matrix = matrix.replace('@(NODE)', self.JOB_TYPE_NAMES[self.job_type])
+        matrix = matrix.replace('@(AXES)', axes)
         if filter:
             matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', filter)
 
@@ -492,7 +496,7 @@ class Jenkins_Job(object):
         shell_script = shell_script.replace('@(SERVERNAME)', self.pipe_inst.server_name)
         shell_script = shell_script.replace('@(STORAGE)', self.network_config['storage'])
         shell_script = shell_script.replace('@(USERNAME)', self.pipe_inst.user_name)
-        shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.job_type)
+        shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.JOB_TYPE_NAMES[self.job_type])
 
         return shell_script
 

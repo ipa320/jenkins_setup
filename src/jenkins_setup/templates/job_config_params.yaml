@@ -35,8 +35,7 @@
     '<hudson.plugins.parameterizedtrigger.PredefinedBuildParameters> <properties>@(PARAMETER)</properties> </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>'
 
 'matrix':
-  'block': '<axes>@(AXIS)<hudson.matrix.LabelAxis> <name>label</name> <values> <string>@(NODE)</string> </values> </hudson.matrix.LabelAxis> </axes> <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl"> <runSequentially>false</runSequentially> </executionStrategy>'
-  'basic': '<axes> @(AXES) </axes>'
+  'basic': '<axes>@(AXES)<hudson.matrix.LabelAxis> <name>label</name> <values> <string>@(NODE)</string> </values> </hudson.matrix.LabelAxis> </axes> <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl"> <runSequentially>false</runSequentially> </executionStrategy>'
   'axis': '<hudson.matrix.TextAxis> <name>@(NAME)</name> <values> @(VALUES) </values> </hudson.matrix.TextAxis>'
   'value': '<string>@(VALUE)</string>'
   'filter': '<combinationFilter>@(FILTER)</combinationFilter>'
