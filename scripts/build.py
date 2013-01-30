@@ -4,7 +4,7 @@ import optparse
 import sys
 import os
 
-from jenkins_setup import cob_common, cob_distro, rosdep
+from jenkins_setup import cob_common, cob_distro, rosdep, cob_pipe
 
 
 def main():
@@ -44,7 +44,7 @@ def main():
 
     # cob_distro_pipe object
     cdp_instance = cob_distro.Cob_Distro_Pipe()
-    cdp_instance.load_from_url(server_name, user_name)
+    cdp_instance.load_config_from_url(server_name, user_name)
     buildpipe_repos = cdp_instance.repositories
 
     # build depending on ros_ distro
