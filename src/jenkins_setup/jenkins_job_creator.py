@@ -485,7 +485,7 @@ class Jenkins_Job(object):
 
         self.params['SHELL'] = shell_config
 
-    def get_shell_script(self):
+    def get_shell_script(self, script_type=None):
         """
         Gets and sets up execute shell script template
         """
@@ -496,7 +496,10 @@ class Jenkins_Job(object):
         shell_script = shell_script.replace('@(SERVERNAME)', self.pipe_inst.server_name)
         shell_script = shell_script.replace('@(STORAGE)', self.network_config['storage'])
         shell_script = shell_script.replace('@(USERNAME)', self.pipe_inst.user_name)
-        shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.JOB_TYPE_NAMES[self.job_type])
+        if script_type:
+            shell_script = shell_script.replace('@(JOB_TYPE_NAME)', script_type)
+        else:
+            shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.JOB_TYPE_NAMES[self.job_type])
 
         return shell_script
 
@@ -659,7 +662,7 @@ class Priority_Build_Job(Build_Job):
 
         super(Priority_Build_Job, self).set_job_type_params(matrix_filter)
 
-        # set execute shell TODO
+        # set execute shell
         shell_script = self.get_shell_script()
         self.set_shell_param(shell_script)
 
@@ -703,7 +706,7 @@ class Normal_Build_Job(Build_Job):
 
         super(Normal_Build_Job, self).set_job_type_params(matrix_filter)
 
-        # set execute shell TODO
+        # set execute shell
         shell_script = self.get_shell_script()
         self.set_shell_param(shell_script)
 
@@ -843,7 +846,7 @@ class Database_Test_Job(Test_Job):
         self.params['NODE_LABEL'] = 'database_test'  # TODO check labels
 
         # set execute shell TODO
-        shell_script = self.get_shell_script()
+        shell_script = self.get_shell_script('test')
         self.set_shell_param(shell_script)
 
 
@@ -876,7 +879,7 @@ class Simulation_Test_Job(Test_Job):
         self.params['NODE_LABEL'] = 'simulation_test'  # TODO check labels
 
         # set execute shell TODO
-        shell_script = self.get_shell_script()
+        shell_script = self.get_shell_script('test')
         self.set_shell_param(shell_script)
 
 
@@ -909,7 +912,7 @@ class Application_Test_Job(Test_Job):
         self.params['NODE_LABEL'] = 'application_test'  # TODO check labels
 
         # set execute shell TODO
-        shell_script = self.get_shell_script()
+        shell_script = self.get_shell_script('test')
         self.set_shell_param(shell_script)
 
 
