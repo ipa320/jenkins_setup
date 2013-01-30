@@ -66,10 +66,8 @@ class Jenkins_Job(object):
                 print "Created job %s" % self.job_name
                 return 'created'
             except Exception as ex:
-                ### HACK because exception gets raised even if job was created
-                if not self.jenkins_instance.job_exists(self.job_name):
-                    print ex
-                    return 'creation failed: %s' % ex
+                print ex
+                return 'creation failed: %s' % ex
 
     def create_job(self):
         """
