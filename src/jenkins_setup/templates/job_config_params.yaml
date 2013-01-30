@@ -47,11 +47,11 @@
     'basic': "<org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder> <groovyScript>@(GROOVYPB_SCRIPT)</groovyScript> <behavior>@(GROOVYPB_BEHAVIOR)</behavior> </org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder>"
     'script':
         'enable': "if(manager.build.result.isBetterOrEqualTo(hudson.model.Result.FAILURE)) {\n manager.listener.logger.println('Because this build did not fail:')\n for (project in @(PROJECT_LIST)) {\n  manager.listener.logger.println(' - ' + project)\n  manager.hudson.getItem(project).enable()\n }\n manager.listener.logger.println('will be enabled.')\n}"
-        'join_enable': 'TODO'
+        'join_enable': ""
         'disable': "for (project in @(PROJECT_LIST)) {\n manager.listener.logger.println('Disable ' + project + ' job')\n manager.hudson.getItem(project).disable()\n}"
 
 'postbuildtrigger': '<hudson.tasks.BuildTrigger> <childProjects>@(CHILD_PROJECTS)</childProjects> <threshold> <name>@(THRESHOLD)</name> </threshold> </hudson.tasks.BuildTrigger>'
 
 'pipelinetrigger': '<au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger> <downstreamProjectNames>@(PIPELINETRIGGER_PROJECT)</downstreamProjectNames> </au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger>'
 
-'execute_shell': '<builders> <hudson.tasks.Shell> <command> @(COMMAND) </command> </hudson.tasks.Shell> </builders>'
+'execute_shell': '<builders> <hudson.tasks.Shell> <command>@(COMMAND)</command> </hudson.tasks.Shell> </builders>'

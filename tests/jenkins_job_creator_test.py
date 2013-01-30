@@ -10,6 +10,24 @@ import jenkins
 
 from jenkins_setup import jenkins_job_creator, cob_pipe
 
+EMPTY_CONFIG_XML = """<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders/>
+  <publishers/>
+  <buildWrappers/>
+</project>"""
+
 
 class Jenkins_Job_Test(unittest.TestCase):
     """
@@ -34,7 +52,7 @@ class Jenkins_Job_Test(unittest.TestCase):
     # Testing schedule_job
     def test__schedule_job__job_name_string_and_job_config_string__return_action_string(self):
         self.jj.job_name = 'test_job'
-        self.jj.job_config = jenkins.EMPTY_CONFIG_XML
+        self.jj.job_config = EMPTY_CONFIG_XML
         self.jj.delete_job()
         result = self.jj.schedule_job()
         self.assertEqual(result, 'created')
@@ -42,7 +60,7 @@ class Jenkins_Job_Test(unittest.TestCase):
 
     def test__schedule_job__job_name_string_and_job_config_string__return_action_string2(self):
         self.jj.job_name = 'test_job'
-        self.jj.job_config = jenkins.EMPTY_CONFIG_XML
+        self.jj.job_config = EMPTY_CONFIG_XML
         self.jj.schedule_job()
         result = self.jj.schedule_job()
         self.assertEqual(result, 'reconfigured')
@@ -51,7 +69,7 @@ class Jenkins_Job_Test(unittest.TestCase):
     # Testing delete_job
     def test__delete_job__job_name_string__return_action_string(self):
         self.jj.job_name = 'test_job'
-        self.jj.job_config = jenkins.EMPTY_CONFIG_XML
+        self.jj.job_config = EMPTY_CONFIG_XML
         self.jj.schedule_job()
         result = self.jj.delete_job()
         self.assertEqual(result, 'test_job')
@@ -309,11 +327,11 @@ class Jenkins_Job_Test(unittest.TestCase):
     # Testing set_groovypostbuild_param
     def test__set_groovypostbuild_param__input_script_type_string_project_list_behavior_string__return_groovypostbuild_config_string(self):
         self.jj.set_groovypostbuild_param('enable', self.job_type_test_list, 2)
-        self.assertEqual(self.jj.params['GROOVY_POSTBUILD'], "<org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder> <groovyScript>if(manager.build.result.isBetterOrEqualTo(hudson.model.Result.FAILURE)) { manager.listener.logger.println('Because this build did not fail:' for (project in ['test-user__pipe_starter', 'test-user__prio_build', 'test-user__normal_build']) { manager.listener.logger.println(' - ' + project) manager.hudson.getItem(project).enable() } manager.listener.logger.println('will be enabled.'}</groovyScript> <behavior>2</behavior> </org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder>")
+        self.assertEqual(self.jj.params['GROOVY_POSTBUILD'], "<org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder> <groovyScript>if(manager.build.result.isBetterOrEqualTo(hudson.model.Result.FAILURE)) {\n manager.listener.logger.println('Because this build did not fail:')\n for (project in ['test-user__pipe_starter', 'test-user__prio_build', 'test-user__normal_build']) {\n  manager.listener.logger.println(' - ' + project)\n  manager.hudson.getItem(project).enable()\n }\n manager.listener.logger.println('will be enabled.')\n}</groovyScript> <behavior>2</behavior> </org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder>")
 
     def test__set_groovypostbuild_param__input_script_type_string_project_list_behavior_string__return_groovypostbuild_config_string2(self):
         self.jj.set_groovypostbuild_param('disable', self.job_type_test_list, 2)
-        self.assertEqual(self.jj.params['GROOVY_POSTBUILD'], "<org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder> <groovyScript>for (project in ['test-user__pipe_starter', 'test-user__prio_build', 'test-user__normal_build']) { manager.listener.logger.println('Disable ' + project + ' job') manager.hudson.getItem(project).disable() }</groovyScript> <behavior>2</behavior> </org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder>")
+        self.assertEqual(self.jj.params['GROOVY_POSTBUILD'], "<org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder> <groovyScript>for (project in ['test-user__pipe_starter', 'test-user__prio_build', 'test-user__normal_build']) {\n manager.listener.logger.println('Disable ' + project + ' job')\n manager.hudson.getItem(project).disable()\n}</groovyScript> <behavior>2</behavior> </org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder>")
 
     def test__set_groovypostbuild_param__input_empty_script_type_string__raise_exception(self):
         self.assertRaises(Exception, self.jj.set_groovypostbuild_param, '', self.job_type_test_list, 2)
@@ -381,7 +399,8 @@ class Jenkins_Job_Test(unittest.TestCase):
         self.jj.set_junit_testresults_param()
         self.assertEqual(self.jj.params['JUNIT_TESTRESULTS'], '<hudson.tasks.junit.JUnitResultArchiver> <testResults>test_results/*.xml</testResults> <keepLongStdio>false</keepLongStdio> <testDataPublishers/> </hudson.tasks.junit.JUnitResultArchiver>')
 
-    def test__set_trigger_param_input_vcs__check_set_param(self):
+    # Testing set_trigger_param
+    def test__set_trigger_param__input_vcs__check_set_param(self):
         self.jj.params['VCS'] = ''
         self.jj.repo_list = ['test_repo_2']
         self.jj.poll = self.jj.repo_list[0]
@@ -389,49 +408,51 @@ class Jenkins_Job_Test(unittest.TestCase):
         self.assertEqual(self.jj.params['TRIGGER'], '<triggers class="vector"> <hudson.triggers.SCMTrigger> <spec>*/10 * * * *</spec> </hudson.triggers.SCMTrigger> </triggers>')
         self.assertTrue(self.jj.params['VCS'] != '')
 
-    def test__set_trigger_param_input_resulttrigger__check_set_param(self):
+    def test__set_trigger_param__input_resulttrigger__check_set_param(self):
         # TODO
         pass
 
+    # Testing set_vcs_param
     def test__set_vcs_param__check_git(self):
         self.jj.repo_list = ['test_repo_2']
         self.jj.poll = self.jj.repo_list[0]
         self.jj.set_vcs_param()
-        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.plugins.git.GitSCM"> <configVersion>2</configVersion> <userRemoteConfigs> <hudson.plugins.git.UserRemoteConfig> <name>origin</name> <refspec>+refs/heads/test:refs/remotes/origin/test</refspec> <url>git@github.com/user/repo2</url> </hudson.plugins.git.UserRemoteConfig> </userRemoteConfigs> <branches> <hudson.plugins.git.BranchSpec> <name>test</name> </hudson.plugins.git.BranchSpec> </branches> <disableSubmodules>false</disableSubmodules> <recursiveSubmodules>true</recursiveSubmodules> <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations> <authorOrCommitter>false</authorOrCommitter> <clean>false</clean> <wipeOutWorkspace>false</wipeOutWorkspace> <pruneBranches>false</pruneBranches> <remotePoll>false</remotePoll> <ignoreNotifyCommit>false</ignoreNotifyCommit> <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/> <gitTool>Default</gitTool> <submoduleCfg class="list"/> <relativeTargetDir>monitored_vcs</relativeTargetDir> <reference/> <excludedRegions/> <excludedUsers/> <gitConfigName/> <gitConfigEmail/> <skipTag>false</skipTag> <includedRegions/> <scmName/> </scm>')
+        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.plugins.git.GitSCM"> <configVersion>2</configVersion> <userRemoteConfigs> <hudson.plugins.git.UserRemoteConfig> <name>origin</name> <refspec>+refs/heads/test:refs/remotes/origin/test</refspec> <url>git@github.com/user/repo2</url> </hudson.plugins.git.UserRemoteConfig> </userRemoteConfigs> <branches> <hudson.plugins.git.BranchSpec> <name>test</name> </hudson.plugins.git.BranchSpec> </branches> <disableSubmodules>false</disableSubmodules> <recursiveSubmodules>true</recursiveSubmodules> <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations> <authorOrCommitter>false</authorOrCommitter> <clean>false</clean> <wipeOutWorkspace>false</wipeOutWorkspace> <pruneBranches>false</pruneBranches> <remotePoll>false</remotePoll> <ignoreNotifyCommit>false</ignoreNotifyCommit> <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/> <gitTool>Default</gitTool> <submoduleCfg class="list"/> <relativeTargetDir>monitored_vcs</relativeTargetDir> <reference/> <excludedRegions/> <excludedUsers/> <gitConfigName/> <gitConfigEmail/> <skipTag>false</skipTag> <includedRegions/> <scmName/> </scm> <scmCheckoutRetryCount>3</scmCheckoutRetryCount>')
 
     def test__set_vcs_param__check_git2(self):
         self.jj.poll = 'dep_repo_1'
         self.jj.repo_list = ['test_repo_2']
         self.jj.set_vcs_param()
-        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.plugins.git.GitSCM"> <configVersion>2</configVersion> <userRemoteConfigs> <hudson.plugins.git.UserRemoteConfig> <name>origin</name> <refspec>+refs/heads/master:refs/remotes/origin/master</refspec> <url>git@github.com/user_x/dep_repo_1</url> </hudson.plugins.git.UserRemoteConfig> </userRemoteConfigs> <branches> <hudson.plugins.git.BranchSpec> <name>master</name> </hudson.plugins.git.BranchSpec> </branches> <disableSubmodules>false</disableSubmodules> <recursiveSubmodules>true</recursiveSubmodules> <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations> <authorOrCommitter>false</authorOrCommitter> <clean>false</clean> <wipeOutWorkspace>false</wipeOutWorkspace> <pruneBranches>false</pruneBranches> <remotePoll>false</remotePoll> <ignoreNotifyCommit>false</ignoreNotifyCommit> <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/> <gitTool>Default</gitTool> <submoduleCfg class="list"/> <relativeTargetDir>monitored_vcs</relativeTargetDir> <reference/> <excludedRegions/> <excludedUsers/> <gitConfigName/> <gitConfigEmail/> <skipTag>false</skipTag> <includedRegions/> <scmName/> </scm>')
+        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.plugins.git.GitSCM"> <configVersion>2</configVersion> <userRemoteConfigs> <hudson.plugins.git.UserRemoteConfig> <name>origin</name> <refspec>+refs/heads/master:refs/remotes/origin/master</refspec> <url>git@github.com/user_x/dep_repo_1</url> </hudson.plugins.git.UserRemoteConfig> </userRemoteConfigs> <branches> <hudson.plugins.git.BranchSpec> <name>master</name> </hudson.plugins.git.BranchSpec> </branches> <disableSubmodules>false</disableSubmodules> <recursiveSubmodules>true</recursiveSubmodules> <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations> <authorOrCommitter>false</authorOrCommitter> <clean>false</clean> <wipeOutWorkspace>false</wipeOutWorkspace> <pruneBranches>false</pruneBranches> <remotePoll>false</remotePoll> <ignoreNotifyCommit>false</ignoreNotifyCommit> <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/> <gitTool>Default</gitTool> <submoduleCfg class="list"/> <relativeTargetDir>monitored_vcs</relativeTargetDir> <reference/> <excludedRegions/> <excludedUsers/> <gitConfigName/> <gitConfigEmail/> <skipTag>false</skipTag> <includedRegions/> <scmName/> </scm> <scmCheckoutRetryCount>3</scmCheckoutRetryCount>')
 
     def test__set_vcs_param__check_hg(self):
         self.jj.repo_list = ['test_repo_3']
         self.jj.poll = self.jj.repo_list[0]
         self.jj.set_vcs_param()
-        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.plugins.mercurial.MercurialSCM"> <source>https://kforge.ros.org/test/test_repo_3</source> <modules/> <subdir>monitored_vcs</subdir> <clean>false</clean> <forest>false</forest> <branch>master</branch> </scm>')
+        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.plugins.mercurial.MercurialSCM"> <source>https://kforge.ros.org/test/test_repo_3</source> <modules/> <subdir>monitored_vcs</subdir> <clean>false</clean> <forest>false</forest> <branch>master</branch> </scm> <scmCheckoutRetryCount>3</scmCheckoutRetryCount>')
 
     def test__set_vcs_param__check_hg2(self):
         self.jj.poll = 'dep_repo_4'
         self.jj.repo_list = ['test_repo_2']
         self.jj.set_vcs_param()
-        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.plugins.mercurial.MercurialSCM"> <source>https://kforge.ros.org/test/dep_repo_4</source> <modules/> <subdir>monitored_vcs</subdir> <clean>false</clean> <forest>false</forest> <branch>master</branch> </scm>')
+        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.plugins.mercurial.MercurialSCM"> <source>https://kforge.ros.org/test/dep_repo_4</source> <modules/> <subdir>monitored_vcs</subdir> <clean>false</clean> <forest>false</forest> <branch>master</branch> </scm> <scmCheckoutRetryCount>3</scmCheckoutRetryCount>')
 
     def test__set_vcs_param__check_svn(self):
         self.jj.repo_list = ['test_repo_4']
         self.jj.poll = self.jj.repo_list[0]
         self.jj.set_vcs_param()
-        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.scm.SubversionSCM"> <locations> <hudson.scm.SubversionSCM_-ModuleLocation> <remote>https://code.test.org/svn/test/stacks/test_repo_4</remote> <local>monitored_vcs</local> </hudson.scm.SubversionSCM_-ModuleLocation> </locations> <useUpdate>false</useUpdate> <doRevert>false</doRevert> <excludedRegions/> <includedRegions/> <excludedUsers/> <excludedRevprop/> <excludedCommitMessages/> </scm>')
+        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.scm.SubversionSCM"> <locations> <hudson.scm.SubversionSCM_-ModuleLocation> <remote>https://code.test.org/svn/test/stacks/test_repo_4</remote> <local>monitored_vcs</local> </hudson.scm.SubversionSCM_-ModuleLocation> </locations> <useUpdate>false</useUpdate> <doRevert>false</doRevert> <excludedRegions/> <includedRegions/> <excludedUsers/> <excludedRevprop/> <excludedCommitMessages/> </scm> <scmCheckoutRetryCount>3</scmCheckoutRetryCount>')
 
     def test__set_vcs_param__check_svn2(self):
         self.jj.poll = 'dep_repo_5'
         self.jj.repo_list = ['test_repo_2']
         self.jj.set_vcs_param()
-        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.scm.SubversionSCM"> <locations> <hudson.scm.SubversionSCM_-ModuleLocation> <remote>https://code.test.org/svn/test/stacks/dep_repo_5</remote> <local>monitored_vcs</local> </hudson.scm.SubversionSCM_-ModuleLocation> </locations> <useUpdate>false</useUpdate> <doRevert>false</doRevert> <excludedRegions/> <includedRegions/> <excludedUsers/> <excludedRevprop/> <excludedCommitMessages/> </scm>')
+        self.assertEqual(self.jj.params['VCS'], '<scm class="hudson.scm.SubversionSCM"> <locations> <hudson.scm.SubversionSCM_-ModuleLocation> <remote>https://code.test.org/svn/test/stacks/dep_repo_5</remote> <local>monitored_vcs</local> </hudson.scm.SubversionSCM_-ModuleLocation> </locations> <useUpdate>false</useUpdate> <doRevert>false</doRevert> <excludedRegions/> <includedRegions/> <excludedUsers/> <excludedRevprop/> <excludedCommitMessages/> </scm> <scmCheckoutRetryCount>3</scmCheckoutRetryCount>')
 
+    # Testing set_shell_param
     def test__set_shell_param__input_shell_script_str_check_param(self):
         self.jj.set_shell_param('echo test')
-        self.assertEqual(self.jj.params['SHELL'], '<builders> <hudson.tasks.Shell> <command> echo test </command> </hudson.tasks.Shell> </builders>')
+        self.assertEqual(self.jj.params['SHELL'], '<builders> <hudson.tasks.Shell> <command>echo test</command> </hudson.tasks.Shell> </builders>')
 
     def test__set_shell_param__input_empty_str_raise_exception(self):
         self.assertRaises(Exception, self.jj.set_shell_param, '')
@@ -439,6 +460,7 @@ class Jenkins_Job_Test(unittest.TestCase):
     def test__set_shell_param__input_wrong_type_raise_exception(self):
         self.assertRaises(Exception, self.jj.set_shell_param, 2)
 
+    # Testing get_shell_script
     def test__get_shell_script__result_shell_script_str(self):
         self.jj.job_type = 'prio'
         result = self.jj.get_shell_script()
@@ -469,22 +491,22 @@ class Pipe_Starter_Job_Test(unittest.TestCase):
         self.jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'], info['jenkins_pw'])
 
     def test__get_prio_subset_filter__result_filter_input_dict(self):
-        self.jj = jenkins_job_creator.Pipe_Starter_Job(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1'], 'dep_repo_1')
+        self.jj = jenkins_job_creator.Pipe_Starter_Job(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1'], 'dep_repo_1', [])
         result = self.jj.get_prio_subset_filter()
         self.assertEqual(result, [{'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
                                   {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro_2', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'}])
 
     def test__get_prio_subset_filter__result_filter_input_dict2(self):
-        self.jj = jenkins_job_creator.Pipe_Starter_Job(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1', 'test_repo_2'], 'dep_repo_1')
+        self.jj = jenkins_job_creator.Pipe_Starter_Job(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1', 'test_repo_2'], 'dep_repo_1', [])
         result = self.jj.get_prio_subset_filter()
         self.assertEqual(result, [{'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
                                   {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro_2', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
                                   {'repository': 'test_repo_2', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'natty', 'arch': 'amd64'}])
 
 
-class Priority_Build_Job_Test(unittest.TestCase):
+class Normal_Build_Job_Test(unittest.TestCase):
     """
-    Tests Priority Build Job
+    Tests Normal Build Job
     """
 
     def setUp(self):
@@ -500,7 +522,7 @@ class Priority_Build_Job_Test(unittest.TestCase):
             info = yaml.load(f)
         self.jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'], info['jenkins_pw'])
 
-        self.jj = jenkins_job_creator.Priority_Build_Job(self.jenkins_instance, self.test_pipe_inst)
+        self.jj = jenkins_job_creator.Normal_Build_Job(self.jenkins_instance, self.test_pipe_inst)
 
     def test__get_normal_subset_filter__result_filter_input_dict(self):
         result = self.jj.get_normal_subset_filter()
