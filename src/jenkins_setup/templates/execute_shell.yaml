@@ -1,120 +1,301 @@
-'prio': '#!/bin/bash -e\n
+'prio': '#!/bin/bash -e
 
-new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}\n
-basetgz=${new_basetgz}__${repository}\n
+new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
 
-sudo rm -rf $WORKSPACE/*\n
+basetgz=@(USERNAME)__${new_basetgz}__${REPOSITORY}
 
-mkdir $WORKSPACE/../aux\n
 
-scp jenkins@@(SERVERNAME):~/chroot_tarballs/$new_basetgz $WORKSPACE/../aux/@(USERNAME)__${basetgz}\n
-scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig\n
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh\n
-ls -lah $WORKSPACE\n
+sudo rm -rf $WORKSPACE/*
 
-git clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup\n
+if [ -d $WORKSPACE/../aux ]; then
+
+sudo rm -rf $WORKSPACE/../aux
+
+fi
+
+mkdir $WORKSPACE/../aux
+
+
+scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
+
+scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
+
+scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
+
 ls -lah $WORKSPACE
 
-cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM\n
-JOBNAME=$JOB_NAME\n
-ROSDISTRO=$ros_distro\n
-REPOSITORY=$repository\n
-UBUNTUDISTRO=$ubuntu_distro\n
-ARCH=$arch\n
-#TODO\n
-JENKINS_MASTER=@(SERVERNAME)\n
-JENKINS_USER=@(USERNAME)\n
-JOBTYPE=@(JOB_TYPE_NAME)\n
-export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO\n
-DELIM\n
 
-ls -lah $WORKSPACE\n
+git clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup
 
-echo "***********ENTER CHROOT************"\n
-echo "*********please be patient*********"\n
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/@(USERNAME)__${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\n
-
-echo "*******CLEANUP WORKSPACE*******"\n
-echo "STORING CHROOT TARBALL ON SERVER"\n
-scp $WORKSPACE/../aux/@(USERNAME)__${basetgz} jenkins@@(STORAGE):~/chroot_tarballs/in_use/\n
-sudo rm -rf $WORKSPACE/../aux\n'
-
-'normal': '#!/bin/bash -e\n
-
-new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}\n
-basetgz=${new_basetgz}__${repository}\n
-
-sudo rm -rf $WORKSPACE/*\n
-
-mkdir $WORKSPACE/../aux\n
-
-scp jenkins@@(STORAGE):~/chroot_tarballs/$new_basetgz $WORKSPACE/../aux/@(USERNAME)__${basetgz}\n
-scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig\n
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh\n
-ls -lah $WORKSPACE\n
-
-git clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup\n
-ls -lah $WORKSPACE\n
-
-cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM\n
-JOBNAME=$JOB_NAME\n
-ROSDISTRO=$ros_distro\n
-REPOSITORY=$repository\n
-UBUNTUDISTRO=$ubuntu_distro\n
-ARCH=$arch\n
-#TODO\n
-JENKINS_MASTER=@(SERVERNAME)\n
-JENKINS_USER=@(USERNAME)\n
-JOBTYPE=@(JOB_TYPE_NAME)\n
-export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO\n
-DELIM\n
-
-ls -lah $WORKSPACE\n
-
-echo "***********ENTER CHROOT************"\n
-echo "*********please be patient*********"\n
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/@(USERNAME)__${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\n
-
-echo "*******CLEANUP WORKSPACE*******"\n
-sudo rm -rf $WORKSPACE/../aux\n'
-
-'down': '#!/bin/bash -e\n
-
-new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}\n
-basetgz=${new_basetgz}__${repository}\n
-
-sudo rm -rf $WORKSPACE/*\n
-
-mkdir $WORKSPACE/../aux\n
-
-scp jenkins@@(SERVERNAME):~/chroot_tarballs/$new_basetgz $WORKSPACE/../aux/@(USERNAME)__${basetgz}\n
-scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig\n
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh\n
-ls -lah $WORKSPACE\n
-
-git clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup\n
 ls -lah $WORKSPACE
 
-cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM\n
-JOBNAME=$JOB_NAME\n
-ROSDISTRO=$ros_distro\n
-REPOSITORY=$repository\n
-UBUNTUDISTRO=$ubuntu_distro\n
-ARCH=$arch\n
-#TODO\n
-JENKINS_MASTER=@(SERVERNAME)\n
-JENKINS_USER=@(USERNAME)\n
-JOBTYPE=@(JOB_TYPE_NAME)\n
-export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO\n
-DELIM\n
 
-ls -lah $WORKSPACE\n
+cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
-echo "***********ENTER CHROOT************"\n
-echo "*********please be patient*********"\n
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/@(USERNAME)__${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\n
+JOBNAME=$JOB_NAME
 
-echo "*******CLEANUP WORKSPACE*******"\n
-echo "STORING CHROOT TARBALL ON SERVER"\n
-scp $WORKSPACE/../aux/@(USERNAME)__${basetgz} jenkins@@(STORAGE):~/chroot_tarballs/in_use/\n
-sudo rm -rf $WORKSPACE/../aux\n'
+ROSDISTRO=$ros_distro
+
+REPOSITORY=${REPOSITORY%__*}
+
+UBUNTUDISTRO=$ubuntu_distro
+
+ARCH=$arch
+
+#TODO
+
+JENKINS_MASTER=@(SERVERNAME)
+
+JENKINS_USER=@(USERNAME)
+
+JOBTYPE=@(JOB_TYPE_NAME)
+
+export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO
+
+DELIM
+
+
+ls -lah $WORKSPACE
+
+
+echo "***********ENTER CHROOT************"
+
+echo "*********please be patient*********"
+
+
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+
+
+echo "*******CLEANUP WORKSPACE*******"
+
+echo "STORING CHROOT TARBALL ON SERVER"
+
+scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use/
+
+sudo rm -rf $WORKSPACE/../aux'
+
+'normal': '#!/bin/bash -e
+
+
+new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+
+basetgz=@(USERNAME)__${new_basetgz}__${repository}
+
+
+sudo rm -rf $WORKSPACE/*
+
+if [ -d $WORKSPACE/../aux ]; then
+
+sudo rm -rf $WORKSPACE/../aux
+
+fi
+
+mkdir $WORKSPACE/../aux
+
+
+scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
+
+scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
+
+scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
+
+ls -lah $WORKSPACE
+
+
+git clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup
+
+ls -lah $WORKSPACE
+
+
+cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
+
+JOBNAME=$JOB_NAME
+
+ROSDISTRO=$ros_distro
+
+REPOSITORY=${REPOSITORY%__*}
+
+UBUNTUDISTRO=$ubuntu_distro
+
+ARCH=$arch
+
+#TODO
+
+JENKINS_MASTER=@(SERVERNAME)
+
+JENKINS_USER=@(USERNAME)
+
+JOBTYPE=@(JOB_TYPE_NAME)
+
+export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO
+
+DELIM
+
+
+ls -lah $WORKSPACE
+
+
+echo "***********ENTER CHROOT************"
+
+echo "*********please be patient*********"
+
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+
+
+echo "*******CLEANUP WORKSPACE*******"
+
+sudo rm -rf $WORKSPACE/../aux'
+
+'down': '#!/bin/bash -e
+
+new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+
+basetgz=@(USERNAME)__${new_basetgz}__${REPOSITORY}
+
+
+sudo rm -rf $WORKSPACE/*
+
+if [ -d $WORKSPACE/../aux ]; then
+
+sudo rm -rf $WORKSPACE/../aux
+
+fi
+
+mkdir $WORKSPACE/../aux
+
+
+scp @(STORAGE)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
+
+scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
+
+scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
+
+ls -lah $WORKSPACE
+
+
+git clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup
+
+ls -lah $WORKSPACE
+
+
+cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
+
+JOBNAME=$JOB_NAME
+
+ROSDISTRO=$ros_distro
+
+REPOSITORY=${REPOSITORY%__*}
+
+UBUNTUDISTRO=$ubuntu_distro
+
+ARCH=$arch
+
+#TODO
+
+JENKINS_MASTER=@(SERVERNAME)
+
+JENKINS_USER=@(USERNAME)
+
+JOBTYPE=@(JOB_TYPE_NAME)
+
+export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO
+
+DELIM
+
+
+ls -lah $WORKSPACE
+
+
+echo "***********ENTER CHROOT************"
+
+echo "*********please be patient*********"
+
+
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+
+
+echo "*******CLEANUP WORKSPACE*******"
+
+sudo rm -rf $WORKSPACE/../aux'
+
+'test': '#!/bin/bash -e
+
+new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+
+basetgz=@(USERNAME)__${new_basetgz}__${REPOSITORY}
+
+
+sudo rm -rf $WORKSPACE/*
+
+if [ -d $WORKSPACE/../aux ]; then
+
+sudo rm -rf $WORKSPACE/../aux
+
+fi
+
+mkdir $WORKSPACE/../aux
+
+
+scp @(STORAGE)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
+
+scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
+
+scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
+
+ls -lah $WORKSPACE
+
+
+git clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup
+
+ls -lah $WORKSPACE
+
+
+cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
+
+JOBNAME=$JOB_NAME
+
+ROSDISTRO=$ros_distro
+
+REPOSITORY=${REPOSITORY%__*}
+
+UBUNTUDISTRO=$ubuntu_distro
+
+ARCH=$arch
+
+#TODO
+
+JENKINS_MASTER=@(SERVERNAME)
+
+JENKINS_USER=@(USERNAME)
+
+JOBTYPE=@(JOB_TYPE_NAME)
+
+export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO
+
+DELIM
+
+
+ls -lah $WORKSPACE
+
+
+echo "***********ENTER CHROOT************"
+
+echo "*********please be patient*********"
+
+
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+
+
+echo "*******CLEANUP WORKSPACE*******"
+
+sudo rm -rf $WORKSPACE/../aux'
+
+'db': '#!/bin/bash -e'
+
+'sim': '#!/bin/bash -e'
+
+'app': '#!/bin/bash -e'
+
+'bringup': '#!/bin/bash -e'
+
+'highlevel': '#!/bin/bash -e'
