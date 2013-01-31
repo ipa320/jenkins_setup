@@ -63,6 +63,8 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     # install Debian packages needed for script TODO ??
     #print "Installing Debian packages we need for running this script"
     #cob_common.call("apt-get install python-catkin-pkg python-rosdistro --yes")
+    print "\nUpdating catkin-pkg and rospkg"
+    cob_common.call("pip install -U catkin-pkg rospkg")
 
     # download build_repo from source
     print "Creating rosinstall file for repo"
