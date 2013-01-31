@@ -141,7 +141,7 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### high-level hardware test
-    if 'bringup' and 'highlevel' in job_type_dict:
+    if 'down' and 'db' and 'sim' and 'bringup' and 'highlevel' in job_type_dict:
         job_creator_instance = jenkins_job_creator.Highlevel_Hardware_Job(jenkins_instance, plc_instance)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
@@ -149,7 +149,7 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### release job
-    if plc_instance.user_group == "admin" and 'highlevel' and 'app' in job_type_dict:
+    if plc_instance.user_group == "admin" and 'down' and 'db' and 'sim' and 'app' and 'bringup' and 'highlevel' in job_type_dict:
         print "Create release job"  # TODO
 
     ### clean up
