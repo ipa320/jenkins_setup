@@ -18,12 +18,12 @@ cp $WORKSPACE/.gitconfig ~/.gitconfig
 cp -a $WORKSPACE/.ssh /root
 chown -R root.root /root/.ssh
 
-echo "Install python-catkin-pkg python-rosdistro rosinstall"
-apt-get update
-apt-get upgrade -y
-apt-get install python-catkin-pkg python-rosdistro -y
+#echo "Install python-catkin-pkg python-rosdistro rosinstall"
+#apt-get update
+#apt-get upgrade -y
+#apt-get install python-catkin-pkg python-rosdistro -y
 
-pip install -U rosinstall
+#pip install -U rosinstall
 
 echo "============================================================"
 echo "==== Begin" $SCRIPT "script.    Ignore the output above ===="
