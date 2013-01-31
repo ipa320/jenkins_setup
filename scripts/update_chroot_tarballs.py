@@ -4,8 +4,9 @@ import sys
 import os
 import subprocess
 import paramiko
+import yaml
 
-PLATFORMS = {'electric': ['lucid', 'natty', 'oneiric'],
+PLATFORMS = {'electric': ['lucid', 'maverick', 'natty', 'oneiric'],
              'fuerte': ['lucid', 'oneiric', 'precise'],
              'groovy': ['oneiric', 'precise', 'quantal']
              }
@@ -13,16 +14,22 @@ ARCH = ['i386', 'amd64']
 
 
 def main():
-    '''TODO'''
+    """
+    Set up and update all chroot tarballs
+    """
 
     errors = []
 
+    # load slave config
+    with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
+        slave_conf = yaml.load(f)
+
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect('jenkins-test-server', username='jenkins')
+    ssh.connect(slave_conf['tarball_host'], username='jenkins')
 
     print "\nGet existent chroot tarballs"
-    existent_tarballs = get_existent_tarballs(ssh)
+    existent_tarballs = get_existent_tarballs(ssh, slave_conf['tarball_folderpath'])
     for tar in existent_tarballs:
         print " ", tar
 
@@ -40,12 +47,12 @@ def main():
     for basic in basic_tarballs:
         print "\nvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
         print "Set up basic chroot %s" % basic
-        local_abs_basic = os.path.join(os.getenv("WORKSPACE"), basic)
-        result = basic_tarball(ssh, basic, local_abs_basic, extended_tarballs, existent_tarballs)
+        result = basic_tarball(ssh, basic, os.getenv("WORKSPACE"), os.path.expanduser(slave_conf['tarball_folderpath']),
+                               extended_tarballs, existent_tarballs)
         if result != []:
             errors += result
 
-        call('sudo rm %s' % local_abs_basic)
+        call('sudo rm %s' % os.path.join(os.getenv("WORKSPACE"), basic))
         print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"
 
     if existent_tarballs != []:
@@ -58,8 +65,9 @@ def main():
     return errors
 
 
-def basic_tarball(ssh, basic, local_abs_basic, extended_tarballs, existent_tarballs):
-    remote_abs_basic = '/home-local/jenkins/chroot_tarballs/%s' % basic
+def basic_tarball(ssh, basic, local_abs, remote_abs, extended_tarballs, existent_tarballs):
+    local_abs_basic = os.path.join(local_abs, basic)
+    remote_abs_basic = os.path.join(remote_abs, basic)
 
     # get tarball parameter
     tarball_params = get_tarball_params(basic)
@@ -113,8 +121,9 @@ def basic_tarball(ssh, basic, local_abs_basic, extended_tarballs, existent_tarba
     for extend in extending_tarballs:
         print "\nvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
         print "Extend basic chroot %s to %s" % (basic, extend)
-        local_abs_extend = os.path.join(os.getenv("WORKSPACE"), extend)
-        result = extend_tarball(ssh, basic, extend, local_abs_extend, existent_tarballs)
+        local_abs_extend = os.path.join(local_abs, extend)
+        remote_abs_extend = os.path.join(remote_abs, extend)
+        result = extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend, remote_abs_extend, existent_tarballs)
         if result != []:
             errors += result
         call('sudo rm %s' % local_abs_extend)
@@ -125,10 +134,7 @@ def basic_tarball(ssh, basic, local_abs_basic, extended_tarballs, existent_tarba
     return errors
 
 
-def extend_tarball(ssh, basic, extend, local_abs_extend, existent_tarballs):
-    local_abs_basic = os.path.join(os.getenv("WORKSPACE"), basic)
-    remote_abs_extend = '/home-local/jenkins/chroot_tarballs/%s' % extend
-
+def extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend, remote_abs_extend, existent_tarballs):
     # get tarball parameter
     tarball_params = get_tarball_params(extend)
 
@@ -194,9 +200,9 @@ def get_tarball(ssh, tar_name, from_location, to_location):
     print "Copied successfully %s from %s" % (tar_name, ssh.get_host_keys().keys()[0])
 
 
-def get_existent_tarballs(ssh):
+def get_existent_tarballs(ssh, path):
     file_list = []
-    stdin, stdout, stderr = ssh.exec_command("ls -1 chroot_tarballs")
+    stdin, stdout, stderr = ssh.exec_command("ls -1 %s" % path)
     for line in stdout.readlines():
         line = line.replace('\n', '')
         file_list.append(line)
