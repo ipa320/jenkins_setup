@@ -4,7 +4,7 @@ import optparse
 import sys
 import os
 
-from jenkins_setup import cob_common, cob_distro, rosdep, cob_pipe
+from jenkins_setup import cob_common, rosdep, cob_pipe
 
 
 def main():
@@ -42,10 +42,10 @@ def main():
     #cob_common.call("git clone git://github.com/fmw-jk/jenkins_config.git %s/jenkins_config" % workspace)  # TODO change to ipa320
     #cob_common.call("cp -r %s/jenkins_config/%s/%s %s/pipeline_config_dir" % (workspace, server_name, user_name, workspace))
 
-    # cob_distro_pipe object
-    cdp_instance = cob_distro.Cob_Distro_Pipe()
-    cdp_instance.load_config_from_url(server_name, user_name)
-    buildpipe_repos = cdp_instance.repositories
+    # cob_pipe object
+    cp_instance = cob_pipe.Cob_Pipe()
+    cp_instance.load_config_from_url(server_name, user_name)
+    buildpipe_repos = cp_instance.repositories
 
     # build depending on ros_ distro
     if ros_distro == "electric":
