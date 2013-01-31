@@ -106,14 +106,16 @@ else
 fi
 if [ $update == True ]; then
     echo "As Jenkins master the PC this script runs on will be set: "${HOST}
-    read -p "Enter location where the chroot tarballs should be stored (e.g. jenkins@jenkinsmaster:~/chroot_tarballs): " storage
+    read -p "Enter name of PC where to host the chroot tarballs: " tarball_host
+    read -p "Enter name of the (absolute) folder path where the chroot tarballs should be located (e.g. ~/chroot_tarballs): " tarball_folderpath
     read -p "Enter Jenkins admin user name: " jenkins_login
     read -p "Enter Jenkins admin password: " jenkins_pw
 
     cat > ~/jenkins-config/slave_config.yaml <<DELIM
 master: $HOST
 master_url: "http://$HOST:8080"
-storage: ${storage%/}
+tarball_host: $tarball_host
+tarball_folderpath: ${tarball_folderpath%/}
 jenkins_login: $jenkins_login
 jenkins_pw: $jenkins_pw
 DELIM
