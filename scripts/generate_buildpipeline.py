@@ -31,11 +31,11 @@ def main():
 
     # load slave config
     with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
-        info = yaml.load(f)
+        slave_conf = yaml.load(f)
 
     # create jenkins instance
-    jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'],
-                                       info['jenkins_pw'])
+    jenkins_instance = jenkins.Jenkins(slave_conf['master_url'], slave_conf['jenkins_login'],
+                                       slave_conf['jenkins_pw'])
 
     # get all existent jobs for user
     existent_user_jobs = []
@@ -47,7 +47,7 @@ def main():
 
     # get pipeline configs object from url
     plc_instance = cob_pipe.Cob_Pipe()
-    plc_instance.load_config_from_url(info['master'], user_name)
+    plc_instance.load_config_from_url(slave_conf['master'], user_name)
 
     # get jobs to create
     job_type_dict = plc_instance.get_jobs_to_create()
