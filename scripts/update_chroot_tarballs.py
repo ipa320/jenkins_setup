@@ -104,7 +104,6 @@ def basic_tarball(ssh, basic, local_abs, remote_abs, extended_tarballs, existent
     sys.stdout.flush()
 
     try:
-        print local_abs_basic
         put_tarball(ssh, basic, local_abs_basic, remote_abs_basic)
     except Exception as ex:
         return ["%s: %s" % (basic, ex)]

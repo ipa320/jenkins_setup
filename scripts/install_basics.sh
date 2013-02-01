@@ -18,7 +18,7 @@ apt-get install -y \
 echo "\n***GET KEY***"
 wget http://packages.ros.org/ros.key -O - | apt-key add -
 echo "\n***WRITE SOURCE***"
-sh -c 'echo "deb http://cob-jenkins-server:3142/packages.ros.org/ros/ubuntu '$1' main" > /etc/apt/sources.list.d/ros-latest.list'
+sh -c 'echo "deb http://packages.ros.org/ros/ubuntu '$1' main" > /etc/apt/sources.list.d/ros-latest.list'
 cat /etc/apt/sources.list.d/ros-latest.list
 
 echo "\n***UPDATE***"
