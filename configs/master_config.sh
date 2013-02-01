@@ -89,6 +89,9 @@ fi
 if [ ! -d ~/jenkins-config/.ssh ] || [ $update == True ]; then
     echo "Copying ~/.ssh to 'jenkins-config'-folder"
     cp -R ~/.ssh ~/jenkins-config/
+    echo "@@@@@@@@@@@@@@@@@@@@IMPORTANT@@@@@@@@@@@@@@@@@@@@@@@"
+    echo "Add this SSH-key to GitHub, if you haven't done yet!"
+    echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 fi
 
 if [ -f ~/jenkins-config/slavelist ]; then
