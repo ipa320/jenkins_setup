@@ -87,7 +87,7 @@ def basic_tarball(ssh, basic, local_abs, remote_abs, extended_tarballs, existent
             call("./pbuilder_calls.sh update %s" % local_abs_basic)
 
         except Exception as ex:
-            return ["%s: %s" % (basic, ex.msg)]
+            return ["%s: %s" % (basic, ex)]
 
     else:
         print "Create %s" % basic
@@ -99,7 +99,7 @@ def basic_tarball(ssh, basic, local_abs, remote_abs, extended_tarballs, existent
                     tarball_params['arch']))
 
         except Exception as ex:
-            return ["%s: %s" % (basic, ex.msg)]
+            return ["%s: %s" % (basic, ex)]
 
     sys.stdout.flush()
 
@@ -155,7 +155,7 @@ def extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend, remote
                  % (local_abs_extend, tarball_params['ubuntu_distro'], tarball_params['ros_distro']))
 
         except Exception as ex:
-            return ["%s: %s" % (extend, ex.msg)]
+            return ["%s: %s" % (extend, ex)]
 
     else:
         print "Create %s" % basic
@@ -166,14 +166,14 @@ def extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend, remote
                  % (local_abs_extend, tarball_params['ubuntu_distro'], tarball_params['ros_distro']))
 
         except Exception as ex:
-            return ["%s: %s" % (extend, ex.msg)]
+            return ["%s: %s" % (extend, ex)]
 
     sys.stdout.flush()
 
     try:
         put_tarball(ssh, extend, local_abs_extend, remote_abs_extend)
     except Exception as ex:
-        return ["%s: %s" % (extend, ex.msg)]
+        return ["%s: %s" % (extend, ex)]
 
     return []
 
