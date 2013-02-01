@@ -184,6 +184,9 @@ def put_tarball(ssh, tar_name, from_location, to_location):
         ftp = ssh.open_sftp()
         ftp.put(from_location,
                 to_location)
+    except Exception as ex:
+        print ex
+        raise Exception(ex)
     finally:
         ftp.close()
     print "Copied successfully %s to %s" % (tar_name, ssh.get_host_keys().keys()[0])
@@ -195,6 +198,9 @@ def get_tarball(ssh, tar_name, from_location, to_location):
         ftp = ssh.open_sftp()
         ftp.get(from_location,
                 to_location)
+    except Exception as ex:
+        print ex
+        raise Exception(ex)
     finally:
         ftp.close()
     print "Copied successfully %s from %s" % (tar_name, ssh.get_host_keys().keys()[0])
@@ -279,7 +285,7 @@ if __name__ == "__main__":
             print "'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\n"
 
     except BuildException as ex:
-        print ex.msg
+        print ex
 
     except Exception as ex:
         print "\n,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
