@@ -6,7 +6,7 @@ import subprocess
 import paramiko
 import yaml
 
-PLATFORMS = {'electric': ['lucid', 'maverick', 'natty', 'oneiric'],
+PLATFORMS = {'electric': ['lucid', 'natty', 'oneiric'],
              'fuerte': ['lucid', 'oneiric', 'precise'],
              'groovy': ['oneiric', 'precise', 'quantal']
              }
