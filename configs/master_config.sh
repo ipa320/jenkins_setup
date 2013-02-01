@@ -3,7 +3,7 @@
 echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 echo "This script will help you set up the configuration of the master."
 echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-echo "Please run this script only on the Jenkins master"
+echo "       Please run this script only on the Jenkins master"
 echo ""
 
 echo "Setting up master configuration"
@@ -36,6 +36,20 @@ else
     echo "Creating 'jenkins-config'-folder"
     mkdir ~/jenkins-config
 fi
+
+if [ -f ~/jenkins-config/README ]; then
+    cat >~/jenkins-config/README << DELIM
+In this directory everything necessary for running a 'Cob-Jenkins-Cluster' is stored. The files contain all information for the communication inside (between master and slaves), as well as the communication with other platforms (like github).
+
+This Folder should include:
+README
+.gitconfig
+.ssh/
+  id_rsa
+  id_rsa.pub
+slavelist
+slave_config.yaml
+DELIM
 
 update=False
 if [ -f ~/jenkins-config/.gitconfig ]; then
