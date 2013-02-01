@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "\n***APT-PROXY***"
-sh -c 'echo "Acquire::http { Proxy "http://cob-kitchen-server:3142"; };" > /etc/apt/apt.conf.d/proxy'
+sh -c 'echo "Acquire::http { Proxy "http://cob-jenkins-server:3142"; };" > /etc/apt/apt.conf.d/proxy'
 echo "\n***UPDATE***"
 cat /etc/apt/sources.list
 apt-get update
@@ -18,7 +18,7 @@ apt-get install -y \
 echo "\n***GET KEY***"
 wget http://packages.ros.org/ros.key -O - | apt-key add -
 echo "\n***WRITE SOURCE***"
-sh -c 'echo "deb http://packages.ros.org/ros/ubuntu '$1' main" > /etc/apt/sources.list.d/ros-latest.list'
+sh -c 'echo "deb http://cob-jenkins-server:3142/packages.ros.org/ros/ubuntu '$1' main" > /etc/apt/sources.list.d/ros-latest.list'
 cat /etc/apt/sources.list.d/ros-latest.list
 
 echo "\n***UPDATE***"
