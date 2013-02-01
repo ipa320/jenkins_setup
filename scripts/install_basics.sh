@@ -2,6 +2,7 @@
 
 echo "\n***APT-PROXY***"
 sh -c 'echo "Acquire::http { Proxy "http://cob-jenkins-server:3142"; };" > /etc/apt/apt.conf.d/01proxy'
+cat /etc/apt/apt.conf.d/01proxy
 echo "\n***UPDATE***"
 cat /etc/apt/sources.list
 apt-get update
