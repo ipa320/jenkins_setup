@@ -34,20 +34,22 @@ else
 fi
 
 echo ""
-echo "Adding $HOSTNAME to slavelist of $master"
-known=False
-scp jenkins@"$master":~/jenkins-config/slavelist .
+known=false
+scp jenkins@"$master":~/jenkins-config/slavelist ~/jenkins-config/slavelist
 while read line; do
     if [ $line == $HOSTNAME ]; then
         echo "$HOSTNAME already known as slave"
-        known=True
+        known=true
     fi
-done <slavelist
-rm slavelist
+done <~/jenkins-config/slavelist
 
-if [ ! known ]; then
-    ssh jenkins@"$master" "echo $HOSTNAME >> ~/jenkins-config/slavelist"
+echo $known
+if [ $known==false ]; then
+    echo "Adding $HOSTNAME to slavelist of $master"
+    echo $HOSTNAME >>~/jenkins-config/slavelist
+    scp ~/jenkins-config/slavelist jenkins@"$master":~/jenkins-config/slavelist
 fi
+rm ~/jenkins-config/slavelist
 
 echo ""
 echo "Setting up slave configuration"

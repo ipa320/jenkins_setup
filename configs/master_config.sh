@@ -1,9 +1,9 @@
 #!/bin/bash
 
-echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-echo "This script will help you set up the configuration of the master."
-echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-echo "       Please run this script only on the Jenkins master"
+echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+echo "This script will help you set up the configuration of the master of your Cob-Jenkins-Cluster."
+echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+echo "                     Please run this script only on the Jenkins master"
 echo ""
 
 echo "Setting up master configuration"
@@ -19,7 +19,7 @@ if [ -d ~/jenkins-config ]; then
                     echo "Installing public key of master on each entry in 'slavelist' via ssh-copy-id to enable password-free communication"
                     while read line; do
                         echo "  - $line"
-                        ssh-copy-id jenkins@"$line"
+                        ssh-copy-id jenkins@${line}
                     done <~/jenkins-config/slavelist
                     ;;
                 *)
@@ -38,7 +38,8 @@ else
 fi
 
 if [ -f ~/jenkins-config/README ]; then
-    cat >~/jenkins-config/README << DELIM
+    echo "Writing README"
+    cat >~/jenkins-config/README <<DELIM
 In this directory everything necessary for running a 'Cob-Jenkins-Cluster' is stored. The files contain all information for the communication inside (between master and slaves), as well as the communication with other platforms (like github).
 
 This Folder should include:
@@ -50,6 +51,7 @@ README
 slavelist
 slave_config.yaml
 DELIM
+fi
 
 update=False
 if [ -f ~/jenkins-config/.gitconfig ]; then
@@ -122,15 +124,15 @@ else
     update=True
 fi
 if [ $update == True ]; then
-    echo "As Jenkins master the PC this script runs on will be set: "${HOST}
+    echo "As Jenkins master the PC this script runs on will be set: "${HOSTNAME}
     read -p "Enter name of PC where to host the chroot tarballs: " tarball_host
     read -p "Enter name of the (absolute) folder path where the chroot tarballs should be located (e.g. ~/chroot_tarballs): " tarball_folderpath
     read -p "Enter Jenkins admin user name: " jenkins_login
     read -p "Enter Jenkins admin password: " jenkins_pw
 
-    cat > ~/jenkins-config/slave_config.yaml <<DELIM
-master: $HOST
-master_url: "http://$HOST:8080"
+    cat >~/jenkins-config/slave_config.yaml <<DELIM
+master: $HOSTNAME
+master_url: http://$HOSTNAME:8080
 tarball_host: $tarball_host
 tarball_folderpath: ${tarball_folderpath%/}
 jenkins_login: $jenkins_login

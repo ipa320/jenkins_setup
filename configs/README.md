@@ -1,4 +1,3 @@
-TODO:
 - Script for master to automatically set up a folder called
   'jenkins-config' containing all necessary configurations and files
   needed for the communication between master and slaves
