@@ -5,10 +5,12 @@ import os
 import subprocess
 import paramiko
 import yaml
+import optparse
 
 PLATFORMS = {'electric': ['lucid', 'natty', 'oneiric'],
              'fuerte': ['lucid', 'oneiric', 'precise'],
-             'groovy': ['oneiric', 'precise', 'quantal']
+             'groovy': ['oneiric', 'precise', 'quantal'],
+             'hydro': []
              }
 ARCH = ['i386', 'amd64']
 
@@ -19,6 +21,28 @@ def main():
     """
 
     errors = []
+
+    # parse options
+    parser = optparse. OptionParser()
+    (options, args) = parser.parse_args()
+
+    if len(args) < 2:
+        print "Usage: %s ubuntu_distro architecture" % (sys.argv[0])
+        sys.exit()
+
+    # check if given ubuntu distro and arch is supported
+    ubuntu_distro = args[0]
+    supported_ubuntu_distros = []
+    for ubu_dist_list in PLATFORMS.itervalues():
+        for supported in ubu_dist_list:
+            supported_ubuntu_distros.append(supported)
+    if ubuntu_distro not in supported_ubuntu_distros:
+        print "Ubuntu distro %s not supported! Supported Ubuntu distros :" % ', '.join(sorted(supported_ubuntu_distros))
+        sys.exit()
+    arch = args[1]
+    if arch not in ARCH:
+        print "Architecture %s not supported! Supported architectures: %s" % (arch, ', '.join(ARCH))
+        sys.exit()
 
     # load slave config
     with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
@@ -33,27 +57,24 @@ def main():
     for tar in existent_tarballs:
         print " ", tar
 
-    print "\nCalculate necessary chroot envs"
-    basic_tarballs, extended_tarballs = get_tarball_lists()
-    print "Basic tarballs:"
-    for basic in basic_tarballs:
-        print " ", basic
-    print "Extended tarballs:"
-    for extend in extended_tarballs:
-        print " ", extend
+    print "\nCalculate chroot envs to set up / update"
+    basic_tarball, extended_tarballs = get_tarball_names(ubuntu_distro, arch)
+    print "Basic tarball:"
+    print " ", basic_tarball
+    print "Extended tarballs: \n%s" % '\n '.join(extended_tarballs)
 
     sys.stdout.flush()
 
-    for basic in basic_tarballs:
-        print "\nvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
-        print "Set up basic chroot %s" % basic
-        result = basic_tarball(ssh, basic, os.getenv("WORKSPACE"), os.path.expanduser(slave_conf['tarball_folderpath']),
-                               extended_tarballs, existent_tarballs)
-        if result != []:
-            errors += result
+    print "\nvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
+    print "Set up basic chroot %s" % basic_tarball
+    result = process_basic_tarball(ssh, basic_tarball, os.getenv("WORKSPACE"),
+                                   os.path.expanduser(slave_conf['tarball_folderpath']),
+                                   extended_tarballs, existent_tarballs)
+    if result != []:
+        errors += result
 
-        call('sudo rm %s' % os.path.join(os.getenv("WORKSPACE"), basic))
-        print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"
+    call('sudo rm %s' % os.path.join(os.getenv("WORKSPACE"), basic_tarball))
+    print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"
 
     if existent_tarballs != []:
         print "\n,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
@@ -65,7 +86,7 @@ def main():
     return errors
 
 
-def basic_tarball(ssh, basic, local_abs, remote_abs, extended_tarballs, existent_tarballs):
+def process_basic_tarball(ssh, basic, local_abs, remote_abs, extended_tarballs, existent_tarballs):
     local_abs_basic = os.path.join(local_abs, basic)
     remote_abs_basic = os.path.join(remote_abs, basic)
 
@@ -123,7 +144,7 @@ def basic_tarball(ssh, basic, local_abs, remote_abs, extended_tarballs, existent
         print "Extend basic chroot %s to %s" % (basic, extend)
         local_abs_extend = os.path.join(local_abs, extend)
         remote_abs_extend = os.path.join(remote_abs, extend)
-        result = extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend, remote_abs_extend, existent_tarballs)
+        result = process_extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend, remote_abs_extend, existent_tarballs)
         if result != []:
             errors += result
         call('sudo rm %s' % local_abs_extend)
@@ -134,7 +155,7 @@ def basic_tarball(ssh, basic, local_abs, remote_abs, extended_tarballs, existent
     return errors
 
 
-def extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend, remote_abs_extend, existent_tarballs):
+def process_extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend, remote_abs_extend, existent_tarballs):
     # get tarball parameter
     tarball_params = get_tarball_params(extend)
 
@@ -228,16 +249,13 @@ def get_tarball_params(name):
     return params_dict
 
 
-def get_tarball_lists():
-    basic_tarballs = []
+def get_tarball_names(ubuntu_distro, arch):
+    basic_tarball = '__'.join([ubuntu_distro, arch])
     extended_tarballs = []
     for ros_distro, ubuntu_list in PLATFORMS.iteritems():
-        for ubuntu_distro in ubuntu_list:
-            for arch in ARCH:
-                if '__'.join([ubuntu_distro, arch]) not in basic_tarballs:
-                    basic_tarballs.append('__'.join([ubuntu_distro, arch]))
-                extended_tarballs.append('__'.join([ubuntu_distro, arch, ros_distro]))
-    return sorted(basic_tarballs), sorted(extended_tarballs)
+        if ubuntu_distro in ubuntu_list:
+            extended_tarballs.append('__'.join([ubuntu_distro, arch, ros_distro]))
+    return basic_tarball, sorted(extended_tarballs)
 
 
 def call_with_list(command, envir=None, verbose=True):
