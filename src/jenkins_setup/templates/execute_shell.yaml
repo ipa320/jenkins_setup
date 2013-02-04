@@ -139,7 +139,7 @@ echo "***********ENTER CHROOT************"
 
 echo "*********please be patient*********"
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 
 echo "*******CLEANUP WORKSPACE*******"
@@ -211,7 +211,7 @@ echo "***********ENTER CHROOT************"
 echo "*********please be patient*********"
 
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 
 echo "*******CLEANUP WORKSPACE*******"
@@ -283,7 +283,7 @@ echo "***********ENTER CHROOT************"
 echo "*********please be patient*********"
 
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 
 echo "*******CLEANUP WORKSPACE*******"
