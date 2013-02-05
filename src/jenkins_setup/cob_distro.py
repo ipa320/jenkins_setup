@@ -151,7 +151,7 @@ class Cob_Distro_Pipe_Repo(Cob_Distro_Repo):
 
         self.matrix_distro_arch = {}
         if data['matrix_distro_arch']:
-            self.matrix_distro_arch = data['matrix_distro_arch']  # TODO ??
+            self.matrix_distro_arch = data['matrix_distro_arch']
 
         self.dependencies = {}
         if data['dependencies']:
@@ -163,3 +163,18 @@ class Cob_Distro_Pipe_Repo(Cob_Distro_Repo):
         self.jobs = []
         if data['jobs']:
             self.jobs = data['jobs']
+
+        self.robots = []
+        if data['robots']:
+            self.robots = data['robots']
+
+        # catch some errors
+        if ('bringup' in self.jobs or 'highlevel' in self.jobs) and self.robots == []:
+            raise CobDistroException("Hardware tests defined but no robot to run them on")
+        if self.matrix_distro_arch != {} and 'normal' not in self.jobs:
+            raise CobDistroException("Configuration for normal build found, but no normal build job")
+
+
+class CobDistroException(Exception):
+    def __init__(self, msg):
+        self.msg = msg
