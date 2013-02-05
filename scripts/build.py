@@ -312,11 +312,6 @@ def build_post_electric(ros_distro, build_repo, buildpipe_repos, workspace):
 
 #    #TODO used when get dependencies
 #    import rosdistro
-#    from jenkins_setup import cob_rosdistro
-#
-#    # parse the cobdistro file
-#    print "Parsing cobdistro file for %s" % ros_distro
-#    cob_distro = cob_rosdistro.CobRosDistro(ros_distro)
 #
 #    # parse the rosdistro file
 #    print "Parsing rosdistro file for %s" % ros_distro
