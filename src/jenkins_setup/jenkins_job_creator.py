@@ -495,7 +495,8 @@ class Jenkins_Job(object):
         else:
             shell_script = shell_temp[self.job_type]
         shell_script = shell_script.replace('@(SERVERNAME)', self.pipe_inst.server_name)
-        shell_script = shell_script.replace('@(STORAGE)', self.network_config['storage'])
+        shell_script = shell_script.replace('@(STORAGE)', 'jenkins@%s:%s' % (self.network_config['tarball_host'],
+                                                                             self.network_config['tarball_folderpath']))
         shell_script = shell_script.replace('@(USERNAME)', self.pipe_inst.user_name)
         shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.JOB_TYPE_NAMES[self.job_type])
 
