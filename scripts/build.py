@@ -345,8 +345,8 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
 
     if build_repo_type == 'dry':
-        print "Make rosdep"
-        cob_common.call("rosmake rosdep", ros_env)
+        #print "Make rosdep"
+        #cob_common.call("rosmake rosdep", ros_env)
         for stack in stacks.keys():
             cob_common.call("rosdep install -y %s" % stack, ros_env_repo)
 
