@@ -294,7 +294,6 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     shutil.move(os.path.join(repo_sourcespace, 'setup.sh'), os.path.join(repo_sourcespace_dry, 'setup.sh'))
     shutil.move(os.path.join(repo_sourcespace, 'setup.bash'), os.path.join(repo_sourcespace_dry, 'setup.bash'))
     print cob_common.get_all_packages(repo_sourcespace)
-    #assert cob_common.get_all_packages(repo_sourcespace) == ({}, {}, {})
 
     # env
     print "Set up environment variables"
@@ -342,13 +341,13 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
             cob_common.copy_test_results(workspace, repo_buildspace)
 
     ### rosbuild repositories
-    ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
+    #ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
 
     if build_repo_type == 'dry':
         #print "Make rosdep"
         #cob_common.call("rosmake rosdep", ros_env)
-        for stack in stacks.keys():
-            cob_common.call("rosdep install -y %s" % stack, ros_env_repo)
+        #for stack in stacks.keys():
+        #    cob_common.call("rosdep install -y %s" % stack, ros_env_repo)
 
         print "Build dry repo list"
         os.mkdir(dry_test_results_dir)
