@@ -276,7 +276,15 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     rosdep_resolver = rosdep.RosDepResolver(ros_distro)
 
     print "Install build dependencies of repo list: %s" % (', '.join(repo_build_dependencies))
-    cob_common.apt_get_install(repo_build_dependencies, rosdep_resolver)
+    repo_build_dependencies_rosdep = []
+    repo_build_dependencies_aptget = []
+    for repo_build_dep in repo_build_dependencies:
+        if rosdep_resolver.has_ros(repo_build_dep):
+            repo_build_dependencies_rosdep.append(repo_build_dep)
+        else:
+            repo_build_dependencies_aptget.append('-'.join(['ros', ros_distro, repo_build_dep.replace('_', '-')]))
+    cob_common.apt_get_install(repo_build_dependencies_rosdep, rosdep_resolver)
+    cob_common.apt_get_install(repo_build_dependencies_aptget)
 
     # separate installed repos in wet and dry
     print "Separate installed repositories in wet and dry"
