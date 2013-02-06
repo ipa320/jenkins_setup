@@ -350,7 +350,7 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
     cob_common.call("env", ros_env_repo)
     print ros_env_repo
-    ros_env_repo['ROS_PACKAGE_PATH'] = ros_env_repo['ROS_PACKAGE_PATH'].replace('/' + ros_distro, '')
+    ros_env_repo['ROS_PACKAGE_PATH'] = ros_env['ROS_PACKAGE_PATH'] + ':' + repo_sourcespace
     cob_common.call("env", ros_env_repo)
     print ros_env_repo
 
