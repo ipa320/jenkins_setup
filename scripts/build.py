@@ -159,6 +159,8 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
 
 
 def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
+    ros_package_path = os.environ['ROS_PACKAGE_PATH']
+
     # set up directories variables
     tmpdir = os.path.join('/tmp', 'test_repositories')
     repo_sourcespace = os.path.join(tmpdir, 'src_repository')
@@ -346,13 +348,10 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
             cob_common.copy_test_results(workspace, repo_buildspace)
 
     ### rosbuild repositories
-    cob_common.call("env", ros_env)
+    cob_common.call("env", ros_env)  # TODO remove
     ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
-    cob_common.call("env", ros_env_repo)
-    print ros_env_repo
-    ros_env_repo['ROS_PACKAGE_PATH'] = ros_env['ROS_PACKAGE_PATH'] + ':' + repo_sourcespace
-    cob_common.call("env", ros_env_repo)
-    print ros_env_repo
+    ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([ros_package_path, repo_sourcespace])
+    cob_common.call("env", ros_env_repo)  # TODO remove
 
     if build_repo_type == 'dry':
         #print "Make rosdep"
