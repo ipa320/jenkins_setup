@@ -347,10 +347,12 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
     ### rosbuild repositories
     cob_common.call("env", ros_env)
-    #ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
-    #cob_common.call("env", ros_env_repo)
-    os.putenv('ROS_PACKAGE_PATH',  ':'.join([os.environ['ROS_PACKAGE_PATH'], repo_sourcespace]))
-    cob_common.call("env", ros_env)
+    ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
+    cob_common.call("env", ros_env_repo)
+    print ros_env_repo
+    ros_env_repo['ROS_PACKAGE_PATH'] = ros_env_repo['ROS_PACKAGE_PATH'].replace('/' + ros_distro, '')
+    cob_common.call("env", ros_env_repo)
+    print ros_env_repo
 
     if build_repo_type == 'dry':
         #print "Make rosdep"
@@ -360,8 +362,8 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
         print "Build dry repo list"
         os.mkdir(dry_test_results_dir)
-        cob_common.call("rosmake --pjobs=8 --output=%s %s" % (dry_test_results_dir, build_repo), ros_env)
-        cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, build_repo), ros_env)
+        cob_common.call("rosmake --pjobs=8 --output=%s %s" % (dry_test_results_dir, build_repo), ros_env_repo)
+        cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, build_repo), ros_env_repo)
 
         # copy test results
         cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
