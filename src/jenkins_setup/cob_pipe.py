@@ -24,7 +24,11 @@ class Cob_Pipe(cob_distro.Cob_Distro_Pipe):
         self.email = pipeline_config['email']
         self.committer = pipeline_config['committer']
 
-        super(Cob_Pipe, self).load_config_from_dict(pipeline_config['repositories'])
+        try:
+            super(Cob_Pipe, self).load_config_from_dict(pipeline_config['repositories'])
+        except cob_distro.CobDistroException as ex:
+            print ex.msg
+            raise CobPipeException(ex.msg)
 
     def load_config_from_url(self, server_name, user_name):
         """
@@ -55,3 +59,8 @@ class Cob_Pipe(cob_distro.Cob_Distro_Pipe):
                     job_type_dict[job] = [repo]
 
         return job_type_dict
+
+
+class CobPipeException(Exception):
+    def __init__(self, msg):
+        self.msg = msg
