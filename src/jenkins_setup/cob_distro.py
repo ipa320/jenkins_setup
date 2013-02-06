@@ -177,4 +177,5 @@ class Cob_Distro_Pipe_Repo(Cob_Distro_Repo):
 
 class CobDistroException(Exception):
     def __init__(self, msg):
+        print msg
         self.msg = msg

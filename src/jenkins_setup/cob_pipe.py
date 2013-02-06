@@ -63,4 +63,5 @@ class Cob_Pipe(cob_distro.Cob_Distro_Pipe):
 
 class CobPipeException(Exception):
     def __init__(self, msg):
+        print msg
         self.msg = msg
