@@ -231,8 +231,6 @@ class Jenkins_Job(object):
         if axes == '':
             return ''
 
-        #matrix = self.job_config_params['matrix']['basic'].replace('@(AXES)', axes)
-
         matrix = self.job_config_params['matrix']['basic']
         matrix = matrix.replace('@(NODE)', self.JOB_TYPE_NAMES[self.job_type])
         matrix = matrix.replace('@(AXES)', axes)
