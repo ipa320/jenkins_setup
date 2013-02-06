@@ -46,6 +46,7 @@ def main():
     cp_instance = cob_pipe.Cob_Pipe()
     cp_instance.load_config_from_url(server_name, user_name)
     buildpipe_repos = cp_instance.repositories
+    print "Pipeline configuration successfully loaded"
 
     # build depending on ros_ distro
     if ros_distro == "electric":
