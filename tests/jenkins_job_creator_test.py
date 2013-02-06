@@ -224,14 +224,16 @@ class Jenkins_Job_Test(unittest.TestCase):
 
     # Testing set_matrix_param
     def test__set_matrix_param__input_name_value_dict_list_and_filter_string__return_matrix_config_string(self):
+        self.jj.job_type = 'prio'
         name_value_test_dict = [{'test_axis': ['test_value_1', 'test_value_2', 'test_value_3']}]
         self.jj.set_matrix_param(name_value_test_dict, 'filter')
-        self.assertEqual(self.jj.params['MATRIX'], '<axes> <hudson.matrix.TextAxis> <name>test_axis</name> <values> <string>test_value_1</string> <string>test_value_2</string> <string>test_value_3</string> </values> </hudson.matrix.TextAxis> </axes> <combinationFilter>filter</combinationFilter>')
+        self.assertEqual(self.jj.params['MATRIX'], '<axes> <hudson.matrix.TextAxis> <name>test_axis</name> <values> <string>test_value_1</string> <string>test_value_2</string> <string>test_value_3</string> </values> </hudson.matrix.TextAxis> <hudson.matrix.LabelAxis> <name>label</name> <values> <string>prio_build</string> </values> </hudson.matrix.LabelAxis> </axes> <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl"> <runSequentially>false</runSequentially> </executionStrategy> <combinationFilter>filter</combinationFilter>')
 
-    def test__set_matrix_param__input_name_value_dict_and_filter_string__return_matrix_config_string2(self):
+    def test__set_matrix_param__input_name_value_dict_list_and_filter_string__return_matrix_config_string2(self):
+        self.jj.job_type = 'prio'
         name_value_test_dict = [{'test_axis': ['test_value_1', 'test_value_2', 'test_value_3']}]
         self.jj.set_matrix_param(name_value_test_dict, 'filter')
-        self.assertEqual(self.jj.params['MATRIX'], '<axes> <hudson.matrix.TextAxis> <name>test_axis</name> <values> <string>test_value_1</string> <string>test_value_2</string> <string>test_value_3</string> </values> </hudson.matrix.TextAxis> </axes> <combinationFilter>filter</combinationFilter>')
+        self.assertEqual(self.jj.params['MATRIX'], '<axes> <hudson.matrix.TextAxis> <name>test_axis</name> <values> <string>test_value_1</string> <string>test_value_2</string> <string>test_value_3</string> </values> </hudson.matrix.TextAxis> <hudson.matrix.LabelAxis> <name>label</name> <values> <string>prio_build</string> </values> </hudson.matrix.LabelAxis> </axes> <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl"> <runSequentially>false</runSequentially> </executionStrategy> <combinationFilter>filter</combinationFilter>')
 
     def test__set_matrix_param__input_empty_list_raise_exception(self):
         self.assertEqual(self.jj.set_matrix_param([], 'filter'), '')
@@ -240,9 +242,10 @@ class Jenkins_Job_Test(unittest.TestCase):
         self.assertEqual(self.jj.set_matrix_param([{}], 'filter'), '')
 
     def test__set_matrix_param__input_empty_name_value_dict__raise_exception2(self):
+        self.jj.job_type = 'prio'
         name_value_test_dict = [{}, {'test_axis': ['test_value_1', 'test_value_2', 'test_value_3']}]
         self.jj.set_matrix_param(name_value_test_dict, 'filter')
-        self.assertEqual(self.jj.params['MATRIX'], '<axes> <hudson.matrix.TextAxis> <name>test_axis</name> <values> <string>test_value_1</string> <string>test_value_2</string> <string>test_value_3</string> </values> </hudson.matrix.TextAxis> </axes> <combinationFilter>filter</combinationFilter>')
+        self.assertEqual(self.jj.params['MATRIX'], '<axes> <hudson.matrix.TextAxis> <name>test_axis</name> <values> <string>test_value_1</string> <string>test_value_2</string> <string>test_value_3</string> </values> </hudson.matrix.TextAxis> <hudson.matrix.LabelAxis> <name>label</name> <values> <string>prio_build</string> </values> </hudson.matrix.LabelAxis> </axes> <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl"> <runSequentially>false</runSequentially> </executionStrategy> <combinationFilter>filter</combinationFilter>')
 
     def test__set_matrix_param__input_empty_value_list__raise_exception(self):
         name_value_test_dict = [{'test_axis': []}]
@@ -252,6 +255,7 @@ class Jenkins_Job_Test(unittest.TestCase):
         self.assertRaises(AttributeError, self.jj.set_matrix_param, ['test_value_1', 'test_value_2', 'test_value_3'], 'filter')
 
     def test__set_matrix_param__input_empty_filter_string__return_matrix_config_string_without_filter(self):
+        self.jj.job_type = 'prio'
         name_value_test_dict = [{'test_axis': ['test_value_1', 'test_value_2', 'test_value_3']}]
         self.jj.set_matrix_param(name_value_test_dict)
         self.assertTrue('combinationFilter' not in self.jj.params['MATRIX'])
