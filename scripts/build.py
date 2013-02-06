@@ -269,7 +269,12 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
     # Create rosdep object
     print "Create rosdep object"
-    rosdep_resolver = rosdep.RosDepResolver(ros_distro)
+    try:
+        rosdep_resolver = rosdep.RosDepResolver(ros_distro)
+    except:
+        from time import sleep
+        sleep(10)
+        rosdep_resolver = rosdep.RosDepResolver(ros_distro)
 
     print "Install build dependencies of repo list: %s" % (', '.join(repo_build_dependencies))
     repo_build_dependencies_rosdep = []
