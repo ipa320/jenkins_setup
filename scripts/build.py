@@ -27,7 +27,7 @@ def main():
     # (debug) output
     print "\n", 50 * 'X'
     print "\nTesting on ros distro: %s" % ros_distro
-    print "Testing the repository: %s" % build_repo
+    print "Testing the repository: %s" % build_repo.split('__')[0]
     print "\n", 50 * 'X'
 
     # update sourcelist and upgrade installed basic packages
@@ -150,8 +150,8 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     # TODO build (like in hudson_helper)
     # build repositories and tests
     print "Build repo"
-    cob_common.call("rosmake --pjobs=8 --output=%s %s" % (test_results_dir, build_repo), ros_env)
-    cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (test_results_dir, build_repo), ros_env)
+    cob_common.call("rosmake --pjobs=8 --output=%s %s" % (test_results_dir, build_repo.split('__')[0]), ros_env)
+    cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (test_results_dir, build_repo.split('__')[0]), ros_env)
     # TODO output dir ??
     # copy test results
     cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
@@ -160,6 +160,7 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
 
 def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     ros_package_path = os.environ['ROS_PACKAGE_PATH']
+    b_r_short = build_repo.split('__')[0]
 
     # set up directories variables
     tmpdir = os.path.join('/tmp', 'test_repositories')
@@ -220,10 +221,10 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
     # check if build_repo is wet or dry and take corresponding deps
     build_repo_type = ''
-    if build_repo in catkin_packages:
+    if b_r_short in catkin_packages:
         build_repo_type = 'wet'
         repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
-    elif build_repo in stacks:
+    elif b_r_short in stacks:
         build_repo_type = 'dry'
         repo_build_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, {})
     else:
@@ -261,7 +262,7 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
         if build_repo_type == 'wet':
             if stacks != {}:
                 raise cob_common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
-                                                % (build_repo, '- ' + '\n- '.join(stacks)))
+                                                % (b_r_short, '- ' + '\n- '.join(stacks)))
             # take only wet packages
             repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
         else:  # dry build repo
@@ -333,7 +334,7 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
         (catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace_wet)
         if stacks != {}:
             raise cob_common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
-                                            % (build_repo, '- ' + '\n- '.join(stacks)))
+                                            % (b_r_short, '- ' + '\n- '.join(stacks)))
         # take only wet packages
         repo_test_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=False, test_depends=True)
         if repo_test_dependencies != []:
@@ -361,8 +362,8 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
         print "Build dry repo list"
         os.mkdir(dry_test_results_dir)
-        cob_common.call("rosmake --pjobs=8 --output=%s %s" % (dry_test_results_dir, build_repo), ros_env_repo)
-        cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, build_repo), ros_env_repo)
+        cob_common.call("rosmake --pjobs=8 --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
+        cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
 
         # copy test results
         cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
@@ -370,6 +371,8 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
 
 def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
+    b_r_short = build_repo.split('__')[0]
+
     # set up directories variables
     tmpdir = os.path.join('/tmp', 'test_repositories')
     repo_sourcespace = os.path.join(tmpdir, 'src_repository')
@@ -427,11 +430,11 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     print "Found dry dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
 
     # check if build_repo is wet or dry and take corresponding deps
-    if build_repo in catkin_packages:
+    if b_r_short in catkin_packages:
         catkin_build_repo = True
         repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
         #repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
-    elif build_repo in stacks:
+    elif b_r_short in stacks:
         catkin_build_repo = False
         repo_build_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, {})
     else:
@@ -470,7 +473,7 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
         if catkin_build_repo:
             if stacks != {}:
                 raise cob_common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
-                                                % (build_repo, '- ' + '\n- '.join(stacks)))
+                                                % (b_r_short, '- ' + '\n- '.join(stacks)))
             # take only wet packages
             repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
             #repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
@@ -510,7 +513,7 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     if catkin_build_repo:
         if stacks != {}:
             raise cob_common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
-                                            % (build_repo, '- ' + '\n- '.join(stacks)))
+                                            % (b_r_short, '- ' + '\n- '.join(stacks)))
         # take only wet packages
         repo_test_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=False, test_depends=True)
     else:  # dry build repo
