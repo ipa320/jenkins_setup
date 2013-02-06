@@ -31,4 +31,4 @@ class Cob_Pipe_Test(unittest.TestCase):
         self.assertEqual(self.cp.committer, False)
 
     def test__get_jobs_to_create__result_job_list(self):
-        self.assertEqual(self.cp.get_jobs_to_create(), {'normal': ['test_repo_1'], 'db': ['test_repo_1'], 'app': ['test_repo_1'], 'bringup': ['test_repo_1'], 'down': ['test_repo_1'], 'release': ['test_repo_1'], 'sim': ['test_repo_1'], 'highlevel': ['test_repo_1']})
+        self.assertEqual(self.cp.get_jobs_to_create(), {'normal': ['test_repo_1', 'test_repo_3'], 'db': ['test_repo_1'], 'app': ['test_repo_1'], 'bringup': ['test_repo_1'], 'down': ['test_repo_1'], 'release': ['test_repo_1'], 'sim': ['test_repo_1'], 'highlevel': ['test_repo_1']})
