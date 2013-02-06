@@ -297,7 +297,8 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
         shutil.move(os.path.join(repo_sourcespace, dry_pkg), os.path.join(repo_sourcespace_dry, dry_pkg))
     shutil.move(os.path.join(repo_sourcespace, 'setup.sh'), os.path.join(repo_sourcespace_dry, 'setup.sh'))
     shutil.move(os.path.join(repo_sourcespace, 'setup.bash'), os.path.join(repo_sourcespace_dry, 'setup.bash'))
-    assert cob_common.get_all_packages(repo_sourcespace) == ({}, {}, {})
+    print cob_common.get_all_packages(repo_sourcespace)
+    #assert cob_common.get_all_packages(repo_sourcespace) == ({}, {}, {})
 
     # env
     print "Set up environment variables"
