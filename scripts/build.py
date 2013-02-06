@@ -181,10 +181,6 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
         raise cob_common.BuildException("Pipeline was triggered by repo %s which is \
                                          not in pipeline config!" % build_repo)
 
-    # add catkin package to rosinstall
-    if build_repo != 'catkin':
-        rosinstall += "\n- git: {local-name: catkin, uri: 'git://github.com/ros/catkin.git', version: fuerte-devel}"
-
     print "Rosinstall file for repository: \n %s" % rosinstall
     # write .rosinstall file
     with open(os.path.join(workspace, "repo.rosinstall"), 'w') as f:
@@ -303,41 +299,51 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     # env
     print "Set up environment variables"
     ros_env = cob_common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
-    ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
 
     ### catkin repositories
-    print "Create a new CMakeLists.txt for catkin packages"
-    cob_common.call("ln -s %s %s" % (os.path.join(repo_sourcespace_wet, 'catkin', 'cmake', 'toplevel.cmake'),
-                                     os.path.join(repo_sourcespace_wet, 'CMakeLists.txt')))
-    os.mkdir(repo_buildspace)
-    os.chdir(repo_buildspace)
-    cob_common.call("cmake %s" % repo_sourcespace_wet, ros_env)
+    # add catkin package to rosinstall
+    if catkin_packages != {}:
+        if 'catkin' not in catkin_packages.keys():
+            rosinstall = "\n- git: {local-name: catkin, uri: 'git://github.com/ros/catkin.git', version: fuerte-devel}"
+            print "Install catkin"
+            # rosinstall catkin
+            cob_common.call("rosinstall %s %s/repo.rosinstall %s"
+                            % (repo_sourcespace_wet, workspace, ros_distro))
 
-    # build repositories and tests
-    print "Build wet repo list"
-    cob_common.call("make", ros_env)
-    cob_common.call("make tests", ros_env)
+        print "Create a new CMakeLists.txt for catkin packages"
+        cob_common.call("ln -s %s %s" % (os.path.join(repo_sourcespace_wet, 'catkin', 'cmake', 'toplevel.cmake'),
+                                         os.path.join(repo_sourcespace_wet, 'CMakeLists.txt')))
+        os.mkdir(repo_buildspace)
+        os.chdir(repo_buildspace)
+        cob_common.call("cmake %s" % repo_sourcespace_wet + '/', ros_env)
 
-    # get wet repositories test and run dependencies
-    print "Get test and run dependencies of repo list"
-    (catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace_wet)
-    if stacks != {}:
-        raise cob_common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
-                                        % (build_repo, '- ' + '\n- '.join(stacks)))
-    # take only wet packages
-    repo_test_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=False, test_depends=True)
-    if repo_test_dependencies != []:
-        print "Install test and run dependencies of repo list: %s" % (', '.join(repo_test_dependencies))
-        cob_common.apt_get_install(repo_test_dependencies, rosdep_resolver)
+        # build repositories and tests
+        print "Build wet repo list"
+        cob_common.call("make", ros_env)
+        cob_common.call("make tests", ros_env)
 
-        # run tests
-        print "Test repo list"
-        cob_common.call("make run_tests", ros_env)
+        # get wet repositories test and run dependencies
+        print "Get test and run dependencies of repo list"
+        (catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace_wet)
+        if stacks != {}:
+            raise cob_common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
+                                            % (build_repo, '- ' + '\n- '.join(stacks)))
+        # take only wet packages
+        repo_test_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=False, test_depends=True)
+        if repo_test_dependencies != []:
+            print "Install test and run dependencies of repo list: %s" % (', '.join(repo_test_dependencies))
+            cob_common.apt_get_install(repo_test_dependencies, rosdep_resolver)
 
-        # copy test results
-        cob_common.copy_test_results(workspace, repo_buildspace)
+            # run tests
+            print "Test repo list"
+            cob_common.call("make run_tests", ros_env)
+
+            # copy test results
+            cob_common.copy_test_results(workspace, repo_buildspace)
 
     ### rosbuild repositories
+    ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
+
     if build_repo_type == 'dry':
         print "Make rosdep"
         cob_common.call("rosmake rosdep", ros_env)
