@@ -61,6 +61,7 @@ def main():
 
 
 def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
+    ros_package_path = os.environ['ROS_PACKAGE_PATH']
     b_r_short = build_repo.split('__')[0]
 
     # set up directories variables
@@ -145,6 +146,7 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     ros_env = cob_common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
     cob_common.call("env", ros_env)
     ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
+    ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_sourcespace, ros_package_path])
     cob_common.call("env", ros_env_repo)
     print "Rosdep"
     cob_common.call("rosmake rosdep", ros_env)
