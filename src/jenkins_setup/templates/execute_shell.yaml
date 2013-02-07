@@ -98,7 +98,7 @@ fi
 mkdir $WORKSPACE/../aux
 
 
-echo "Copying "$basetgz" from @(STORAGE)/in_use"
+echo "Copying "$new_basetgz" from @(STORAGE)"
 
 scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
