@@ -367,7 +367,7 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     ### rosbuild repositories
     cob_common.call("env", ros_env)  # TODO remove
     ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
-    ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([ros_package_path, repo_sourcespace, repo_buildspace])
+    ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([ros_package_path, repo_buildspace, repo_sourcespace])
     cob_common.call("env", ros_env_repo)  # TODO remove
 
     if build_repo_type == 'dry':
@@ -580,7 +580,7 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     ### rosbuild repositories
     cob_common.call("env", ros_env)  # TODO remove
     ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
-    ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([ros_package_path, repo_sourcespace, repo_buildspace])
+    ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([ros_package_path, repo_buildspace, repo_sourcespace])
     cob_common.call("env", ros_env_repo)  # TODO remove
 
     if build_repo_type == 'dry':
