@@ -202,9 +202,6 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     cob_common.call("rosinstall %s %s/repo.rosinstall /opt/ros/%s"
                     % (repo_sourcespace, workspace, ros_distro))
 
-    # rename repo folder if repo has suffix
-    #shutil.move(os.path.join(repo_sourcespace, build_repo), os.path.join(repo_sourcespace, b_r_short))
-
     # get the repositories build dependencies
     print "Get build dependencies of repo"
 
@@ -367,10 +364,8 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
             cob_common.copy_test_results(workspace, repo_buildspace)
 
     ### rosbuild repositories
-    cob_common.call("env", ros_env)  # TODO remove
     ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
     ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([ros_package_path, repo_buildspace, repo_sourcespace])
-    cob_common.call("env", ros_env_repo)  # TODO remove
 
     if build_repo_type == 'dry':
         #print "Make rosdep"
@@ -424,10 +419,6 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     # rosinstall repos
     cob_common.call("rosinstall %s %s/repo.rosinstall /opt/ros/%s"
                     % (repo_sourcespace, workspace, ros_distro))
-
-    # rename repo folder if repo has suffix
-    #shutil.move(os.path.join(repo_sourcespace, build_repo), os.path.join(repo_sourcespace, b_r_short))
-    #print os.listdir(repo_sourcespace)  # TODO remove
 
     # get the repositories build dependencies
     print "Get build dependencies of repo"
@@ -486,7 +477,6 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
         print "Rosinstall file for user-defined build dependencies: \n %s" % rosinstall
         with open(os.path.join(workspace, "repo.rosinstall"), 'w') as f:
             f.write(rosinstall)
-        cob_common.call("cat %s" % os.path.join(workspace, "repo.rosinstall"))  # TODO remove
         print "Install user-defined build dependencies from source"
         # rosinstall depends
         cob_common.call("rosinstall %s %s/repo.rosinstall /opt/ros/%s"
@@ -544,7 +534,6 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
             shutil.move(os.path.join(repo_sourcespace, dir), os.path.join(repo_sourcespace_dry, dir))
     shutil.move(os.path.join(repo_sourcespace, 'setup.sh'), os.path.join(repo_sourcespace_dry, 'setup.sh'))
     shutil.move(os.path.join(repo_sourcespace, 'setup.bash'), os.path.join(repo_sourcespace_dry, 'setup.bash'))
-    print cob_common.get_all_packages(repo_sourcespace)  # TODO remove
 
     # env
     print "Set up environment variables"
@@ -585,10 +574,8 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
             cob_common.copy_test_results(workspace, repo_buildspace)
 
     ### rosbuild repositories
-    cob_common.call("env", ros_env)  # TODO remove
     ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
     ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([ros_package_path, repo_buildspace, repo_sourcespace])
-    cob_common.call("env", ros_env_repo)  # TODO remove
 
     if build_repo_type == 'dry':
         #print "Make rosdep"
