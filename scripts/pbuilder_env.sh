@@ -24,6 +24,7 @@ ls -lah /root/.ssh
 #apt-get update
 #apt-get upgrade -y
 #apt-get install python-catkin-pkg python-rosdistro -y
+apt-get install openssh-client -y
 
 #pip install -U rosinstall
 
