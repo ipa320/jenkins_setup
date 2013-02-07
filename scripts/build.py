@@ -94,9 +94,6 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     cob_common.call("rosinstall %s %s/repo.rosinstall /opt/ros/%s"
                     % (repo_sourcespace, workspace, ros_distro))
 
-    # rename repo folder if repo has suffix
-    shutil.move(os.path.join(repo_sourcespace, build_repo), os.path.join(repo_sourcespace, b_r_short))
-
     # get the repositories build dependencies
     print "Get build dependencies of repo"
     #repo_build_wet_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
