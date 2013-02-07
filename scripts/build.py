@@ -486,6 +486,7 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
         print "Rosinstall file for user-defined build dependencies: \n %s" % rosinstall
         with open(os.path.join(workspace, "repo.rosinstall"), 'w') as f:
             f.write(rosinstall)
+        cob_common.call("cat repo.rosinstall")  # TODO remove
         print "Install user-defined build dependencies from source"
         # rosinstall depends
         cob_common.call("rosinstall %s %s/repo.rosinstall /opt/ros/%s"
