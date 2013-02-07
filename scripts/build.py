@@ -203,7 +203,7 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
                     % (repo_sourcespace, workspace, ros_distro))
 
     # rename repo folder if repo has suffix
-    shutil.move(os.path.join(repo_sourcespace, build_repo), os.path.join(repo_sourcespace, b_r_short))
+    #shutil.move(os.path.join(repo_sourcespace, build_repo), os.path.join(repo_sourcespace, b_r_short))
 
     # get the repositories build dependencies
     print "Get build dependencies of repo"
@@ -426,8 +426,8 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
                     % (repo_sourcespace, workspace, ros_distro))
 
     # rename repo folder if repo has suffix
-    shutil.move(os.path.join(repo_sourcespace, build_repo), os.path.join(repo_sourcespace, b_r_short))
-    print os.listdir(repo_sourcespace)  # TODO remove
+    #shutil.move(os.path.join(repo_sourcespace, build_repo), os.path.join(repo_sourcespace, b_r_short))
+    #print os.listdir(repo_sourcespace)  # TODO remove
 
     # get the repositories build dependencies
     print "Get build dependencies of repo"

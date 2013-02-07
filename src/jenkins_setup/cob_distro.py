@@ -120,12 +120,12 @@ class Cob_Distro_Repo(object):
         """
 
         if self.version:
-            return yaml.dump([{self.type: {'local-name': self.name,
+            return yaml.dump([{self.type: {'local-name': self.name.split('__')[0],
                                            'uri': '%s' % self.url,
                                            'version': '%s' % self.version}}],
                              default_style=False)
         else:
-            return yaml.dump([{self.type: {'local-name': self.name,
+            return yaml.dump([{self.type: {'local-name': self.name.split('__')[0],
                                            'uri': '%s' % self.url}}],
                              default_style=False)
 
