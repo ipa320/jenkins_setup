@@ -15,6 +15,7 @@ fi
 
 mkdir $WORKSPACE/../aux
 
+echo "Copying "$new_basetgz" from @(STORAGE)"
 
 scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
@@ -24,6 +25,8 @@ scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
 
 ls -lah $WORKSPACE
 
+
+echo "Cloning jenkins_setup repository"
 
 git clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup
 
@@ -95,6 +98,8 @@ fi
 mkdir $WORKSPACE/../aux
 
 
+echo "Copying "$basetgz" from @(STORAGE)/in_use"
+
 scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
 scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
@@ -103,6 +108,8 @@ scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
 
 ls -lah $WORKSPACE
 
+
+echo "Cloning jenkins_setup repository"
 
 git clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup
 
@@ -168,6 +175,8 @@ fi
 mkdir $WORKSPACE/../aux
 
 
+echo "Copying "$basetgz" from @(STORAGE)/in_use"
+
 scp @(STORAGE)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
 
 scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
@@ -176,6 +185,8 @@ scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
 
 ls -lah $WORKSPACE
 
+
+echo "Cloning jenkins_setup repository"
 
 git clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup
 
@@ -242,6 +253,8 @@ fi
 mkdir $WORKSPACE/../aux
 
 
+echo "Copying "$basetgz" from @(STORAGE)/in_use"
+
 scp @(STORAGE)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
 
 scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
@@ -250,6 +263,8 @@ scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
 
 ls -lah $WORKSPACE
 
+
+echo "Cloning jenkins_setup repository"
 
 git clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup
 
