@@ -26,8 +26,10 @@ def main():
 
     # (debug) output
     print "\n", 50 * 'X'
-    print "\nTesting on ros distro: %s" % ros_distro
+    print "\nTesting on ros distro:  %s" % ros_distro
     print "Testing the repository: %s" % build_repo.split('__')[0]
+    if len(build_repo.split('__')) > 1:
+        print "          with suffix: %s" % '__'.join(build_repo.split('__')[1:])
     print "\n", 50 * 'X'
 
     # update sourcelist and upgrade installed basic packages
@@ -195,6 +197,9 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     cob_common.call("rosinstall %s %s/repo.rosinstall /opt/ros/%s"
                     % (repo_sourcespace, workspace, ros_distro))
 
+    # rename repo folder if repo has suffix
+    shutil.move(os.path.join(repo_sourcespace, build_repo), os.path.join(repo_sourcespace, b_r_short))
+
     # get the repositories build dependencies
     print "Get build dependencies of repo"
 
@@ -221,15 +226,15 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
     # check if build_repo is wet or dry and take corresponding deps
     build_repo_type = ''
-    if build_repo in catkin_packages:
+    if b_r_short in catkin_packages:
         build_repo_type = 'wet'
         repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
-    elif build_repo in stacks:
+    elif b_r_short in stacks:
         build_repo_type = 'dry'
         repo_build_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, {})
     else:
-        # build_repo is neither wet nor dry
-        raise cob_common.BuildException("Repository %s to build not found in sourcespace" % build_repo)
+        # b_r_short is neither wet nor dry
+        raise cob_common.BuildException("Repository %s to build not found in sourcespace" % b_r_short)
 
     # install user-defined/customized dependencies from source
     rosinstall = ''
@@ -362,8 +367,8 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
         print "Build dry repo list"
         os.mkdir(dry_test_results_dir)
-        cob_common.call("rosmake --pjobs=8 --output=%s %s" % (dry_test_results_dir, build_repo), ros_env_repo)
-        cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, build_repo), ros_env_repo)
+        cob_common.call("rosmake --pjobs=8 --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
+        cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
 
         # copy test results
         cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
