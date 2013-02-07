@@ -603,6 +603,7 @@ if __name__ == "__main__":
     except (cob_common.BuildException, cob_pipe.CobPipeException) as ex:
         print "Build script failed!"
         print ex.msg
+        raise ex
 
     except Exception as ex:
         print "Build script failed! Check out the console output above for details."
