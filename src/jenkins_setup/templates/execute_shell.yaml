@@ -73,7 +73,7 @@ sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec -
 
 echo "*******CLEANUP WORKSPACE*******"
 
-echo "STORING CHROOT TARBALL ON SERVER"
+echo "STORING CHROOT TARBALL ON @(STORAGE)"
 
 scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use/
 
