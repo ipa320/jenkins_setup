@@ -34,6 +34,8 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
+BUILD_ID=$BUILD_ID
+
 ROSDISTRO=$ros_distro
 
 REPOSITORY=$REPOSITORY
@@ -111,6 +113,8 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
+BUILD_ID=$BUILD_ID
+
 ROSDISTRO=$ros_distro
 
 REPOSITORY=$REPOSITORY
@@ -181,6 +185,8 @@ ls -lah $WORKSPACE
 cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
+
+BUILD_ID=$BUILD_ID
 
 ROSDISTRO=$ros_distro
 
@@ -253,6 +259,8 @@ ls -lah $WORKSPACE
 cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
+
+BUILD_ID=$BUILD_ID
 
 ROSDISTRO=$ros_distro
 
