@@ -29,7 +29,7 @@ def main():
     print "\nTesting on ros distro:  %s" % ros_distro
     print "Testing the repository: %s" % build_repo.split('__')[0]
     if len(build_repo.split('__')) > 1:
-        print "          with suffix: %s" % '__'.join(build_repo.split('__')[1:])
+        print "           with suffix: %s" % '__'.join(build_repo.split('__')[1:])
     print "\n", 50 * 'X'
 
     # update sourcelist and upgrade installed basic packages
@@ -61,6 +61,8 @@ def main():
 
 
 def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
+    b_r_short = build_repo.split('__')[0]
+
     # set up directories variables
     tmpdir = os.path.join('/tmp', 'test_repositories')
     repo_sourcespace = os.path.join(tmpdir, 'src_repository')
@@ -91,6 +93,9 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     # rosinstall repos
     cob_common.call("rosinstall %s %s/repo.rosinstall /opt/ros/%s"
                     % (repo_sourcespace, workspace, ros_distro))
+
+    # rename repo folder if repo has suffix
+    shutil.move(os.path.join(repo_sourcespace, build_repo), os.path.join(repo_sourcespace, b_r_short))
 
     # get the repositories build dependencies
     print "Get build dependencies of repo"
@@ -152,8 +157,8 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     # TODO build (like in hudson_helper)
     # build repositories and tests
     print "Build repo"
-    cob_common.call("rosmake --pjobs=8 --output=%s %s" % (test_results_dir, build_repo), ros_env)
-    cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (test_results_dir, build_repo), ros_env)
+    cob_common.call("rosmake --pjobs=8 --output=%s %s" % (test_results_dir, b_r_short), ros_env)
+    cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (test_results_dir, b_r_short), ros_env)
     # TODO output dir ??
     # copy test results
     cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
@@ -411,6 +416,9 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     cob_common.call("rosinstall %s %s/repo.rosinstall --catkin"
                     % (repo_sourcespace, workspace))
 
+    # rename repo folder if repo has suffix
+    shutil.move(os.path.join(repo_sourcespace, build_repo), os.path.join(repo_sourcespace, b_r_short))
+
     # get the repositories build dependencies
     # TODO handle dry stacks
     print "Get build dependencies of repo"
@@ -435,16 +443,16 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     print "Found dry dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
 
     # check if build_repo is wet or dry and take corresponding deps
-    if build_repo in catkin_packages:
+    if b_r_short in catkin_packages:
         catkin_build_repo = True
         repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
         #repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
-    elif build_repo in stacks:
+    elif b_r_short in stacks:
         catkin_build_repo = False
         repo_build_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, {})
     else:
         # build_repo is neither wet nor dry
-        raise cob_common.BuildException("Repository to build not found in sourcespace")
+        raise cob_common.BuildException("Repository %s to build not found in sourcespace" % b_r_short)
 
     # install user-defined/customized dependencies from source
     rosinstall = ''
@@ -533,15 +541,6 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
     # copy test results
     cob_common.copy_test_results(workspace, repo_buildspace)
-
-#    #TODO used when get dependencies
-#    import rosdistro
-#
-#    # parse the rosdistro file
-#    print "Parsing rosdistro file for %s" % ros_distro
-#    distro = rosdistro.RosDistro(ros_distro)
-#    print "Parsing devel file for %s" % ros_distro
-#    devel = rosdistro.DevelDistro(ros_distro)
 
 
 if __name__ == "__main__":
