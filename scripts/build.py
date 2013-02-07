@@ -157,8 +157,8 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     # TODO build (like in hudson_helper)
     # build repositories and tests
     print "Build repo"
-    cob_common.call("rosmake --pjobs=8 --output=%s %s" % (test_results_dir, b_r_short), ros_env)
-    cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (test_results_dir, b_r_short), ros_env)
+    cob_common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" % (test_results_dir, b_r_short), ros_env)
+    cob_common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" % (test_results_dir, b_r_short), ros_env)
     # TODO output dir ??
     # copy test results
     cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
@@ -296,7 +296,7 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
             repo_build_dependencies_aptget.append('-'.join(['ros', ros_distro, repo_build_dep.replace('_', '-')]))
     cob_common.apt_get_install(repo_build_dependencies_rosdep, rosdep_resolver)
     if repo_build_dependencies_aptget != []:
-        print "The following dependencies couldn't be found in the rosdep database: \n -%s" % '\n -'.join(repo_build_dependencies_aptget)
+        print "The following dependencies couldn't be found in the rosdep database: \n - %s" % '\n - '.join(repo_build_dependencies_aptget)
         print "Trying to install them via 'ros-%s-<dependenpy_name>'" % ros_distro
         try:
             cob_common.apt_get_install(repo_build_dependencies_aptget)
@@ -375,8 +375,8 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
         print "Build dry repo list"
         os.mkdir(dry_test_results_dir)
-        cob_common.call("rosmake --pjobs=8 --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
-        cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
+        cob_common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
+        cob_common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
 
         # copy test results
         cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
@@ -514,7 +514,7 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
             repo_build_dependencies_aptget.append('-'.join(['ros', ros_distro, repo_build_dep.replace('_', '-')]))
     cob_common.apt_get_install(repo_build_dependencies_rosdep, rosdep_resolver)
     if repo_build_dependencies_aptget != []:
-        print "The following dependencies couldn't be found in the rosdep database: \n -%s" % '\n -'.join(repo_build_dependencies_aptget)
+        print "The following dependencies couldn't be found in the rosdep database: \n - %s" % '\n - '.join(repo_build_dependencies_aptget)
         print "Trying to install them via 'ros-%s-<dependenpy_name>'" % ros_distro
         try:
             cob_common.apt_get_install(repo_build_dependencies_aptget)
@@ -585,8 +585,8 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
         print "Build dry repo list"
         os.mkdir(dry_test_results_dir)
-        cob_common.call("rosmake --pjobs=8 --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
-        cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
+        cob_common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
+        cob_common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
 
         # copy test results
         cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
