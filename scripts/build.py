@@ -427,6 +427,7 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
     # rename repo folder if repo has suffix
     shutil.move(os.path.join(repo_sourcespace, build_repo), os.path.join(repo_sourcespace, b_r_short))
+    print os.listdir(repo_sourcespace)  # TODO remove
 
     # get the repositories build dependencies
     print "Get build dependencies of repo"
