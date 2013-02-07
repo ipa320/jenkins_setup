@@ -37,8 +37,6 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-BUILD_ID=$BUILD_ID
-
 ROSDISTRO=$ros_distro
 
 REPOSITORY=$REPOSITORY
@@ -56,6 +54,8 @@ JENKINS_USER=@(USERNAME)
 JOBTYPE=@(JOB_TYPE_NAME)
 
 export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO
+
+export BUILD_ID=$BUILD_ID
 
 DELIM
 
@@ -120,8 +120,6 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-BUILD_ID=$BUILD_ID
-
 ROSDISTRO=$ros_distro
 
 REPOSITORY=$REPOSITORY
@@ -139,6 +137,8 @@ JENKINS_USER=@(USERNAME)
 JOBTYPE=@(JOB_TYPE_NAME)
 
 export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO
+
+export BUILD_ID=$BUILD_ID
 
 DELIM
 
@@ -197,8 +197,6 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-BUILD_ID=$BUILD_ID
-
 ROSDISTRO=$ros_distro
 
 REPOSITORY=$REPOSITORY
@@ -216,6 +214,8 @@ JENKINS_USER=@(USERNAME)
 JOBTYPE=@(JOB_TYPE_NAME)
 
 export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO
+
+export BUILD_ID=$BUILD_ID
 
 DELIM
 
@@ -275,8 +275,6 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-BUILD_ID=$BUILD_ID
-
 ROSDISTRO=$ros_distro
 
 REPOSITORY=$REPOSITORY
@@ -294,6 +292,8 @@ JENKINS_USER=@(USERNAME)
 JOBTYPE=@(JOB_TYPE_NAME)
 
 export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO
+
+export BUILD_ID=$BUILD_ID
 
 DELIM
 
