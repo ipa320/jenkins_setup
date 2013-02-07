@@ -298,7 +298,13 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
         else:
             repo_build_dependencies_aptget.append('-'.join(['ros', ros_distro, repo_build_dep.replace('_', '-')]))
     cob_common.apt_get_install(repo_build_dependencies_rosdep, rosdep_resolver)
-    cob_common.apt_get_install(repo_build_dependencies_aptget)
+    if repo_build_dependencies_aptget != []:
+        print "The following dependencies couldn't be found in the rosdep database: \n -%s" % '\n -'.join(repo_build_dependencies_aptget)
+        print "Trying to install them via 'ros-%s-<dependenpy_name>'" % ros_distro
+        try:
+            cob_common.apt_get_install(repo_build_dependencies_aptget)
+        except:
+            raise cob_common.BuildException("A dependency could neighter be found in the rosdep database nor installed directly")
 
     # separate installed repos in wet and dry
     print "Separate installed repositories in wet and dry"
@@ -361,7 +367,7 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     ### rosbuild repositories
     cob_common.call("env", ros_env)  # TODO remove
     ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
-    ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([ros_package_path, repo_sourcespace])
+    ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([ros_package_path, repo_sourcespace, repo_buildspace])
     cob_common.call("env", ros_env_repo)  # TODO remove
 
     if build_repo_type == 'dry':
@@ -381,14 +387,16 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
 
 def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
+    ros_package_path = os.environ['ROS_PACKAGE_PATH']
     b_r_short = build_repo.split('__')[0]
 
     # set up directories variables
     tmpdir = os.path.join('/tmp', 'test_repositories')
     repo_sourcespace = os.path.join(tmpdir, 'src_repository')
-    #dependson_sourcespace = os.path.join(tmpdir, 'src_depends_on')
+    repo_sourcespace_wet = os.path.join(tmpdir, 'src_repository', 'wet')
+    repo_sourcespace_dry = os.path.join(tmpdir, 'src_repository', 'dry')
     repo_buildspace = os.path.join(tmpdir, 'build_repository')
-    #dependson_buildspace = os.path.join(tmpdir, 'build_depend_on')
+    dry_test_results_dir = os.path.join(repo_sourcespace_dry, 'test_results')
 
     # install Debian packages needed for script
     print "Installing Debian packages we need for running this script"
@@ -412,16 +420,20 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     # create repo sourcespace directory 'src_repository'
     os.makedirs(repo_sourcespace)
     # rosinstall repos
-    # TODO handle dry stacks
-    cob_common.call("rosinstall %s %s/repo.rosinstall --catkin"
-                    % (repo_sourcespace, workspace))
+    cob_common.call("rosinstall %s %s/repo.rosinstall /opt/ros/%s"
+                    % (repo_sourcespace, workspace, ros_distro))
 
     # rename repo folder if repo has suffix
     shutil.move(os.path.join(repo_sourcespace, build_repo), os.path.join(repo_sourcespace, b_r_short))
 
     # get the repositories build dependencies
-    # TODO handle dry stacks
     print "Get build dependencies of repo"
+
+    # all packages in sourcespace
+    (catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace)
+    print catkin_packages
+    print stacks
+    print manifest_packages
 
     ### DEBUG ###
     # get deps directly for catkin like willow
@@ -430,28 +442,24 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
         print "Found wet build dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
     except:
         pass
-    # all packages in sourcespace
-    (catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace)
-    print catkin_packages
-    print stacks
-    print manifest_packages
     # deps catkin
     repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
     print "Found wet dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
     # deps stacks
     repo_build_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, {})
     print "Found dry dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
+    ###############
 
     # check if build_repo is wet or dry and take corresponding deps
+    build_repo_type = ''
     if b_r_short in catkin_packages:
-        catkin_build_repo = True
+        build_repo_type = 'wet'
         repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
-        #repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
     elif b_r_short in stacks:
-        catkin_build_repo = False
+        build_repo_type = 'dry'
         repo_build_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, {})
     else:
-        # build_repo is neither wet nor dry
+        # b_r_short is neither wet nor dry
         raise cob_common.BuildException("Repository %s to build not found in sourcespace" % b_r_short)
 
     # install user-defined/customized dependencies from source
@@ -477,19 +485,17 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
             f.write(rosinstall)
         print "Install user-defined build dependencies from source"
         # rosinstall depends
-        # TODO handle dry stacks
-        cob_common.call("rosinstall %s %s/repo.rosinstall --catkin"
-                        % (repo_sourcespace, workspace))
+        cob_common.call("rosinstall %s %s/repo.rosinstall %s"
+                        % (repo_sourcespace, workspace, ros_distro))
 
         # get all deps also of just installed user-defined/customized dependencies
         (catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace)
-        if catkin_build_repo:
+        if build_repo_type == 'wet':
             if stacks != {}:
                 raise cob_common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
                                                 % (b_r_short, '- ' + '\n- '.join(stacks)))
             # take only wet packages
             repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
-            #repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
         else:  # dry build repo
             # take all packages
             repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, stacks, {}, build_depends=True, test_depends=False)
@@ -497,50 +503,100 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
     # Create rosdep object
     print "Create rosdep object"
-    rosdep_resolver = rosdep.RosDepResolver(ros_distro)
+    try:
+        rosdep_resolver = rosdep.RosDepResolver(ros_distro)
+    except:
+        from time import sleep
+        sleep(10)
+        rosdep_resolver = rosdep.RosDepResolver(ros_distro)
 
     print "Install build dependencies of repo list: %s" % (', '.join(repo_build_dependencies))
-    cob_common.apt_get_install(repo_build_dependencies, rosdep_resolver)
+    repo_build_dependencies_rosdep = []
+    repo_build_dependencies_aptget = []
+    for repo_build_dep in repo_build_dependencies:
+        if rosdep_resolver.has_ros(repo_build_dep):
+            repo_build_dependencies_rosdep.append(repo_build_dep)
+        else:
+            repo_build_dependencies_aptget.append('-'.join(['ros', ros_distro, repo_build_dep.replace('_', '-')]))
+    cob_common.apt_get_install(repo_build_dependencies_rosdep, rosdep_resolver)
+    if repo_build_dependencies_aptget != []:
+        print "The following dependencies couldn't be found in the rosdep database: \n -%s" % '\n -'.join(repo_build_dependencies_aptget)
+        print "Trying to install them via 'ros-%s-<dependenpy_name>'" % ros_distro
+        try:
+            cob_common.apt_get_install(repo_build_dependencies_aptget)
+        except:
+            raise cob_common.BuildException("A dependency could neighter be found in the rosdep database nor installed directly")
 
-    # replace the CMakeLists.txt file for repositories that use catkin
-    print "Removing the CMakeLists.txt file generated by rosinstall"
-    cob_common.call("cat %s" % os.path.join(repo_sourcespace, 'CMakeLists.txt'))
-    os.remove(os.path.join(repo_sourcespace, 'CMakeLists.txt'))
-    print "Create a new CMakeLists.txt file using catkin"
+    # separate installed repos in wet and dry
+    print "Separate installed repositories in wet and dry"
+    os.makedirs(repo_sourcespace_wet)
+    os.makedirs(repo_sourcespace_dry)
+    for wet_pkg in catkin_packages.keys():
+        shutil.move(os.path.join(repo_sourcespace, wet_pkg), os.path.join(repo_sourcespace_wet, wet_pkg))
+    for dry_pkg in stacks.keys():
+        shutil.move(os.path.join(repo_sourcespace, dry_pkg), os.path.join(repo_sourcespace_dry, dry_pkg))
+    shutil.move(os.path.join(repo_sourcespace, 'setup.sh'), os.path.join(repo_sourcespace_dry, 'setup.sh'))
+    shutil.move(os.path.join(repo_sourcespace, 'setup.bash'), os.path.join(repo_sourcespace_dry, 'setup.bash'))
+    print cob_common.get_all_packages(repo_sourcespace)  # TODO remove
+
+    # env
+    print "Set up environment variables"
     ros_env = cob_common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
-    cob_common.call("catkin_init_workspace %s" % repo_sourcespace, ros_env)
-    os.makedirs(repo_buildspace)
-    os.chdir(repo_buildspace)
-    cob_common.call("cmake %s" % repo_sourcespace, ros_env)
-    #ros_env_repo = cob_common.get_ros_env(os.path.join(repo_buildspace, 'devel/setup.bash'))
 
-    # build repositories and tests
-    print "Build repo list"
-    cob_common.call("make", ros_env)
-    cob_common.call("make tests", ros_env)
+    ### catkin repositories
+    if catkin_packages != {}:
+        print "Create a CMakeLists.txt for catkin packages"
+        cob_common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env)
 
-    # get the repositories test and run dependencies
-    print "Get test and run dependencies of repo list"
-    # TODO
-    (catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace)
-    if catkin_build_repo:
+        os.makedirs(repo_buildspace)
+        os.chdir(repo_buildspace)
+        cob_common.call("cmake %s" % repo_sourcespace_wet, ros_env)
+        #ros_env_repo = cob_common.get_ros_env(os.path.join(repo_buildspace, 'devel/setup.bash'))
+
+        # build repositories and tests
+        print "Build repo list"
+        cob_common.call("make", ros_env)
+        cob_common.call("make tests", ros_env)
+
+        # get the repositories test and run dependencies
+        print "Get test and run dependencies of repo list"
+        (catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace_wet)
         if stacks != {}:
             raise cob_common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
                                             % (b_r_short, '- ' + '\n- '.join(stacks)))
         # take only wet packages
         repo_test_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=False, test_depends=True)
-    else:  # dry build repo
-        # take all packages
-        repo_test_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, stacks, {}, build_depends=False, test_depends=True)
-    print "Install test and run dependencies of repo list: %s" % (', '.join(repo_test_dependencies))
-    cob_common.apt_get_install(repo_test_dependencies, rosdep_resolver)
+        if repo_test_dependencies != []:
+            print "Install test and run dependencies of repo list: %s" % (', '.join(repo_test_dependencies))
+            cob_common.apt_get_install(repo_test_dependencies, rosdep_resolver)
 
-    # run tests
-    print "Test repo list"
-    cob_common.call("make run_tests", ros_env)
+            # run tests
+            print "Test repo list"
+            cob_common.call("make run_tests", ros_env)
 
-    # copy test results
-    cob_common.copy_test_results(workspace, repo_buildspace)
+            # copy test results
+            cob_common.copy_test_results(workspace, repo_buildspace)
+
+    ### rosbuild repositories
+    cob_common.call("env", ros_env)  # TODO remove
+    ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
+    ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([ros_package_path, repo_sourcespace, repo_buildspace])
+    cob_common.call("env", ros_env_repo)  # TODO remove
+
+    if build_repo_type == 'dry':
+        #print "Make rosdep"
+        #cob_common.call("rosmake rosdep", ros_env)
+        #for stack in stacks.keys():
+        #    cob_common.call("rosdep install -y %s" % stack, ros_env_repo)
+
+        print "Build dry repo list"
+        os.mkdir(dry_test_results_dir)
+        cob_common.call("rosmake --pjobs=8 --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
+        cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
+
+        # copy test results
+        cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
+        cob_common.copy_test_results(workspace, repo_sourcespace_dry)
 
 
 if __name__ == "__main__":
