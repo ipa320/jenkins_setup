@@ -310,11 +310,13 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     print "Separate installed repositories in wet and dry"
     os.makedirs(repo_sourcespace_wet)
     os.makedirs(repo_sourcespace_dry)
-    #(catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(repo_sourcespace)
-    for wet_pkg in catkin_packages.keys():
-        shutil.move(os.path.join(repo_sourcespace, wet_pkg), os.path.join(repo_sourcespace_wet, wet_pkg))
-    for dry_pkg in stacks.keys():
-        shutil.move(os.path.join(repo_sourcespace, dry_pkg), os.path.join(repo_sourcespace_dry, dry_pkg))
+    # get all folders in repo_sourcespace
+    sourcespace_dirs = [name for name in os.listdir(repo_sourcespace) if os.path.isdir(os.path.join(repo_sourcespace, name))]
+    for dir in sourcespace_dirs:
+        if dir in catkin_packages.keys():
+            shutil.move(os.path.join(repo_sourcespace, dir), os.path.join(repo_sourcespace_wet, dir))
+        if dir in stacks.keys():
+            shutil.move(os.path.join(repo_sourcespace, dir), os.path.join(repo_sourcespace_dry, dir))
     shutil.move(os.path.join(repo_sourcespace, 'setup.sh'), os.path.join(repo_sourcespace_dry, 'setup.sh'))
     shutil.move(os.path.join(repo_sourcespace, 'setup.bash'), os.path.join(repo_sourcespace_dry, 'setup.bash'))
     print cob_common.get_all_packages(repo_sourcespace)
@@ -531,10 +533,13 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     print "Separate installed repositories in wet and dry"
     os.makedirs(repo_sourcespace_wet)
     os.makedirs(repo_sourcespace_dry)
-    for wet_pkg in catkin_packages.keys():
-        shutil.move(os.path.join(repo_sourcespace, wet_pkg), os.path.join(repo_sourcespace_wet, wet_pkg))
-    for dry_pkg in stacks.keys():
-        shutil.move(os.path.join(repo_sourcespace, dry_pkg), os.path.join(repo_sourcespace_dry, dry_pkg))
+    # get all folders in repo_sourcespace
+    sourcespace_dirs = [name for name in os.listdir(repo_sourcespace) if os.path.isdir(os.path.join(repo_sourcespace, name))]
+    for dir in sourcespace_dirs:
+        if dir in catkin_packages.keys():
+            shutil.move(os.path.join(repo_sourcespace, dir), os.path.join(repo_sourcespace_wet, dir))
+        if dir in stacks.keys():
+            shutil.move(os.path.join(repo_sourcespace, dir), os.path.join(repo_sourcespace_dry, dir))
     shutil.move(os.path.join(repo_sourcespace, 'setup.sh'), os.path.join(repo_sourcespace_dry, 'setup.sh'))
     shutil.move(os.path.join(repo_sourcespace, 'setup.bash'), os.path.join(repo_sourcespace_dry, 'setup.bash'))
     print cob_common.get_all_packages(repo_sourcespace)  # TODO remove
