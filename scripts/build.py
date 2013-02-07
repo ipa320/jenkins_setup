@@ -365,7 +365,7 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
     ### rosbuild repositories
     ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
-    ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([ros_package_path, repo_buildspace, repo_sourcespace])
+    ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_buildspace, repo_sourcespace, ros_package_path])
 
     if build_repo_type == 'dry':
         #print "Make rosdep"
@@ -575,7 +575,7 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
     ### rosbuild repositories
     ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
-    ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([ros_package_path, repo_buildspace, repo_sourcespace])
+    ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_buildspace, repo_sourcespace, ros_package_path])
 
     if build_repo_type == 'dry':
         #print "Make rosdep"
