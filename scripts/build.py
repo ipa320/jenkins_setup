@@ -150,8 +150,8 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     # TODO build (like in hudson_helper)
     # build repositories and tests
     print "Build repo"
-    cob_common.call("rosmake --pjobs=8 --output=%s %s" % (test_results_dir, build_repo.split('__')[0]), ros_env)
-    cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (test_results_dir, build_repo.split('__')[0]), ros_env)
+    cob_common.call("rosmake --pjobs=8 --output=%s %s" % (test_results_dir, build_repo), ros_env)
+    cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (test_results_dir, build_repo), ros_env)
     # TODO output dir ??
     # copy test results
     cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
@@ -221,10 +221,10 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
     # check if build_repo is wet or dry and take corresponding deps
     build_repo_type = ''
-    if b_r_short in catkin_packages:
+    if build_repo in catkin_packages:
         build_repo_type = 'wet'
         repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
-    elif b_r_short in stacks:
+    elif build_repo in stacks:
         build_repo_type = 'dry'
         repo_build_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, {})
     else:
@@ -362,8 +362,8 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
         print "Build dry repo list"
         os.mkdir(dry_test_results_dir)
-        cob_common.call("rosmake --pjobs=8 --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
-        cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
+        cob_common.call("rosmake --pjobs=8 --output=%s %s" % (dry_test_results_dir, build_repo), ros_env_repo)
+        cob_common.call("rosmake --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, build_repo), ros_env_repo)
 
         # copy test results
         cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
@@ -430,11 +430,11 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
     print "Found dry dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
 
     # check if build_repo is wet or dry and take corresponding deps
-    if b_r_short in catkin_packages:
+    if build_repo in catkin_packages:
         catkin_build_repo = True
         repo_build_dependencies = cob_common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
         #repo_build_dependencies = cob_common.get_dependencies(repo_sourcespace, build_depends=True, test_depends=False)
-    elif b_r_short in stacks:
+    elif build_repo in stacks:
         catkin_build_repo = False
         repo_build_dependencies = cob_common.get_nonlocal_dependencies({}, stacks, {})
     else:
