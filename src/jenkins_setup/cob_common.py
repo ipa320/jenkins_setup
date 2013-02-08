@@ -83,14 +83,16 @@ def call_with_list(command, envir=None, verbose=True):
     while helper.poll() is None:
         output = helper.stdout.readline()
         res += output
+        if verbose:
+            print output
         time.sleep(0.1)  # TODO What is a good value here? Without this delay it's busy looping
 
     #make sure to capture the last line(s)
     output = helper.stdout.read()
     res += output
-
     if verbose:
-        print res
+        print output
+
     if helper.returncode != 0:
         msg = "Failed to execute command '%s'" % command
         print "/!\  %s" % msg
