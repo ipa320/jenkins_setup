@@ -84,7 +84,7 @@ def call_with_list(command, envir=None, verbose=True):
         output = helper.stdout.readline()
         res += output
         if verbose:
-            print output
+            sys.stdout.write(output)
         time.sleep(0.1)  # TODO What is a good value here? Without this delay it's busy looping
 
     #make sure to capture the last line(s)
