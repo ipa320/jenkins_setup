@@ -153,15 +153,17 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
     print "Build repository %s" % b_r_short
     try:
         cob_common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" % (test_results_dir, b_r_short), ros_env_repo)
-    except:
+    except cob_common.BuildException as ex:
+        print ex.msg
         raise cob_common.BuildException("Failed to rosmake %s" % b_r_short)
     try:
         cob_common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" % (test_results_dir, b_r_short), ros_env_repo)
         # TODO output dir ??
-    finally:
-        # copy test results
-        cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
-        cob_common.copy_test_results(workspace, repo_sourcespace)
+    except cob_common.BuildException as ex:
+        print ex.msg
+    # copy test results
+    cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
+    cob_common.copy_test_results(workspace, repo_sourcespace)
 
 
 def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
