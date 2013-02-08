@@ -336,12 +336,24 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
                                          os.path.join(repo_sourcespace_wet, 'CMakeLists.txt')))
         os.mkdir(repo_buildspace)
         os.chdir(repo_buildspace)
-        cob_common.call("cmake %s" % repo_sourcespace_wet + '/', ros_env)
+        try:
+            cob_common.call("cmake %s" % repo_sourcespace_wet + '/', ros_env)
+        except cob_common.BuildException as ex:
+            print ex.msg
+            raise cob_common.BuildException("Failed to cmake wet repositories")
+        #ros_env_repo = cob_common.get_ros_env(os.path.join(repo_buildspace, 'devel/setup.bash'))
 
         # build repositories and tests
         print "Build wet repo list"
-        cob_common.call("make", ros_env)
-        cob_common.call("make tests", ros_env)
+        try:
+            cob_common.call("make", ros_env)
+        except cob_common.BuildException as ex:
+            print ex.msg
+            raise cob_common.BuildException("Failed to make wet packages")
+        try:
+            cob_common.call("make tests", ros_env)
+        except cob_common.BuildException as ex:
+            print ex.msg
 
         # get wet repositories test and run dependencies
         print "Get test and run dependencies of repo list"
@@ -357,10 +369,13 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
             # run tests
             print "Test repo list"
-            cob_common.call("make run_tests", ros_env)
+            try:
+                cob_common.call("make run_tests", ros_env)
+            except cob_common.BuildException as ex:
+                print ex.msg
 
-            # copy test results
-            cob_common.copy_test_results(workspace, repo_buildspace)
+        # copy test results
+        cob_common.copy_test_results(workspace, repo_buildspace)
 
     ### rosbuild repositories
     ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
@@ -372,14 +387,19 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
         #for stack in stacks.keys():
         #    cob_common.call("rosdep install -y %s" % stack, ros_env_repo)
 
-        print "Build dry repo list"
+        print "Build dry repository %s" % b_r_short
         os.mkdir(dry_test_results_dir)
-        cob_common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
-        cob_common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
-
-        # copy test results
-        cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
-        cob_common.copy_test_results(workspace, repo_sourcespace_dry)
+        try:
+            cob_common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
+        except:
+            raise cob_common.BuildException("Failed to rosmake %s" % b_r_short)
+        try:
+            cob_common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
+            # TODO output dir ??
+        finally:
+            # copy test results
+            cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
+            cob_common.copy_test_results(workspace, repo_sourcespace_dry)
 
 
 def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
@@ -543,15 +563,26 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
         print "Create a CMakeLists.txt for catkin packages"
         cob_common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env)
 
-        os.makedirs(repo_buildspace)
+        os.mkdir(repo_buildspace)
         os.chdir(repo_buildspace)
-        cob_common.call("cmake %s" % repo_sourcespace_wet, ros_env)
+        try:
+            cob_common.call("cmake %s" % repo_sourcespace_wet + '/', ros_env)
+        except cob_common.BuildException as ex:
+            print ex.msg
+            raise cob_common.BuildException("Failed to cmake wet repositories")
         #ros_env_repo = cob_common.get_ros_env(os.path.join(repo_buildspace, 'devel/setup.bash'))
 
         # build repositories and tests
         print "Build repo list"
-        cob_common.call("make", ros_env)
-        cob_common.call("make tests", ros_env)
+        try:
+            cob_common.call("make", ros_env)
+        except cob_common.BuildException as ex:
+            print ex.msg
+            raise cob_common.BuildException("Failed to make wet packages")
+        try:
+            cob_common.call("make tests", ros_env)
+        except cob_common.BuildException as ex:
+            print ex.msg
 
         # get the repositories test and run dependencies
         print "Get test and run dependencies of repo list"
@@ -567,10 +598,13 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
 
             # run tests
             print "Test repo list"
-            cob_common.call("make run_tests", ros_env)
+            try:
+                cob_common.call("make run_tests", ros_env)
+            except cob_common.BuildException as ex:
+                print ex.msg
 
-            # copy test results
-            cob_common.copy_test_results(workspace, repo_buildspace)
+        # copy test results
+        cob_common.copy_test_results(workspace, repo_buildspace)
 
     ### rosbuild repositories
     ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
@@ -582,14 +616,19 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
         #for stack in stacks.keys():
         #    cob_common.call("rosdep install -y %s" % stack, ros_env_repo)
 
-        print "Build dry repo list"
+        print "Build dry repository %s" % b_r_short
         os.mkdir(dry_test_results_dir)
-        cob_common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
-        cob_common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
-
-        # copy test results
-        cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
-        cob_common.copy_test_results(workspace, repo_sourcespace_dry)
+        try:
+            cob_common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
+        except:
+            raise cob_common.BuildException("Failed to rosmake %s" % b_r_short)
+        try:
+            cob_common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_repo)
+            # TODO output dir ??
+        finally:
+            # copy test results
+            cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
+            cob_common.copy_test_results(workspace, repo_sourcespace_dry)
 
 
 if __name__ == "__main__":
