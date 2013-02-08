@@ -315,9 +315,6 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
             shutil.move(os.path.join(repo_sourcespace, dir), os.path.join(repo_sourcespace_wet, dir))
         if dir in stacks.keys():
             shutil.move(os.path.join(repo_sourcespace, dir), os.path.join(repo_sourcespace_dry, dir))
-    shutil.move(os.path.join(repo_sourcespace, 'setup.sh'), os.path.join(repo_sourcespace_dry, 'setup.sh'))
-    shutil.move(os.path.join(repo_sourcespace, 'setup.bash'), os.path.join(repo_sourcespace_dry, 'setup.bash'))
-    print cob_common.get_all_packages(repo_sourcespace)
 
     # env
     print "Set up environment variables"
@@ -380,7 +377,7 @@ def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
         cob_common.copy_test_results(workspace, repo_buildspace)
 
     ### rosbuild repositories
-    ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
+    ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
     ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_buildspace, repo_sourcespace, ros_package_path])
 
     if build_repo_type == 'dry':
@@ -553,8 +550,6 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
             shutil.move(os.path.join(repo_sourcespace, dir), os.path.join(repo_sourcespace_wet, dir))
         if dir in stacks.keys():
             shutil.move(os.path.join(repo_sourcespace, dir), os.path.join(repo_sourcespace_dry, dir))
-    shutil.move(os.path.join(repo_sourcespace, 'setup.sh'), os.path.join(repo_sourcespace_dry, 'setup.sh'))
-    shutil.move(os.path.join(repo_sourcespace, 'setup.bash'), os.path.join(repo_sourcespace_dry, 'setup.bash'))
 
     # env
     print "Set up environment variables"
@@ -609,7 +604,7 @@ def build_post_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
         cob_common.copy_test_results(workspace, repo_buildspace)
 
     ### rosbuild repositories
-    ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace_dry, 'setup.bash'))
+    ros_env_repo = cob_common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
     ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_buildspace, repo_sourcespace, ros_package_path])
 
     if build_repo_type == 'dry':
