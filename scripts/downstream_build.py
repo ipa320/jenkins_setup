@@ -19,7 +19,7 @@ def main():
         raise cob_common.BuildException("Wrong arguments for build script")
 
     # get arguments
-    #server_name = args[0]
+    server_name = args[0]
     #user_name = args[1]
     ros_distro = args[2]
     build_repo = args[3]  # repository to build
@@ -36,10 +36,10 @@ def main():
     if ros_distro == 'electric':
         pass
     else:
-        build_downstream_post_fuerte(ros_distro, build_repo, workspace)
+        build_downstream_post_fuerte(ros_distro, build_repo, workspace, server_name)
 
 
-def build_downstream_post_fuerte(ros_distro, build_repo, workspace):
+def build_downstream_post_fuerte(ros_distro, build_repo, workspace, server):
     ros_package_path = os.environ['ROS_PACKAGE_PATH']
     b_r_short = build_repo.split('__')[0]
 
@@ -59,7 +59,7 @@ def build_downstream_post_fuerte(ros_distro, build_repo, workspace):
     # get depends on
     print "Get list of released repositories that (build-)depend on repository %s" % b_r_short
     ros_depends_on = []
-    distro_ros = rosdistro.RosDistro(ros_distro)
+    distro_ros = rosdistro.RosDistro(ros_distro, 'http://%s/~jenkins' % server)
     for d in distro_ros.get_depends_on([b_r_short])['build'] + distro_ros.get_depends_on([b_r_short])['buildtool']:
         if not d in ros_depends_on and d != b_r_short:
             ros_depends_on.append(d)
