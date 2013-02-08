@@ -37,13 +37,8 @@ def main():
     cob_common.call("apt-get update")
     cob_common.call("apt-get dist-upgrade -y")
 
-    print "\nUpdating rosinstall"
+    print "\nUpdating rosinstall"  # TODO run install frequently in chroot_tarball_updater an remove here
     cob_common.call("pip install -U rosinstall")
-
-    # clone jenkins_config repository
-    #print "\nCloning jenkins_config repository"  # TODO necessary??
-    #cob_common.call("git clone git://github.com/fmw-jk/jenkins_config.git %s/jenkins_config" % workspace)  # TODO change to ipa320
-    #cob_common.call("cp -r %s/jenkins_config/%s/%s %s/pipeline_config_dir" % (workspace, server_name, user_name, workspace))
 
     # cob_pipe object
     cp_instance = cob_pipe.Cob_Pipe()
@@ -155,13 +150,18 @@ def build_electric(ros_distro, build_repo, buildpipe_repos, workspace):
 
     # TODO build (like in hudson_helper)
     # build repositories and tests
-    print "Build repo"
-    cob_common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" % (test_results_dir, b_r_short), ros_env)
-    cob_common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" % (test_results_dir, b_r_short), ros_env)
-    # TODO output dir ??
-    # copy test results
-    cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
-    cob_common.copy_test_results(workspace, repo_sourcespace)
+    print "Build repository %s" % b_r_short
+    try:
+        cob_common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" % (test_results_dir, b_r_short), ros_env_repo)
+    except:
+        raise cob_common.BuildException("Failed to rosmake %s" % b_r_short)
+    try:
+        cob_common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" % (test_results_dir, b_r_short), ros_env_repo)
+        # TODO output dir ??
+    finally:
+        # copy test results
+        cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env)
+        cob_common.copy_test_results(workspace, repo_sourcespace)
 
 
 def build_fuerte(ros_distro, build_repo, buildpipe_repos, workspace):
