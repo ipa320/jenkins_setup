@@ -806,6 +806,8 @@ class Test_Job(Jenkins_Job):
         Sets test job specific job configuration parameters
         """
 
+        self.params['NODE_LABEL'] = 'master'
+
         self.set_mailer_param()
         #self.set_junit_testresults_param()  TODO
 
