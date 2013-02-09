@@ -6,7 +6,7 @@ import yaml
 from jenkins_setup import cob_common
 
 
-class Cob_Distro(object):
+class CobDistro(object):
     """
     Object containing distro information
     """
@@ -32,11 +32,11 @@ class Cob_Distro(object):
             self.repos_dict = yaml.load(self.release_file.read())['repositories']
 
         for repo_name, data in self.repos_dict.iteritems():
-            repo = Cob_Distro_Repo(repo_name, data)
+            repo = CobDistroRepo(repo_name, data)
             self.repositories[repo_name] = repo
 
 
-class Cob_Distro_Pipe(object):
+class CobDistroPipe(object):
     """
     Object containing buildpipeline information
     """
@@ -52,7 +52,7 @@ class Cob_Distro_Pipe(object):
         self.repos_dict = repos_dict
 
         for repo_name, data in self.repos_dict.iteritems():
-            repo = Cob_Distro_Pipe_Repo(repo_name, data)
+            repo = CobDistroPipeRepo(repo_name, data)
             self.repositories[repo_name] = repo
 
     def load_config_from_url(self, server_name, user_name):
@@ -91,7 +91,7 @@ class Cob_Distro_Pipe(object):
         return deps
 
 
-class Cob_Distro_Repo(object):
+class CobDistroRepo(object):
     """
     Object containing repository information
     """
@@ -130,7 +130,7 @@ class Cob_Distro_Repo(object):
                              default_style=False)
 
 
-class Cob_Distro_Pipe_Repo(Cob_Distro_Repo):
+class CobDistroPipeRepo(CobDistroRepo):
     """
     Object containing repository information and additional information for
     the buildpipeline
@@ -142,7 +142,7 @@ class Cob_Distro_Pipe_Repo(Cob_Distro_Repo):
         file, ``dict``
         """
 
-        super(Cob_Distro_Pipe_Repo, self).__init__(name, data)
+        super(CobDistroPipeRepo, self).__init__(name, data)
 
         self.poll = True  # first level repos are always polled
         self.ros_distro = data['ros_distro']
@@ -156,9 +156,9 @@ class Cob_Distro_Pipe_Repo(Cob_Distro_Repo):
         self.dependencies = {}
         if data['dependencies']:
             for dep_name, dep_data in data['dependencies'].iteritems():
-                dep = Cob_Distro_Repo(dep_name, dep_data)
+                dep = CobDistroRepo(dep_name, dep_data)
                 self.dependencies[dep_name] = dep
-            #self.dependencies = Cob_Distro('deps', repos_dict=data['dependencies'])
+            #self.dependencies = CobDistro('deps', repos_dict=data['dependencies'])
 
         self.jobs = []
         if data['jobs']:

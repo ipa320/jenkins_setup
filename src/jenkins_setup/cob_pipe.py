@@ -4,7 +4,7 @@
 from jenkins_setup import cob_distro, cob_common
 
 
-class Cob_Pipe(cob_distro.Cob_Distro_Pipe):
+class CobPipe(cob_distro.CobDistroPipe):
     """
     Pipeline configuration class
     """
@@ -25,7 +25,7 @@ class Cob_Pipe(cob_distro.Cob_Distro_Pipe):
         self.committer = pipeline_config['committer']
 
         try:
-            super(Cob_Pipe, self).load_config_from_dict(pipeline_config['repositories'])
+            super(CobPipe, self).load_config_from_dict(pipeline_config['repositories'])
         except cob_distro.CobDistroException as ex:
             print ex.msg
             raise CobPipeException(ex.msg)

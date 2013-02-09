@@ -31,7 +31,7 @@ def main():
         print " - ", repo
 
     # cob_distro_pipe object
-    cdp_instance = cob_distro.Cob_Distro_Pipe()
+    cdp_instance = cob_distro.CobDistroPipe()
     buildpipe_repos = cdp_instance.load_from_url(server_name, user_name)
 
     repos_to_trigger = []

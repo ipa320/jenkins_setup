@@ -29,7 +29,7 @@ EMPTY_CONFIG_XML = """<?xml version='1.0' encoding='UTF-8'?>
 </project>"""
 
 
-class Jenkins_Job_Test(unittest.TestCase):
+class JenkinsJobTest(unittest.TestCase):
     """
     Tests Jenkins jobs
     """
@@ -38,7 +38,7 @@ class Jenkins_Job_Test(unittest.TestCase):
         self.maxDiff = None
 
         #self.test_dict = cob_common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
-        self.test_pipe_inst = cob_pipe.Cob_Pipe()
+        self.test_pipe_inst = cob_pipe.CobPipe()
         self.test_pipe_inst.load_config_from_url('jenkins-test-server', 'test-user')
 
         self.job_type_test_list = ['pipe', 'prio', 'normal']
@@ -47,7 +47,7 @@ class Jenkins_Job_Test(unittest.TestCase):
             info = yaml.load(f)
         jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'], info['jenkins_pw'])
 
-        self.jj = jenkins_job_creator.Jenkins_Job(jenkins_instance, self.test_pipe_inst)
+        self.jj = jenkins_job_creator.JenkinsJob(jenkins_instance, self.test_pipe_inst)
 
     # Testing schedule_job
     def test__schedule_job__job_name_string_and_job_config_string__return_action_string(self):
@@ -476,7 +476,7 @@ class Jenkins_Job_Test(unittest.TestCase):
         self.assertEqual(result, '#!/bin/bash -e\\n\nnew_basetgz=${ubuntu_distro}__${arch}__${ros_distro}\\n basetgz=${new_basetgz}__${repository}\\n\nsudo rm -rf $WORKSPACE/*\\n\nmkdir $WORKSPACE/../aux\\n\nscp jenkins@jenkins-test-server:~/chroot_tarballs/$new_basetgz $WORKSPACE/../aux/test-user__${basetgz}\\n scp jenkins@jenkins-test-server:~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig\\n scp -r jenkins@jenkins-test-server:~/jenkins-config/.ssh $WORKSPACE/.ssh\\n ls -lah $WORKSPACE\\n\ngit clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup\\n ls -lah $WORKSPACE\\n\ncat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM\\n JOBNAME=$JOB_NAME\\n ROSDISTRO=$ros_distro\\n REPOSITORY=$repository\\n UBUNTUDISTRO=$ubuntu_distro\\n ARCH=$arch\\n #TODO\\n JENKINS_MASTER=jenkins-test-server\\n JENKINS_USER=test-user\\n JOBTYPE=normal\\n export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO\\n DELIM\\n\nls -lah $WORKSPACE\\n\necho "***********ENTER CHROOT************"\\n echo "*********please be patient*********"\\n sudo pbuilder execute --basetgz $WORKSPACE/../aux/test-user__${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\\n\necho "*******CLEANUP WORKSPACE*******"\\n sudo rm -rf $WORKSPACE/../aux\\n')
 
 
-class Pipe_Starter_Job_Test(unittest.TestCase):
+class PipeStarterJobTest(unittest.TestCase):
     """
     Tests Pipe Starter jobs
     """
@@ -485,7 +485,7 @@ class Pipe_Starter_Job_Test(unittest.TestCase):
         self.maxDiff = None
 
         #self.test_dict = cob_common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
-        self.test_pipe_inst = cob_pipe.Cob_Pipe()
+        self.test_pipe_inst = cob_pipe.CobPipe()
         self.test_pipe_inst.load_config_from_url('jenkins-test-server', 'test-user')
 
         self.job_type_test_list = ['pipe', 'prio', 'normal']
@@ -495,20 +495,20 @@ class Pipe_Starter_Job_Test(unittest.TestCase):
         self.jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'], info['jenkins_pw'])
 
     def test__get_prio_subset_filter__result_filter_input_dict(self):
-        self.jj = jenkins_job_creator.Pipe_Starter_Job(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1'], 'dep_repo_1', [])
+        self.jj = jenkins_job_creator.PipeStarterJob(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1'], 'dep_repo_1', [])
         result = self.jj.get_prio_subset_filter()
         self.assertEqual(result, [{'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
                                   {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro_2', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'}])
 
     def test__get_prio_subset_filter__result_filter_input_dict2(self):
-        self.jj = jenkins_job_creator.Pipe_Starter_Job(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1', 'test_repo_2'], 'dep_repo_1', [])
+        self.jj = jenkins_job_creator.PipeStarterJob(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1', 'test_repo_2'], 'dep_repo_1', [])
         result = self.jj.get_prio_subset_filter()
         self.assertEqual(result, [{'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
                                   {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro_2', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
                                   {'repository': 'test_repo_2', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'natty', 'arch': 'amd64'}])
 
 
-class Normal_Build_Job_Test(unittest.TestCase):
+class NormalBuildJobTest(unittest.TestCase):
     """
     Tests Normal Build Job
     """
@@ -517,7 +517,7 @@ class Normal_Build_Job_Test(unittest.TestCase):
         self.maxDiff = None
 
         #self.test_dict = cob_common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
-        self.test_pipe_inst = cob_pipe.Cob_Pipe()
+        self.test_pipe_inst = cob_pipe.CobPipe()
         self.test_pipe_inst.load_config_from_url('jenkins-test-server', 'test-user')
 
         self.job_type_test_list = ['pipe', 'prio', 'normal']
@@ -526,7 +526,7 @@ class Normal_Build_Job_Test(unittest.TestCase):
             info = yaml.load(f)
         self.jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'], info['jenkins_pw'])
 
-        self.jj = jenkins_job_creator.Normal_Build_Job(self.jenkins_instance, self.test_pipe_inst)
+        self.jj = jenkins_job_creator.NormalBuildJob(self.jenkins_instance, self.test_pipe_inst)
 
     def test__get_normal_subset_filter__result_filter_input_dict(self):
         result = self.jj.get_normal_subset_filter()

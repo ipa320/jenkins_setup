@@ -4,12 +4,12 @@ import unittest
 from jenkins_setup import cob_pipe
 
 
-class Cob_Pipe_Test(unittest.TestCase):
+class CobPipeTest(unittest.TestCase):
 
     def setUp(self):
         self.MaxDiff = None
 
-        self.cp = cob_pipe.Cob_Pipe()
+        self.cp = cob_pipe.CobPipe()
         self.cp.load_config_from_url('jenkins-test-server', 'test-user')
 
     def test__load_config_from_url__check_pipeline_github_ur(self):

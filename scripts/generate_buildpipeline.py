@@ -46,7 +46,7 @@ def main():
     modified_jobs = []
 
     # get pipeline configs object from url
-    plc_instance = cob_pipe.Cob_Pipe()
+    plc_instance = cob_pipe.CobPipe()
     plc_instance.load_config_from_url(slave_conf['master'], user_name)
 
     # get jobs to create
@@ -61,13 +61,13 @@ def main():
     for poll, starts_repo_list in polls_dict.iteritems():
         if poll in pipe_repo_list:
             pipe_repo_list.remove(poll)
-        job_creator_instance = jenkins_job_creator.Pipe_Starter_Job(jenkins_instance, plc_instance, starts_repo_list, poll, ['bringup', 'highlevel'])  # TODO
+        job_creator_instance = jenkins_job_creator.PipeStarterJob(jenkins_instance, plc_instance, starts_repo_list, poll, ['bringup', 'highlevel'])  # TODO
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
             modified_jobs.append(job_creator_instance.create_job())
     for repo in pipe_repo_list:
-        job_creator_instance = jenkins_job_creator.Pipe_Starter_Job(jenkins_instance, plc_instance, [repo], repo, ['bringup', 'highlevel'])  # TODO
+        job_creator_instance = jenkins_job_creator.PipeStarterJob(jenkins_instance, plc_instance, [repo], repo, ['bringup', 'highlevel'])  # TODO
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -77,8 +77,8 @@ def main():
     # this pipe starter job won't poll any repository; it has to be started
     # manually. It triggers the priority build job with all defined
     # repositories as parameters
-    job_creator_instance = jenkins_job_creator.Pipe_Starter_General_Job(jenkins_instance, plc_instance,
-                                                                        plc_instance.repositories.keys(), ['bringup', 'highlevel'])  # TODO
+    job_creator_instance = jenkins_job_creator.PipeStarterGeneralJob(jenkins_instance, plc_instance,
+                                                                     plc_instance.repositories.keys(), ['bringup', 'highlevel'])  # TODO
     if options.delete:
         modified_jobs.append(job_creator_instance.delete_job())
     else:
@@ -86,7 +86,7 @@ def main():
         modified_jobs.append(general_pipe_starter_name)
 
     ### priority build
-    job_creator_instance = jenkins_job_creator.Priority_Build_Job(jenkins_instance, plc_instance, plc_instance.repositories.keys())
+    job_creator_instance = jenkins_job_creator.PriorityBuildJob(jenkins_instance, plc_instance, plc_instance.repositories.keys())
     if options.delete:
         modified_jobs.append(job_creator_instance.delete_job())
     else:
@@ -94,7 +94,7 @@ def main():
 
     ### normal build
     if 'normal' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.Normal_Build_Job(jenkins_instance, plc_instance)
+        job_creator_instance = jenkins_job_creator.NormalBuildJob(jenkins_instance, plc_instance)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -102,7 +102,7 @@ def main():
 
     ### downstream build
     if 'down' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.Downstream_Build_Job(jenkins_instance, plc_instance, job_type_dict['down'])
+        job_creator_instance = jenkins_job_creator.DownstreamBuildJob(jenkins_instance, plc_instance, job_type_dict['down'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -110,7 +110,7 @@ def main():
 
     ### database test
     if 'down' and 'db' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.Database_Test_Job(jenkins_instance, plc_instance, job_type_dict['db'])
+        job_creator_instance = jenkins_job_creator.DatabaseTestJob(jenkins_instance, plc_instance, job_type_dict['db'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -118,7 +118,7 @@ def main():
 
     ### simulation test
     if 'down' and 'sim' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.Simulation_Test_Job(jenkins_instance, plc_instance, job_type_dict['sim'])
+        job_creator_instance = jenkins_job_creator.SimulationTestJob(jenkins_instance, plc_instance, job_type_dict['sim'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -126,7 +126,7 @@ def main():
 
     ### application test
     if 'db' and 'sim' and 'app' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.Application_Test_Job(jenkins_instance, plc_instance, job_type_dict['app'])
+        job_creator_instance = jenkins_job_creator.ApplicationTestJob(jenkins_instance, plc_instance, job_type_dict['app'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -134,7 +134,7 @@ def main():
 
     ### bringup hardware test
     if plc_instance.user_group in ['MA', 'admin'] and 'bringup' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.Bringup_Hardware_Job(jenkins_instance, plc_instance)
+        job_creator_instance = jenkins_job_creator.BringupHardwareJob(jenkins_instance, plc_instance)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -142,7 +142,7 @@ def main():
 
     ### high-level hardware test
     if plc_instance.user_group in ['MA', 'admin'] and 'down' and 'db' and 'sim' and 'bringup' and 'highlevel' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.Highlevel_Hardware_Job(jenkins_instance, plc_instance)
+        job_creator_instance = jenkins_job_creator.HighlevelHardwareJob(jenkins_instance, plc_instance)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:

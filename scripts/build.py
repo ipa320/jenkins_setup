@@ -41,7 +41,7 @@ def main():
     cob_common.call("pip install -U rosinstall")
 
     # cob_pipe object
-    cp_instance = cob_pipe.Cob_Pipe()
+    cp_instance = cob_pipe.CobPipe()
     cp_instance.load_config_from_url(server_name, user_name)
     buildpipe_repos = cp_instance.repositories
     print "Pipeline configuration successfully loaded"
