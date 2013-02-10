@@ -12,6 +12,7 @@ from jenkins_setup import cob_common, cob_pipe, cob_build, rosdep
 def main():
     # parse parameter values
     parser = optparse.OptionParser()
+    parser.add_option('-v', '--verbose', action='store_true', default=False)
     (options, args) = parser.parse_args()
 
     if len(args) < 4:
@@ -22,15 +23,17 @@ def main():
     server_name = args[0]
     #user_name = args[1]
     ros_distro = args[2]
-    build_repo = args[3]  # repository to build
+    build_identifier = args[3]
+    build_repo = build_identifier.split('__')[0]  # repository to build
     workspace = os.environ['WORKSPACE']
+    ros_package_path = os.environ['ROS_PACKAGE_PATH']
 
     # (debug) output
     print "\n", 50 * 'X'
     print "\nTesting on ros distro:  %s" % ros_distro
-    print "Testing the repository: %s" % build_repo.split('__')[0]
+    print "Testing repository: %s" % build_repo.split('__')[0]
     if len(build_repo.split('__')) > 1:
-        print "           with suffix: %s" % '__'.join(build_repo.split('__')[1:])
+        print "       with suffix: %s" % '__'.join(build_repo.split('__')[1:])
     print "\n", 50 * 'X'
 
     if ros_distro == 'electric':
