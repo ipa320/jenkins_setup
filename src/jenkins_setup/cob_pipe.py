@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
+import yaml
 
-from jenkins_setup import cob_distro, cob_common
+from jenkins_setup import cob_common
 
 
-class CobPipe(cob_distro.CobDistroPipe):
+class CobPipe(object):
     """
     Pipeline configuration class
     """
@@ -24,11 +25,11 @@ class CobPipe(cob_distro.CobDistroPipe):
         self.email = pipeline_config['email']
         self.committer = pipeline_config['committer']
 
-        try:
-            super(CobPipe, self).load_config_from_dict(pipeline_config['repositories'])
-        except cob_distro.CobDistroException as ex:
-            print ex.msg
-            raise CobPipeException(ex.msg)
+        self.repositories = {}
+
+        for repo_name, data in pipeline_config['repositories'].iteritems():
+            repo = CobPipeRepo(repo_name, data)
+            self.repositories[repo_name] = repo
 
     def load_config_from_url(self, server_name, user_name):
         """
@@ -41,13 +42,16 @@ class CobPipe(cob_distro.CobDistroPipe):
         @type  user_name: str
         """
 
-        pipeline_config = cob_common.get_buildpipeline_configs(server_name, user_name)
+        pipeline_config = cob_common.get_buildpipeline_configs(server_name,
+                                                               user_name)
         self.load_config_from_dict(pipeline_config)
 
     def get_jobs_to_create(self):
         """
         Gets a dict of all job types to create and the repositories which will
         use them
+
+        @return type: dict
         """
 
         job_type_dict = {}
@@ -59,6 +63,116 @@ class CobPipe(cob_distro.CobDistroPipe):
                     job_type_dict[job] = [repo]
 
         return job_type_dict
+
+    def get_custom_dependencies(self, polled_only=False):
+        """
+        Gets all dependencies defined in the pipeline and their corresponding
+        repositories
+
+        @param polled_only: if set only polled dependencies will be considered
+        @type  polled_only: bool
+        @return type: dict
+        """
+
+        deps = {}
+        for repo in self.repositories.keys():
+            for dep in self.repositories[repo].dependencies.keys():
+                if polled_only:
+                    if not self.repositories[repo].dependencies[dep].poll:
+                        continue
+                if dep in deps:
+                    deps[dep].append(repo)
+                else:
+                    deps[dep] = [repo]
+
+        return deps
+
+
+class CobPipeDependencyRepo(object):
+    """
+    Cob pipeline dependency repository class
+    """
+
+    def __init__(self, name, data):
+        """
+        @param name: repository name
+        @type  name: str
+        @param data: repository and dependency information
+        @type  data: dict
+        """
+
+        self.name = name
+        self.type = data['type']
+        self.url = data['url']
+        self.version = None
+        if 'version' in data:
+            self.version = data['version']
+
+        self.poll = None
+        if 'poll' in data:
+            self.poll = data['poll']
+
+    def get_rosinstall(self):
+        """
+        Gets the rosinstall file entry for the repository object
+
+        @returns type: str
+        """
+
+        if self.version:
+            return yaml.dump([{self.type: {'local-name': self.name.split('__')[0],
+                                           'uri': '%s' % self.url,
+                                           'version': '%s' % self.version}}],
+                             default_style=False)
+        else:
+            return yaml.dump([{self.type: {'local-name': self.name.split('__')[0],
+                                           'uri': '%s' % self.url}}],
+                             default_style=False)
+
+
+class CobPipeRepo(CobPipeDependencyRepo):
+    """
+    Cob pipeline repository class
+    """
+
+    def __init__(self, name, data):
+        """
+        @param name: repository name
+        @type  name: str
+        @param data: repository and dependency information
+        @type  data: dict
+        """
+
+        super(CobPipeRepo, self).__init__(name, data)
+
+        self.poll = True  # first level repos are always polled
+        self.ros_distro = data['ros_distro']
+        self.prio_ubuntu_distro = data['prio_ubuntu_distro']
+        self.prio_arch = data['prio_arch']
+
+        self.matrix_distro_arch = {}
+        if data['matrix_distro_arch']:
+            self.matrix_distro_arch = data['matrix_distro_arch']
+
+        self.dependencies = {}
+        if data['dependencies']:
+            for dep_name, dep_data in data['dependencies'].iteritems():
+                dep = CobPipeDependencyRepo(dep_name, dep_data)
+                self.dependencies[dep_name] = dep
+
+        self.jobs = []
+        if data['jobs']:
+            self.jobs = data['jobs']
+
+        self.robots = []
+        if data['robots']:
+            self.robots = data['robots']
+
+        # catch some errors
+        if ('bringup' in self.jobs or 'highlevel' in self.jobs) and self.robots == []:
+            raise CobPipeException("Hardware tests defined but no robot to run them on")
+        if self.matrix_distro_arch != {} and 'normal' not in self.jobs:
+            raise CobPipeException("Configuration for normal build found, but no normal build job")
 
 
 class CobPipeException(Exception):
