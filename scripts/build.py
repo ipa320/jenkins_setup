@@ -36,15 +36,15 @@ def main():
     print "\n", 50 * 'X'
 
     # update sourcelist and upgrade installed basic packages
-    print "\nUpdating chroot enviroment installed packages"
+    cob_common.output("Updating chroot enviroment")
     cob_common.call("apt-get update")
     cob_common.call("apt-get dist-upgrade -y")
 
-    print "\nUpdating rosinstall"  # TODO run install frequently in chroot_tarball_updater an remove here
+    cob_common.output("Updating rosinstall")  # TODO run install frequently in chroot_tarball_updater an remove here
     cob_common.call("pip install -U rosinstall")
 
-    # install packages needed for execution
-    print "\nInstalling necessary packages:"
+    # install packages needed for execution (depending on ros_distro)
+    cob_common.output("Installing necessary packages:", decoration='')
     if ros_distro == 'electric':
         print "  catkin-pkg and rospkg"
         cob_common.call("pip install -U catkin-pkg rospkg")
@@ -59,7 +59,7 @@ def main():
     cp_instance = cob_pipe.CobPipe()
     cp_instance.load_config_from_url(server_name, user_name)
     pipe_repos = cp_instance.repositories
-    print "Pipeline configuration successfully loaded"
+    cob_common.output("Pipeline configuration successfully loaded", blankline='b')
 
     # set up directories variables
     tmpdir = os.path.join('/tmp', 'test_repositories')

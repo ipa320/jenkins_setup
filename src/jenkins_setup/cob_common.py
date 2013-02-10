@@ -145,6 +145,29 @@ def call(command, envir=None, verbose=True):
     return call_with_list(command.split(' '), envir, verbose)
 
 
+def output(message, decoration='*', blankline='a'):
+    """
+    Outputs a message in a prominent way
+
+    @param message: text to print
+    @type  message: str
+    @param decoration: character in which to message will be enclosed
+    @type  decoration: str
+    @param blankline: position of a blank line, a=above and b=below
+    @type  blankline: str
+    """
+
+    if 'a' in blankline:
+        print ''
+    if decoration != '':
+        print len(message) * decoration
+    print message
+    if decoration != '':
+        print len(message) * decoration
+    if 'b' in blankline:
+        print ''
+
+
 def get_catkin_stack_deps(xml_path):
     import xml.etree.ElementTree as ET
     tree = ET.parse(xml_path)
