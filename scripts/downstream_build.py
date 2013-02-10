@@ -6,7 +6,7 @@ import sys
 import shutil
 import rosdistro
 
-from jenkins_setup import cob_common, cob_pipe, cob_build, rosdep
+from jenkins_setup import cob_common, cob_pipe, rosdep
 
 
 def main():
@@ -140,7 +140,7 @@ def build_downstream_post_fuerte(ros_distro, build_repo, workspace, server):
 
     # install build dependencies
     print "Install all build dependencies of the depends_on list: %s" % (', '.join(dependson_build_dependencies))
-    cob_build.apt_get_install_also_nonrosdep(dependson_build_dependencies, rosdep_resolver)
+    cob_common.apt_get_install_also_nonrosdep(dependson_build_dependencies, rosdep_resolver)
 
     # env
     print "Setting up environment"
@@ -179,7 +179,7 @@ def build_downstream_post_fuerte(ros_distro, build_repo, workspace, server):
         if dependson_test_dependencies != []:
             # install test dependencies
             print "Install all test dependencies of the depends_on list: %s" % (', '.join(dependson_test_dependencies))
-            cob_build.apt_get_install_also_nonrosdep(dependson_test_dependencies, rosdep_resolver)
+            cob_common.apt_get_install_also_nonrosdep(dependson_test_dependencies, rosdep_resolver)
 
             # test repositories
             try:
