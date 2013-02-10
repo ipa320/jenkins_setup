@@ -3,7 +3,7 @@
 import optparse
 import sys
 
-from jenkins_setup import cob_common, cob_distro
+from jenkins_setup import common, cob_distro
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
 
     if len(args) < 3:
         print "Usage: %s server_name user_name repo1 repo2 ..." % sys.argv[0]
-        raise cob_common.BuildException("Wrong arguments for pipe_starter script")
+        raise common.BuildException("Wrong arguments for pipe_starter script")
 
     # get arguments
     server_name = args[0]
@@ -45,8 +45,8 @@ def main():
                 if buildpipe_repos.repositories[parent_repo].dependencies[repo].poll:
                     repos_to_trigger.append(repo)
         else:
-            raise cob_common.BuildException("Pipeline was triggered by repo %s which is \
-                                             not in pipeline config!" % repo)
+            raise common.BuildException("Pipeline was triggered by repo %s which is \
+                                         not in pipeline config!" % repo)
 
     return repos_to_trigger
 
@@ -58,7 +58,7 @@ if __name__ == "__main__":
         print "Pipe starter script finished cleanly!"
 
     # global catch
-    except cob_common.BuildException as ex:
+    except common.BuildException as ex:
         print ex.msg
 
     except Exception as ex:

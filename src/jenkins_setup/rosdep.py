@@ -1,5 +1,5 @@
 import os
-from cob_common import *
+from common import *
 
 
 class RosDepResolver:

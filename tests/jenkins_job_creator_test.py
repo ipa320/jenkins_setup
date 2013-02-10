@@ -37,7 +37,7 @@ class JenkinsJobTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
 
-        #self.test_dict = cob_common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
+        #self.test_dict = common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
         self.test_pipe_inst = cob_pipe.CobPipe()
         self.test_pipe_inst.load_config_from_url('jenkins-test-server', 'test-user')
 
@@ -484,7 +484,7 @@ class PipeStarterJobTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
 
-        #self.test_dict = cob_common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
+        #self.test_dict = common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
         self.test_pipe_inst = cob_pipe.CobPipe()
         self.test_pipe_inst.load_config_from_url('jenkins-test-server', 'test-user')
 
@@ -516,7 +516,7 @@ class NormalBuildJobTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
 
-        #self.test_dict = cob_common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
+        #self.test_dict = common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
         self.test_pipe_inst = cob_pipe.CobPipe()
         self.test_pipe_inst.load_config_from_url('jenkins-test-server', 'test-user')
 

@@ -6,7 +6,7 @@ import sys
 import shutil
 import rosdistro
 
-from jenkins_setup import cob_common, cob_pipe, rosdep
+from jenkins_setup import common, cob_pipe, rosdep
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
 
     if len(args) < 4:
         print "Usage: %s server_name user_name ros_distro build_repo" % sys.argv[0]
-        raise cob_common.BuildException("Wrong arguments for build script")
+        raise common.BuildException("Wrong arguments for build script")
 
     # get arguments
     server_name = args[0]
@@ -89,17 +89,17 @@ def build_downstream_post_fuerte(ros_distro, build_repo, workspace, server):
     # install all repository and system dependencies of the depends_on list
     print "Install all depends_on from source: %s" % (', '.join(ros_depends_on))
     os.makedirs(dependson_sourcespace)
-    cob_common.call("rosinstall %s %s/depends_on.rosinstall /opt/ros/%s" % (dependson_sourcespace, workspace, ros_distro))
+    common.call("rosinstall %s %s/depends_on.rosinstall /opt/ros/%s" % (dependson_sourcespace, workspace, ros_distro))
 
     # all packages in dependson_sourcespace
-    (catkin_packages, stacks, manifest_packages) = cob_common.get_all_packages(dependson_sourcespace)
+    (catkin_packages, stacks, manifest_packages) = common.get_all_packages(dependson_sourcespace)
     print catkin_packages
     print stacks
     print manifest_packages
 
     # get build and test dependencies of depends_on list
     dependson_build_dependencies = []
-    for d in cob_common.get_nonlocal_dependencies(catkin_packages, stacks, {}, build_depends=True, test_depends=False):
+    for d in common.get_nonlocal_dependencies(catkin_packages, stacks, {}, build_depends=True, test_depends=False):
         print "  Checking dependency %s" % d
         if d in dependson_build_dependencies:
             print "    Already in dependson_build_dependencies"
@@ -112,7 +112,7 @@ def build_downstream_post_fuerte(ros_distro, build_repo, workspace, server):
     print "Build dependencies of depends_on list are %s" % (', '.join(dependson_build_dependencies))
 
     dependson_test_dependencies = []
-    for d in cob_common.get_nonlocal_dependencies(catkin_packages, stacks, {}, build_depends=False, test_depends=True):
+    for d in common.get_nonlocal_dependencies(catkin_packages, stacks, {}, build_depends=False, test_depends=True):
         if d not in dependson_test_dependencies + ros_depends_on + cob_depends_on and d != b_r_short:
             dependson_test_dependencies.append(d)
     print "Test dependencies of depends_on list are %s" % (', '.join(dependson_test_dependencies))
@@ -140,15 +140,15 @@ def build_downstream_post_fuerte(ros_distro, build_repo, workspace, server):
 
     # install build dependencies
     print "Install all build dependencies of the depends_on list: %s" % (', '.join(dependson_build_dependencies))
-    cob_common.apt_get_install_also_nonrosdep(dependson_build_dependencies, rosdep_resolver)
+    common.apt_get_install_also_nonrosdep(dependson_build_dependencies, rosdep_resolver)
 
     # env
     print "Setting up environment"
-    ros_env = cob_common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
-    cob_common.call("env", ros_env)
-    ros_env_dependson = cob_common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
+    ros_env = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
+    common.call("env", ros_env)
+    ros_env_dependson = common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
     ros_env_dependson['ROS_PACKAGE_PATH'] = ':'.join([dependson_buildspace, repo_buildspace, ros_package_path])
-    cob_common.call("env", ros_env_dependson)
+    common.call("env", ros_env_dependson)
 
     ### catkin repositories
     if catkin_packages != {}:
@@ -156,39 +156,39 @@ def build_downstream_post_fuerte(ros_distro, build_repo, workspace, server):
         os.chdir(dependson_buildspace)
         print "Create a new CMakeLists.txt for catkin packages"
         if ros_distro == 'fuerte':
-            cob_common.call("ln -s %s %s" % (os.path.join(dependson_sourcespace_wet, 'catkin', 'cmake', 'toplevel.cmake'),
-                                             os.path.join(dependson_sourcespace_wet, 'CMakeLists.txt')))
+            common.call("ln -s %s %s" % (os.path.join(dependson_sourcespace_wet, 'catkin', 'cmake', 'toplevel.cmake'),
+                                         os.path.join(dependson_sourcespace_wet, 'CMakeLists.txt')))
         else:
-            cob_common.call("catkin_init_workspace %s" % dependson_sourcespace_wet, ros_env_dependson)
+            common.call("catkin_init_workspace %s" % dependson_sourcespace_wet, ros_env_dependson)
 
         try:
-            cob_common.call("cmake %s" % dependson_sourcespace_wet, ros_env_dependson)
-        except cob_common.BuildException as ex:
+            common.call("cmake %s" % dependson_sourcespace_wet, ros_env_dependson)
+        except common.BuildException as ex:
             print ex.msg
-            raise cob_common.BuildException("Failed to cmake wet repositories")
-        #ros_env_repo = cob_common.get_ros_env(os.path.join(repo_buildspace, 'devel/setup.bash'))
+            raise common.BuildException("Failed to cmake wet repositories")
+        #ros_env_repo = common.get_ros_env(os.path.join(repo_buildspace, 'devel/setup.bash'))
 
         # build repositories
         print "Build wet depends_on list"
         try:
-            cob_common.call("make", ros_env_dependson)
-        except cob_common.BuildException as ex:
+            common.call("make", ros_env_dependson)
+        except common.BuildException as ex:
             print ex.msg
-            raise cob_common.BuildException("Failed to make wet packages")
+            raise common.BuildException("Failed to make wet packages")
 
         if dependson_test_dependencies != []:
             # install test dependencies
             print "Install all test dependencies of the depends_on list: %s" % (', '.join(dependson_test_dependencies))
-            cob_common.apt_get_install_also_nonrosdep(dependson_test_dependencies, rosdep_resolver)
+            common.apt_get_install_also_nonrosdep(dependson_test_dependencies, rosdep_resolver)
 
             # test repositories
             try:
-                cob_common.call("make run_tests", ros_env_dependson)
-            except cob_common.BuildException as ex:
+                common.call("make run_tests", ros_env_dependson)
+            except common.BuildException as ex:
                 print ex.msg
 
         # copy test results
-        cob_common.copy_test_results(workspace, dependson_buildspace)
+        common.copy_test_results(workspace, dependson_buildspace)
 
     ### rosbuild repositories
     if stacks != {}:
@@ -197,29 +197,29 @@ def build_downstream_post_fuerte(ros_distro, build_repo, workspace, server):
         ros_env_dependson['ROS_PACKAGE_PATH'] = ':'.join([dependson_buildspace, repo_buildspace,
                                                           dependson_sourcespace_dry, repo_sourcespace_dry,
                                                           ros_package_path])
-        cob_common.call("env", ros_env_dependson)
+        common.call("env", ros_env_dependson)
 
         #print "Make rosdep"
-        #cob_common.call("rosmake rosdep", ros_env)
+        #common.call("rosmake rosdep", ros_env)
         #for stack in stacks.keys():
-        #    cob_common.call("rosdep install -y %s" % stack, ros_env_repo)
+        #    common.call("rosdep install -y %s" % stack, ros_env_repo)
 
         dependson_sourcespace_dry_dirs = [name for name in os.listdir(dependson_sourcespace_dry) if os.path.isdir(os.path.join(dependson_sourcespace_dry, name))]
         print "Build dry depends_on repositories:\n - %s" % '\n - '.join(dependson_sourcespace_dry_dirs)
         os.mkdir(dry_test_results_dir)
         for dry_dependson in dependson_sourcespace_dry_dirs:
             try:
-                cob_common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_dependson)
+                common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_dependson)
             except:
-                raise cob_common.BuildException("Failed to rosmake %s" % b_r_short)
+                raise common.BuildException("Failed to rosmake %s" % b_r_short)
             try:
-                cob_common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_dependson)
+                common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_dependson)
                 # TODO output dir ??
             except:
                 print "Failed to test %s" % dry_dependson
         # copy test results
-        cob_common.call("rosrun rosunit clean_junit_xml.py", ros_env_dependson)
-        cob_common.copy_test_results(workspace, dependson_sourcespace_dry)
+        common.call("rosrun rosunit clean_junit_xml.py", ros_env_dependson)
+        common.copy_test_results(workspace, dependson_sourcespace_dry)
 
 
 if __name__ == "__main__":
@@ -229,7 +229,7 @@ if __name__ == "__main__":
         print "Build script finished cleanly!"
 
     # global catch
-    except (cob_common.BuildException, cob_pipe.CobPipeException) as ex:
+    except (common.BuildException, cob_pipe.CobPipeException) as ex:
         print "Build script failed!"
         print ex.msg
         raise ex

@@ -41,7 +41,7 @@ def apt_get_install(pkgs, rosdep=None, sudo=False):
 
 def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
     """
-    Extends cob_common.apt_get_install by trying to guess Debian package names
+    Extends common.apt_get_install by trying to guess Debian package names
     of packages not included in rosdep
 
     @param pkgs: names of ros repositories

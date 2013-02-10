@@ -2,7 +2,7 @@
 
 import yaml
 
-from jenkins_setup import cob_common
+from jenkins_setup import common
 
 
 class CobPipe(object):
@@ -42,7 +42,7 @@ class CobPipe(object):
         @type  user_name: str
         """
 
-        pipeline_config = cob_common.get_buildpipeline_configs(server_name,
+        pipeline_config = common.get_buildpipeline_configs(server_name,
                                                                user_name)
         self.load_config_from_dict(pipeline_config)
 
