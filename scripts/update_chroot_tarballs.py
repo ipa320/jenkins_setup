@@ -4,14 +4,10 @@ import sys
 import os
 import subprocess
 import paramiko
+import urllib2
 import yaml
 import optparse
 
-PLATFORMS = {'electric': ['lucid', 'natty', 'oneiric'],
-             'fuerte': ['lucid', 'oneiric', 'precise'],
-             'groovy': ['oneiric', 'precise', 'quantal'],
-             'hydro': []
-             }
 ARCH = ['i386', 'amd64']
 
 
@@ -30,12 +26,23 @@ def main():
         print "Usage: %s ubuntu_distro architecture" % (sys.argv[0])
         sys.exit()
 
+    # load target platforms
+    target_platforms_url = "https://raw.github.com/fmw-jk/jenkins_setup/master/releases/targets.yaml"
+    try:
+        f = urllib2.urlopen(target_platforms_url)
+        platforms = yaml.load(f)
+    except Exception as ex:
+        print "While downloading and parsing target platforms file from\n%s\n \
+               the following error occured:\n%s" % (target_platforms_url, ex)
+        raise ex
+
     # check if given ubuntu distro and arch is supported
     ubuntu_distro = args[0]
     supported_ubuntu_distros = []
-    for ubu_dist_list in PLATFORMS.itervalues():
-        for supported in ubu_dist_list:
-            supported_ubuntu_distros.append(supported)
+    for ros_distro_dict in platforms:
+        for ros_distro, ubuntu_distro_list in ros_distro_dict.iteritems():
+            for supported in ubuntu_distro_list:
+                supported_ubuntu_distros.append(supported)
     if ubuntu_distro not in supported_ubuntu_distros:
         print "Ubuntu distro %s not supported! Supported Ubuntu distros :" % ', '.join(sorted(supported_ubuntu_distros))
         sys.exit()
@@ -58,7 +65,7 @@ def main():
         print " ", tar
 
     print "\nCalculate chroot envs to set up / update"
-    basic_tarball, extended_tarballs = get_tarball_names(ubuntu_distro, arch)
+    basic_tarball, extended_tarballs = get_tarball_names(platforms, ubuntu_distro, arch)
     print "Basic tarball:"
     print " ", basic_tarball
     print "Extended tarballs: \n%s" % '\n '.join(extended_tarballs)
@@ -249,12 +256,14 @@ def get_tarball_params(name):
     return params_dict
 
 
-def get_tarball_names(ubuntu_distro, arch):
+def get_tarball_names(platforms, ubuntu_distro, arch):
     basic_tarball = '__'.join([ubuntu_distro, arch])
     extended_tarballs = []
-    for ros_distro, ubuntu_list in PLATFORMS.iteritems():
-        if ubuntu_distro in ubuntu_list:
-            extended_tarballs.append('__'.join([ubuntu_distro, arch, ros_distro]))
+    for ros_distro_dict in platforms:
+        for ros_distro, ubuntu_distro_list in ros_distro_dict.iteritems():
+            if ubuntu_distro in ubuntu_distro_list:
+                extended_tarballs.append('__'.join([ubuntu_distro, arch,
+                                                    ros_distro]))
     return basic_tarball, sorted(extended_tarballs)
 
 
