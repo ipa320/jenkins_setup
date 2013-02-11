@@ -26,7 +26,7 @@ class CobDevelDistro(develdistro.DevelDistro):
             self.release_file = urllib2.urlopen(self.url)
             self.repos_dict = yaml.load(self.release_file.read())['repositories']
         else:
-            self.url = 'https://raw.github.com/fmw-jk/jenkins_setup/master/releases/cob_%s.yaml' % name  # TODO change to ipa320
+            self.url = 'https://raw.github.com/fmw-jk/jenkins_setup/master/releases/cob_%s-devel.yaml' % name  # TODO change to ipa320
             self.release_file = urllib2.urlopen(self.url)
             self.repos_dict = yaml.load(self.release_file.read())['repositories']
 
