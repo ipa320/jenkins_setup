@@ -124,14 +124,6 @@ def main():
         else:
             modified_jobs.append(job_creator_instance.create_job())
 
-    ### application test
-    if 'nongraphics_test' and 'graphics_test' and 'app' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.ApplicationTestJob(jenkins_instance, plc_instance, job_type_dict['app'])
-        if options.delete:
-            modified_jobs.append(job_creator_instance.delete_job())
-        else:
-            modified_jobs.append(job_creator_instance.create_job())
-
     ### bringup hardware test
     if 'bringup' in job_type_dict:
         job_creator_instance = jenkins_job_creator.BringupHardwareJob(jenkins_instance, plc_instance)
@@ -149,7 +141,7 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### release job
-    if 'down' and 'nongraphics_test' and 'graphics_test' and 'app' and 'bringup' and 'highlevel' in job_type_dict:
+    if 'down' and 'nongraphics_test' and 'graphics_test' and 'bringup' and 'highlevel' in job_type_dict:
         print "Create release job"  # TODO
 
     ### clean up

@@ -23,7 +23,6 @@ class JenkinsJob(object):
                                'down': 'downstream_build',
                                'nongraphics_test': 'nongraphics_test',
                                'graphics_test': 'graphics_test',
-                               'app': 'application_test',
                                'clean': 'clean_up',
                                'bringup': 'bringup_hardware_test',
                                'highlevel': 'highlevel_hardware_test',
@@ -773,10 +772,6 @@ class DownstreamBuildJob(BuildJob):
         graphics_test_trigger = self.get_single_parameterizedtrigger(['graphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
         self.set_parameterizedtrigger_param([nongraphics_test_trigger, graphics_test_trigger])
 
-        # set join trigger
-        app_trigger = self.get_single_parameterizedtrigger(['app'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
-        self.set_jointrigger_param([], False, self.get_parameterizedtrigger_param([app_trigger]))  # TODO check unstable behavior
-
 
 class TestJob(JenkinsJob):
     """
@@ -850,6 +845,9 @@ class NongraphicsTestJob(TestJob):
         shell_script = self.get_shell_script('test')
         self.set_shell_param(shell_script)
 
+        # set pipeline trigger
+        self.set_pipelinetrigger_param(['release'])
+
 
 class GraphicsTestJob(TestJob):
     """
@@ -883,38 +881,8 @@ class GraphicsTestJob(TestJob):
         shell_script = self.get_shell_script('test')
         self.set_shell_param(shell_script)
 
-
-class ApplicationTestJob(TestJob):
-    """
-    Class for application test job
-    """
-    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
-        """
-        Creates a application test job instance
-
-        @param jenkins_instance: Jenkins instance
-        @type  jenkins_instance: jenkins.Jenkins
-        @param pipeline_config: pipeline configuration
-        @type  pipeline_config: dict
-        """
-
-        super(ApplicationTestJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
-
-        self.job_type = 'app'
-        self.job_name = self.generate_job_name(self.job_type)
-
-    def set_job_type_params(self):
-        """
-        Sets application test job specific job configuration parameters
-        """
-
-        super(ApplicationTestJob, self).set_job_type_params()
-
-        self.params['NODE_LABEL'] = 'application_test'  # TODO check labels
-
-        # set execute shell TODO
-        shell_script = self.get_shell_script('test')
-        self.set_shell_param(shell_script)
+        # set pipeline trigger
+        self.set_pipelinetrigger_param(['release'])
 
 
 class HardwareJob(JenkinsJob):

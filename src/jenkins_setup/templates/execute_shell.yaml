@@ -317,8 +317,6 @@ sudo rm -rf $WORKSPACE/../aux'
 
 'graphics_test': '#!/bin/bash -e'
 
-'app': '#!/bin/bash -e'
-
 'bringup': '#!/bin/bash -e'
 
 'highlevel': '#!/bin/bash -e'
