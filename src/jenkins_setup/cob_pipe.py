@@ -18,7 +18,6 @@ class CobPipe(object):
         @type  pipeline_config: dict
         """
 
-        self.pipeline_github_url = pipeline_config['pipeline_github_url']
         self.user_name = pipeline_config['user_name']
         self.user_group = pipeline_config['user_group']
         self.server_name = pipeline_config['server_name']
