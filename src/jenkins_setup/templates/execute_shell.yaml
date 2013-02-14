@@ -317,6 +317,8 @@ sudo rm -rf $WORKSPACE/../aux'
 
 'graphics_test': '#!/bin/bash -e'
 
-'bringup': '#!/bin/bash -e'
+'hardware_build': '#!/bin/bash -e'
 
-'highlevel': '#!/bin/bash -e'
+'automatic_hw_test': '#!/bin/bash -e'
+
+'interactive_hw_test,': '#!/bin/bash -e'

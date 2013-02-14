@@ -34,7 +34,7 @@ class CobPipeTest(unittest.TestCase):
         self.assertEqual(self.cp.committer_email_enabled, False)
 
     def test__get_jobs_to_create__result_job_list(self):
-        self.assertEqual(self.cp.get_jobs_to_create(), {'normal': ['test_repo_1', 'test_repo_3'], 'nongraphics_test': ['test_repo_1'], 'bringup': ['test_repo_1'], 'down': ['test_repo_1'], 'release': ['test_repo_1'], 'graphics_test': ['test_repo_1'], 'highlevel': ['test_repo_1']})
+        self.assertEqual(self.cp.get_jobs_to_create(), {'normal': ['test_repo_1', 'test_repo_3'], 'nongraphics_test': ['test_repo_1'], 'hardware_build': ['test_repo_1'], 'automatic_hw_test': ['test_repo_1'], 'down': ['test_repo_1'], 'release': ['test_repo_1'], 'graphics_test': ['test_repo_1'], 'interactive_hw_test': ['test_repo_1']})
 
     def test__load_config_from_dict__input_repo_dict__check_repo(self):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
@@ -82,7 +82,7 @@ class CobPipeTest(unittest.TestCase):
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
                                          'matrix_distro_arch': None, 'dependencies': None,
-                                         'jobs': ['bringup'], 'robots': None}}
+                                         'jobs': [], 'robots': ['test-robot']}}
         self.pipe_config_test_dict['repositories'] = repo_test_dict
         self.assertRaises(cob_pipe.CobPipeException, self.cp.load_config_from_dict, self.pipe_config_test_dict)
 
@@ -91,7 +91,16 @@ class CobPipeTest(unittest.TestCase):
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
                                          'matrix_distro_arch': None, 'dependencies': None,
-                                         'jobs': ['highlevel'], 'robots': None}}
+                                         'jobs': ['automatic_hw_test'], 'robots': None}}
+        self.pipe_config_test_dict['repositories'] = repo_test_dict
+        self.assertRaises(cob_pipe.CobPipeException, self.cp.load_config_from_dict, self.pipe_config_test_dict)
+
+    def test__load_config_from_dict__input_repo_dict__raise_exception3(self):
+        repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
+                                         'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
+                                         'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
+                                         'matrix_distro_arch': None, 'dependencies': None,
+                                         'jobs': ['interactive_hw_test'], 'robots': None}}
         self.pipe_config_test_dict['repositories'] = repo_test_dict
         self.assertRaises(cob_pipe.CobPipeException, self.cp.load_config_from_dict, self.pipe_config_test_dict)
 

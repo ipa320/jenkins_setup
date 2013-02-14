@@ -61,13 +61,13 @@ def main():
     for poll, starts_repo_list in polls_dict.iteritems():
         if poll in pipe_repo_list:
             pipe_repo_list.remove(poll)
-        job_creator_instance = jenkins_job_creator.PipeStarterJob(jenkins_instance, plc_instance, starts_repo_list, poll, ['bringup', 'highlevel'])  # TODO
+        job_creator_instance = jenkins_job_creator.PipeStarterJob(jenkins_instance, plc_instance, starts_repo_list, poll, ['automatic_hw_test', 'interactive_hw_test'])  # TODO
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
             modified_jobs.append(job_creator_instance.create_job())
     for repo in pipe_repo_list:
-        job_creator_instance = jenkins_job_creator.PipeStarterJob(jenkins_instance, plc_instance, [repo], repo, ['bringup', 'highlevel'])  # TODO
+        job_creator_instance = jenkins_job_creator.PipeStarterJob(jenkins_instance, plc_instance, [repo], repo, ['automatic_hw_test', 'interactive_hw_test'])  # TODO
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -78,7 +78,7 @@ def main():
     # manually. It triggers the priority build job with all defined
     # repositories as parameters
     job_creator_instance = jenkins_job_creator.PipeStarterGeneralJob(jenkins_instance, plc_instance,
-                                                                     plc_instance.repositories.keys(), ['bringup', 'highlevel'])  # TODO
+                                                                     plc_instance.repositories.keys(), ['automatic_hw_test', 'interactive_hw_test'])  # TODO
     if options.delete:
         modified_jobs.append(job_creator_instance.delete_job())
     else:
@@ -124,24 +124,32 @@ def main():
         else:
             modified_jobs.append(job_creator_instance.create_job())
 
-    ### bringup hardware test
-    if 'bringup' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.BringupHardwareJob(jenkins_instance, plc_instance)
+    ### hardware build
+    if 'hardware_build' in job_type_dict:
+        job_creator_instance = jenkins_job_creator.HardwareBuildJob(jenkins_instance, plc_instance)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
             modified_jobs.append(job_creator_instance.create_job())
 
-    ### high-level hardware test
-    if 'down' and 'nongraphics_test' and 'graphics_test' and 'bringup' and 'highlevel' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.HighlevelHardwareJob(jenkins_instance, plc_instance)
+    ### automatic hardware test
+    if 'hardware_build' and 'automatic_hw_test' in job_type_dict:
+        job_creator_instance = jenkins_job_creator.AutomaticHWTestJob(jenkins_instance, plc_instance)
+        if options.delete:
+            modified_jobs.append(job_creator_instance.delete_job())
+        else:
+            modified_jobs.append(job_creator_instance.create_job())
+
+    ### interactive hardware test
+    if 'hardware_build' and 'interactive_hw_test' in job_type_dict:
+        job_creator_instance = jenkins_job_creator.InteractiveHWTestJob(jenkins_instance, plc_instance)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
             modified_jobs.append(job_creator_instance.create_job())
 
     ### release job
-    if 'down' and 'nongraphics_test' and 'graphics_test' and 'bringup' and 'highlevel' in job_type_dict:
+    if 'down' and 'nongraphics_test' and 'graphics_test' and 'automatic_hw_test' and 'interactive_hw_test' in job_type_dict:
         print "Create release job"  # TODO
 
     ### clean up

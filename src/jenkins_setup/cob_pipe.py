@@ -166,7 +166,9 @@ class CobPipeRepo(CobPipeDependencyRepo):
             self.robots = data['robots']
 
         # catch some errors
-        if ('bringup' in self.jobs or 'highlevel' in self.jobs) and self.robots == []:
+        if self.robots != [] and 'hardware_build' not in self.jobs:
+            raise CobPipeException("Found robot to build on, but job is missing")
+        if ('automatic_hw_test' in self.jobs or 'interactive_hw_test' in self.jobs) and self.robots == []:
             raise CobPipeException("Hardware tests defined but no robot to run them on")
         if self.matrix_distro_arch != {} and 'normal' not in self.jobs:
             raise CobPipeException("Configuration for normal build found, but no normal build job")

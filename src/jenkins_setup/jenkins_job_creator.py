@@ -24,8 +24,9 @@ class JenkinsJob(object):
                                'nongraphics_test': 'nongraphics_test',
                                'graphics_test': 'graphics_test',
                                'clean': 'clean_up',
-                               'bringup': 'bringup_hardware_test',
-                               'highlevel': 'highlevel_hardware_test',
+                               'hardware_build': 'hardware_build',
+                               'automatic_hw_test': 'automatic_hw_test',
+                               'interactive_hw_test': 'interactive_hw_test',
                                'release': 'release'}
 
         self.jenkins_instance = jenkins_instance
@@ -664,11 +665,8 @@ class PriorityBuildJob(BuildJob):
         shell_script = self.get_shell_script()
         self.set_shell_param(shell_script)
 
-        # set groovy postbuild script
-        self.set_groovypostbuild_param('enable', ['bringup'], 2)
-
         # set pipeline trigger
-        self.set_pipelinetrigger_param(['bringup'])
+        self.set_pipelinetrigger_param(['hardware_build'])
 
         # set parameterized triggers
         normal_trigger = self.get_single_parameterizedtrigger(['normal'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
@@ -885,9 +883,39 @@ class GraphicsTestJob(TestJob):
         self.set_pipelinetrigger_param(['release'])
 
 
+class HardwareBuildJob(JenkinsJob):
+    """
+    Class for hardware build job
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        """
+        Creates a hardware build job
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(HardwareBuildJob, self).__init__(jenkins_instance, pipeline_config)
+
+    def set_job_type_params(self):
+        """
+        Sets hardware build job specific job configuration parameters
+        """
+
+        self.params['PROJECT'] = 'project'  # TODO 'matrix-project' ??
+
+        # set execute shell TODO
+
+        # set pipeline trigger
+        self.set_pipelinetrigger_param(['automatic_hw_test'])
+        self.set_pipelinetrigger_param(['interactive_hw_test'])
+
+
 class HardwareJob(JenkinsJob):
     """
-    Class for hardware jobs
+    Class for hardware test jobs
     """
     def __init__(self, jenkins_instance, pipeline_config):
         """
@@ -922,13 +950,13 @@ class HardwareJob(JenkinsJob):
         # TODO
 
 
-class BringupHardwareJob(HardwareJob):
+class AutomaticHWTestJob(HardwareJob):
     """
-    Class for bringup hardware jobs
+    Class for automatic hardware test jobs
     """
     def __init__(self, jenkins_instance, pipeline_config):
         """
-        Creates a bringup hardware test job
+        Creates a automatic hardware test job
 
         @param jenkins_instance: Jenkins instance
         @type  jenkins_instance: jenkins.Jenkins
@@ -936,29 +964,31 @@ class BringupHardwareJob(HardwareJob):
         @type  pipeline_config: dict
         """
 
-        super(BringupHardwareJob, self).__init__(jenkins_instance, pipeline_config)
+        super(AutomaticHWTestJob, self).__init__(jenkins_instance, pipeline_config)
 
-        self.job_type = 'bringup'
+        self.job_type = 'automatic_hw_test'
         self.job_name = self.generate_job_name(self.job_type)
 
     def set_job_type_params(self):
         """
-        Sets bringup hardware job specific job configuration parameters
+        Sets automatic hardware test job specific job configuration parameters
         """
 
-        super(BringupHardwareJob, self).set_job_type_params()
+        super(AutomaticHWTestJob, self).set_job_type_params()
+
+        # set execute shell TODO
 
         # set pipeline trigger
-        self.set_pipelinetrigger_param(['highlevel'])
+        self.set_pipelinetrigger_param(['release'])
 
 
-class HighlevelHardwareJob(HardwareJob):
+class InteractiveHWTestJob(HardwareJob):
     """
-    Class for high-level hardware jobs
+    Class for interactive hardware test jobs
     """
     def __init__(self, jenkins_instance, pipeline_config):
         """
-        Creates a high-level hardware test job
+        Creates a interactive hardware test job
 
         @param jenkins_instance: Jenkins instance
         @type  jenkins_instance: jenkins.Jenkins
@@ -966,17 +996,19 @@ class HighlevelHardwareJob(HardwareJob):
         @type  pipeline_config: dict
         """
 
-        super(HighlevelHardwareJob, self).__init__(jenkins_instance, pipeline_config)
+        super(InteractiveHWTestJob, self).__init__(jenkins_instance, pipeline_config)
 
-        self.job_type = 'highlevel'
+        self.job_type = 'interactive_hw_test'
         self.job_name = self.generate_job_name(self.job_type)
 
     def set_job_type_params(self):
         """
-        Sets high-level hardware job specific job configuration parameters
+        Sets interactive hardware test job specific job configuration parameters
         """
 
-        super(HighlevelHardwareJob, self).set_job_type_params()
+        super(InteractiveHWTestJob, self).set_job_type_params()
+
+        # set execute shell TODO
 
         # set pipeline trigger
         self.set_pipelinetrigger_param(['release'])
