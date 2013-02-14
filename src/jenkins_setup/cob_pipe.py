@@ -23,7 +23,7 @@ class CobPipe(object):
         self.user_group = pipeline_config['user_group']
         self.server_name = pipeline_config['server_name']
         self.email = pipeline_config['email']
-        self.committer = pipeline_config['committer']
+        self.committer_email_enabled = pipeline_config['committer_email_enabled']
 
         self.repositories = {}
 
@@ -42,8 +42,7 @@ class CobPipe(object):
         @type  user_name: str
         """
 
-        pipeline_config = common.get_buildpipeline_configs(server_name,
-                                                               user_name)
+        pipeline_config = common.get_buildpipeline_configs(server_name, user_name)
         self.load_config_from_dict(pipeline_config)
 
     def get_jobs_to_create(self):

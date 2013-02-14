@@ -18,7 +18,7 @@
 
 'junit_testresults': '<hudson.tasks.junit.JUnitResultArchiver> <testResults>test_results/*.xml</testResults> <keepLongStdio>false</keepLongStdio> <testDataPublishers/> </hudson.tasks.junit.JUnitResultArchiver>'
 
-'mailer': '<hudson.tasks.Mailer> <recipients>@(EMAIL)</recipients> <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild> <sendToIndividuals>@(EMAIL_COMMITTER)</sendToIndividuals> </hudson.tasks.Mailer>'
+'mailer': '<hudson.tasks.Mailer> <recipients>@(EMAIL)</recipients> <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild> <sendToIndividuals>@(EMAIL_TO_COMMITTER)</sendToIndividuals> </hudson.tasks.Mailer>'
 
 'parameters':
   'block': '<hudson.model.ParametersDefinitionProperty> <parameterDefinitions> @(PARAMS) </parameterDefinitions> </hudson.model.ParametersDefinitionProperty>'
