@@ -28,7 +28,7 @@ ls -lah $WORKSPACE
 
 echo "Cloning jenkins_setup repository"
 
-git clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup
+git clone git://github.com/ipa320/jenkins_setup.git $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
@@ -111,7 +111,7 @@ ls -lah $WORKSPACE
 
 echo "Cloning jenkins_setup repository"
 
-git clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup
+git clone git://github.com/ipa320/jenkins_setup.git $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
@@ -188,7 +188,7 @@ ls -lah $WORKSPACE
 
 echo "Cloning jenkins_setup repository"
 
-git clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup
+git clone git://github.com/ipa320/jenkins_setup.git $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
@@ -266,7 +266,7 @@ ls -lah $WORKSPACE
 
 echo "Cloning jenkins_setup repository"
 
-git clone git://github.com/fmw-jk/jenkins_setup.git $WORKSPACE/jenkins_setup
+git clone git://github.com/ipa320/jenkins_setup.git $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
