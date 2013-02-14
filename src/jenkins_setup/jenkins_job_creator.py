@@ -20,7 +20,7 @@ class JenkinsJob(object):
         self.JOB_TYPE_NAMES = {'pipe': 'pipe_starter',
                                'prio': 'prio_build',
                                'normal': 'normal_build',
-                               'down': 'downstream_build',
+                               'downstream_build': 'downstream_build',
                                'nongraphics_test': 'nongraphics_test',
                                'graphics_test': 'graphics_test',
                                'clean': 'clean_up',
@@ -670,8 +670,8 @@ class PriorityBuildJob(BuildJob):
 
         # set parameterized triggers
         normal_trigger = self.get_single_parameterizedtrigger(['normal'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
-        down_trigger = self.get_single_parameterizedtrigger(['down'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
-        self.set_parameterizedtrigger_param([normal_trigger, down_trigger])
+        downstream_build_trigger = self.get_single_parameterizedtrigger(['downstream_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
+        self.set_parameterizedtrigger_param([normal_trigger, downstream_build_trigger])
 
 
 class NormalBuildJob(BuildJob):
@@ -728,11 +728,11 @@ class NormalBuildJob(BuildJob):
 
 class DownstreamBuildJob(BuildJob):
     """
-    Class for downstream job
+    Class for downstream build job
     """
     def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
-        Creates a downstream job instance
+        Creates a downstream build job instance
 
         @param jenkins_instance: Jenkins instance
         @type  jenkins_instance: jenkins.Jenkins
@@ -746,12 +746,12 @@ class DownstreamBuildJob(BuildJob):
 
         self.repo_list = execute_repo_list
 
-        self.job_type = 'down'
+        self.job_type = 'downstream_build'
         self.job_name = self.generate_job_name(self.job_type)
 
     def set_job_type_params(self):
         """
-        Sets downstream job specific job configuration parameters
+        Sets downstream build job specific job configuration parameters
         """
 
         matrix_filter = self.generate_matrix_filter(self.get_prio_subset_filter())
@@ -791,7 +791,7 @@ class TestJob(JenkinsJob):
 
         self.repo_list = execute_repo_list
 
-        self.job_type = 'down'
+        self.job_type = 'test'
         self.job_name = self.generate_job_name(self.job_type)
 
     def set_job_type_params(self):

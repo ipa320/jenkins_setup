@@ -157,7 +157,7 @@ echo "*******CLEANUP WORKSPACE*******"
 
 sudo rm -rf $WORKSPACE/../aux'
 
-'down': '#!/bin/bash -e
+'downstream_build': '#!/bin/bash -e
 
 new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
 
