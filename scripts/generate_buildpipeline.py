@@ -116,16 +116,16 @@ def main():
         else:
             modified_jobs.append(job_creator_instance.create_job())
 
-    ### simulation test
-    if 'down' and 'sim' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.SimulationTestJob(jenkins_instance, plc_instance, job_type_dict['sim'])
+    ### graphics test
+    if 'down' and 'graphics_test' in job_type_dict:
+        job_creator_instance = jenkins_job_creator.GraphicsTestJob(jenkins_instance, plc_instance, job_type_dict['graphics_test'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
             modified_jobs.append(job_creator_instance.create_job())
 
     ### application test
-    if 'db' and 'sim' and 'app' in job_type_dict:
+    if 'db' and 'graphics_test' and 'app' in job_type_dict:
         job_creator_instance = jenkins_job_creator.ApplicationTestJob(jenkins_instance, plc_instance, job_type_dict['app'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
@@ -141,7 +141,7 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### high-level hardware test
-    if 'down' and 'db' and 'sim' and 'bringup' and 'highlevel' in job_type_dict:
+    if 'down' and 'db' and 'graphics_test' and 'bringup' and 'highlevel' in job_type_dict:
         job_creator_instance = jenkins_job_creator.HighlevelHardwareJob(jenkins_instance, plc_instance)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
@@ -149,7 +149,7 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### release job
-    if 'down' and 'db' and 'sim' and 'app' and 'bringup' and 'highlevel' in job_type_dict:
+    if 'down' and 'db' and 'graphics_test' and 'app' and 'bringup' and 'highlevel' in job_type_dict:
         print "Create release job"  # TODO
 
     ### clean up

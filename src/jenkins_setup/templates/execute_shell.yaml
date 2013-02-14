@@ -315,7 +315,7 @@ sudo rm -rf $WORKSPACE/../aux'
 
 'db': '#!/bin/bash -e'
 
-'sim': '#!/bin/bash -e'
+'graphics_test': '#!/bin/bash -e'
 
 'app': '#!/bin/bash -e'
 

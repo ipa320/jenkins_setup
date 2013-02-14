@@ -22,7 +22,7 @@ class JenkinsJob(object):
                                'normal': 'normal_build',
                                'down': 'downstream_build',
                                'db': 'database_test',
-                               'sim': 'simulation_test',
+                               'graphics_test': 'graphics_test',
                                'app': 'application_test',
                                'clean': 'clean_up',
                                'bringup': 'bringup_hardware_test',
@@ -770,8 +770,8 @@ class DownstreamBuildJob(BuildJob):
 
         # set parameterized triggers
         db_trigger = self.get_single_parameterizedtrigger(['db'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
-        sim_trigger = self.get_single_parameterizedtrigger(['sim'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
-        self.set_parameterizedtrigger_param([db_trigger, sim_trigger])
+        graphics_test_trigger = self.get_single_parameterizedtrigger(['graphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
+        self.set_parameterizedtrigger_param([db_trigger, graphics_test_trigger])
 
         # set join trigger
         app_trigger = self.get_single_parameterizedtrigger(['app'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
@@ -851,13 +851,13 @@ class DatabaseTestJob(TestJob):
         self.set_shell_param(shell_script)
 
 
-class SimulationTestJob(TestJob):
+class GraphicsTestJob(TestJob):
     """
-    Class for simulation test job
+    Class for graphics test job
     """
     def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
-        Creates a simulation test job instance
+        Creates a graphics test job instance
 
         @param jenkins_instance: Jenkins instance
         @type  jenkins_instance: jenkins.Jenkins
@@ -865,19 +865,19 @@ class SimulationTestJob(TestJob):
         @type  pipeline_config: dict
         """
 
-        super(SimulationTestJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
+        super(GraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
 
-        self.job_type = 'sim'
+        self.job_type = 'graphics_test'
         self.job_name = self.generate_job_name(self.job_type)
 
     def set_job_type_params(self):
         """
-        Sets simulation test job specific job configuration parameters
+        Sets graphics test job specific job configuration parameters
         """
 
-        super(SimulationTestJob, self).set_job_type_params()
+        super(GraphicsTestJob, self).set_job_type_params()
 
-        self.params['NODE_LABEL'] = 'simulation_test'  # TODO check labels
+        self.params['NODE_LABEL'] = 'graphics_test'  # TODO check labels
 
         # set execute shell TODO
         shell_script = self.get_shell_script('test')
