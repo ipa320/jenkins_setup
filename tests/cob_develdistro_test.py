@@ -11,11 +11,11 @@ class CobDevelDistroTest(unittest.TestCase):
 
     def test__init__input_rosdistro__check_url(self):
         cd = cob_develdistro.CobDevelDistro('test')
-        self.assertEqual(cd.url, 'https://raw.github.com/fmw-jk/jenkins_setup/master/releases/cob_test.yaml')
+        self.assertEqual(cd.url, 'https://raw.github.com/fmw-jk/jenkins_setup/master/releases/cob_test-devel.yaml')
 
     def test__init__input_rosdistro__check_url2(self):
         cd = cob_develdistro.CobDevelDistro('fuerte')
-        self.assertEqual(cd.url, 'https://raw.github.com/fmw-jk/jenkins_setup/master/releases/cob_fuerte.yaml')
+        self.assertEqual(cd.url, 'https://raw.github.com/fmw-jk/jenkins_setup/master/releases/cob_fuerte-devel.yaml')
 
 
 if __name__ == "__main__":
