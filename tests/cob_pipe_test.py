@@ -17,16 +17,12 @@ class CobPipeTest(unittest.TestCase):
                                               'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
                                               'matrix_distro_arch': None, 'dependencies': None,
                                               'jobs': None, 'robots': None}}
-        self.pipe_config_test_dict = {'user_name': 'test-user',
-                                      'user_group': 'test-group', 'server_name': 'test-server',
+        self.pipe_config_test_dict = {'user_name': 'test-user', 'server_name': 'test-server',
                                       'email': 'test@ipa.fhg.de', 'committer_email_enabled': False,
                                       'repositories': self.repo_test_dict}
 
     def test__load_config_from_url__check_user_name(self):
         self.assertEqual(self.cp.user_name, 'test-user')
-
-    def test__load_config_from_url__check_user_group(self):
-        self.assertEqual(self.cp.user_group, 'test-group')
 
     def test__load_config_from_url__check_server_name(self):
         self.assertEqual(self.cp.server_name, 'jenkins-test-server')

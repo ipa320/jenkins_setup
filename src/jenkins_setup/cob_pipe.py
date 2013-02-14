@@ -19,7 +19,6 @@ class CobPipe(object):
         """
 
         self.user_name = pipeline_config['user_name']
-        self.user_group = pipeline_config['user_group']
         self.server_name = pipeline_config['server_name']
         self.email = pipeline_config['email']
         self.committer_email_enabled = pipeline_config['committer_email_enabled']
