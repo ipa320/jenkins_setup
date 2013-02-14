@@ -313,7 +313,7 @@ echo "*******CLEANUP WORKSPACE*******"
 
 sudo rm -rf $WORKSPACE/../aux'
 
-'db': '#!/bin/bash -e'
+'nongraphics_test': '#!/bin/bash -e'
 
 'graphics_test': '#!/bin/bash -e'
 

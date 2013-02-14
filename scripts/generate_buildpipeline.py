@@ -108,9 +108,9 @@ def main():
         else:
             modified_jobs.append(job_creator_instance.create_job())
 
-    ### database test
-    if 'down' and 'db' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.DatabaseTestJob(jenkins_instance, plc_instance, job_type_dict['db'])
+    ### nongraphics test
+    if 'down' and 'nongraphics_test' in job_type_dict:
+        job_creator_instance = jenkins_job_creator.NongraphicsTestJob(jenkins_instance, plc_instance, job_type_dict['nongraphics_test'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -125,7 +125,7 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### application test
-    if 'db' and 'graphics_test' and 'app' in job_type_dict:
+    if 'nongraphics_test' and 'graphics_test' and 'app' in job_type_dict:
         job_creator_instance = jenkins_job_creator.ApplicationTestJob(jenkins_instance, plc_instance, job_type_dict['app'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
@@ -141,7 +141,7 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### high-level hardware test
-    if 'down' and 'db' and 'graphics_test' and 'bringup' and 'highlevel' in job_type_dict:
+    if 'down' and 'nongraphics_test' and 'graphics_test' and 'bringup' and 'highlevel' in job_type_dict:
         job_creator_instance = jenkins_job_creator.HighlevelHardwareJob(jenkins_instance, plc_instance)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
@@ -149,7 +149,7 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### release job
-    if 'down' and 'db' and 'graphics_test' and 'app' and 'bringup' and 'highlevel' in job_type_dict:
+    if 'down' and 'nongraphics_test' and 'graphics_test' and 'app' and 'bringup' and 'highlevel' in job_type_dict:
         print "Create release job"  # TODO
 
     ### clean up

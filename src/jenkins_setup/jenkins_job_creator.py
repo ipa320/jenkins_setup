@@ -21,7 +21,7 @@ class JenkinsJob(object):
                                'prio': 'prio_build',
                                'normal': 'normal_build',
                                'down': 'downstream_build',
-                               'db': 'database_test',
+                               'nongraphics_test': 'nongraphics_test',
                                'graphics_test': 'graphics_test',
                                'app': 'application_test',
                                'clean': 'clean_up',
@@ -769,9 +769,9 @@ class DownstreamBuildJob(BuildJob):
         self.set_shell_param(shell_script)
 
         # set parameterized triggers
-        db_trigger = self.get_single_parameterizedtrigger(['db'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
+        nongraphics_test_trigger = self.get_single_parameterizedtrigger(['nongraphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
         graphics_test_trigger = self.get_single_parameterizedtrigger(['graphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
-        self.set_parameterizedtrigger_param([db_trigger, graphics_test_trigger])
+        self.set_parameterizedtrigger_param([nongraphics_test_trigger, graphics_test_trigger])
 
         # set join trigger
         app_trigger = self.get_single_parameterizedtrigger(['app'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
@@ -818,13 +818,13 @@ class TestJob(JenkinsJob):
         self.set_matrix_param(matrix_entries_dict_list, matrix_filter)
 
 
-class DatabaseTestJob(TestJob):
+class NongraphicsTestJob(TestJob):
     """
-    Class for database test job
+    Class for nongraphics test job
     """
     def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
-        Creates a database test job instance
+        Creates a nongraphics test job instance
 
         @param jenkins_instance: Jenkins instance
         @type  jenkins_instance: jenkins.Jenkins
@@ -832,19 +832,19 @@ class DatabaseTestJob(TestJob):
         @type  pipeline_config: dict
         """
 
-        super(DatabaseTestJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
+        super(NongraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
 
-        self.job_type = 'db'
+        self.job_type = 'nongraphics_test'
         self.job_name = self.generate_job_name(self.job_type)
 
     def set_job_type_params(self):
         """
-        Sets database test job specific job configuration parameters
+        Sets nongraphics test job specific job configuration parameters
         """
 
-        super(DatabaseTestJob, self).set_job_type_params()
+        super(NongraphicsTestJob, self).set_job_type_params()
 
-        self.params['NODE_LABEL'] = 'database_test'  # TODO check labels
+        self.params['NODE_LABEL'] = 'nongraphics_test'  # TODO check labels
 
         # set execute shell TODO
         shell_script = self.get_shell_script('test')
