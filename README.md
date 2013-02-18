@@ -25,7 +25,7 @@ Create a folder in your HOME-folder called: jenkins-config
 mkdir ~/jenkins-config
 ```
 
-Create the so called slave_config.yaml file with the following entries:
+Create a so called slave_config.yaml file with the following entries:
 ```yaml
 master: name_of_jenkins_master
 master_uri: "http://url_of_jenkins_master:8080"
@@ -45,12 +45,13 @@ export PYTHONPATH=$PYTHONPATH:<repository_path>/src
 4. Set up pipeline configuration:
 ---------------------------------
 
-Checkout the repository ipa320/jenkins_config
+Checkout the repository [jenkins_config](https://github.com/ipa320/jenkins_config "ipa320/jenkins_config")
 ```bash
 git clone git@github.com:config/jenkins_config.git
 ```
 
 Repository structure:
+```bash
 jenkins_config
 |-jenkins_master_name1
 | |- user_name1
@@ -60,11 +61,12 @@ jenkins_config
 |-jenkins_master_name2
 | |- user_name3
 | |  |-pipeline_config.yaml
+```
 
 You have to create a folder according to your Jenkins masters name (if
-necessary). Inside create a folder with your user name. Within this
+not existent yet). Inside create a folder with your user name. Within this
 folder set up a pipeline_config.yaml file with your configurations. You
-can use the <jenkins_config_repository_location>/jenkins-test-server/test-user
+can use the \<jenkins_config_repository_location\>/jenkins-test-server/test-user
 as an example.
 
 When your done push it to GitHub.
@@ -73,7 +75,7 @@ When your done push it to GitHub.
 -------------------
 
 Execute the
-<jenkins_setup_repository_location>/scripts/generate_buildpipeline.py
+\<jenkins_setup_repository_location\>/scripts/generate_buildpipeline.py
 script to create all your pipeline jobs on the Jenkins CI Server.
 
 ```bash
