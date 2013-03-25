@@ -10,7 +10,7 @@ class CobPipeTest(unittest.TestCase):
         self.MaxDiff = None
 
         self.cp = cob_pipe.CobPipe()
-        self.cp.load_config_from_url('jenkins-test-server', 'test-user')
+        self.cp.load_config_from_url('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
 
         self.repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                               'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
@@ -105,7 +105,7 @@ class CobPipeTest(unittest.TestCase):
         self.assertRaises(cob_pipe.CobPipeException, self.cp.load_config_from_dict, self.pipe_config_test_dict)
 
     def test__load_config_from_url__input_repo_dict__check_repo(self):
-        self.cp.load_config_from_url('jenkins-test-server', 'test-user')
+        self.cp.load_config_from_url('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
         self.assertTrue('test_repo_1' in self.cp.repositories)
 
     def test__get_custom_dependencies__return_dependency_dict(self):

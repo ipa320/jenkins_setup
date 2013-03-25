@@ -39,7 +39,7 @@ class JenkinsJobTest(unittest.TestCase):
 
         #self.test_dict = common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
         self.test_pipe_inst = cob_pipe.CobPipe()
-        self.test_pipe_inst.load_config_from_url('jenkins-test-server', 'test-user')
+        self.test_pipe_inst.load_config_from_url('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
 
         self.job_type_test_list = ['pipe', 'prio', 'normal']
 
@@ -486,7 +486,7 @@ class PipeStarterJobTest(unittest.TestCase):
 
         #self.test_dict = common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
         self.test_pipe_inst = cob_pipe.CobPipe()
-        self.test_pipe_inst.load_config_from_url('jenkins-test-server', 'test-user')
+        self.test_pipe_inst.load_config_from_url('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
 
         self.job_type_test_list = ['pipe', 'prio', 'normal']
 
@@ -518,7 +518,7 @@ class NormalBuildJobTest(unittest.TestCase):
 
         #self.test_dict = common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
         self.test_pipe_inst = cob_pipe.CobPipe()
-        self.test_pipe_inst.load_config_from_url('jenkins-test-server', 'test-user')
+        self.test_pipe_inst.load_config_from_url('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
 
         self.job_type_test_list = ['pipe', 'prio', 'normal']
 
