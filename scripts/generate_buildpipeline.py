@@ -23,11 +23,12 @@ def main():
     parser.add_option("--delete", action="store_true", default=False)
     (options, args) = parser.parse_args()
 
-    if len(args) != 1:
-        print "Usage: %s username" % (sys.argv[0])
+    if len(args) != 2:
+        print "Usage: %s config_repo_address username" % (sys.argv[0])
         sys.exit()
 
-    user_name = args[0]
+    config_repo = args[0]
+    user_name = args[1]
 
     # load slave config
     with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
@@ -47,7 +48,7 @@ def main():
 
     # get pipeline configs object from url
     plc_instance = cob_pipe.CobPipe()
-    plc_instance.load_config_from_url(slave_conf['master'], user_name)
+    plc_instance.load_config_from_url(config_repo, slave_conf['master'], user_name)
 
     # get jobs to create
     job_type_dict = plc_instance.get_jobs_to_create()

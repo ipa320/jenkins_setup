@@ -499,6 +499,7 @@ class JenkinsJob(object):
                                                                              self.network_config['tarball_folderpath']))
         shell_script = shell_script.replace('@(USERNAME)', self.pipe_inst.user_name)
         shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.JOB_TYPE_NAMES[self.job_type])
+        shell_script = shell_script.replace('@(CONFIGREPO)', self.pipe_inst.config_repo)
 
         return shell_script
 

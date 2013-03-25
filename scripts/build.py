@@ -14,15 +14,16 @@ def main():
     parser.add_option('-v', '--verbose', action='store_true', default=False)
     (options, args) = parser.parse_args()
 
-    if len(args) < 4:
-        print "Usage: %s server_name user_name ros_distro build_repo" % sys.argv[0]
+    if len(args) < 5:
+        print "Usage: %s config_repo server_name user_name ros_distro build_repo" % sys.argv[0]
         raise common.BuildException("Wrong arguments for build script")
 
     # get arguments
-    server_name = args[0]
-    user_name = args[1]
-    ros_distro = args[2]
-    build_identifier = args[3]
+    config_repo = args[0]
+    server_name = args[1]
+    user_name = args[2]
+    ros_distro = args[3]
+    build_identifier = args[4]
     build_repo = build_identifier.split('__')[0]  # repository to build
     workspace = os.environ['WORKSPACE']
     ros_package_path = os.environ['ROS_PACKAGE_PATH']
@@ -57,7 +58,7 @@ def main():
 
     # cob_pipe object
     cp_instance = cob_pipe.CobPipe()
-    cp_instance.load_config_from_url(server_name, user_name)
+    cp_instance.load_config_from_url(config_repo, server_name, user_name)
     pipe_repos = cp_instance.repositories
     common.output("Pipeline configuration successfully loaded", blankline='b')
 

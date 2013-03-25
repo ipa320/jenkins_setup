@@ -30,7 +30,7 @@ echo "============================================================"
 echo "==== Begin" $SCRIPT "script.    Ignore the output above ===="
 echo "============================================================"
 
-$WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
+$WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $CONFIG_REPO $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
 
 echo "============================================================"
 echo "==== End" $SCRIPT "script.    Ignore the output below ======"

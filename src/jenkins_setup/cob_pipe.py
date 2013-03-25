@@ -29,19 +29,22 @@ class CobPipe(object):
             repo = CobPipeRepo(repo_name, data)
             self.repositories[repo_name] = repo
 
-    def load_config_from_url(self, server_name, user_name):
+    def load_config_from_url(self, config_repo, server_name, user_name):
         """
         Gets the buildpipeline configuration by the given server and user name
         and sets up the pipeline object
 
+        @param config_repo: address of config repo
+        @type  config_repo: str
         @param server_name: name of server
         @type  server_name: str
         @param user_name: name of user
         @type  user_name: str
         """
 
-        pipeline_config = common.get_buildpipeline_configs(server_name, user_name)
+        pipeline_config = common.get_buildpipeline_configs(config_repo, server_name, user_name)
         self.load_config_from_dict(pipeline_config)
+        self.config_repo = config_repo
 
     def get_jobs_to_create(self):
         """
