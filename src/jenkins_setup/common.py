@@ -340,10 +340,11 @@ def get_buildpipeline_configs(config_repo, server_name, user_name):
     :raises: :exec:`Exception`
     """
 
-    pipeconfig_url = config_repo.replace("https://github.com/", "https://raw.github.com/")
-    pipeconfig_url = config_repo.replace("git://github.com/", "https://raw.github.com/")
-    pipeconfig_url = config_repo.replace("git@github.com:", "https://raw.github.com/")
-    pipeconfig_url = pipeconfig_url.replace(".git", "") + "/master/%s/%s/pipeline_config.yaml" % (server_name, user_name)
+    pipeconfig_url = config_repo.replace(".git", "")
+    pipeconfig_url = pipeconfig_url.replace("https://github.com/", "https://raw.github.com/")
+    pipeconfig_url = pipeconfig_url.replace("git://github.com/", "https://raw.github.com/")
+    pipeconfig_url = pipeconfig_url.replace("git@github.com:", "https://raw.github.com/")
+    pipeconfig_url = pipeconfig_url + "/master/%s/%s/pipeline_config.yaml" % (server_name, user_name)
     print "Parsing buildpipeline configuration file for %s stored at:\n%s" % (user_name, pipeconfig_url)
     try:
         f = urllib2.urlopen(pipeconfig_url)
