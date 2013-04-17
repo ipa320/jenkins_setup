@@ -1,4 +1,4 @@
-'prio': '#!/bin/bash -e
+'prio_build': '#!/bin/bash -e
 
 new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
 
