@@ -105,14 +105,6 @@ class JenkinsJobTest(unittest.TestCase):
         self.jj.set_common_params()
         self.assertEqual(self.jj.params, common_job_config_dict)
 
-    def test__set_common_params__empty_job_type_string__raise_exception(self):
-        self.jj.job_type = ''
-        self.assertRaises(Exception, self.jj.set_common_params)
-
-    def test__set_common_params__invalid_job_type_string__raise_exception(self):
-        self.jj.job_type = 'invalid'
-        self.assertRaises(Exception, self.jj.set_common_params)
-
     # Testing replace_placeholder
     def test__replace_placeholder__set_config_string_and_params_dict__check_config_string(self):
         self.jj.job_config = '@(TEST_1) and @(TEST_2) should be replaced'
@@ -148,12 +140,6 @@ class JenkinsJobTest(unittest.TestCase):
     def test__generate_job_name__input_job_and_suffix_string__return_job_name_string(self):
         result = self.jj.generate_job_name('pipe_starter', 'suffix')
         self.assertEqual(result, 'test-user__pipe_starter__suffix')
-
-    def test__generate_job_name__input_wrong_key_string__raise_exception(self):
-        self.assertRaises(KeyError, self.jj.generate_job_name, 'wrong_key')
-
-    def test__generate_job_name__input_wrong_key_int__raise_exception(self):
-        self.assertRaises(KeyError, self.jj.generate_job_name, 12)
 
     # Testing generate_job_list
     def test__generate_job_list__input_job_list__return_job_name_list(self):
@@ -345,9 +331,6 @@ class JenkinsJobTest(unittest.TestCase):
 
     def test__set_groovypostbuild_param__input_empty_project_list__raise_exception(self):
         self.assertRaises(Exception, self.jj.set_groovypostbuild_param, 'enable', [], 2)
-
-    def test__set_groovypostbuild_param__input_invalid_project_list_entry__raise_exception(self):
-        self.assertRaises(Exception, self.jj.set_groovypostbuild_param, 'enable', ['invalid'], 2)
 
     def test__set_groovypostbuild_param__input_invalid_behavior__raise_exception(self):
         self.assertRaises(Exception, self.jj.set_groovypostbuild_param, 'enable', self.job_type_test_list, 3)
