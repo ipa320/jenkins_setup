@@ -19,7 +19,7 @@ class JenkinsJob(object):
 
         self.JOB_TYPE_NAMES = {'pipe': 'pipe_starter',
                                'prio': 'prio_build',
-                               'normal': 'normal_build',
+                               'regular': 'regular_build',
                                'downstream_build': 'downstream_build',
                                'nongraphics_test': 'nongraphics_test',
                                'graphics_test': 'graphics_test',
@@ -670,18 +670,18 @@ class PriorityBuildJob(BuildJob):
         self.set_pipelinetrigger_param(['hardware_build'])
 
         # set parameterized triggers
-        normal_trigger = self.get_single_parameterizedtrigger(['normal'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
+        regular_trigger = self.get_single_parameterizedtrigger(['regular_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
         downstream_build_trigger = self.get_single_parameterizedtrigger(['downstream_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
-        self.set_parameterizedtrigger_param([normal_trigger, downstream_build_trigger])
+        self.set_parameterizedtrigger_param([regular_trigger, downstream_build_trigger])
 
 
-class NormalBuildJob(BuildJob):
+class RegularBuildJob(BuildJob):
     """
-    Class for normal build jobs
+    Class for regular build jobs
     """
     def __init__(self, jenkins_instance, pipeline_config):
         """
-        Creates a normal  build job instance
+        Creates a regular  build job instance
 
         @param jenkins_instance: Jenkins instance
         @type  jenkins_instance: jenkins.Jenkins
@@ -689,27 +689,27 @@ class NormalBuildJob(BuildJob):
         @type  pipeline_config: dict
         """
 
-        super(NormalBuildJob, self).__init__(jenkins_instance, pipeline_config)
+        super(RegularBuildJob, self).__init__(jenkins_instance, pipeline_config)
 
-        self.job_type = 'normal'
+        self.job_type = 'regular'
         self.job_name = self.generate_job_name(self.job_type)
 
     def set_job_type_params(self):
         """
-        Sets normal build job specific job configuration parameters
+        Sets regular build job specific job configuration parameters
         """
 
-        matrix_filter = self.generate_matrix_filter(self.get_normal_subset_filter())
+        matrix_filter = self.generate_matrix_filter(self.get_regular_subset_filter())
 
-        super(NormalBuildJob, self).set_job_type_params(matrix_filter)
+        super(RegularBuildJob, self).set_job_type_params(matrix_filter)
 
         # set execute shell
         shell_script = self.get_shell_script()
         self.set_shell_param(shell_script)
 
-    def get_normal_subset_filter(self):
+    def get_regular_subset_filter(self):
         """
-        Gets subset filter for normal build
+        Gets subset filter for regular build
         """
 
         subset_filter_input = []

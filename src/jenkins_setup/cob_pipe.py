@@ -173,8 +173,8 @@ class CobPipeRepo(CobPipeDependencyRepo):
             raise CobPipeException("Found robot to build on, but job is missing")
         if ('automatic_hw_test' in self.jobs or 'interactive_hw_test' in self.jobs) and self.robots == []:
             raise CobPipeException("Hardware tests defined but no robot to run them on")
-        if self.matrix_distro_arch != {} and 'normal' not in self.jobs:
-            raise CobPipeException("Configuration for normal build found, but no normal build job")
+        if self.matrix_distro_arch != {} and 'regular_build' not in self.jobs:
+            raise CobPipeException("Configuration for regular build found, but no regular build job")
 
 
 class CobPipeException(Exception):

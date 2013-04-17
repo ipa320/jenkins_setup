@@ -93,9 +93,9 @@ def main():
     else:
         modified_jobs.append(job_creator_instance.create_job())
 
-    ### normal build
-    if 'normal' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.NormalBuildJob(jenkins_instance, plc_instance)
+    ### regular build
+    if 'regular_build' in job_type_dict:
+        job_creator_instance = jenkins_job_creator.RegularBuildJob(jenkins_instance, plc_instance)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:

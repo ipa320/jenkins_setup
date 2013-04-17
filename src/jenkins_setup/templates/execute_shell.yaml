@@ -81,7 +81,7 @@ scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use/
 
 sudo rm -rf $WORKSPACE/../aux'
 
-'normal': '#!/bin/bash -e
+'regular_build': '#!/bin/bash -e
 
 
 new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}

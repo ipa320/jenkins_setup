@@ -41,7 +41,7 @@ class JenkinsJobTest(unittest.TestCase):
         self.test_pipe_inst = cob_pipe.CobPipe()
         self.test_pipe_inst.load_config_from_url('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
 
-        self.job_type_test_list = ['pipe', 'prio', 'normal']
+        self.job_type_test_list = ['pipe', 'prio', 'regular']
 
         with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
             info = yaml.load(f)
@@ -160,19 +160,19 @@ class JenkinsJobTest(unittest.TestCase):
         result = self.jj.generate_job_list(self.job_type_test_list)
         self.assertEqual(result, ['test-user__pipe_starter',
                                   'test-user__prio_build',
-                                  'test-user__normal_build'])
+                                  'test-user__regular_build'])
 
     def test__generate_job_list__input_empty_list__return_empty_string(self):
         result = self.jj.generate_job_list([])
         self.assertEqual(result, [])
 
     def test__generate_job_list__input_dict__raise_exception(self):
-        self.assertRaises(TypeError, self.jj.generate_job_list, ('pipe', 'prio', 'normal'))
+        self.assertRaises(TypeError, self.jj.generate_job_list, ('pipe', 'prio', 'regular'))
 
     # Testing generate_job_list_string
     def test__generate_job_list_string__input_job_list__return_job_names_as_comma_separatet_string(self):
         result = self.jj.generate_job_list_string(self.job_type_test_list)
-        self.assertEqual(result, 'test-user__pipe_starter, test-user__prio_build, test-user__normal_build')
+        self.assertEqual(result, 'test-user__pipe_starter, test-user__prio_build, test-user__regular_build')
 
     def test__generate_job_list_string__input_empty_list__return_empty_string(self):
         result = self.jj.generate_job_list_string([])
@@ -272,18 +272,18 @@ class JenkinsJobTest(unittest.TestCase):
     def test__set_jointrigger_param__input_job_type_list_and_unstable_behavior_bool__check_set_param(self):
         unstable_behavior_test = True
         self.jj.set_jointrigger_param(self.job_type_test_list, unstable_behavior_test)
-        self.assertEqual(self.jj.params['JOIN_TRIGGER'], '<join.JoinTrigger> <joinProjects>test-user__pipe_starter, test-user__prio_build, test-user__normal_build</joinProjects> <joinPublishers>  </joinPublishers> <evenIfDownstreamUnstable>true</evenIfDownstreamUnstable> </join.JoinTrigger>')
+        self.assertEqual(self.jj.params['JOIN_TRIGGER'], '<join.JoinTrigger> <joinProjects>test-user__pipe_starter, test-user__prio_build, test-user__regular_build</joinProjects> <joinPublishers>  </joinPublishers> <evenIfDownstreamUnstable>true</evenIfDownstreamUnstable> </join.JoinTrigger>')
 
     def test__set_jointrigger_param__input_job_type_list_and_unstable_behavior_bool__check_set_param2(self):
         unstable_behavior_test = False
         self.jj.set_jointrigger_param(self.job_type_test_list, unstable_behavior_test)
-        self.assertEqual(self.jj.params['JOIN_TRIGGER'], '<join.JoinTrigger> <joinProjects>test-user__pipe_starter, test-user__prio_build, test-user__normal_build</joinProjects> <joinPublishers>  </joinPublishers> <evenIfDownstreamUnstable>false</evenIfDownstreamUnstable> </join.JoinTrigger>')
+        self.assertEqual(self.jj.params['JOIN_TRIGGER'], '<join.JoinTrigger> <joinProjects>test-user__pipe_starter, test-user__prio_build, test-user__regular_build</joinProjects> <joinPublishers>  </joinPublishers> <evenIfDownstreamUnstable>false</evenIfDownstreamUnstable> </join.JoinTrigger>')
 
     def test__set_jointrigger_param__input_job_type_list_and_unstable_behavior_bool_and_parameterized_trigger_str__check_set_param(self):
         parameterized_trigger_test = 'TESTCONFIG'
         unstable_behavior_test = False
         self.jj.set_jointrigger_param(self.job_type_test_list, unstable_behavior_test, parameterized_trigger_test)
-        self.assertEqual(self.jj.params['JOIN_TRIGGER'], '<join.JoinTrigger> <joinProjects>test-user__pipe_starter, test-user__prio_build, test-user__normal_build</joinProjects> <joinPublishers> TESTCONFIG </joinPublishers> <evenIfDownstreamUnstable>false</evenIfDownstreamUnstable> </join.JoinTrigger>')
+        self.assertEqual(self.jj.params['JOIN_TRIGGER'], '<join.JoinTrigger> <joinProjects>test-user__pipe_starter, test-user__prio_build, test-user__regular_build</joinProjects> <joinPublishers> TESTCONFIG </joinPublishers> <evenIfDownstreamUnstable>false</evenIfDownstreamUnstable> </join.JoinTrigger>')
 
     def test__set_jointrigger_param__input_empty_job_type_list__check_set_param(self):
         self.jj.set_jointrigger_param([], False, 'TESTCONFIG')
@@ -302,7 +302,7 @@ class JenkinsJobTest(unittest.TestCase):
     def test__set_postbuildtrigger_param__input_job_type_list_and_threshold_name_string__return_postbuildtrigger_config_string(self):
         treshold_name_test = 'SUCCESS'
         self.jj.set_postbuildtrigger_param(self.job_type_test_list, treshold_name_test)
-        self.assertEqual(self.jj.params['POSTBUILD_TRIGGER'], '<hudson.tasks.BuildTrigger> <childProjects>test-user__pipe_starter, test-user__prio_build, test-user__normal_build</childProjects> <threshold> <name>SUCCESS</name> </threshold> </hudson.tasks.BuildTrigger>')
+        self.assertEqual(self.jj.params['POSTBUILD_TRIGGER'], '<hudson.tasks.BuildTrigger> <childProjects>test-user__pipe_starter, test-user__prio_build, test-user__regular_build</childProjects> <threshold> <name>SUCCESS</name> </threshold> </hudson.tasks.BuildTrigger>')
 
     def test__set_postbuildtrigger_param__input_empty_job_type_list__return_empty_string(self):
         self.assertEqual(self.jj.set_postbuildtrigger_param([], ''), '')
@@ -319,7 +319,7 @@ class JenkinsJobTest(unittest.TestCase):
     # Testing set_pipelinetrigger_param
     def test__set_pipelinetrigger_param__input_job_type_list__return_pipelinetrigger_config_string(self):
         self.jj.set_pipelinetrigger_param(self.job_type_test_list)
-        self.assertEqual(self.jj.params['PIPELINE_TRIGGER'], '<au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger> <downstreamProjectNames>test-user__pipe_starter, test-user__prio_build, test-user__normal_build</downstreamProjectNames> </au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger>')
+        self.assertEqual(self.jj.params['PIPELINE_TRIGGER'], '<au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger> <downstreamProjectNames>test-user__pipe_starter, test-user__prio_build, test-user__regular_build</downstreamProjectNames> </au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger>')
 
     def test__set_pipelinetrigger_param__input_job_type_list__return_pipelinetrigger_config_string2(self):
         self.jj.set_pipelinetrigger_param(['pipe'])
@@ -331,11 +331,11 @@ class JenkinsJobTest(unittest.TestCase):
     # Testing set_groovypostbuild_param
     def test__set_groovypostbuild_param__input_script_type_string_project_list_behavior_string__return_groovypostbuild_config_string(self):
         self.jj.set_groovypostbuild_param('enable', self.job_type_test_list, 2)
-        self.assertEqual(self.jj.params['GROOVY_POSTBUILD'], "<org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder> <groovyScript>if(manager.build.result.isBetterOrEqualTo(hudson.model.Result.FAILURE)) {\n manager.listener.logger.println('Because this build did not fail:')\n for (project in ['test-user__pipe_starter', 'test-user__prio_build', 'test-user__normal_build']) {\n  manager.listener.logger.println(' - ' + project)\n  manager.hudson.getItem(project).enable()\n }\n manager.listener.logger.println('will be enabled.')\n}</groovyScript> <behavior>2</behavior> </org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder>")
+        self.assertEqual(self.jj.params['GROOVY_POSTBUILD'], "<org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder> <groovyScript>if(manager.build.result.isBetterOrEqualTo(hudson.model.Result.FAILURE)) {\n manager.listener.logger.println('Because this build did not fail:')\n for (project in ['test-user__pipe_starter', 'test-user__prio_build', 'test-user__regular_build']) {\n  manager.listener.logger.println(' - ' + project)\n  manager.hudson.getItem(project).enable()\n }\n manager.listener.logger.println('will be enabled.')\n}</groovyScript> <behavior>2</behavior> </org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder>")
 
     def test__set_groovypostbuild_param__input_script_type_string_project_list_behavior_string__return_groovypostbuild_config_string2(self):
         self.jj.set_groovypostbuild_param('disable', self.job_type_test_list, 2)
-        self.assertEqual(self.jj.params['GROOVY_POSTBUILD'], "<org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder> <groovyScript>for (project in ['test-user__pipe_starter', 'test-user__prio_build', 'test-user__normal_build']) {\n manager.listener.logger.println('Disable ' + project + ' job')\n manager.hudson.getItem(project).disable()\n}</groovyScript> <behavior>2</behavior> </org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder>")
+        self.assertEqual(self.jj.params['GROOVY_POSTBUILD'], "<org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder> <groovyScript>for (project in ['test-user__pipe_starter', 'test-user__prio_build', 'test-user__regular_build']) {\n manager.listener.logger.println('Disable ' + project + ' job')\n manager.hudson.getItem(project).disable()\n}</groovyScript> <behavior>2</behavior> </org.jvnet.hudson.plugins.groovypostbuild.GroovyPostbuildRecorder>")
 
     def test__set_groovypostbuild_param__input_empty_script_type_string__raise_exception(self):
         self.assertRaises(Exception, self.jj.set_groovypostbuild_param, '', self.job_type_test_list, 2)
@@ -361,35 +361,35 @@ class JenkinsJobTest(unittest.TestCase):
     # Testing get_single_parameterizedtrigger
     def test__get_single_parameterizedtrigger__input_job_type_list__check_set_param(self):
         result = self.jj.get_single_parameterizedtrigger(self.job_type_test_list)
-        self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>')
+        self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__regular_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>')
 
     def test__get_single_parameterizedtrigger__input_job_type_list_and_subset_filter_str__check_set_param(self):
         result = self.jj.get_single_parameterizedtrigger(self.job_type_test_list, subset_filter='test==filter')
-        self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs> <hudson.plugins.parameterizedtrigger.matrix.MatrixSubsetBuildParameters> <filter>test==filter</filter> </hudson.plugins.parameterizedtrigger.matrix.MatrixSubsetBuildParameters> </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>')
+        self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs> <hudson.plugins.parameterizedtrigger.matrix.MatrixSubsetBuildParameters> <filter>test==filter</filter> </hudson.plugins.parameterizedtrigger.matrix.MatrixSubsetBuildParameters> </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__regular_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>')
 
     def test__get_single_parameterizedtrigger__input_job_type_list_and_subset_filter_str__check_set_param2(self):
         result = self.jj.get_single_parameterizedtrigger(self.job_type_test_list, predefined_param='PARAM=value')
-        self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs> <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters> <properties>PARAM=value</properties> </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters> </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>')
+        self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs> <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters> <properties>PARAM=value</properties> </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters> </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__regular_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>')
 
     def test__get_single_parameterizedtrigger__input_job_type_list_and_condition_str__check_set_param(self):
         result = self.jj.get_single_parameterizedtrigger(self.job_type_test_list, condition='FAILURE')
-        self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>FAILURE</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>')
+        self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__regular_build </projects> <condition>FAILURE</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>')
 
     def test__get_single_parameterizedtrigger__input_job_type_list_and_no_param_bool__check_set_param(self):
         result = self.jj.get_single_parameterizedtrigger(self.job_type_test_list, no_param=True)
-        self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>true</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>')
+        self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__regular_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>true</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>')
 
     # Testing set_parameterizedtrigger_param
     def test__set_parameterizedtrigger_param__input_trigger_config_str_list__check_set_param(self):
-        trigger_config = '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>'
+        trigger_config = '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__regular_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>'
         self.jj.set_parameterizedtrigger_param([trigger_config])
-        self.assertEqual(self.jj.params['PARAMETERIZED_TRIGGER'], '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
+        self.assertEqual(self.jj.params['PARAMETERIZED_TRIGGER'], '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__regular_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
 
     def test__set_parameterizedtrigger_param__input_trigger_config_str_list__check_set_param2(self):
-        trigger_config1 = '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>'
-        trigger_config2 = '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__normal_build2 </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>'
+        trigger_config1 = '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__regular_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>'
+        trigger_config2 = '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__regular_build2 </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>'
         self.jj.set_parameterizedtrigger_param([trigger_config1, trigger_config2])
-        self.assertEqual(self.jj.params['PARAMETERIZED_TRIGGER'], '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__normal_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__normal_build2 </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
+        self.assertEqual(self.jj.params['PARAMETERIZED_TRIGGER'], '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__regular_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__regular_build2 </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig> </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>')
 
     def test__set_parameterizedtrigger_param__input_empty_list__raise_exception(self):
         self.assertRaises(Exception, self.jj.set_parameterizedtrigger_param, [])
@@ -471,9 +471,9 @@ class JenkinsJobTest(unittest.TestCase):
         self.assertEqual(result, '#!/bin/bash -e\nnew_basetgz=${ubuntu_distro}__${arch}__${ros_distro}\nbasetgz=test-user__${new_basetgz}__${REPOSITORY}\n\nsudo rm -rf $WORKSPACE/*\nif [ -d $WORKSPACE/../aux ]; then\nsudo rm -rf $WORKSPACE/../aux\nfi\nmkdir $WORKSPACE/../aux\necho "Copying "$new_basetgz" from jenkins@%(server_name)s:~/chroot_tarballs"\nscp jenkins@%(server_name)s:~/chroot_tarballs/$new_basetgz $WORKSPACE/../aux/${basetgz}\nscp jenkins@%(server_name)s:~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig\nscp -r jenkins@%(server_name)s:~/jenkins-config/.ssh $WORKSPACE/.ssh\nls -lah $WORKSPACE\n\necho "Cloning jenkins_setup repository"\ngit clone git@github.com:fmw-jk/jenkins_config.git $WORKSPACE/jenkins_setup\nls -lah $WORKSPACE\n\ncat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM\nJOBNAME=$JOB_NAME\nROSDISTRO=$ros_distro\nREPOSITORY=$REPOSITORY\nUBUNTUDISTRO=$ubuntu_distro\nARCH=$arch\n#TODO\nCONFIG_REPO=git@github.com:fmw-jk/jenkins_config.git\nJENKINS_MASTER=%(server_name)s\nJENKINS_USER=test-user\nJOBTYPE=prio_build\nexport ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO\nexport BUILD_ID=$BUILD_ID\nDELIM\n\nls -lah $WORKSPACE\n\necho "***********ENTER CHROOT************"\necho "*********please be patient*********"\n\nsudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\n\necho "*******CLEANUP WORKSPACE*******"\necho "STORING CHROOT TARBALL ON jenkins@%(server_name)s:~/chroot_tarballs"\nscp $WORKSPACE/../aux/${basetgz} jenkins@%(server_name)s:~/chroot_tarballs/in_use/\nsudo rm -rf $WORKSPACE/../aux' % {'server_name': self.test_pipe_inst.server_name})
 
     def test__get_shell_script__result_shell_script_str2(self):
-        self.jj.job_type = 'normal'
+        self.jj.job_type = 'regular'
         result = self.jj.get_shell_script()
-        self.assertEqual(result, '#!/bin/bash -e\n\nnew_basetgz=${ubuntu_distro}__${arch}__${ros_distro}\nbasetgz=test-user__${new_basetgz}__${repository}\n\nsudo rm -rf $WORKSPACE/*\nif [ -d $WORKSPACE/../aux ]; then\nsudo rm -rf $WORKSPACE/../aux\nfi\nmkdir $WORKSPACE/../aux\n\necho "Copying "$new_basetgz" from jenkins@%(server_name)s:~/chroot_tarballs"\nscp jenkins@%(server_name)s:~/chroot_tarballs/$new_basetgz $WORKSPACE/../aux/${basetgz}\nscp jenkins@%(server_name)s:~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig\nscp -r jenkins@%(server_name)s:~/jenkins-config/.ssh $WORKSPACE/.ssh\nls -lah $WORKSPACE\n\necho "Cloning jenkins_setup repository"\ngit clone git@github.com:fmw-jk/jenkins_config.git $WORKSPACE/jenkins_setup\nls -lah $WORKSPACE\n\ncat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM\nJOBNAME=$JOB_NAME\nROSDISTRO=$ros_distro\nREPOSITORY=$REPOSITORY\nUBUNTUDISTRO=$ubuntu_distro\nARCH=$arch\n#TODO\nCONFIG_REPO=git@github.com:fmw-jk/jenkins_config.git\nJENKINS_MASTER=%(server_name)s\nJENKINS_USER=test-user\nJOBTYPE=normal_build\nexport ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO\nexport BUILD_ID=$BUILD_ID\nDELIM\n\nls -lah $WORKSPACE\n\necho "***********ENTER CHROOT************"\necho "*********please be patient*********"\nsudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\n\necho "*******CLEANUP WORKSPACE*******"\nsudo rm -rf $WORKSPACE/../aux' % {"server_name": self.test_pipe_inst.server_name})
+        self.assertEqual(result, '#!/bin/bash -e\n\nnew_basetgz=${ubuntu_distro}__${arch}__${ros_distro}\nbasetgz=test-user__${new_basetgz}__${repository}\n\nsudo rm -rf $WORKSPACE/*\nif [ -d $WORKSPACE/../aux ]; then\nsudo rm -rf $WORKSPACE/../aux\nfi\nmkdir $WORKSPACE/../aux\n\necho "Copying "$new_basetgz" from jenkins@%(server_name)s:~/chroot_tarballs"\nscp jenkins@%(server_name)s:~/chroot_tarballs/$new_basetgz $WORKSPACE/../aux/${basetgz}\nscp jenkins@%(server_name)s:~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig\nscp -r jenkins@%(server_name)s:~/jenkins-config/.ssh $WORKSPACE/.ssh\nls -lah $WORKSPACE\n\necho "Cloning jenkins_setup repository"\ngit clone git@github.com:fmw-jk/jenkins_config.git $WORKSPACE/jenkins_setup\nls -lah $WORKSPACE\n\ncat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM\nJOBNAME=$JOB_NAME\nROSDISTRO=$ros_distro\nREPOSITORY=$REPOSITORY\nUBUNTUDISTRO=$ubuntu_distro\nARCH=$arch\n#TODO\nCONFIG_REPO=git@github.com:fmw-jk/jenkins_config.git\nJENKINS_MASTER=%(server_name)s\nJENKINS_USER=test-user\nJOBTYPE=regular_build\nexport ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO\nexport BUILD_ID=$BUILD_ID\nDELIM\n\nls -lah $WORKSPACE\n\necho "***********ENTER CHROOT************"\necho "*********please be patient*********"\nsudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\n\necho "*******CLEANUP WORKSPACE*******"\nsudo rm -rf $WORKSPACE/../aux' % {"server_name": self.test_pipe_inst.server_name})
 
 
 class PipeStarterJobTest(unittest.TestCase):
@@ -488,7 +488,7 @@ class PipeStarterJobTest(unittest.TestCase):
         self.test_pipe_inst = cob_pipe.CobPipe()
         self.test_pipe_inst.load_config_from_url('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
 
-        self.job_type_test_list = ['pipe', 'prio', 'normal']
+        self.job_type_test_list = ['pipe', 'prio', 'regular']
 
         with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
             info = yaml.load(f)
@@ -508,9 +508,9 @@ class PipeStarterJobTest(unittest.TestCase):
                                   {'repository': 'test_repo_2', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'natty', 'arch': 'amd64'}])
 
 
-class NormalBuildJobTest(unittest.TestCase):
+class RegularBuildJobTest(unittest.TestCase):
     """
-    Tests Normal Build Job
+    Tests Regular Build Job
     """
 
     def setUp(self):
@@ -520,16 +520,16 @@ class NormalBuildJobTest(unittest.TestCase):
         self.test_pipe_inst = cob_pipe.CobPipe()
         self.test_pipe_inst.load_config_from_url('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
 
-        self.job_type_test_list = ['pipe', 'prio', 'normal']
+        self.job_type_test_list = ['pipe', 'prio', 'regular']
 
         with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
             info = yaml.load(f)
         self.jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'], info['jenkins_pw'])
 
-        self.jj = jenkins_job_creator.NormalBuildJob(self.jenkins_instance, self.test_pipe_inst)
+        self.jj = jenkins_job_creator.RegularBuildJob(self.jenkins_instance, self.test_pipe_inst)
 
-    def test__get_normal_subset_filter__result_filter_input_dict(self):
-        result = self.jj.get_normal_subset_filter()
+    def test__get_regular_subset_filter__result_filter_input_dict(self):
+        result = self.jj.get_regular_subset_filter()
         self.assertEqual(result, [{'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'lucid', 'arch': 'amd64'},
                                   {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'lucid', 'arch': 'i386'},
                                   {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'i386'},
