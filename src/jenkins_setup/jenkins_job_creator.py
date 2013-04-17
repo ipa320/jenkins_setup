@@ -534,7 +534,7 @@ class PipeStarterGeneralJob(JenkinsJob):
         self.params['PROJECT'] = 'project'
 
         # set groovy postbuild script
-        self.set_groovypostbuild_param('disable', self.manual_jobs_list, 2)
+        #self.set_groovypostbuild_param('disable', self.manual_jobs_list, 2)
 
         # set parameterized trigger
         prio_triggers = []
