@@ -41,7 +41,7 @@ class JenkinsJobTest(unittest.TestCase):
         self.test_pipe_inst = cob_pipe.CobPipe()
         self.test_pipe_inst.load_config_from_url('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
 
-        self.job_type_test_list = ['pipe', 'prio', 'regular']
+        self.job_type_test_list = ['pipe_starter', 'prio_build', 'regular_build']
 
         with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
             info = yaml.load(f)
@@ -81,12 +81,12 @@ class JenkinsJobTest(unittest.TestCase):
 
     # Testing common_params
     def test__set_common_params__return_common_job_config_dict(self):
-        self.jj.job_type = 'pipe'
+        self.jj.job_type = 'pipe_starter'
         common_job_config_dict = {'SHELL': '',
                                   'USERNAME': 'test-user',
                                   #'JOB_TYPE_NAME': 'pipe_starter',
                                   'SCRIPT': 'pipe_starter',
-                                  'NODE_LABEL': 'pipe',
+                                  'NODE_LABEL': 'pipe_starter',
                                   'TIME': datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M'),
                                   'HOSTNAME': socket.gethostname(),
                                   'PROJECT': 'matrix-project',
@@ -138,7 +138,7 @@ class JenkinsJobTest(unittest.TestCase):
 
     # Testing generate_job_name
     def test__generate_job_name__input_job_string__return_job_name_string(self):
-        result = self.jj.generate_job_name('pipe')
+        result = self.jj.generate_job_name('pipe_starter')
         self.assertEqual(result, 'test-user__pipe_starter')
 
     def test__generate_job_name__input_job_string__return_job_name_string2(self):
@@ -146,7 +146,7 @@ class JenkinsJobTest(unittest.TestCase):
         self.assertEqual(result, 'test-user__interactive_hw_test')
 
     def test__generate_job_name__input_job_and_suffix_string__return_job_name_string(self):
-        result = self.jj.generate_job_name('pipe', 'suffix')
+        result = self.jj.generate_job_name('pipe_starter', 'suffix')
         self.assertEqual(result, 'test-user__pipe_starter__suffix')
 
     def test__generate_job_name__input_wrong_key_string__raise_exception(self):
@@ -167,7 +167,7 @@ class JenkinsJobTest(unittest.TestCase):
         self.assertEqual(result, [])
 
     def test__generate_job_list__input_dict__raise_exception(self):
-        self.assertRaises(TypeError, self.jj.generate_job_list, ('pipe', 'prio', 'regular'))
+        self.assertRaises(TypeError, self.jj.generate_job_list, ('pipe_starter', 'prio_build', 'regular_build'))
 
     # Testing generate_job_list_string
     def test__generate_job_list_string__input_job_list__return_job_names_as_comma_separatet_string(self):
@@ -224,13 +224,13 @@ class JenkinsJobTest(unittest.TestCase):
 
     # Testing set_matrix_param
     def test__set_matrix_param__input_name_value_dict_list_and_filter_string__return_matrix_config_string(self):
-        self.jj.job_type = 'prio'
+        self.jj.job_type = 'prio_build'
         name_value_test_dict = [{'test_axis': ['test_value_1', 'test_value_2', 'test_value_3']}]
         self.jj.set_matrix_param(name_value_test_dict, 'filter')
         self.assertEqual(self.jj.params['MATRIX'], '<axes> <hudson.matrix.TextAxis> <name>test_axis</name> <values> <string>test_value_1</string> <string>test_value_2</string> <string>test_value_3</string> </values> </hudson.matrix.TextAxis> <hudson.matrix.LabelAxis> <name>label</name> <values> <string>prio_build</string> </values> </hudson.matrix.LabelAxis> </axes> <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl"> <runSequentially>false</runSequentially> </executionStrategy> <combinationFilter>filter</combinationFilter>')
 
     def test__set_matrix_param__input_name_value_dict_list_and_filter_string__return_matrix_config_string2(self):
-        self.jj.job_type = 'prio'
+        self.jj.job_type = 'prio_build'
         name_value_test_dict = [{'test_axis': ['test_value_1', 'test_value_2', 'test_value_3']}]
         self.jj.set_matrix_param(name_value_test_dict, 'filter')
         self.assertEqual(self.jj.params['MATRIX'], '<axes> <hudson.matrix.TextAxis> <name>test_axis</name> <values> <string>test_value_1</string> <string>test_value_2</string> <string>test_value_3</string> </values> </hudson.matrix.TextAxis> <hudson.matrix.LabelAxis> <name>label</name> <values> <string>prio_build</string> </values> </hudson.matrix.LabelAxis> </axes> <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl"> <runSequentially>false</runSequentially> </executionStrategy> <combinationFilter>filter</combinationFilter>')
@@ -242,7 +242,7 @@ class JenkinsJobTest(unittest.TestCase):
         self.assertEqual(self.jj.set_matrix_param([{}], 'filter'), '')
 
     def test__set_matrix_param__input_empty_name_value_dict__raise_exception2(self):
-        self.jj.job_type = 'prio'
+        self.jj.job_type = 'prio_build'
         name_value_test_dict = [{}, {'test_axis': ['test_value_1', 'test_value_2', 'test_value_3']}]
         self.jj.set_matrix_param(name_value_test_dict, 'filter')
         self.assertEqual(self.jj.params['MATRIX'], '<axes> <hudson.matrix.TextAxis> <name>test_axis</name> <values> <string>test_value_1</string> <string>test_value_2</string> <string>test_value_3</string> </values> </hudson.matrix.TextAxis> <hudson.matrix.LabelAxis> <name>label</name> <values> <string>prio_build</string> </values> </hudson.matrix.LabelAxis> </axes> <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl"> <runSequentially>false</runSequentially> </executionStrategy> <combinationFilter>filter</combinationFilter>')
@@ -255,7 +255,7 @@ class JenkinsJobTest(unittest.TestCase):
         self.assertRaises(AttributeError, self.jj.set_matrix_param, ['test_value_1', 'test_value_2', 'test_value_3'], 'filter')
 
     def test__set_matrix_param__input_empty_filter_string__return_matrix_config_string_without_filter(self):
-        self.jj.job_type = 'prio'
+        self.jj.job_type = 'prio_build'
         name_value_test_dict = [{'test_axis': ['test_value_1', 'test_value_2', 'test_value_3']}]
         self.jj.set_matrix_param(name_value_test_dict)
         self.assertTrue('combinationFilter' not in self.jj.params['MATRIX'])
@@ -322,7 +322,7 @@ class JenkinsJobTest(unittest.TestCase):
         self.assertEqual(self.jj.params['PIPELINE_TRIGGER'], '<au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger> <downstreamProjectNames>test-user__pipe_starter, test-user__prio_build, test-user__regular_build</downstreamProjectNames> </au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger>')
 
     def test__set_pipelinetrigger_param__input_job_type_list__return_pipelinetrigger_config_string2(self):
-        self.jj.set_pipelinetrigger_param(['pipe'])
+        self.jj.set_pipelinetrigger_param(['pipe_starter'])
         self.assertEqual(self.jj.params['PIPELINE_TRIGGER'], '<au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger> <downstreamProjectNames>test-user__pipe_starter</downstreamProjectNames> </au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger>')
 
     def test__set_pipelinetrigger_param__input_empty_job_type_list__return_empty_string(self):
@@ -466,12 +466,12 @@ class JenkinsJobTest(unittest.TestCase):
 
     # Testing get_shell_script
     def test__get_shell_script__result_shell_script_str(self):
-        self.jj.job_type = 'prio'
+        self.jj.job_type = 'prio_build'
         result = self.jj.get_shell_script()
         self.assertEqual(result, '#!/bin/bash -e\nnew_basetgz=${ubuntu_distro}__${arch}__${ros_distro}\nbasetgz=test-user__${new_basetgz}__${REPOSITORY}\n\nsudo rm -rf $WORKSPACE/*\nif [ -d $WORKSPACE/../aux ]; then\nsudo rm -rf $WORKSPACE/../aux\nfi\nmkdir $WORKSPACE/../aux\necho "Copying "$new_basetgz" from jenkins@%(server_name)s:~/chroot_tarballs"\nscp jenkins@%(server_name)s:~/chroot_tarballs/$new_basetgz $WORKSPACE/../aux/${basetgz}\nscp jenkins@%(server_name)s:~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig\nscp -r jenkins@%(server_name)s:~/jenkins-config/.ssh $WORKSPACE/.ssh\nls -lah $WORKSPACE\n\necho "Cloning jenkins_setup repository"\ngit clone git@github.com:fmw-jk/jenkins_config.git $WORKSPACE/jenkins_setup\nls -lah $WORKSPACE\n\ncat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM\nJOBNAME=$JOB_NAME\nROSDISTRO=$ros_distro\nREPOSITORY=$REPOSITORY\nUBUNTUDISTRO=$ubuntu_distro\nARCH=$arch\n#TODO\nCONFIG_REPO=git@github.com:fmw-jk/jenkins_config.git\nJENKINS_MASTER=%(server_name)s\nJENKINS_USER=test-user\nJOBTYPE=prio_build\nexport ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO\nexport BUILD_ID=$BUILD_ID\nDELIM\n\nls -lah $WORKSPACE\n\necho "***********ENTER CHROOT************"\necho "*********please be patient*********"\n\nsudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\n\necho "*******CLEANUP WORKSPACE*******"\necho "STORING CHROOT TARBALL ON jenkins@%(server_name)s:~/chroot_tarballs"\nscp $WORKSPACE/../aux/${basetgz} jenkins@%(server_name)s:~/chroot_tarballs/in_use/\nsudo rm -rf $WORKSPACE/../aux' % {'server_name': self.test_pipe_inst.server_name})
 
     def test__get_shell_script__result_shell_script_str2(self):
-        self.jj.job_type = 'regular'
+        self.jj.job_type = 'regular_build'
         result = self.jj.get_shell_script()
         self.assertEqual(result, '#!/bin/bash -e\n\nnew_basetgz=${ubuntu_distro}__${arch}__${ros_distro}\nbasetgz=test-user__${new_basetgz}__${repository}\n\nsudo rm -rf $WORKSPACE/*\nif [ -d $WORKSPACE/../aux ]; then\nsudo rm -rf $WORKSPACE/../aux\nfi\nmkdir $WORKSPACE/../aux\n\necho "Copying "$new_basetgz" from jenkins@%(server_name)s:~/chroot_tarballs"\nscp jenkins@%(server_name)s:~/chroot_tarballs/$new_basetgz $WORKSPACE/../aux/${basetgz}\nscp jenkins@%(server_name)s:~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig\nscp -r jenkins@%(server_name)s:~/jenkins-config/.ssh $WORKSPACE/.ssh\nls -lah $WORKSPACE\n\necho "Cloning jenkins_setup repository"\ngit clone git@github.com:fmw-jk/jenkins_config.git $WORKSPACE/jenkins_setup\nls -lah $WORKSPACE\n\ncat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM\nJOBNAME=$JOB_NAME\nROSDISTRO=$ros_distro\nREPOSITORY=$REPOSITORY\nUBUNTUDISTRO=$ubuntu_distro\nARCH=$arch\n#TODO\nCONFIG_REPO=git@github.com:fmw-jk/jenkins_config.git\nJENKINS_MASTER=%(server_name)s\nJENKINS_USER=test-user\nJOBTYPE=regular_build\nexport ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO\nexport BUILD_ID=$BUILD_ID\nDELIM\n\nls -lah $WORKSPACE\n\necho "***********ENTER CHROOT************"\necho "*********please be patient*********"\nsudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\n\necho "*******CLEANUP WORKSPACE*******"\nsudo rm -rf $WORKSPACE/../aux' % {"server_name": self.test_pipe_inst.server_name})
 
@@ -488,7 +488,7 @@ class PipeStarterJobTest(unittest.TestCase):
         self.test_pipe_inst = cob_pipe.CobPipe()
         self.test_pipe_inst.load_config_from_url('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
 
-        self.job_type_test_list = ['pipe', 'prio', 'regular']
+        self.job_type_test_list = ['pipe_starter', 'prio_build', 'regular_build']
 
         with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
             info = yaml.load(f)
@@ -520,7 +520,7 @@ class RegularBuildJobTest(unittest.TestCase):
         self.test_pipe_inst = cob_pipe.CobPipe()
         self.test_pipe_inst.load_config_from_url('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
 
-        self.job_type_test_list = ['pipe', 'prio', 'regular']
+        self.job_type_test_list = ['pipe_starter', 'prio_build', 'regular_build']
 
         with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
             info = yaml.load(f)
