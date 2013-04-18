@@ -1,4 +1,4 @@
-'prio': '#!/bin/bash -e
+'prio_build': '#!/bin/bash -e
 
 new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
 
@@ -28,7 +28,7 @@ ls -lah $WORKSPACE
 
 echo "Cloning jenkins_setup repository"
 
-git clone git://github.com/ipa320/jenkins_setup.git $WORKSPACE/jenkins_setup
+git clone @(CONFIGREPO) $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
@@ -46,6 +46,8 @@ UBUNTUDISTRO=$ubuntu_distro
 ARCH=$arch
 
 #TODO
+
+CONFIG_REPO=@(CONFIGREPO)
 
 JENKINS_MASTER=@(SERVERNAME)
 
@@ -79,7 +81,7 @@ scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use/
 
 sudo rm -rf $WORKSPACE/../aux'
 
-'normal': '#!/bin/bash -e
+'regular_build': '#!/bin/bash -e
 
 
 new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
@@ -111,7 +113,7 @@ ls -lah $WORKSPACE
 
 echo "Cloning jenkins_setup repository"
 
-git clone git://github.com/ipa320/jenkins_setup.git $WORKSPACE/jenkins_setup
+git clone @(CONFIGREPO) $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
@@ -129,6 +131,8 @@ UBUNTUDISTRO=$ubuntu_distro
 ARCH=$arch
 
 #TODO
+
+CONFIG_REPO=@(CONFIGREPO)
 
 JENKINS_MASTER=@(SERVERNAME)
 
@@ -188,7 +192,7 @@ ls -lah $WORKSPACE
 
 echo "Cloning jenkins_setup repository"
 
-git clone git://github.com/ipa320/jenkins_setup.git $WORKSPACE/jenkins_setup
+git clone @(CONFIGREPO) $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
@@ -206,6 +210,8 @@ UBUNTUDISTRO=$ubuntu_distro
 ARCH=$arch
 
 #TODO
+
+CONFIG_REPO=@(CONFIGREPO)
 
 JENKINS_MASTER=@(SERVERNAME)
 
@@ -266,7 +272,7 @@ ls -lah $WORKSPACE
 
 echo "Cloning jenkins_setup repository"
 
-git clone git://github.com/ipa320/jenkins_setup.git $WORKSPACE/jenkins_setup
+git clone @(CONFIGREPO) $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
@@ -284,6 +290,8 @@ UBUNTUDISTRO=$ubuntu_distro
 ARCH=$arch
 
 #TODO
+
+CONFIG_REPO=@(CONFIGREPO)
 
 JENKINS_MASTER=@(SERVERNAME)
 
