@@ -63,7 +63,7 @@ def main():
         jenkins_instance = jenkins.Jenkins(jenkins_conf['masterURL'], jenkins_conf['login'],
                                            jenkins_conf['password'])
 
-    elif options.master_url and options.jenkins_login and options.jenkins_pw and tarball_location:
+    elif options.master_url and options.jenkins_login and options.jenkins_pw and options.tarball_location:
         master_name = get_master_name(options.master_url)
         tarball_location = options.tarballLocation
 
