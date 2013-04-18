@@ -505,7 +505,7 @@ class PipeStarterGeneralJob(JenkinsJob):
     """
     Object representation of a general Pipe Starter Job
     """
-    def __init__(self, jenkins_instance, pipeline_config, repo_list, manual_jobs_list):
+    def __init__(self, jenkins_instance, pipeline_config, repo_list):
         """
         :param jenkins_instance: object of Jenkins server
         :param pipeline_config: config dict, ``dict``
@@ -518,7 +518,6 @@ class PipeStarterGeneralJob(JenkinsJob):
         self.job_name = self.generate_job_name(self.job_type, suffix='general')
 
         self.repo_list = repo_list
-        self.manual_jobs_list = manual_jobs_list
 
     def set_job_type_params(self):
         """
@@ -527,9 +526,6 @@ class PipeStarterGeneralJob(JenkinsJob):
 
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
-
-        # set groovy postbuild script
-        #self.set_groovypostbuild_param('disable', self.manual_jobs_list, 2)
 
         # set parameterized trigger
         prio_triggers = []
@@ -544,7 +540,7 @@ class PipeStarterJob(PipeStarterGeneralJob):
     """
     Object representation of Pipe Starter Job
     """
-    def __init__(self, jenkins_instance, pipeline_config, repo_list, poll, manual_jobs_list):
+    def __init__(self, jenkins_instance, pipeline_config, repo_list, poll):
         """
         :param jenkins_instance: object of Jenkins server
         :param pipeline_config: config dict, ``dict``
@@ -552,7 +548,7 @@ class PipeStarterJob(PipeStarterGeneralJob):
         :param poll: name of repository to monitor for changes, ``str``
         """
 
-        super(PipeStarterJob, self).__init__(jenkins_instance, pipeline_config, repo_list, manual_jobs_list)
+        super(PipeStarterJob, self).__init__(jenkins_instance, pipeline_config, repo_list)
 
         self.job_type = 'pipe_starter'
         self.job_name = self.generate_job_name(self.job_type, suffix=poll)

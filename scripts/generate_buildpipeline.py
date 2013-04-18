@@ -102,13 +102,13 @@ def main():
     for poll, starts_repo_list in polls_dict.iteritems():
         if poll in pipe_repo_list:
             pipe_repo_list.remove(poll)
-        job_creator_instance = jenkins_job_creator.PipeStarterJob(jenkins_instance, plc_instance, starts_repo_list, poll, ['automatic_hw_test', 'interactive_hw_test'])  # TODO
+        job_creator_instance = jenkins_job_creator.PipeStarterJob(jenkins_instance, plc_instance, starts_repo_list, poll)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
             modified_jobs.append(job_creator_instance.create_job())
     for repo in pipe_repo_list:
-        job_creator_instance = jenkins_job_creator.PipeStarterJob(jenkins_instance, plc_instance, [repo], repo, ['automatic_hw_test', 'interactive_hw_test'])  # TODO
+        job_creator_instance = jenkins_job_creator.PipeStarterJob(jenkins_instance, plc_instance, [repo], repo)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -118,8 +118,7 @@ def main():
     # this pipe starter job won't poll any repository; it has to be started
     # manually. It triggers the priority build job with all defined
     # repositories as parameters
-    job_creator_instance = jenkins_job_creator.PipeStarterGeneralJob(jenkins_instance, plc_instance,
-                                                                     plc_instance.repositories.keys(), ['automatic_hw_test', 'interactive_hw_test'])  # TODO
+    job_creator_instance = jenkins_job_creator.PipeStarterGeneralJob(jenkins_instance, plc_instance, plc_instance.repositories.keys())
     if options.delete:
         modified_jobs.append(job_creator_instance.delete_job())
     else:
