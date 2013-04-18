@@ -2,7 +2,6 @@
 
 import datetime
 import socket
-import os
 import pkg_resources
 import yaml
 import re
@@ -23,9 +22,6 @@ class JenkinsJob(object):
         self.job_config_params = pkg_resources.resource_string('jenkins_setup', 'templates/job_config_params.yaml')
         self.job_config_params = yaml.load(self.job_config_params)
         self.job_config = pkg_resources.resource_string('jenkins_setup', 'templates/job_config.xml')
-
-        with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
-            self.network_config = yaml.load(f)
 
         self.params = {}
 
@@ -480,8 +476,7 @@ class JenkinsJob(object):
         else:
             shell_script = shell_temp[self.job_type]
         shell_script = shell_script.replace('@(SERVERNAME)', self.pipe_inst.server_name)
-        shell_script = shell_script.replace('@(STORAGE)', 'jenkins@%s:%s' % (self.network_config['tarball_host'],
-                                                                             self.network_config['tarball_folderpath']))
+        shell_script = shell_script.replace('@(STORAGE)', self.tarball_location)
         shell_script = shell_script.replace('@(USERNAME)', self.pipe_inst.user_name)
         shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.job_type)
         shell_script = shell_script.replace('@(CONFIGREPO)', self.pipe_inst.config_repo)
@@ -590,7 +585,7 @@ class BuildJob(JenkinsJob):
     """
     Class for build jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
         """
         Creates a build job instance
 
@@ -601,6 +596,8 @@ class BuildJob(JenkinsJob):
         """
 
         super(BuildJob, self).__init__(jenkins_instance, pipeline_config)
+
+        self.tarball_location = tarball_location
 
     def set_job_type_params(self, matrix_filter=None):
         """
@@ -621,7 +618,7 @@ class PriorityBuildJob(BuildJob):
     """
     Class for priority build jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
         Creates a priority build job instance
 
@@ -631,7 +628,7 @@ class PriorityBuildJob(BuildJob):
         @type  pipeline_config: dict
         """
 
-        super(PriorityBuildJob, self).__init__(jenkins_instance, pipeline_config)
+        super(PriorityBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
 
         self.repo_list = execute_repo_list
 
@@ -664,7 +661,7 @@ class RegularBuildJob(BuildJob):
     """
     Class for regular build jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
         """
         Creates a regular  build job instance
 
@@ -674,7 +671,7 @@ class RegularBuildJob(BuildJob):
         @type  pipeline_config: dict
         """
 
-        super(RegularBuildJob, self).__init__(jenkins_instance, pipeline_config)
+        super(RegularBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
 
         self.job_type = 'regular_build'
         self.job_name = self.generate_job_name(self.job_type)
@@ -716,7 +713,7 @@ class DownstreamBuildJob(BuildJob):
     """
     Class for downstream build job
     """
-    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
         Creates a downstream build job instance
 
@@ -728,7 +725,7 @@ class DownstreamBuildJob(BuildJob):
         @typo  repo_list: list
         """
 
-        super(DownstreamBuildJob, self).__init__(jenkins_instance, pipeline_config)
+        super(DownstreamBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
 
         self.repo_list = execute_repo_list
 
@@ -761,7 +758,7 @@ class TestJob(JenkinsJob):
     """
     Class for test jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
         Creates a test job instance
 
@@ -801,7 +798,7 @@ class NongraphicsTestJob(TestJob):
     """
     Class for nongraphics test job
     """
-    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
         Creates a nongraphics test job instance
 
@@ -811,7 +808,7 @@ class NongraphicsTestJob(TestJob):
         @type  pipeline_config: dict
         """
 
-        super(NongraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
+        super(NongraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
 
         self.job_type = 'nongraphics_test'
         self.job_name = self.generate_job_name(self.job_type)
@@ -837,7 +834,7 @@ class GraphicsTestJob(TestJob):
     """
     Class for graphics test job
     """
-    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
         Creates a graphics test job instance
 
@@ -847,7 +844,7 @@ class GraphicsTestJob(TestJob):
         @type  pipeline_config: dict
         """
 
-        super(GraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
+        super(GraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
 
         self.job_type = 'graphics_test'
         self.job_name = self.generate_job_name(self.job_type)
@@ -1004,7 +1001,7 @@ class ReleaseJob(JenkinsJob):
     """
     Class for release jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
         """
         Creates a release job
 
@@ -1033,7 +1030,7 @@ class CleanUpJob(JenkinsJob):
     """
     Class for clean up jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
         """
         Creates a clean up job
 
