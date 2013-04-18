@@ -65,7 +65,7 @@ def main():
 
     elif options.master_url and options.jenkins_login and options.jenkins_pw and options.tarball_location:
         master_name = get_master_name(options.master_url)
-        tarball_location = options.tarballLocation
+        tarball_location = options.tarball_location
 
         # create jenkins instance
         jenkins_instance = jenkins.Jenkins(options.master_url, options.jenkins_login, options.jenkins_pw)
