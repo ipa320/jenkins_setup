@@ -878,6 +878,9 @@ class HardwareBuildJob(JenkinsJob):
 
         super(HardwareBuildJob, self).__init__(jenkins_instance, pipeline_config)
 
+        self.job_type = 'hardware_build'
+        self.job_name = self.generate_job_name(self.job_type)
+
     def set_job_type_params(self):
         """
         Sets hardware build job specific job configuration parameters
