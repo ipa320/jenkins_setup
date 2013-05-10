@@ -15,11 +15,11 @@ def main():
     (options, args) = parser.parse_args()
 
     if len(args) < 5:
-        print "Usage: %s config_repo server_name user_name ros_distro build_repo" % sys.argv[0]
+        print "Usage: %s pipeline_repos_owner server_name user_name ros_distro build_repo" % sys.argv[0]
         raise common.BuildException("Wrong arguments for build script")
 
     # get arguments
-    config_repo = args[0]
+    pipeline_repos_owner = args[0]
     server_name = args[1]
     user_name = args[2]
     ros_distro = args[3]
@@ -58,7 +58,7 @@ def main():
 
     # cob_pipe object
     cp_instance = cob_pipe.CobPipe()
-    cp_instance.load_config_from_url(config_repo, server_name, user_name)
+    cp_instance.load_config_from_url(pipeline_repos_owner, server_name, user_name)
     pipe_repos = cp_instance.repositories
     common.output("Pipeline configuration successfully loaded", blankline='b')
 

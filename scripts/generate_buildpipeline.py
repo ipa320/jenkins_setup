@@ -26,7 +26,7 @@ def main():
     """
 
     # parse options
-    usage = "Usage: %prog [masterURL login password tarballLocation | jenkinsConfig] configRepo username"
+    usage = "Usage: %prog [masterURL login password tarballLocation | jenkinsConfig] pipelineReposOwner username"
     parser = optparse.OptionParser(usage)
     parser.add_option("-m", "--masterURL", action="store", type="string", dest="master_url",
                       metavar="URL", help="URL of Jenkins server/master")
@@ -39,8 +39,8 @@ def main():
     parser.add_option("--jenkinsConfig", action="store", type="string", dest="jenkinsConfigFile",
                       metavar="FILE", help="YAML file that replaces the Jenkins config options and contains values for:\
                                             masterURL, login, password, tarballLocation")
-    parser.add_option("-c", "--configRepo", action="store", type="string", dest="config_repo_address",
-                      metavar="GITHUB ADDRESS", help="Github address of configuration repository")
+    parser.add_option("-o", "--pipelineReposOwner", action="store", type="string", dest="pipeline_repos_owner",
+                      metavar="PIPELINE_REPOS_OWNER", help="Owner of the GitHub repositories 'jenkins_setup' and 'jenkins_config'")
     parser.add_option("-u", "--username", action="store", type="string", dest="username",
                       metavar="USERNAME", help="Name of user to generate pipeline for")
     parser.add_option("-d", "--delete", action="store_true", default=False,
@@ -48,7 +48,7 @@ def main():
     (options, args) = parser.parse_args()
 
     if len(args) != 0:
-        print "Usage: %s [masterURL login password tarballLocation | jenkinsConfig] configRepo username" % (sys.argv[0])
+        print "Usage: %s [masterURL login password tarballLocation | jenkinsConfig] pipelineReposOwner username" % (sys.argv[0])
         sys.exit()
 
     if options.jenkinsConfigFile:
@@ -71,11 +71,11 @@ def main():
         jenkins_instance = jenkins.Jenkins(options.master_url, options.jenkins_login, options.jenkins_pw)
 
     else:
-        print "Usage: %s [masterURL login password tarballLocation | jenkinsConfig] configRepo username" % (sys.argv[0])
+        print "Usage: %s [masterURL login password tarballLocation | jenkinsConfig] pipelineReposOwner username" % (sys.argv[0])
         sys.exit()
 
-    if not options.config_repo_address or not options.username:
-        print "Usage: %s [masterURL login password tarballLocation | jenkinsConfig] configRepo username" % (sys.argv[0])
+    if not options.pipeline_repos_owner or not options.username:
+        print "Usage: %s [masterURL login password tarballLocation | jenkinsConfig] pipelineReposOwner username" % (sys.argv[0])
         sys.exit()
 
     # get all existent jobs for user
@@ -88,7 +88,7 @@ def main():
 
     # get pipeline configs object from url
     plc_instance = cob_pipe.CobPipe()
-    plc_instance.load_config_from_url(options.config_repo_address, master_name, options.username)
+    plc_instance.load_config_from_url(options.pipeline_repos_owner, master_name, options.username)
 
     # get jobs to create
     job_type_dict = plc_instance.get_jobs_to_create()

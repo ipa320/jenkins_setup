@@ -28,7 +28,7 @@ ls -lah $WORKSPACE
 
 echo "Cloning jenkins_setup repository"
 
-git clone @(CONFIGREPO) $WORKSPACE/jenkins_setup
+git clone git@github.com:@(PIPELINEREPOSOWNER)/jenkins_setup.git $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
@@ -47,7 +47,7 @@ ARCH=$arch
 
 #TODO
 
-CONFIG_REPO=@(CONFIGREPO)
+PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
 
 JENKINS_MASTER=@(SERVERNAME)
 
@@ -113,7 +113,7 @@ ls -lah $WORKSPACE
 
 echo "Cloning jenkins_setup repository"
 
-git clone @(CONFIGREPO) $WORKSPACE/jenkins_setup
+git clone git@github.com:@(PIPELINEREPOSOWNER)/jenkins_setup.git $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
@@ -132,7 +132,7 @@ ARCH=$arch
 
 #TODO
 
-CONFIG_REPO=@(CONFIGREPO)
+PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
 
 JENKINS_MASTER=@(SERVERNAME)
 
@@ -192,7 +192,7 @@ ls -lah $WORKSPACE
 
 echo "Cloning jenkins_setup repository"
 
-git clone @(CONFIGREPO) $WORKSPACE/jenkins_setup
+git clone git@github.com:@(PIPELINEREPOSOWNER)/jenkins_setup.git $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
@@ -211,7 +211,7 @@ ARCH=$arch
 
 #TODO
 
-CONFIG_REPO=@(CONFIGREPO)
+PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
 
 JENKINS_MASTER=@(SERVERNAME)
 
@@ -272,7 +272,7 @@ ls -lah $WORKSPACE
 
 echo "Cloning jenkins_setup repository"
 
-git clone @(CONFIGREPO) $WORKSPACE/jenkins_setup
+git clone git@github.com:@(PIPELINEREPOSOWNER)/jenkins_setup.git $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
@@ -291,7 +291,7 @@ ARCH=$arch
 
 #TODO
 
-CONFIG_REPO=@(CONFIGREPO)
+PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
 
 JENKINS_MASTER=@(SERVERNAME)
 

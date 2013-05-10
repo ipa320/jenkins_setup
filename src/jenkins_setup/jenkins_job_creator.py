@@ -479,7 +479,7 @@ class JenkinsJob(object):
         shell_script = shell_script.replace('@(STORAGE)', self.tarball_location)
         shell_script = shell_script.replace('@(USERNAME)', self.pipe_inst.user_name)
         shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.job_type)
-        shell_script = shell_script.replace('@(CONFIGREPO)', self.pipe_inst.config_repo)
+        shell_script = shell_script.replace('@(PIPELINEREPOSOWNER)', self.pipe_inst.pipeline_repos_owner)
 
         return shell_script
 
