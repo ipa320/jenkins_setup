@@ -33,7 +33,7 @@ def main():
     print "\nTesting on ros distro:  %s" % ros_distro
     print "Testing repository: %s" % build_repo
     if build_repo != build_identifier:
-        print "       with suffix: %s" % '__'.join(build_identifier)
+        print "       with suffix: %s" % build_identifier.split('__')[1]
     print "\n", 50 * 'X'
 
     # update sourcelist and upgrade installed basic packages
@@ -73,11 +73,10 @@ def main():
     # download build_repo from source
     print "Creating rosinstall file for repository %s" % build_repo
     rosinstall = ""
-    if build_repo in pipe_repos:
+    if build_identifier in pipe_repos:
         rosinstall += pipe_repos[build_repo].get_rosinstall()
     else:
-        err_msg = "Pipeline was triggered by repository %s which is not \
-                    in pipeline config!" % build_repo
+        err_msg = "Pipeline was triggered by repository %s which is not in pipeline config!" % build_identifier
         raise common.BuildException(err_msg)
 
     print "Rosinstall file for repository: \n %s" % rosinstall
@@ -134,15 +133,15 @@ def main():
     rosinstall = ''
     fulfilled_deps = []
     for dep in repo_build_dependencies:
-        if dep in pipe_repos[build_repo].dependencies:
+        if dep in pipe_repos[build_identifier].dependencies:
             print "Install user-defined build dependency %s from source" % dep
-            rosinstall += pipe_repos[build_repo].dependencies[dep].get_rosinstall()
+            rosinstall += pipe_repos[build_identifier].dependencies[dep].get_rosinstall()
             fulfilled_deps.append(dep)
 
     # check if all user-defined/customized dependencies are satisfied
-    if sorted(fulfilled_deps) != sorted(pipe_repos[build_repo].dependencies):
+    if sorted(fulfilled_deps) != sorted(pipe_repos[build_identifier].dependencies):
         print "Not all user-defined build dependencies are fulfilled"
-        print "User-defined build dependencies:\n - %s" % '\n - '.join(pipe_repos[build_repo].dependencies)
+        print "User-defined build dependencies:\n - %s" % '\n - '.join(pipe_repos[build_identifier].dependencies)
         print "Fulfilled dependencies:\n - %s" % '\n - '.join(fulfilled_deps)
         raise common.BuildException("Not all user-defined build dependencies are fulfilled")
 
