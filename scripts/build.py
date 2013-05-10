@@ -74,7 +74,7 @@ def main():
     print "Creating rosinstall file for repository %s" % build_repo
     rosinstall = ""
     if build_identifier in pipe_repos:
-        rosinstall += pipe_repos[build_repo].get_rosinstall()
+        rosinstall += pipe_repos[build_identifier].get_rosinstall()
     else:
         err_msg = "Pipeline was triggered by repository %s which is not in pipeline config!" % build_identifier
         raise common.BuildException(err_msg)
