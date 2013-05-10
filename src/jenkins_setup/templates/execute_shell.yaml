@@ -2,7 +2,7 @@
 
 new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
 
-basetgz=@(USERNAME)__${new_basetgz}__${REPOSITORY}
+basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
 
 sudo rm -rf $WORKSPACE/*
@@ -39,7 +39,7 @@ JOBNAME=$JOB_NAME
 
 ROSDISTRO=$ros_distro
 
-REPOSITORY=$REPOSITORY
+REPOSITORY=$repository
 
 UBUNTUDISTRO=$ubuntu_distro
 
@@ -124,7 +124,7 @@ JOBNAME=$JOB_NAME
 
 ROSDISTRO=$ros_distro
 
-REPOSITORY=$REPOSITORY
+REPOSITORY=$repository
 
 UBUNTUDISTRO=$ubuntu_distro
 
@@ -165,7 +165,7 @@ sudo rm -rf $WORKSPACE/../aux'
 
 new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
 
-basetgz=@(USERNAME)__${new_basetgz}__${REPOSITORY}
+basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
 
 sudo rm -rf $WORKSPACE/*
@@ -203,7 +203,7 @@ JOBNAME=$JOB_NAME
 
 ROSDISTRO=$ros_distro
 
-REPOSITORY=$REPOSITORY
+REPOSITORY=$repository
 
 UBUNTUDISTRO=$ubuntu_distro
 
@@ -245,7 +245,7 @@ sudo rm -rf $WORKSPACE/../aux'
 
 new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
 
-basetgz=@(USERNAME)__${new_basetgz}__${REPOSITORY}
+basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
 
 sudo rm -rf $WORKSPACE/*
@@ -283,7 +283,7 @@ JOBNAME=$JOB_NAME
 
 ROSDISTRO=$ros_distro
 
-REPOSITORY=$REPOSITORY
+REPOSITORY=$repository
 
 UBUNTUDISTRO=$ubuntu_distro
 
