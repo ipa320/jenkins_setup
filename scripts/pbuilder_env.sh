@@ -30,6 +30,7 @@ echo "============================================================"
 echo "==== Begin" $SCRIPT "script.    Ignore the output above ===="
 echo "============================================================"
 
+echo $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
 $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
 
 echo "============================================================"
