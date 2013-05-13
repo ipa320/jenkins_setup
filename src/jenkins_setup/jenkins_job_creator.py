@@ -111,6 +111,7 @@ class JenkinsJob(object):
         self.params['PARAMETERIZED_TRIGGER'] = ''
         self.params['JUNIT_TESTRESULTS'] = ''
         self.params['MAILER'] = ''
+        self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
     ###########################################################################
     # helper methods - parameter generation

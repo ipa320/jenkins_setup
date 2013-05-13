@@ -25,6 +25,7 @@
   <concurrentBuild>true</concurrentBuild>
   @(SHELL)
   <publishers>
+    @(POSTBUILD_TASK)
     @(GROOVY_POSTBUILD)
     @(PIPELINE_TRIGGER)
     @(JOIN_TRIGGER)
