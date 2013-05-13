@@ -16,6 +16,7 @@ env
 echo "Set up git and ssh"
 cp $WORKSPACE/.gitconfig ~/.gitconfig
 cp -a $WORKSPACE/.ssh /root
+ls -la /root/
 chown -R root.root /root/.ssh
 
 #echo "Install python-catkin-pkg python-rosdistro rosinstall"
