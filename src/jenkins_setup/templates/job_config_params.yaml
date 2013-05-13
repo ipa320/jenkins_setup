@@ -51,10 +51,7 @@
 
 'postbuildtrigger': '<hudson.tasks.BuildTrigger> <childProjects>@(CHILD_PROJECTS)</childProjects> <threshold> <name>@(THRESHOLD)</name> </threshold> </hudson.tasks.BuildTrigger>'
 
-'postbuildtask': '<hudson.plugins.postbuildtask.PostbuildTask> <tasks> <hudson.plugins.postbuildtask.TaskProperties> <logTexts> <hudson.plugins.postbuildtask.LogProperties> <logText>Building remotely on</logText> <operator>AND</operator> </hudson.plugins.postbuildtask.LogProperties> </logTexts> <EscalateStatus>false</EscalateStatus> <RunIfJobSuccessful>false</RunIfJobSuccessful> <script>#!/bin/bash&#xd;
-if [ -d $WORKSPACE/../aux ]; then&#xd;
-sudo rm -rf $WORKSPACE/../aux&#xd;
-fi</script> </hudson.plugins.postbuildtask.TaskProperties> </tasks> </hudson.plugins.postbuildtask.PostbuildTask>'
+'postbuildtask': '<hudson.plugins.postbuildtask.PostbuildTask> <tasks> <hudson.plugins.postbuildtask.TaskProperties> <logTexts> <hudson.plugins.postbuildtask.LogProperties> <logText>Building remotely on</logText> <operator>AND</operator> </hudson.plugins.postbuildtask.LogProperties> </logTexts> <EscalateStatus>false</EscalateStatus> <RunIfJobSuccessful>false</RunIfJobSuccessful> <script>#!/bin/bash&#xd;if [ -d $WORKSPACE/../aux ]; then&#xd;sudo rm -rf $WORKSPACE/../aux&#xd;fi</script> </hudson.plugins.postbuildtask.TaskProperties> </tasks> </hudson.plugins.postbuildtask.PostbuildTask>'
 
 'pipelinetrigger': '<au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger> <downstreamProjectNames>@(PIPELINETRIGGER_PROJECT)</downstreamProjectNames> </au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger>'
 
