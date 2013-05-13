@@ -39,19 +39,17 @@ class JenkinsJob(object):
         if self.jenkins_instance.job_exists(self.job_name):
             try:
                 self.jenkins_instance.reconfig_job(self.job_name, self.job_config)
-                print "Reconfigured job %s" % self.job_name
-                return 'reconfigured'
+                return "Reconfigured job %s" % self.job_name
             except Exception as ex:
                 print ex
-                return 'reconfiguration failed: %s' % ex
+                return 'Reconfiguration of %s failed: %s' % (self.job_name, ex)
         else:
             try:
                 self.jenkins_instance.create_job(self.job_name, self.job_config)
-                print "Created job %s" % self.job_name
-                return 'created'
+                return "Created job %s" % self.job_name
             except Exception as ex:
                 print ex
-                return 'creation failed: %s' % ex
+                return 'Creation of %s failed: %s' % (self.job_name, ex)
 
     def create_job(self):
         """
