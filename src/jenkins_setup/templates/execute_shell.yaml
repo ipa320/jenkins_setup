@@ -21,7 +21,7 @@ scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
 scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
 
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
+scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
 
 ls -lah $WORKSPACE
 
@@ -106,7 +106,7 @@ scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
 scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
 
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
+scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
 
 ls -lah $WORKSPACE
 
@@ -185,7 +185,7 @@ scp @(STORAGE)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
 
 scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
 
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
+scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
 
 ls -lah $WORKSPACE
 
@@ -265,7 +265,7 @@ scp @(STORAGE)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
 
 scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
 
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
+scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
 
 ls -lah $WORKSPACE
 
