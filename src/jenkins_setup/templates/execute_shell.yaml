@@ -77,9 +77,7 @@ echo "*******CLEANUP WORKSPACE*******"
 
 echo "STORING CHROOT TARBALL ON @(STORAGE)"
 
-scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use/
-
-sudo rm -rf $WORKSPACE/../aux'
+scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use/'
 
 'regular_build': '#!/bin/bash -e
 
@@ -154,12 +152,7 @@ echo "***********ENTER CHROOT************"
 
 echo "*********please be patient*********"
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
-
-
-echo "*******CLEANUP WORKSPACE*******"
-
-sudo rm -rf $WORKSPACE/../aux'
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE'
 
 'downstream_build': '#!/bin/bash -e
 
@@ -234,12 +227,7 @@ echo "***********ENTER CHROOT************"
 echo "*********please be patient*********"
 
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
-
-
-echo "*******CLEANUP WORKSPACE*******"
-
-sudo rm -rf $WORKSPACE/../aux'
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE'
 
 'test': '#!/bin/bash -e
 
@@ -314,12 +302,7 @@ echo "***********ENTER CHROOT************"
 echo "*********please be patient*********"
 
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
-
-
-echo "*******CLEANUP WORKSPACE*******"
-
-sudo rm -rf $WORKSPACE/../aux'
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE'
 
 'nongraphics_test': '#!/bin/bash -e'
 
