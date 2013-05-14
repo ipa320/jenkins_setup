@@ -63,7 +63,7 @@ def main():
     # set up ssh object
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(tarball_host, tarball_host_username)
+    ssh.connect(tarball_host, username=tarball_host_username)
 
     print "\nGet existent chroot tarballs"
     existent_tarballs = get_existent_tarballs(ssh, tarball_dir)
