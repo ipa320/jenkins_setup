@@ -67,7 +67,7 @@ def main():
     if tarball_dir.startswith('~/'):
         tarball_dir = tarball_dir.replace('~/', '')
     if not tarball_dir.startswith('/'):
-        tarball_dir = get_home_folder(ssh) + tarball_dir
+        tarball_dir = os.path.join(get_home_folder(ssh), tarball_dir)
 
     print "\nGet existent chroot tarballs"
     existent_tarballs = get_existent_tarballs(ssh, tarball_dir)
@@ -216,7 +216,6 @@ def process_extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend
 
 
 def put_tarball(ssh, tar_name, from_location, to_location):
-    print from_location, to_location
     print "Copying %s to %s" % (tar_name, ssh.get_host_keys().keys()[0])
     try:
         ftp = ssh.open_sftp()
