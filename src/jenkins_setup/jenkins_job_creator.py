@@ -109,7 +109,7 @@ class JenkinsJob(object):
         self.params['PARAMETERIZED_TRIGGER'] = ''
         self.params['JUNIT_TESTRESULTS'] = ''
         self.params['MAILER'] = ''
-        self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
+        self.params['POSTBUILD_TASK'] = ''
 
     ###########################################################################
     # helper methods - parameter generation
@@ -525,7 +525,6 @@ class PipeStarterGeneralJob(JenkinsJob):
 
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
-        self.params['POSTBUILD_TASK'] = ''
 
         # set parameterized trigger
         prio_triggers = []
@@ -601,6 +600,7 @@ class BuildJob(JenkinsJob):
         """
 
         self.params['NODE_LABEL'] = 'master'
+        self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
         self.set_mailer_param()
         self.set_junit_testresults_param()
@@ -779,6 +779,7 @@ class TestJob(JenkinsJob):
         """
 
         self.params['NODE_LABEL'] = 'master'
+        self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
         self.set_mailer_param()
         #self.set_junit_testresults_param()  TODO
