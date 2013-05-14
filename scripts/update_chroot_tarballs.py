@@ -216,6 +216,7 @@ def process_extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend
 
 
 def put_tarball(ssh, tar_name, from_location, to_location):
+    print from_location, to_location
     print "Copying %s to %s" % (tar_name, ssh.get_host_keys().keys()[0])
     try:
         ftp = ssh.open_sftp()
