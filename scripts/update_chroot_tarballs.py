@@ -34,8 +34,6 @@ def main():
     tarball_host = tarball_location_ssh_address.split(':')[0].split('@')[1]
     tarball_host_username = tarball_location_ssh_address.split('@')[0]
     tarball_dir = tarball_location_ssh_address.split(':')[1]
-    if not tarball_dir.startswith('/'):
-        tarball_dir = '~/' + tarball_dir
 
     try:
         f = urllib2.urlopen(target_platforms_url)
@@ -65,6 +63,12 @@ def main():
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(tarball_host, username=tarball_host_username)
 
+    # get home folder
+    if tarball_dir.startswith('~/'):
+        tarball_dir = tarball_dir.replace('~/', '')
+    if not tarball_dir.startswith('/'):
+        tarball_dir = get_home_folder(ssh) + tarball_dir
+
     print "\nGet existent chroot tarballs"
     existent_tarballs = get_existent_tarballs(ssh, tarball_dir)
     for tar in existent_tarballs:
@@ -81,8 +85,7 @@ def main():
     print "\nvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
     print "Set up basic chroot %s" % basic_tarball
     result = process_basic_tarball(ssh, basic_tarball, os.getenv("WORKSPACE"),
-                                   tarball_dir,
-                                   extended_tarballs, existent_tarballs)
+                                   tarball_dir, extended_tarballs, existent_tarballs)
     if result != []:
         errors += result
 
@@ -238,6 +241,11 @@ def get_tarball(ssh, tar_name, from_location, to_location):
     finally:
         ftp.close()
     print "Copied successfully %s from %s" % (tar_name, ssh.get_host_keys().keys()[0])
+
+
+def get_home_folder(ssh):
+    stdin, stdout, stderr = ssh.exec_command("pwd")
+    return stdout.readline().replace('\n', '')
 
 
 def get_existent_tarballs(ssh, path):
