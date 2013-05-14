@@ -48,7 +48,7 @@ def main():
     supported_ubuntu_distros = []
     for ros_distro_dict in platforms:
         for ros_distro, ubuntu_distro_list in ros_distro_dict.iteritems():
-            if ros_distro is not "backports":
+            if ros_distro != "backports":
                 for supported in ubuntu_distro_list:
                     supported_ubuntu_distros.append(supported)
     if ubuntu_distro not in supported_ubuntu_distros:
@@ -276,7 +276,6 @@ def get_tarball_names(platforms, ubuntu_distro, arch):
     extended_tarballs = []
     for ros_distro_dict in platforms:
         for ros_distro, ubuntu_distro_list in ros_distro_dict.iteritems():
-            print ros_distro
             if ubuntu_distro in ubuntu_distro_list and ros_distro != "backports":
                 extended_tarballs.append('__'.join([ubuntu_distro, arch,
                                                     ros_distro]))
