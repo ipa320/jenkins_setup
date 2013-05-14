@@ -79,7 +79,7 @@ def main():
     basic_tarball, extended_tarballs = get_tarball_names(platforms, ubuntu_distro, arch)
     print "Basic tarball:"
     print " ", basic_tarball
-    print "Extended tarballs: \n%s" % '\n '.join(extended_tarballs)
+    print "Extended tarballs: \n %s" % '\n '.join(extended_tarballs)
 
     sys.stdout.flush()
 
@@ -276,7 +276,8 @@ def get_tarball_names(platforms, ubuntu_distro, arch):
     extended_tarballs = []
     for ros_distro_dict in platforms:
         for ros_distro, ubuntu_distro_list in ros_distro_dict.iteritems():
-            if ubuntu_distro in ubuntu_distro_list and ros_distro is not "backports":
+            print ros_distro
+            if ubuntu_distro in ubuntu_distro_list and ros_distro != "backports":
                 extended_tarballs.append('__'.join([ubuntu_distro, arch,
                                                     ros_distro]))
     return basic_tarball, sorted(extended_tarballs)
