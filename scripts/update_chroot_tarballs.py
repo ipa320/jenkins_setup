@@ -81,7 +81,7 @@ def main():
     print "\nvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
     print "Set up basic chroot %s" % basic_tarball
     result = process_basic_tarball(ssh, basic_tarball, os.getenv("WORKSPACE"),
-                                   os.path.expanduser(tarball_dir),
+                                   tarball_dir,
                                    extended_tarballs, existent_tarballs)
     if result != []:
         errors += result
