@@ -100,7 +100,8 @@ class JenkinsJobTest(unittest.TestCase):
                                   'GROOVY_POSTBUILD': '',
                                   'PARAMETERIZED_TRIGGER': '',
                                   'JUNIT_TESTRESULTS': '',
-                                  'MAILER': ''
+                                  'MAILER': '',
+                                  'POSTBUILD_TASK': ''
                                   }
         self.jj.set_common_params()
         self.assertEqual(self.jj.params, common_job_config_dict)

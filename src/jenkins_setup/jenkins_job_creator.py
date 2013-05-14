@@ -525,6 +525,7 @@ class PipeStarterGeneralJob(JenkinsJob):
 
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
+        self.params['POSTBUILD_TASK'] = ''
 
         # set parameterized trigger
         prio_triggers = []
