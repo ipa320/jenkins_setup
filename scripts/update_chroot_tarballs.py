@@ -26,6 +26,8 @@ def main():
         print "Usage: %s tarball_location_ssh_address target_yaml_url ubuntu_distro architecture" % (sys.argv[0])
         sys.exit()
 
+    print args
+
     tarball_location_ssh_address = args[0]
     target_platforms_url = args[1]
 
