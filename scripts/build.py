@@ -63,6 +63,16 @@ def main():
     pipe_repos = cp_instance.repositories
     common.output("Pipeline configuration successfully loaded", blankline='b')
 
+    # (debug) output
+    print "\n", 50 * 'X'
+    print "\nTesting on ros distro:  %s" % ros_distro
+    print "Testing repository: %s" % build_repo
+    if build_repo != build_identifier:
+        print "       with suffix: %s" % build_identifier.split('__')[1]
+    print "Using source: %s" % pipe_repos[build_identifier].url
+    print "Testing branch/version: %s" % pipe_repos[build_identifier].version
+    print "\n", 50 * 'X'
+
     # set up directories variables
     tmpdir = os.path.join('/tmp', 'test_repositories')
     repo_sourcespace = os.path.join(tmpdir, 'src_repository')               # location to store repositories in
