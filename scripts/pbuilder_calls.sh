@@ -6,7 +6,7 @@ case $1 in
         echo "Going to create $2 with arguments $3 and $4"
         sudo pbuilder --create --basetgz $2 --distribution $3 --architecture $4 \
             --debootstrapopts --variant=buildd --components "main universe multiverse" \
-            --debootstrapopts --keyring=/etc/apt/trusted.gpg
+            --debootstrapopts --keyring=/etc/apt/trusted.gpg --timeout 5m
         ;;
     update)
         # parameter: basetgz
