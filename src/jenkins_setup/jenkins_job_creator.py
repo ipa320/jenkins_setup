@@ -205,7 +205,7 @@ class JenkinsJob(object):
         axes = ''
         if name_value_dict_list == []:
             return ''
-        for name_value_dict in name_value_dict_list:
+        for name_value_dict in sorted(name_value_dict_list):
             axes += ' '.join([self.generate_matrix_axis(axis_name, axis_values)
                               for axis_name, axis_values in name_value_dict.iteritems()])
         if axes == '':
