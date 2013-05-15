@@ -187,7 +187,7 @@ class JenkinsJob(object):
         if value_list == []:
             raise Exception('No values given')
         axis = self.job_config_params['matrix']['axis'].replace('@(NAME)', axis_name)
-        values = ' '.join([self.job_config_params['matrix']['value'].replace('@(VALUE)', value) for value in value_list])
+        values = ' '.join([self.job_config_params['matrix']['value'].replace('@(VALUE)', value) for value in sorted(value_list)])
         axis = axis.replace('@(VALUES)', values)
 
         return axis
