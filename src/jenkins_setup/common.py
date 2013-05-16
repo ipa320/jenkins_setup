@@ -349,6 +349,7 @@ def get_buildpipeline_configs(config_repo, server_name, user_name):
     try:
         f = urllib2.urlopen(pipeconfig_url)
         bpl_configs = yaml.load(f.read())
+        f.close()
     except Exception as ex:
         print "While downloading and parsing the buildpipeline configuration \
                file from\n%s\nthe following error occured:\n%s" % (pipeconfig_url, ex)
