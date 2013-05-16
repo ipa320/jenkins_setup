@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import urllib2
+import contextlib
 import os
 import subprocess
 import sys
@@ -347,9 +348,9 @@ def get_buildpipeline_configs(config_repo, server_name, user_name):
     pipeconfig_url = pipeconfig_url + "/master/%s/%s/pipeline_config.yaml" % (server_name, user_name)
     print "Parsing buildpipeline configuration file for %s stored at:\n%s" % (user_name, pipeconfig_url)
     try:
-        f = urllib2.urlopen(pipeconfig_url)
-        bpl_configs = yaml.load(f.read())
-        f.close()
+        #f = urllib2.urlopen(pipeconfig_url)
+        with contextlib.closing(urllib2.urlopen(pipeconfig_url)) as f:
+            bpl_configs = yaml.load(f.read())
     except Exception as ex:
         print "While downloading and parsing the buildpipeline configuration \
                file from\n%s\nthe following error occured:\n%s" % (pipeconfig_url, ex)
