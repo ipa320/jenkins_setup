@@ -79,7 +79,7 @@ def main():
     repo_sourcespace_wet = os.path.join(tmpdir, 'src_repository', 'wet')    # wet (catkin) repositories
     repo_sourcespace_dry = os.path.join(tmpdir, 'src_repository', 'dry')    # dry (rosbuild) repositories
     repo_buildspace = os.path.join(tmpdir, 'build_repository')              # location for build output
-    dry_test_results = os.path.join(repo_sourcespace_dry, 'test_results')   # location for test results
+    dry_build_logs = os.path.join(repo_sourcespace_dry, 'build_logs')       # location for build logs
 
     # download build_repo from source
     print "Creating rosinstall file for repository %s" % build_repo
@@ -290,20 +290,20 @@ def main():
         print "Build repository %s" % build_repo
         try:
             common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" %
-                        (dry_test_results, build_repo), ros_env_repo)
+                        (dry_build_logs, build_repo), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
             raise common.BuildException("Failed to rosmake %s" % build_repo)
         try:
             common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" %
-                        (dry_test_results, build_repo), ros_env_repo)
-            # TODO output dir ??
+                        (dry_build_logs, build_repo), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
 
         # copy test results
-        #common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
         common.copy_test_results(workspace, repo_sourcespace)
+
+        shutil.move(dry_build_logs, os.path.join(workspace, "build_logs"))
 
 
 if __name__ == "__main__":
