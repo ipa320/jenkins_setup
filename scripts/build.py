@@ -207,7 +207,7 @@ def main():
             shutil.move(os.path.join(repo_sourcespace, dir), os.path.join(repo_sourcespace_dry, dir))
 
     # env
-    print "Set up environment variables"
+    print "Set up ros environment variables"
     ros_env = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
     if options.verbose:
         common.call("env", ros_env)
