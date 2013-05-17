@@ -397,7 +397,7 @@ class JenkinsJob(object):
         Sets config for mailer
         """
 
-        mailer = self.job_config_params['mailer']
+        mailer = self.job_config_params['emailext']
         mailer = mailer.replace('@(EMAIL)', self.pipe_inst.email)
         if self.pipe_inst.committer_email_enabled:
             mailer = mailer.replace('@(EMAIL_TO_COMMITTER)', 'true')
