@@ -12,6 +12,7 @@
   @(MATRIX)
   <properties>
     @(PARAMETERS)
+    @(AUTHORIZATIONMATRIX)
     <hudson.plugins.trac.TracProjectProperty>
         <tracWebsite>http://www.care-o-bot-research.org/trac</tracWebsite>
     </hudson.plugins.trac.TracProjectProperty>

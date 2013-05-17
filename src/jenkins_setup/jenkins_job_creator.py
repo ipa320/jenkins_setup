@@ -110,6 +110,7 @@ class JenkinsJob(object):
         self.params['JUNIT_TESTRESULTS'] = ''
         self.params['MAILER'] = ''
         self.params['POSTBUILD_TASK'] = ''
+        self.params['AUTHORIZATIONMATRIX'] = ''
 
     ###########################################################################
     # helper methods - parameter generation
@@ -406,6 +407,19 @@ class JenkinsJob(object):
 
         self.params['MAILER'] = mailer
 
+    def set_authorization_matrix_param(self, job):
+        """
+        Sets config for authorization matrix plugin
+
+        @param job: [build|starter]
+        @type  job: string
+        """
+
+        authorization = self.job_config_params['authorizationmatrix'][job]
+        authorization = authorization.replace('@(USERNAME)', self.pipe_inst.user_name)
+
+        self.param['AUTHORIZATIONMATRIX'] = authorization
+
     def set_junit_testresults_param(self):
         """
         Sets config for junit test result report
@@ -533,6 +547,7 @@ class PipeStarterGeneralJob(JenkinsJob):
                                                                       subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()),
                                                                       predefined_param='POLL=manually triggered' + '\nREPOSITORY=%s' % repo + '\nREPOSITORY_FILTER=repository=="%s"' % repo))
         self.set_parameterizedtrigger_param(prio_triggers)
+        self.set_authorization_matrix_param('starter')
 
 
 class PipeStarterJob(PipeStarterGeneralJob):
@@ -608,6 +623,8 @@ class BuildJob(JenkinsJob):
         # set matrix
         matrix_entries_dict_list = self.get_matrix_entries()
         self.set_matrix_param(matrix_entries_dict_list, matrix_filter)
+
+        self.set_authorization_matrix_param('build')
 
 
 class PriorityBuildJob(BuildJob):

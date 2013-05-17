@@ -80,6 +80,10 @@
   'block': '<hudson.model.ParametersDefinitionProperty> <parameterDefinitions> @(PARAMS) </parameterDefinitions> </hudson.model.ParametersDefinitionProperty>'
   'param': '<hudson.model.StringParameterDefinition> <name>@(PARAM)</name> <description> </description> <defaultValue> </defaultValue>  </hudson.model.StringParameterDefinition>'
 
+'authorizationmatrix':
+    'build': '<hudson.security.AuthorizationMatrixProperty> <permission>hudson.model.Item.Read:@(USERNAME)</permission> </hudson.security.AuthorizationMatrixProperty>'
+    'starter': '<hudson.security.AuthorizationMatrixProperty> <permission>hudson.model.Item.Build:@(USERNAME)</permission> </hudson.security.AuthorizationMatrixProperty>'
+
 'parameterizedtrigger':
   'basic':
     '<hudson.plugins.parameterizedtrigger.BuildTrigger> <configs> @(TRIGGERS) </configs> </hudson.plugins.parameterizedtrigger.BuildTrigger>'
