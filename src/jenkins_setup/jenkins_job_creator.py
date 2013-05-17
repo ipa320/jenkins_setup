@@ -418,7 +418,7 @@ class JenkinsJob(object):
         authorization = self.job_config_params['authorizationmatrix'][job]
         authorization = authorization.replace('@(USERNAME)', self.pipe_inst.user_name)
 
-        self.param['AUTHORIZATIONMATRIX'] = authorization
+        self.params['AUTHORIZATIONMATRIX'] = authorization
 
     def set_junit_testresults_param(self):
         """
@@ -757,7 +757,7 @@ class DownstreamBuildJob(BuildJob):
         # TODO remove
         self.params['JUNIT_TESTRESULTS'] = ''
 
-        # set execute shell TODO
+        # set execute shell
         shell_script = self.get_shell_script()
         self.set_shell_param(shell_script)
 
