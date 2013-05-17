@@ -292,8 +292,11 @@ def main():
             common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" %
                         (dry_build_logs, build_repo), ros_env_repo)
         except common.BuildException as ex:
-            print ex.msg
-            raise common.BuildException("Failed to rosmake %s" % build_repo)
+            try:
+                shutil.move(dry_build_logs, os.path.join(workspace, "build_logs"))
+            finally:
+                print ex.msg
+                raise common.BuildException("Failed to rosmake %s" % build_repo)
         try:
             common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" %
                         (dry_build_logs, build_repo), ros_env_repo)
@@ -302,8 +305,10 @@ def main():
 
         # copy test results
         common.copy_test_results(workspace, repo_sourcespace)
-
-        shutil.move(dry_build_logs, os.path.join(workspace, "build_logs"))
+        try:
+            shutil.move(dry_build_logs, os.path.join(workspace, "build_logs"))
+        except IOError as ex:
+            print "No build logs found: %s" % ex
 
 
 if __name__ == "__main__":
