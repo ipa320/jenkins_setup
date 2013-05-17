@@ -23,7 +23,7 @@ chown -R root.root /root/.ssh
 #apt-get update
 #apt-get upgrade -y
 #apt-get install python-catkin-pkg python-rosdistro -y
-apt-get install openssh-client -y
+#apt-get install openssh-client -y
 
 #pip install -U rosinstall
 
@@ -38,16 +38,14 @@ echo "==== End" $SCRIPT "script.    Ignore the output below ======"
 echo "============================================================"
 
 
-echo "============================================================"
-echo "DEBUG"
+#echo "============================================================"
+#echo "DEBUG"
+#rospack list
 
-rospack list
+#echo "============================================================"
+#rosstack list
 
-echo "============================================================"
+#apt-get install tree
+#tree $WORKSPACE
 
-rosstack list
-
-apt-get install tree
-tree $WORKSPACE
-
-tree /tmp/test_repositories
+#tree /tmp/test_repositories
