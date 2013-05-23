@@ -38,12 +38,12 @@ def main():
     print "\n", 50 * 'X'
 
     # update sourcelist and upgrade installed basic packages
-    common.output("Updating chroot enviroment")
-    common.call("apt-get update")
-    common.call("apt-get dist-upgrade -y")
+    #common.output("Updating chroot enviroment")
+    #common.call("apt-get update")
+    #common.call("apt-get dist-upgrade -y")
 
-    common.output("Updating rosinstall")  # TODO run install frequently in chroot_tarball_updater an remove here
-    common.call("pip install -U rosinstall")
+    #common.output("Updating rosinstall")  # TODO run install frequently in chroot_tarball_updater an remove here
+    #common.call("pip install -U rosinstall")
 
     # install packages needed for execution (depending on ros_distro)
     common.output("Installing necessary packages:", decoration='')
