@@ -101,7 +101,10 @@ class CobPipeDependencyRepo(object):
         @type  data: dict
         """
 
-        self.name = name
+        if name is None or name == "":
+            raise CobPipeException("No Name given!")
+        else:
+            self.name = name
         self.type = data['type']
         self.url = data['url']
         self.version = None
