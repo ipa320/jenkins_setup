@@ -321,11 +321,12 @@ def main():
         common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
         for file in os.listdir(os.path.join(repo_sourcespace, "test_results")):
             file_path = os.path.join(repo_sourcespace, "test_results", file)
+            print file_path
             try:
                 if os.path.isfile(file_path) and file.startswith("TEST"):
-                    os.unlink(file_path)
-            except:
-                pass
+                    os.remove(file_path)
+            except Exception as e:
+                print e
 
         common.copy_test_results(workspace, repo_sourcespace)
         print datetime.datetime.now()
