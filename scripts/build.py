@@ -319,7 +319,15 @@ def main():
 
         # copy test results
         common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
-        common.copy_test_results(workspace, os.path.join(repo_sourcespace, "_hudson"))
+        for file in os.listdir(os.path.join(repo_sourcespace, "test_results")):
+            file_path = os.path.join(repo_sourcespace, "test_results", file)
+            try:
+                if os.path.isfile(file_path) and file.startswith("TEST"):
+                    os.unlink(file_path)
+            except:
+                pass
+
+        common.copy_test_results(workspace, repo_sourcespace)
         print datetime.datetime.now()
         try:
             shutil.move(dry_build_logs, os.path.join(workspace, "build_logs"))
