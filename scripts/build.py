@@ -145,6 +145,8 @@ def main():
     # install user-defined/customized dependencies of build_repo from source
     rosinstall = ''
     fulfilled_deps = []
+    print "build dependencies: %s" % (', '.join(repo_build_dependencies))
+    print "selected deps: %s" % (', '.join(pipe_repos[build_identifier].dependencies))
     for dep in repo_build_dependencies:
         if dep in pipe_repos[build_identifier].dependencies:
             print "Install user-defined build dependency %s from source" % dep
