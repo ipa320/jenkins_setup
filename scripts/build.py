@@ -319,7 +319,7 @@ def main():
 
         # copy test results
         common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
-        common.copy_test_results(workspace, repo_sourcespace)
+        common.copy_test_results(workspace, os.path.join(repo_sourcespace, "_hudson"))
         print datetime.datetime.now()
         try:
             shutil.move(dry_build_logs, os.path.join(workspace, "build_logs"))
