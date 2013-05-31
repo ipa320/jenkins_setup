@@ -318,6 +318,7 @@ def main():
             print ex.msg
 
         # copy test results
+        common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
         common.copy_test_results(workspace, repo_sourcespace)
         print datetime.datetime.now()
         try:
