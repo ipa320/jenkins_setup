@@ -323,8 +323,8 @@ def main():
             file_path = os.path.join(repo_sourcespace, "test_results", file)
             print file_path
             try:
-                if os.path.isfile(file_path) and file.startswith("TEST"):
-                    os.remove(file_path)
+                if not file.startswith("_hudson"):
+                    shutil.rmtree(file_path)
             except Exception as e:
                 print e
 
