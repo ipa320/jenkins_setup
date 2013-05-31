@@ -4,6 +4,7 @@ import optparse
 import sys
 import os
 import shutil
+import datetime
 
 from jenkins_setup import common, rosdep, cob_pipe
 
@@ -31,6 +32,7 @@ def main():
 
     # (debug) output
     print "\n", 50 * 'X'
+    print datetime.datetime.now()
     print "\nTesting on ros distro:  %s" % ros_distro
     print "Testing repository: %s" % build_repo
     if build_repo != build_identifier:
@@ -190,9 +192,11 @@ def main():
             sleep(10)
             rosdep_resolver = rosdep.RosDepResolver(ros_distro)
 
+    print datetime.datetime.now()
     print "Install build dependencies: %s" % (', '.join(repo_build_dependencies))
     common.apt_get_install_also_nonrosdep(repo_build_dependencies, ros_distro,
                                           rosdep_resolver)
+    print datetime.datetime.now()
 
     # separate installed repos in wet and dry
     print "Separate installed repositories in wet and dry"
@@ -213,6 +217,7 @@ def main():
         common.call("env", ros_env)
 
     ### catkin repositories
+    print datetime.datetime.now()
     if catkin_packages != {}:
         # set up catkin workspace
         if ros_distro == 'fuerte':
@@ -274,6 +279,7 @@ def main():
         common.copy_test_results(workspace, repo_buildspace)
 
     ### rosbuild repositories
+    print datetime.datetime.now()
     if build_repo_type == 'dry':
         ros_env_repo = common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
         ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_sourcespace, ros_package_path])
@@ -305,6 +311,7 @@ def main():
 
         # copy test results
         common.copy_test_results(workspace, repo_sourcespace)
+        print datetime.datetime.now()
         try:
             shutil.move(dry_build_logs, os.path.join(workspace, "build_logs"))
         except IOError as ex:
