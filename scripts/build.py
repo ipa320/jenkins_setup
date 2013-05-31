@@ -67,6 +67,7 @@ def main():
 
     # (debug) output
     print "\n", 50 * 'X'
+    print datetime.datetime.now()
     print "\nTesting on ros distro:  %s" % ros_distro
     print "Testing repository: %s" % build_repo
     if build_repo != build_identifier:
