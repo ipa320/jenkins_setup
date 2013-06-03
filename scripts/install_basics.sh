@@ -11,7 +11,7 @@ apt-get dist-upgrade -y
 echo "\n***INSTALL HELPER***"
 apt-get install -y \
     python-setuptools ccache wget curl curl-ssl sudo git-buildpackage dput \
-    python-yaml python-pip python-support git-core mercurial subversion \
+    python-yaml python-pip python-support python-apt git-core mercurial subversion \
     python-all gccxml python-empy python-nose python-mock python-minimock \
     lsb-release python-numpy python-wxgtk2.8 python-argparse python-networkx \
     graphviz python-sphinx doxygen python-epydoc cmake pkg-config openssh-client
