@@ -76,7 +76,14 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
         try:
             apt_get_install(aptget_pkgs, sudo=sudo)
         except:
-            raise BuildException("Failed to apt-get install ros repositories")
+            #find not availabel/released packages
+            import apt
+            unavailable_pkgs = []
+            for pkg in aptget_pkgs:
+                if pkg not in apt.Cache():
+                    unavailable_pkgs.append(pkg)
+
+            raise BuildException("Failed to apt-get install ros repositories: %s" % (', '.join(unavailable_pkgs)))
 
 
 def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):
