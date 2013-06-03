@@ -77,7 +77,7 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
             apt_get_install(aptget_pkgs, sudo=sudo)
         except:
             #find not availabel/released packages
-            call("apt-get install python-apt")
+            call("apt-get install python-apt -y")
             import apt
             unavailable_pkgs = []
             for pkg in aptget_pkgs:
