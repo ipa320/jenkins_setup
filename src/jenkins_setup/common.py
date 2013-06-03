@@ -70,7 +70,7 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
         try:
             apt_get_install(rosdep_pkgs, rosdep, sudo)
         except:
-            raise BuildException("Failed to apt-get install rosdep packages.")
+            raise BuildException("Failed to apt-get install rosdep packages")
 
     if aptget_pkgs != []:
         try:

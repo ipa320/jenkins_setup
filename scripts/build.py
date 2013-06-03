@@ -202,8 +202,20 @@ def main():
 
     print datetime.datetime.now()
     print "Install build dependencies: %s" % (', '.join(repo_build_dependencies))
-    common.apt_get_install_also_nonrosdep(repo_build_dependencies, ros_distro,
-                                          rosdep_resolver)
+    try:
+        common.apt_get_install_also_nonrosdep(repo_build_dependencies, ros_distro, rosdep_resolver)
+    except common.BuildException as ex:
+        #find not availabel/released package
+        import apt
+        apt_cache = apt.Cache()
+        unavailable_pkgs = []
+        for pkg in repo_build_dependencies:
+            if pkg not in apt_cache:
+                unavailable_pkgs.append(pkg)
+
+        print "Failed to apt-get install the following packages, because they are not available:\n%s" % (', '.join(unavailable_pkgs))
+        raise common.BuildException(ex, ": %" (', '.join(unavailable_pkgs)))
+
     print datetime.datetime.now()
 
     # separate installed repos in wet and dry
