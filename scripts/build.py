@@ -258,10 +258,13 @@ def main():
         except common.BuildException as ex:
             print ex.msg
             raise common.BuildException("Failed to make wet packages")
+
+        test_error_msg = None
         try:
             common.call("make tests", ros_env)
         except common.BuildException as ex:
             print ex.msg
+            test_error_msg = ex.msg
 
         # get wet repositories test and run dependencies
         print "Get test and run dependencies of repo list"
@@ -271,7 +274,7 @@ def main():
                                         % (build_repo, '- ' + '\n- '.join(stacks)))
         # take only wet packages
         repo_test_dependencies = common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=False, test_depends=True)
-        if repo_test_dependencies != []:
+        if repo_test_dependencies != [] and test_error_msg is None:
             print "Install test and run dependencies of repository list: %s" % (', '.join(repo_test_dependencies))
             common.apt_get_install(repo_test_dependencies, rosdep_resolver)
 
@@ -281,9 +284,10 @@ def main():
                 common.call("make run_tests", ros_env)
             except common.BuildException as ex:
                 print ex.msg
+                test_error_msg = ex.msg
 
         # copy test results
-        common.copy_test_results(workspace, repo_buildspace)
+        common.copy_test_results(workspace, repo_buildspace, test_error_msg)
 
     ### rosbuild repositories
     print datetime.datetime.now()
