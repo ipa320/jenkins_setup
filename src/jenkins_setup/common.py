@@ -63,14 +63,15 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
     import apt
     for pkg in pkgs:
         if rosdep and rosdep.has_ros(pkg):
-            debian_pkg = rosdep.to_apt(pkg)
+            debian_pkgs = rosdep.to_apt(pkg)
             rosdep_pkgs.append(pkg)
         else:
-            debian_pkg = '-'.join(['ros', ros_distro, pkg.replace('_', '-')])
-            aptget_pkgs.append(debian_pkg)
+            debian_pkgs = ['-'.join(['ros', ros_distro, pkg.replace('_', '-')])]
+            aptget_pkgs += debian_pkgs
         # use python apt module to check if Debian package exists
-        if debian_pkg not in apt.Cache():
-            unavailable_pkgs.append(debian_pkg)
+        for debian_pkg in debian_pkgs:
+            if debian_pkg not in apt.Cache():
+                unavailable_pkgs.append(debian_pkg)
 
     if unavailable_pkgs != []:
         raise BuildException("Some dependencies are not available: %s" % (', '.join(unavailable_pkgs)))
