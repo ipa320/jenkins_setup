@@ -5,6 +5,7 @@ import sys
 import os
 import shutil
 import datetime
+import logging
 
 from jenkins_setup import common, rosdep, cob_pipe
 
