@@ -11,6 +11,9 @@ from jenkins_setup import common, rosdep, cob_pipe
 
 
 def main():
+    # Log everything, and send it to stderr.
+    logging.basicConfig(level=logging.DEBUG)
+
     # parse parameter values
     parser = optparse.OptionParser()
     parser.add_option('-v', '--verbose', action='store_true', default=False)
