@@ -57,14 +57,24 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
 
     rosdep_pkgs = []
     aptget_pkgs = []
+    unavailable_pkgs = []
 
+    call("apt-get install python-apt -y")  # TODO move installation into chroot setup script
+    import apt
     for pkg in pkgs:
         if rosdep:
             if rosdep.has_ros(pkg):
                 rosdep_pkgs.append(pkg)
                 continue
-        # TODO use python apt module to check if Debian package exists
-        aptget_pkgs.append('-'.join(['ros', ros_distro, pkg.replace('_', '-')]))
+        # use python apt module to check if Debian package exists
+        debian_pkg = '-'.join(['ros', ros_distro, pkg.replace('_', '-')])
+        if debian_pkg not in apt.Cache():
+            unavailable_pkgs.append(debian_pkg)
+            continue
+        aptget_pkgs.append(debian_pkg)
+
+    if unavailable_pkgs != []:
+        raise BuildException("Some dependencies are not available: %s" % (', '.join(unavailable_pkgs)))
 
     if rosdep_pkgs != []:
         try:
@@ -76,15 +86,7 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
         try:
             apt_get_install(aptget_pkgs, sudo=sudo)
         except:
-            #find not availabel/released packages
-            call("apt-get install python-apt -y")
-            import apt
-            unavailable_pkgs = []
-            for pkg in aptget_pkgs:
-                if pkg not in apt.Cache():
-                    unavailable_pkgs.append(pkg)
-
-            raise BuildException("Failed to apt-get install ros repositories: %s" % (', '.join(unavailable_pkgs)))
+            raise BuildException("Failed to apt-get install ros repositories")
 
 
 def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):

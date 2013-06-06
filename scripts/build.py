@@ -276,7 +276,7 @@ def main():
         repo_test_dependencies = common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=False, test_depends=True)
         if repo_test_dependencies != [] and test_error_msg is None:
             print "Install test and run dependencies of repository list: %s" % (', '.join(repo_test_dependencies))
-            common.apt_get_install(repo_test_dependencies, rosdep_resolver)
+            common.apt_get_install_also_nonrosdep(repo_test_dependencies, ros_distro, rosdep_resolver)
 
             # run tests
             print "Test repository list"
