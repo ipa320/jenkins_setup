@@ -62,16 +62,15 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
     call("apt-get install python-apt -y")  # TODO move installation into chroot setup script
     import apt
     for pkg in pkgs:
-        if rosdep:
-            if rosdep.has_ros(pkg):
-                rosdep_pkgs.append(pkg)
-                continue
+        if rosdep and rosdep.has_ros(pkg):
+            debian_pkg = rosdep.to_apt(pkg)
+            rosdep_pkgs.append(pkg)
+        else:
+            debian_pkg = '-'.join(['ros', ros_distro, pkg.replace('_', '-')])
+            aptget_pkgs.append(debian_pkg)
         # use python apt module to check if Debian package exists
-        debian_pkg = '-'.join(['ros', ros_distro, pkg.replace('_', '-')])
         if debian_pkg not in apt.Cache():
             unavailable_pkgs.append(debian_pkg)
-            continue
-        aptget_pkgs.append(debian_pkg)
 
     if unavailable_pkgs != []:
         raise BuildException("Some dependencies are not available: %s" % (', '.join(unavailable_pkgs)))
