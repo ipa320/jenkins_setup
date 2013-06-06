@@ -71,7 +71,7 @@
       <defaultContent>${JELLY_SCRIPT,template=&quot;html-with-health-builds-tests&quot;}</defaultContent>
       <attachmentsPattern></attachmentsPattern>
       <presendScript></presendScript>
-      <attachBuildLog>false</attachBuildLog>
+      <attachBuildLog>true</attachBuildLog>
       <replyTo></replyTo>
       <matrixTriggerMode>ONLY_CONFIGURATIONS</matrixTriggerMode>
     </hudson.plugins.emailext.ExtendedEmailPublisher>'
