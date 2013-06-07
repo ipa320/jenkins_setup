@@ -393,13 +393,17 @@ class JenkinsJob(object):
 
         self.params['PARAMETERIZED_TRIGGER'] = self.get_parameterizedtrigger_param(trigger_list)
 
-    def set_mailer_param(self):
+    def set_mailer_param(self, job_name):
         """
         Sets config for mailer
+
+        @param job_name: name of job to be shown in email subject
+        @type  job_name: string
         """
 
         mailer = self.job_config_params['emailext']
         mailer = mailer.replace('@(EMAIL)', self.pipe_inst.email)
+        mailer = mailer.replace('@(JOBNAME)', job_name)
         if self.pipe_inst.committer_email_enabled:
             mailer = mailer.replace('@(EMAIL_TO_COMMITTER)', 'true')
         else:
@@ -617,7 +621,6 @@ class BuildJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
-        self.set_mailer_param()
         self.set_junit_testresults_param()
 
         # set matrix
@@ -656,6 +659,9 @@ class PriorityBuildJob(BuildJob):
         matrix_filter = self.generate_matrix_filter(self.get_prio_subset_filter())
 
         super(PriorityBuildJob, self).set_job_type_params(matrix_filter)
+
+        # email
+        self.set_mailer_param('Priority Build')
 
         # set execute shell
         shell_script = self.get_shell_script()
@@ -697,6 +703,9 @@ class RegularBuildJob(BuildJob):
         matrix_filter = self.generate_matrix_filter(self.get_regular_subset_filter())
 
         super(RegularBuildJob, self).set_job_type_params(matrix_filter)
+
+        # email
+        self.set_mailer_param('Regular Build')
 
         # set execute shell
         shell_script = self.get_shell_script()
@@ -757,6 +766,9 @@ class DownstreamBuildJob(BuildJob):
         # TODO remove
         self.params['JUNIT_TESTRESULTS'] = ''
 
+        # email
+        self.set_mailer_param('Downstream Build')
+
         # set execute shell
         shell_script = self.get_shell_script()
         self.set_shell_param(shell_script)
@@ -798,7 +810,6 @@ class TestJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
-        self.set_mailer_param()
         #self.set_junit_testresults_param()  TODO
 
         matrix_filter = self.generate_matrix_filter(self.get_prio_subset_filter())
@@ -836,6 +847,9 @@ class NongraphicsTestJob(TestJob):
 
         self.params['NODE_LABEL'] = 'nongraphics_test'  # TODO check labels
 
+        # email
+        self.set_mailer_param('Non-Graphics Test')
+
         # set execute shell TODO
         shell_script = self.get_shell_script('test')
         self.set_shell_param(shell_script)
@@ -872,6 +886,9 @@ class GraphicsTestJob(TestJob):
 
         self.params['NODE_LABEL'] = 'graphics_test'  # TODO check labels
 
+        # email
+        self.set_mailer_param('Graphics Test')
+
         # set execute shell TODO
         shell_script = self.get_shell_script('test')
         self.set_shell_param(shell_script)
@@ -905,6 +922,9 @@ class HardwareBuildJob(JenkinsJob):
         """
 
         self.params['PROJECT'] = 'project'  # TODO 'matrix-project' ??
+
+        # email
+        self.set_mailer_param('Hardware Build')
 
         # set execute shell TODO
 
@@ -976,6 +996,9 @@ class AutomaticHWTestJob(HardwareJob):
 
         super(AutomaticHWTestJob, self).set_job_type_params()
 
+        # email
+        self.set_mailer_param('Automatic Hardware Test')
+
         # set execute shell TODO
 
         # set pipeline trigger
@@ -1007,6 +1030,9 @@ class InteractiveHWTestJob(HardwareJob):
         """
 
         super(InteractiveHWTestJob, self).set_job_type_params()
+
+        # email
+        self.set_mailer_param('Interactive Hardware Test')
 
         # set execute shell TODO
 
@@ -1041,6 +1067,9 @@ class ReleaseJob(JenkinsJob):
         self.params['PROJECT'] = 'project'
 
         self.params['NODE_LABEL'] = 'release'
+
+        # email
+        self.set_mailer_param('Release')
 
 
 class CleanUpJob(JenkinsJob):
