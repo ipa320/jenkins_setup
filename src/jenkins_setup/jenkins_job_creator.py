@@ -1096,5 +1096,3 @@ class CleanUpJob(JenkinsJob):
         self.params['PROJECT'] = 'project'
 
         self.params['NODE_LABEL'] = 'clean_up'
-
-# TODO classes: test jobs, hardware jobs, release

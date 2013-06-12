@@ -308,7 +308,35 @@ sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKS
 
 'graphics_test': '#!/bin/bash -e'
 
-'hardware_build': '#!/bin/bash -e'
+'hardware_build': '#!/bin/bash -e
+
+    if [ -d @(USERNAME)/${repository} ]; then
+
+        sudo cp -r @(USERNAME)/${repository} @(USERNAME)/${repository}_backup
+
+    fi
+
+    mkdir @(USERNAME)/${repository}
+
+
+    echo "============================================================\n==== Begin" $SCRIPT "script.    Ignore the output above ====\n============================================================"
+
+    python hardware_build.py
+
+    echo "============================================================\n==== Begin" $SCRIPT "script.    Ignore the output above ====\n============================================================"
+
+
+    if [[ $? != 0 ]]; then
+
+        sudo cp -rf @(USERNAME)/${repository}_backup @(USERNAME)/${repository}
+
+    fi
+
+    sudo rm -r @(USERNAME)/${repository}_backup
+
+    TODO
+
+'
 
 'automatic_hw_test': '#!/bin/bash -e'
 
