@@ -1,5 +1,4 @@
 #!/bin/bash
 export WORKSPACE=$1
-DIR="$( cd "$( dirname "$0" )" && pwd )" 
 $WORKSPACE/setupGraphicDriver.bash
-$DIR/testGlx.bash
+$WORKSPACE/jenkins_setup/scripts/graphicTest/testGlx.bash
