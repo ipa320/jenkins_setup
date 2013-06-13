@@ -1,4 +1,5 @@
 #!/bin/bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-$WORKSPACE/graphicTest/setupGraphicDriver.bash
+export WORKSPACE=$1
+DIR="$( cd "$( dirname "$0" )" && pwd )" 
+$WORKSPACE/setupGraphicDriver.bash
 $DIR/testGlx.bash
