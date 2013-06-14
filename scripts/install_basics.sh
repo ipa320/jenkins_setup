@@ -28,6 +28,19 @@ echo "\n***INSTALL ROS***"
 apt-get install -y ros-$2-ros
 echo "\n***INSTALL ROSINSTALL***"
 pip install -U rosinstall
-echo "\n***EXECUTE ADDITIONAL COMMAND***"
-echo "$3"
-$3
+
+echo "\n***INSTALL ROS VERSION SPECIFIC PACKAGES***"
+case $2 in
+    electric)
+        echo "ELECTRIC: catkin-pkg and rospkg"
+        pip install -U catkin-pkg rospkg
+        ;;
+    fuerte)
+        echo "FUERTE: rospkg and rosdep"
+        pip install -U rospkg rosdep
+        ;;
+    groovy)
+        echo "GROOVY: python-catkin-pkg and python-rosdistro"
+        apt-get install python-catkin-pkg python-rosdistro --yes
+        ;;
+esac
