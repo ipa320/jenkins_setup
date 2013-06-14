@@ -178,6 +178,13 @@ def process_extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend
 
     sys.stdout.flush()
 
+    if tarball_params['ros_distro'] == 'electric':
+        ros_version_specific_command = "pip install -U catkin-pkg rospkg"
+    elif tarball_params['ros_distro'] == 'fuerte':
+        ros_version_specific_command = "pip install -U rospkg rosdep"
+    elif tarball_params['ros_distro'] == 'groovy':
+        ros_version_specific_command = "apt-get install python-catkin-pkg python-rosdistro --yes"
+
     if extend in existent_tarballs:
         print "Update %s" % extend
         existent_tarballs.remove(extend)
@@ -189,8 +196,9 @@ def process_extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend
             # update tarball
             #call("./pbuilder_calls.sh update %s" % local_abs_extend)
 
-            call("./pbuilder_calls.sh execute %s install_basics.sh %s %s"
-                 % (local_abs_extend, tarball_params['ubuntu_distro'], tarball_params['ros_distro']))
+            call("./pbuilder_calls.sh execute %s install_basics.sh %s %s %s"
+                 % (local_abs_extend, tarball_params['ubuntu_distro'],
+                    tarball_params['ros_distro'], ros_version_specific_command))
 
         except Exception as ex:
             return ["%s: %s" % (extend, ex)]
@@ -201,7 +209,8 @@ def process_extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend
             call("cp %s %s" % (local_abs_basic, local_abs_extend))
 
             call("./pbuilder_calls.sh execute %s install_basics.sh %s %s"
-                 % (local_abs_extend, tarball_params['ubuntu_distro'], tarball_params['ros_distro']))
+                 % (local_abs_extend, tarball_params['ubuntu_distro'],
+                    tarball_params['ros_distro'], ros_version_specific_command))
 
         except Exception as ex:
             return ["%s: %s" % (extend, ex)]
