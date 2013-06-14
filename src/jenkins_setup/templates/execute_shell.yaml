@@ -325,7 +325,7 @@ scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
-cp ~/jenkins-config/setupGraphicDriver__${ubuntu_distro}__${arch}.bash $WORKSPACE/graphicTest/setupGraphicDriver.bash
+cp ~/jenkins-config/setupGraphicDriver__${ubuntu_distro}__${arch}.bash $WORKSPACE/setupGraphicDriver.bash
 
 
 echo "***********ENTER CHROOT************"
