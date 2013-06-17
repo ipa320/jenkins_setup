@@ -19,3 +19,5 @@ rosmake --rosdep-install navigation_test
 
 export DISPLAY=:0
 rostest navigation_test navigation.test robot:=cob3-3 robot_env:=ipa-kitchen route:=1
+
+rosrun rosunit clean_junit_xml.py
