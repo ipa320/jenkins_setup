@@ -16,7 +16,7 @@ apt-get install -y libwxgtk2.8-0 libwxgtk2.8-dev python-wxgtk2.8 python-wxversio
 source ~/.bashrc
 source /opt/ros/electric/setup.bash
 export ROS_PACKAGE_PATH=~/ros:$ROS_PACKAGE_PATH
-rosmake --rosdep-install navigation_test
+rosmake --rosdep-install --rosdep-yes navigation_test
 
 dpkg -l > $WORKSPACE/dpkg_output.log
 
