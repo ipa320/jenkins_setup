@@ -3,6 +3,14 @@ pattern="s/^\s*deb (http:[^ ]+)\s+([^ ]+)(.*)/"
 url=`cat /etc/apt/sources.list | sed -rn "$pattern\1/p"`
 dist=`cat /etc/apt/sources.list | sed -rn "$pattern\2/p"`
 pools=`cat /etc/apt/sources.list | sed -rn "$pattern\3/p"`
+if [ -z $url ] || [ -z $dist ] || [ -z $pools ]; then
+    echo ''
+    echo '-------------------------------------'
+    echo 'Could not parse /etc/apt/sources.list'
+    echo '-------------------------------------'
+    echo ''
+    exit 1
+fi
 
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.bkp
 sudo cat > /etc/apt/sources.list << EOF
