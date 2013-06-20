@@ -17,4 +17,4 @@ startX &&
 $DIR/startTest.bash;
 stopX
 
-rosrun rosunit clean_junit_xml.py
+$DIR/cleanXmlOutput.bash
