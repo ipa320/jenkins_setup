@@ -14,7 +14,7 @@ arch=`dpkg --print-architecture`
 file=`ls /tmp/nvidia | grep $arch`
 if [ -z $file ]; then
 	echo "Cannot find appropriate nvidia-driver in /tmp/nvidia"
-	exit 1
+	exit 2
 fi
 
 ar -x /tmp/nvidia/$file
