@@ -10,3 +10,5 @@ $DIR/installLatestRosRepos.bash &&
 $DIR/installSimulator.bash &&
 $DIR/installTest.bash &&
 $DIR/startTest.bash
+
+rosrun rosunit clean_junit_xml.py
