@@ -13,7 +13,7 @@ fi
 rm -rf tmpNvidiaFiles; mkdir tmpNvidiaFiles; cd tmpNvidiaFiles
 arch=`dpkg --print-architecture`
 file=`ls /tmp/nvidia | grep $arch`
-if [ -z $file ]; then
+if [ -z "$file" ]; then
 	echo "Cannot find appropriate nvidia-driver in /tmp/nvidia"
 	exit 2
 fi
