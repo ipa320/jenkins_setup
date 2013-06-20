@@ -21,3 +21,4 @@ ar -x /tmp/nvidia/$file
 tar -xzvf data.tar.gz -C /
 ldconfig
 cd ..; rm -rf tmpNvidiaFiles
+exit 0

@@ -27,5 +27,6 @@ if [ $? != 0 ]; then
     echo ''
 fi
 
+exit 0
 #dpkg -l > $WORKSPACE/dpkg_output.log
 
