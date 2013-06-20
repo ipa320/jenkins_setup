@@ -1,5 +1,6 @@
 #!/bin/bash
-apt-get install -y --force-yes --reinstall libgl1-mesa-glx nvidia-current
+apt-get install -y --force-yes --reinstall libgl1-mesa-glx
+apt-get install -y --force-yes nvidia-current
 if [ $? != 0 ]; then
     echo ''
     echo '---------------------------------------------------------'
