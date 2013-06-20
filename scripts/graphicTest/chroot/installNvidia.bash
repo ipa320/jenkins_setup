@@ -1,5 +1,6 @@
 #!/bin/bash
-apt-get install -y nvidia-current
+apt-get install -y --force-yes --reinstall libgl1-mesa-glx
+apt-get install -y --force-yes nvidia-current
 if [ $? != 0 ]; then
     echo ''
     echo '---------------------------------------------------------'
@@ -12,7 +13,7 @@ fi
 rm -rf tmpNvidiaFiles; mkdir tmpNvidiaFiles; cd tmpNvidiaFiles
 arch=`dpkg --print-architecture`
 file=`ls /tmp/nvidia | grep $arch`
-if [ -z $file ]; then
+if [ -z "$file" ]; then
 	echo "Cannot find appropriate nvidia-driver in /tmp/nvidia"
 	exit 2
 fi
@@ -21,3 +22,4 @@ ar -x /tmp/nvidia/$file
 tar -xzvf data.tar.gz -C /
 ldconfig
 cd ..; rm -rf tmpNvidiaFiles
+exit 0
