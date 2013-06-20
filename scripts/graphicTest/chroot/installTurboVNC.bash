@@ -21,8 +21,8 @@ sudo dpkg -i $pkg
 
 # Copy passwd file
 mkdir -p ~/.vnc
-cp $DIR/tvnc/vncpasswd ~/.vnc/passwd
-cp $DIR/tvnc/xstartup.turbovnc ~/.vnc/
+cp $DIR/../tvnc/vncpasswd ~/.vnc/passwd
+cp $DIR/../tvnc/xstartup.turbovnc ~/.vnc/
 user=`whoami`
 if [ -z "$user" ]; then 
     user='jenkins'
