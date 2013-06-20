@@ -1,5 +1,5 @@
 #!/bin/bash
-#apt-get install -y nvidia-current
+apt-get install -y nvidia-current
 rm -rf tmpNvidiaFiles; mkdir tmpNvidiaFiles; cd tmpNvidiaFiles
 arch=`dpkg --print-architecture`
 file=`ls /tmp/nvidia | grep $arch`
