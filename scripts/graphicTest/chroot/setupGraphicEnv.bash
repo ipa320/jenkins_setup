@@ -4,6 +4,7 @@ export WORKSPACE=$1
 env
 export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 
+$DIR/setupXauthority.bash &&
 $DIR/setupSources.bash &&
 $DIR/installNvidia.bash &&
 $DIR/installLatestRosRepos.bash &&
