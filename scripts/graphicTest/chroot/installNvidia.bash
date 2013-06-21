@@ -57,8 +57,9 @@ if [ -z "`cat postinst | sed -n '8s/CVERSION//p'`" ]; then
     echo ""
     exit 5
 fi
-cat postinst | sed "8s/^.*$/CVERSION=\"$CVERSION\"/" > postinst
-./postinst configure
+cat postinst | sed "8s/^.*$/CVERSION=\"$CVERSION\"/" > postinst2
+chmod a+x postinst2
+./postinst2 configure
 
 # remove artifacts
 # ---------------------------------------------------------------------
