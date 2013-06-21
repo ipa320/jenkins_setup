@@ -9,7 +9,7 @@ for driver in "nvidia-current" "nvidia-experimental-304"; do
     echo "Searching for '$driver'"
     echo ""
 
-    VERSION=`dpkg -l | grep -E "[ ]+$driver[ ]+" | awk '{ print $3 }'
+    VERSION=`dpkg -l | grep -E "[ ]+$driver[ ]+" | awk '{ print $3 }'`
     if [ -z "$VERSION" ]; then
         echo "'$driver' not found"
         continue
