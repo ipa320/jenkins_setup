@@ -4,21 +4,22 @@ if [ -d /tmp/nvidia ]; then
     exit 0
 fi
 
-VERSION=`dpkg -l | grep nvidia-current | sed -rn "s/.*nvidia-current\s*([^ ]+).*/\1/p"`
-if [ -z $VERSION ]; then
+VERSION=`dpkg -l | grep -E "[ ]+nvidia-current[ ]+" | sed -rn "s/.*nvidia-current\s*([^ ]+).*/\1/p"`
+if [ -z "$VERSION" ]; then
     echo 'No nvidia-current driver installed'
     exit 1
 fi
+echo "Version: '$VERSION'"
 
 
-endpoint=`apt-cache --no-all-versions policy nvidia-current | grep -A1 $VERSION | tail -n 1 | awk '{ print $2 }'`
-if [ -z $endpoint ]; then
-    echo 'No endpoint found'
+endpoint=`apt-cache --no-all-versions policy nvidia-current | grep -A1 "$VERSION" | tail -n 1 | awk '{ print $2 }'`
+if [ -z "$endpoint" ]; then
+    echo "No endpoint for Version '$VERSION' found"
     exit 2
 fi
 
 filename=`apt-cache --no-all-versions show nvidia-current=$VERSION | grep Filename | awk '{ print $2 }'`
-if [ -z $filename ]; then 
+if [ -z "$filename" ]; then 
     echo 'No filename found'
     exit 3
 fi
