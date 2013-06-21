@@ -9,5 +9,9 @@ startX(){
     export DISPLAY=:$i
 }
 stopX(){
-    $TURBO/vncserver -kill $DISPLAY
+    if [ -z "$DISPLAY" ]; then
+        echo "DISPLAY not set. Cannot stop VNC"
+    else
+        $TURBO/vncserver -kill $DISPLAY
+    fi
 }
