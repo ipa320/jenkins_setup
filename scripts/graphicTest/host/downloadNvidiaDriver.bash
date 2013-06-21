@@ -9,20 +9,20 @@ for driver in "nvidia-current" "nvidia-experimental-304"; do
     echo "Searching for '$driver'"
     echo ""
 
-    VERSION=`dpkg -l | grep "$driver" | sed -rn "s/.*$driver\s*([^ ]+).*/\1/p"`
-    if [ -z $VERSION ]; then
+    VERSION=`dpkg -l | grep -E "[ ]+$driver[ ]+" | awk '{ print $3 }'
+    if [ -z "$VERSION" ]; then
         echo "'$driver' not found"
         continue
     fi
 
     endpoint=`apt-cache --no-all-versions policy $driver | grep -A1 $VERSION | tail -n 1 | awk '{ print $2 }'`
-    if [ -z $endpoint ]; then
+    if [ -z "$endpoint" ]; then
         echo 'No endpoint found'
         exit 2
     fi
 
     filename=`apt-cache --no-all-versions show $driver=$VERSION | grep Filename | awk '{ print $2 }'`
-    if [ -z $filename ]; then 
+    if [ -z "$filename" ]; then 
         echo 'No filename found'
         exit 3
     fi

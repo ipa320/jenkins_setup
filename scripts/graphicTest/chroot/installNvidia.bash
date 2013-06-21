@@ -41,7 +41,7 @@ if [ ! -f postinst ] || [ ! -f control ]; then
     exit 3
 fi
 CVERSION=`cat control | grep "^Version" | awk '{print $2}' | awk -F "-" '{print $1}' | cut -d\: -f2`
-if [ -z $CVERSION ]; then
+if [ -z "$CVERSION" ]; then
     echo ""
     echo "---------------------------------------------"
     echo "Could not determine patching driver's version"
