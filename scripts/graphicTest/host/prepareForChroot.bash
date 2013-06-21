@@ -6,3 +6,4 @@ type xhost 2>/dev/null || { echo 'You need xhost installed'; exit 1; }
 export DISPLAY=:0
 xhost +
 $DIR/downloadNvidiaDriver.bash
+$DIR/setupXauthority.bash
