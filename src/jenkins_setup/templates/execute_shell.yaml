@@ -1,5 +1,7 @@
 'prio_build': '#!/bin/bash -e
 
+date
+
 new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
@@ -69,15 +71,20 @@ echo "***********ENTER CHROOT************"
 
 echo "*********please be patient*********"
 
+date
 
 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 
 echo "*******CLEANUP WORKSPACE*******"
 
+date
+
 echo "STORING CHROOT TARBALL ON @(STORAGE)"
 
-scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use/'
+scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use/
+
+date'
 
 'regular_build': '#!/bin/bash -e
 

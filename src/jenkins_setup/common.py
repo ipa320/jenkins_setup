@@ -59,7 +59,6 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
     aptget_pkgs = []
     unavailable_pkgs = []
 
-    call("apt-get install python-apt -y")  # TODO move installation into chroot setup script
     import apt
     for pkg in pkgs:
         if rosdep and rosdep.has_ros(pkg):
