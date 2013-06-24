@@ -368,27 +368,42 @@
       <j:if test="${build.workspace.list().size()&gt;0}">
         <j:set var="buildLogExist" value="False" />
 	<j:set var="workspaceUrl" value="${rooturl}${build.url}" />
-        <a href="${workspaceUrl.substring(0, workspaceUrl.length() - (build.number.toString().length + 2))}/ws">
+        <!--a href="${workspaceUrl.substring(0, workspaceUrl.length() - (build.number.toString().length + 2))}/ws">
           <h1>Workspace</h1>
-        </a>
+        </a-->
 	<!--h1>"${build.workspace}"</h1-->
         <j:forEach var="file" items="${build.workspace.list()}" varStatus="loop">
           <j:if test="${line.indexOf('build_log') != -1}">
             <j:set var="buildLogExist" value="True" />
           </j:if>
-          <table>
+          <!--table>
               <tr>
                 <td>
                   <tt>${file.toString().replace(build.workspace.toString()+'/', '')}</tt>
                 </td>
               </tr>
-          </table>
+          </table-->
         </j:forEach>
         <br />
       </j:if>
     </div>
 
-    <j:if test="${buildLogExist==True}">
+    <j:forEach var="line" items="${build.getLog(999999)}">
+	<j:if test="${line.indexOf('Some dependencies are not available:') != -1}">
+          <j:set var="buildLogExist" value="False" />
+          <a href="${rooturl}${build.url}/console">
+            <h1>UNAVAILABLE DEPENDECIES</h1>
+          </a>
+	  <tr>
+	    <td><tt>
+              <b>${line}</b><br/>
+              Add dependency repository in pipeline configuration!
+            </tt></td>
+	  </tr>
+	</j:if>
+    </j:forEach>
+
+    <j:if test="${buildLogExist=='True'}">
     <j:choose>
 	<j:when test="${build.result=='FAILURE'}">
 	    <div class="content">
@@ -402,7 +417,7 @@
                     <j:set var="buildLogUrl" value="${rooturl}${build.url}" />
 		    <tr>
 		      <td><tt>
-                        <a href="${buildLogUrl.substring(0, buildLogUrl.length() - (build.number.toString().length + 2))}/ws/build_logs/${line.substring(line.indexOf(' --- ') + 5, line.length())}/build_output.log">
+                        <a href="${buildLogUrl.replace('/' + build.number.toString() + '/', '')}/ws/build_logs/${line.substring(line.indexOf(' --- ') + 5, line.length())}/build_output.log">
                           ${line}
                         </a>
                       </tt></td>
@@ -413,11 +428,11 @@
 	      <br />
 	    </div>
      	</j:when>
-        <j:when test="${build.result=='INSTABLE'}">
+        <j:when test="${build.result=='UNSTABLE'}">
 	    <div class="content">
 	      <!-- TEST FAILURE -->
 	      <a href="${rooturl}${build.url}/console">
-		<h1>Instable Tests</h1>
+		<h1>Unstable Tests</h1>
 	      </a>
 	      <table class="console">
 		<j:forEach var="line" items="${build.getLog(100000)}">
@@ -426,7 +441,7 @@
                       <j:set var="testLogUrl" value="${rooturl}${build.url}" />
 		      <tr>
 		        <td><tt>
-                          <a href="${testLogUrl.substring(0, testLogUrl.length() - (build.number.toString().length + 2))}/ws/build_logs/${line.substring(line.indexOf(' --- ') + 5, line.length())}/build_test_output.log">
+                          <a href="${testLogUrl.replace('/' + build.number.toString() + '/', '')}/ws/build_logs/${line.substring(line.indexOf(' --- ') + 5, line.length())}/build_test_output.log">
                             ${line}
                           </a>
                         </tt></td>
@@ -439,7 +454,6 @@
 	    </div>
      	</j:when>
     </j:choose>
-    </j:if>
 
     <div class="content">
       <!-- BUILDS -->
@@ -463,7 +477,7 @@
                    <j:set var="buildLogUrl" value="${rooturl}${build.url}" />
 	        	<tr>
 	        	    <td><tt>
-                               <a href="${buildLogUrl.substring(0, buildLogUrl.length() - (build.number.toString().length + 2))}/ws/build_logs/${line.substring(line.indexOf(' --- ') + 5, line.length())}/build_output.log">
+                               <a href="${buildLogUrl.replace('/' + build.number.toString() + '/', '')}/ws/build_logs/${line.substring(line.indexOf(' --- ') + 5, line.length())}/build_output.log">
                                  ${line}
                                </a>
                             </tt></td>
@@ -475,6 +489,7 @@
       <br />
     </div>
 
+    <j:if test="${build.result=='UNSTABLE'}">
     <div class="content">
       <!-- TESTS -->
       <a href="${rooturl}${build.url}/console">
@@ -488,7 +503,7 @@
                     <j:set var="testLogUrl" value="${rooturl}${build.url}" />
 	            <tr>
 	              <td><tt>
-                        <a href="${testLogUrl.substring(0, testLogUrl.length() - (build.number.toString().length + 2))}/ws/build_logs/${line.substring(line.indexOf(' --- ') + 5, line.length())}/build_test_output.log">
+                        <a href="${testLogUrl.replace('/' + build.number.toString() + '/', '')}/ws/build_logs/${line.substring(line.indexOf(' --- ') + 5, line.length())}/build_test_output.log">
                           ${line}
                         </a>
                       </tt></td>
@@ -498,7 +513,7 @@
                     <j:set var="testLogUrl" value="${rooturl}${build.url}" />
 	            <tr>
 	              <td><tt>
-                        <a href="${testLogUrl.substring(0, testLogUrl.length() - (build.number.toString().length + 2))}/ws/build_logs/${line.substring(line.indexOf(' --- ') + 5, line.length())}/build_test_output.log">
+                        <a href="${testLogUrl.replace('/' + build.number.toString() + '/', '')}/ws/build_logs/${line.substring(line.indexOf(' --- ') + 5, line.length())}/build_test_output.log">
                           ${line}
                         </a>
                       </tt></td>
@@ -515,6 +530,8 @@
       </table>
       <br />
     </div>
+    </j:if>
+    </j:if>
 
     <!-- CONSOLE OUTPUT -->
     <!--div class="content">
