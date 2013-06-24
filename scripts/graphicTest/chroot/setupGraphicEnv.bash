@@ -8,8 +8,8 @@ export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 
 $DIR/checkDisplayNull.bash &&
 $DIR/setupSources.bash &&
-$DIR/installTurboVNC.bash &&
-$DIR/installVirtualGL.bash &&
+$DIR/../tvnc/installTurboVNC.bash &&
+$DIR/../vgl/installVirtualGL.bash &&
 $DIR/installNvidia.bash &&
 $DIR/installLatestRosRepos.bash &&
 $DIR/installSimulator.bash &&
