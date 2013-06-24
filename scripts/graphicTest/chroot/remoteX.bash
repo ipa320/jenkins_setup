@@ -3,7 +3,7 @@ export TURBO="/opt/TurboVNC/bin"
 export VGL="/opt/VirtualGL/bin"
 startX(){
     for i in {1..20}; do
-        $TURBO/vncserver :$i
+        $TURBO/vncserver :$i -noauth
         if [ $? -eq 0 ]; then break; fi
     done
     export DISPLAY=:$i
