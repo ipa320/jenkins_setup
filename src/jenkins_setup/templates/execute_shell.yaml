@@ -328,6 +328,17 @@ scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 cp ~/jenkins-config/setupGraphicDriver__${ubuntu_distro}__${arch}.bash $WORKSPACE/setupGraphicDriver.bash
 
 
+sudo $WORKSPACE/jenkins_setup/scripts/graphicTest/host/prepareForChroot.bash $WORKSPACE
+
+if [ $? != 0 ]; then
+
+echo "Error"
+
+exit 1
+
+fi
+
+
 echo "***********ENTER CHROOT************"
 
 echo "*********please be patient*********"
