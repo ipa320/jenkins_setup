@@ -64,8 +64,6 @@ ls -lah $WORKSPACE
 
 echo "***********ENTER CHROOT************"
 
-echo "*********please be patient*********"
-
 date
 
 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
@@ -149,8 +147,6 @@ ls -lah $WORKSPACE
 
 echo "***********ENTER CHROOT************"
 
-echo "*********please be patient*********"
-
 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 echo "***********LEAVE CHROOT************"
@@ -220,8 +216,6 @@ ls -lah $WORKSPACE
 
 
 echo "***********ENTER CHROOT************"
-
-echo "*********please be patient*********"
 
 
 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
@@ -294,8 +288,6 @@ ls -lah $WORKSPACE
 
 echo "***********ENTER CHROOT************"
 
-echo "*********please be patient*********"
-
 
 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
@@ -332,8 +324,39 @@ scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
-cp ~/jenkins-config/setupGraphicDriver__${ubuntu_distro}__${arch}.bash $WORKSPACE/setupGraphicDriver.bash
+ls -lah $WORKSPACE
 
+
+cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
+
+JOBNAME=$JOB_NAME
+
+ROSDISTRO=$ros_distro
+
+REPOSITORY=$repository
+
+UBUNTUDISTRO=$ubuntu_distro
+
+ARCH=$arch
+
+#TODO
+
+PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
+
+JENKINS_MASTER=@(SERVERNAME)
+
+JENKINS_USER=@(USERNAME)
+
+JOBTYPE=@(JOB_TYPE_NAME)
+
+export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO
+
+export BUILD_ID=$BUILD_ID
+
+DELIM
+
+
+ls -lah $WORKSPACE
 
 $WORKSPACE/jenkins_setup/scripts/graphicTest/host/prepareForChroot.bash $WORKSPACE
 
@@ -348,10 +371,8 @@ fi
 
 echo "***********ENTER CHROOT************"
 
-echo "*********please be patient*********"
 
-
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/graphicTest/setupGraphicEnv.bash $WORKSPACE
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts "$WORKSPACE /tmp/.X11-unix /tmp/nvidia" -- $WORKSPACE/jenkins_setup/scripts/graphicTest/chroot/setupGraphicEnv.bash $WORKSPACE
 
 echo "***********LEAVE CHROOT************"
 '
