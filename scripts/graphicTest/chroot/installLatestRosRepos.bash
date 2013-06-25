@@ -1,5 +1,6 @@
 #!/bin/bash
 mkdir -p ~/ros
+mkdir -p ~/.ros; chmod a+wr -R ~/.ros
 # for debugging purposes only
 export PATH=/usr/local/bin:$PATH
 type git 2>/dev/null || apt-get install -y --force-yes git-core
