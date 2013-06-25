@@ -16,6 +16,9 @@ $DIR/installSimulator.bash &&
 $DIR/installTest.bash &&
 startX &&
 $DIR/startTest.bash;
+success=$?
 stopX
 
-$DIR/cleanXmlOutput.bash
+if [ $success == 0 ]; then
+    $DIR/cleanXmlOutput.bash
+fi
