@@ -48,16 +48,16 @@ def main():
     #common.call("pip install -U rosinstall")
 
     # install packages needed for execution (depending on ros_distro)
-    common.output("Installing necessary packages:", decoration='')
-    if ros_distro == 'electric':
-        print "  catkin-pkg and rospkg"
-        common.call("pip install -U catkin-pkg rospkg")
-    elif ros_distro == 'fuerte':
-        print "  rospkg and rosdep"
-        common.call("pip install -U rospkg rosdep")
-    elif ros_distro == 'groovy':
-        print "  python-catkin-pkg and python-rosdistro"
-        common.call("apt-get install python-catkin-pkg python-rosdistro --yes")
+    #common.output("Installing necessary packages:", decoration='')
+    #if ros_distro == 'electric':
+        #print "  catkin-pkg and rospkg"
+        #common.call("pip install -U catkin-pkg rospkg")
+    #elif ros_distro == 'fuerte':
+        #print "  rospkg and rosdep"
+        #common.call("pip install -U rospkg rosdep")
+    #elif ros_distro == 'groovy':
+        #print "  python-catkin-pkg and python-rosdistro"
+        #common.call("apt-get install python-catkin-pkg python-rosdistro --yes")
 
     # cob_pipe object
     cp_instance = cob_pipe.CobPipe()
@@ -101,7 +101,7 @@ def main():
     # create repo sourcespace directory 'src_repository'
     os.makedirs(repo_sourcespace)
     # rosinstall repos
-    common.call("rosinstall %s %s/repo.rosinstall /opt/ros/%s"
+    common.call("rosinstall --verbose --continue-on-error %s %s/repo.rosinstall /opt/ros/%s"
                 % (repo_sourcespace, workspace, ros_distro))
 
     # get the repositories build dependencies
@@ -173,7 +173,7 @@ def main():
             f.write(rosinstall)
         print "Install user-defined build dependencies from source"
         # rosinstall depends
-        common.call("rosinstall %s %s/repo.rosinstall /opt/ros/%s"
+        common.call("rosinstall --verbose --continue-on-error %s %s/repo.rosinstall /opt/ros/%s"
                     % (repo_sourcespace, workspace, ros_distro))
 
         # get also deps of just installed user-defined/customized dependencies
@@ -233,7 +233,7 @@ def main():
                 rosinstall = "\n- git: {local-name: catkin, uri: 'git://github.com/ros/catkin.git', version: fuerte-devel}"
                 print "Install catkin"
                 # rosinstall catkin
-                common.call("rosinstall %s %s/repo.rosinstall /opt/ros/%s"
+                common.call("rosinstall --verbose %s %s/repo.rosinstall /opt/ros/%s"
                             % (repo_sourcespace_wet, workspace, ros_distro))
 
             print "Create a CMakeLists.txt for catkin packages"
