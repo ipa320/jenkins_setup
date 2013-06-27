@@ -15,8 +15,8 @@ def main():
     parser.add_option('-v', '--verbose', action='store_true', default=False)
     (options, args) = parser.parse_args()
 
-    if len(args) < 5:
-        print "Usage: %s pipeline_repos_owner server_name user_name ros_distro build_repo" % sys.argv[0]
+    if len(args) < 6:
+        print "Usage: %s pipeline_repos_owner server_name user_name ros_distro build_repo graphic_test" % sys.argv[0]
         raise common.BuildException("Wrong arguments for build script")
 
     # get arguments
@@ -26,6 +26,7 @@ def main():
     ros_distro = args[3]
     build_identifier = args[4]                      # repository + suffix
     build_repo = build_identifier.split('__')[0]    # only repository to build
+    graphic_test = args[5]  # TODO optional
     # environment variables
     workspace = os.environ['WORKSPACE']
     ros_package_path = os.environ['ROS_PACKAGE_PATH']
@@ -118,7 +119,7 @@ def main():
             # run tests
             print "Test repository list"
             try:
-                common.call("make run_tests", ros_env)
+                common.call("%s make run_tests" % "/opt/VirtualGL/bin/vglrun" if graphic_test else "", ros_env)
             except common.BuildException as ex:
                 print ex.msg
                 test_error_msg = ex.msg
@@ -138,8 +139,8 @@ def main():
         # test dry repositories
         print "Test repository %s" % build_repo
         try:
-            common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" %  # TODO test all repos!?
-                        (dry_build_logs, build_repo), ros_env_repo)
+            common.call("%s rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" %  # TODO test all repos!?
+                        ("/opt/VirtualGL/bin/vglrun" if graphic_test else "", dry_build_logs, build_repo), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
 
