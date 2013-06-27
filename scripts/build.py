@@ -30,15 +30,6 @@ def main():
     workspace = os.environ['WORKSPACE']
     ros_package_path = os.environ['ROS_PACKAGE_PATH']
 
-    # (debug) output
-    print "\n", 50 * 'X'
-    print datetime.datetime.now()
-    print "\nTesting on ros distro:  %s" % ros_distro
-    print "Testing repository: %s" % build_repo
-    if build_repo != build_identifier:
-        print "       with suffix: %s" % build_identifier.split('__')[1]
-    print "\n", 50 * 'X'
-
     # cob_pipe object
     cp_instance = cob_pipe.CobPipe()
     cp_instance.load_config_from_url(pipeline_repos_owner, server_name, user_name)
