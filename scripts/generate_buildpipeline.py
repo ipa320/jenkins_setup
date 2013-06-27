@@ -172,14 +172,6 @@ def main():
         else:
             modified_jobs.append(job_creator_instance.create_job())
 
-    ### automatic hardware test
-    if 'hardware_build' and 'automatic_hw_test' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.AutomaticHWTestJob(jenkins_instance, plc_instance)
-        if options.delete:
-            modified_jobs.append(job_creator_instance.delete_job())
-        else:
-            modified_jobs.append(job_creator_instance.create_job())
-
     ### interactive hardware test
     if 'hardware_build' and 'interactive_hw_test' in job_type_dict:
         job_creator_instance = jenkins_job_creator.InteractiveHWTestJob(jenkins_instance, plc_instance)
@@ -190,7 +182,7 @@ def main():
 
     ### release job
     if ('release' and 'downstream_build' and 'nongraphics_test' and 'graphics_test'
-            and 'hardware_build' and 'automatic_hw_test' and 'interactive_hw_test' in job_type_dict):
+            and 'hardware_build' and 'interactive_hw_test' in job_type_dict):
         print "Create release job"
         # TODO
 
