@@ -115,6 +115,10 @@ class CobPipeDependencyRepo(object):
         if 'poll' in data:
             self.poll = data['poll']
 
+        self.test = None
+        if 'test' in data:
+            self.poll = data['test']
+
     def get_rosinstall(self):
         """
         Gets the rosinstall file entry for the repository object
