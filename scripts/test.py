@@ -26,7 +26,7 @@ def main():
     ros_distro = args[3]
     build_identifier = args[4]                      # repository + suffix
     build_repo = build_identifier.split('__')[0]    # only repository to build
-    graphic_test = args[5]  # TODO optional
+    graphic_test = True if args[5] == "true" else False  # TODO optional
     # environment variables
     workspace = os.environ['WORKSPACE']
     ros_package_path = os.environ['ROS_PACKAGE_PATH']
