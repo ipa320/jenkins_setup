@@ -20,9 +20,9 @@ def main():
         raise common.BuildException("Wrong arguments for build script")
 
     # get arguments
-    #pipeline_repos_owner = args[0]
-    #server_name = args[1]
-    #user_name = args[2]
+    pipeline_repos_owner = args[0]
+    server_name = args[1]
+    user_name = args[2]
     ros_distro = args[3]
     build_identifier = args[4]                      # repository + suffix
     build_repo = build_identifier.split('__')[0]    # only repository to build
@@ -32,9 +32,9 @@ def main():
     ros_package_path = os.environ['ROS_PACKAGE_PATH']
 
     # cob_pipe object
-    #cp_instance = cob_pipe.CobPipe()
-    #cp_instance.load_config_from_url(pipeline_repos_owner, server_name, user_name)
-    #pipe_repos = cp_instance.repositories
+    cp_instance = cob_pipe.CobPipe()
+    cp_instance.load_config_from_url(pipeline_repos_owner, server_name, user_name)
+    pipe_repos = cp_instance.repositories
     common.output("Pipeline configuration successfully loaded", blankline='b')
 
     # (debug) output
@@ -44,8 +44,8 @@ def main():
     print "Testing repository: %s" % build_repo
     if build_repo != build_identifier:
         print "       with suffix: %s" % build_identifier.split('__')[1]
-    #print "Using source: %s" % pipe_repos[build_identifier].url
-    #print "Testing branch/version: %s" % pipe_repos[build_identifier].version
+    print "Using source: %s" % pipe_repos[build_identifier].url
+    print "Testing branch/version: %s" % pipe_repos[build_identifier].version
     print "\n", 50 * 'X'
 
     # set up directories variables
@@ -119,7 +119,7 @@ def main():
             # run tests
             print "Test repository list"
             try:
-                common.call("%s make run_tests" % "/opt/VirtualGL/bin/vglrun" if graphic_test else "", ros_env)
+                common.call("%s make run_tests" % "/opt/VirtualGL/bin/vglrun" if graphic_test else "", ros_env)  # TODO check how to test a list of repos
             except common.BuildException as ex:
                 print ex.msg
                 test_error_msg = ex.msg
@@ -131,6 +131,11 @@ def main():
     print datetime.datetime.now()
     (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_dry)
     if build_repo in stacks:
+        test_repos_list = []
+        for dep in pipe_repos[build_identifier].dependencies:
+            if dep.name in stacks and dep.test:
+                test_repos_list.append(dep.name)
+
         ros_env_repo = common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
         ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_sourcespace, ros_package_path])
         if options.verbose:
@@ -139,8 +144,9 @@ def main():
         # test dry repositories
         print "Test repository %s" % build_repo
         try:
-            common.call("%s rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" %  # TODO test all repos!?
-                        ("/opt/VirtualGL/bin/vglrun" if graphic_test else "", dry_build_logs, build_repo), ros_env_repo)
+            common.call("%s rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" %
+                        ("/opt/VirtualGL/bin/vglrun" if graphic_test else "", dry_build_logs,
+                         " ".join(test_repos_list + [build_repo])), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
 
