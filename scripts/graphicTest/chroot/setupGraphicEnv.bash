@@ -7,6 +7,7 @@ export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 . $DIR/remoteX.bash
 
 $DIR/checkDisplayNull.bash &&
+$DIR/setupSSHKeys.bash &&
 $DIR/setupSources.bash &&
 $DIR/../tvnc/installTurboVNC.bash &&
 $DIR/../vgl/installVirtualGL.bash &&
