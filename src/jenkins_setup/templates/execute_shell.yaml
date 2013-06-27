@@ -21,16 +21,11 @@ echo "Copying "$new_basetgz" from @(STORAGE)"
 
 scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
-scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
+scp jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.gitconfig $WORKSPACE/.gitconfig
 
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
 
-ls -lah $WORKSPACE
-
-
-echo "Cloning jenkins_setup repository"
-
-git clone git@github.com:@(PIPELINEREPOSOWNER)/jenkins_setup.git $WORKSPACE/jenkins_setup
+scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
 ls -lah $WORKSPACE
 
@@ -69,11 +64,11 @@ ls -lah $WORKSPACE
 
 echo "***********ENTER CHROOT************"
 
-echo "*********please be patient*********"
-
 date
 
 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+
+echo "***********LEAVE CHROOT************"
 
 
 echo "*******CLEANUP WORKSPACE*******"
@@ -109,16 +104,11 @@ echo "Copying "$new_basetgz" from @(STORAGE)"
 
 scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
-scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
+scp jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.gitconfig $WORKSPACE/.gitconfig
 
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
 
-ls -lah $WORKSPACE
-
-
-echo "Cloning jenkins_setup repository"
-
-git clone git@github.com:@(PIPELINEREPOSOWNER)/jenkins_setup.git $WORKSPACE/jenkins_setup
+scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
 ls -lah $WORKSPACE
 
@@ -157,9 +147,10 @@ ls -lah $WORKSPACE
 
 echo "***********ENTER CHROOT************"
 
-echo "*********please be patient*********"
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE'
+echo "***********LEAVE CHROOT************"
+'
 
 'downstream_build': '#!/bin/bash -e
 
@@ -183,16 +174,11 @@ echo "Copying "$basetgz" from @(STORAGE)/in_use"
 
 scp @(STORAGE)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
 
-scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
+scp jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.gitconfig $WORKSPACE/.gitconfig
 
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
 
-ls -lah $WORKSPACE
-
-
-echo "Cloning jenkins_setup repository"
-
-git clone git@github.com:@(PIPELINEREPOSOWNER)/jenkins_setup.git $WORKSPACE/jenkins_setup
+scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
 ls -lah $WORKSPACE
 
@@ -231,10 +217,11 @@ ls -lah $WORKSPACE
 
 echo "***********ENTER CHROOT************"
 
-echo "*********please be patient*********"
 
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE'
+echo "***********LEAVE CHROOT************"
+'
 
 'test': '#!/bin/bash -e
 
@@ -258,16 +245,11 @@ echo "Copying "$basetgz" from @(STORAGE)/in_use"
 
 scp @(STORAGE)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
 
-scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
+scp jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.gitconfig $WORKSPACE/.gitconfig
 
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
 
-ls -lah $WORKSPACE
-
-
-echo "Cloning jenkins_setup repository"
-
-git clone git@github.com:@(PIPELINEREPOSOWNER)/jenkins_setup.git $WORKSPACE/jenkins_setup
+scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
 ls -lah $WORKSPACE
 
@@ -306,14 +288,94 @@ ls -lah $WORKSPACE
 
 echo "***********ENTER CHROOT************"
 
-echo "*********please be patient*********"
 
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE'
+echo "***********LEAVE CHROOT************"
+'
 
 'nongraphics_test': '#!/bin/bash -e'
 
-'graphics_test': '#!/bin/bash -e'
+'graphics_test': '#!/bin/bash -e
+
+new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+
+basetgz=@(USERNAME)__${new_basetgz}__${repository}
+
+
+sudo rm -rf $WORKSPACE/*
+
+if [ -d $WORKSPACE/../aux ]; then
+
+sudo rm -rf $WORKSPACE/../aux
+
+fi
+
+mkdir $WORKSPACE/../aux
+
+
+echo "Copying "$basetgz" from @(STORAGE)/in_use"
+
+scp @(STORAGE)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
+
+scp jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.gitconfig $WORKSPACE/.gitconfig
+
+scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
+
+scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
+
+ls -lah $WORKSPACE
+
+
+cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
+
+JOBNAME=$JOB_NAME
+
+ROSDISTRO=$ros_distro
+
+REPOSITORY=$repository
+
+UBUNTUDISTRO=$ubuntu_distro
+
+ARCH=$arch
+
+#TODO
+
+PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
+
+JENKINS_MASTER=@(SERVERNAME)
+
+JENKINS_USER=@(USERNAME)
+
+JOBTYPE=@(JOB_TYPE_NAME)
+
+export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO
+
+export BUILD_ID=$BUILD_ID
+
+DELIM
+
+
+ls -lah $WORKSPACE
+
+$WORKSPACE/jenkins_setup/scripts/graphicTest/host/prepareForChroot.bash $WORKSPACE
+
+if [ $? != 0 ]; then
+
+echo "Error"
+
+exit 1
+
+fi
+
+
+echo "***********ENTER CHROOT************"
+
+
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts "$WORKSPACE /tmp/.X11-unix /tmp/nvidia" -- $WORKSPACE/jenkins_setup/scripts/graphicTest/chroot/setupGraphicEnv.bash $WORKSPACE
+
+echo "***********LEAVE CHROOT************"
+'
 
 'hardware_build': '#!/bin/bash -e'
 

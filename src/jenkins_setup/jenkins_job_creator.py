@@ -497,6 +497,7 @@ class JenkinsJob(object):
         shell_script = shell_script.replace('@(USERNAME)', self.pipe_inst.user_name)
         shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.job_type)
         shell_script = shell_script.replace('@(PIPELINEREPOSOWNER)', self.pipe_inst.pipeline_repos_owner)
+        shell_script = shell_script.replace('@(CONFIG_FOLDER)', self.pipe_inst.config_folder)
 
         return shell_script
 
