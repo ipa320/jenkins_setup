@@ -15,7 +15,7 @@ class CobPipeTest(unittest.TestCase):
         self.repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                               'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                               'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                                              'matrix_distro_arch': None, 'dependencies': None,
+                                              'regular_matrix': None, 'dependencies': None,
                                               'jobs': None, 'robots': None}}
         self.pipe_config_test_dict = {'user_name': 'test-user', 'server_name': 'test-server',
                                       'email': 'test@ipa.fhg.de', 'committer_email_enabled': False,
@@ -40,7 +40,7 @@ class CobPipeTest(unittest.TestCase):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                                         'matrix_distro_arch': None, 'dependencies': None,
+                                         'regular_matrix': None, 'dependencies': None,
                                          'jobs': None, 'robots': None}}
         self.pipe_config_test_dict['repositories'] = repo_test_dict
         self.cp.load_config_from_dict(self.pipe_config_test_dict)
@@ -51,7 +51,7 @@ class CobPipeTest(unittest.TestCase):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                                         'matrix_distro_arch': None, 'dependencies': None,
+                                         'regular_matrix': None, 'dependencies': None,
                                          'jobs': None, 'robots': None}}
         self.pipe_config_test_dict['repositories'] = repo_test_dict
         self.cp.load_config_from_dict(self.pipe_config_test_dict)
@@ -61,7 +61,7 @@ class CobPipeTest(unittest.TestCase):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                                         'matrix_distro_arch': None, 'dependencies': None,
+                                         'regular_matrix': None, 'dependencies': None,
                                          'jobs': None, 'robots': None}}
         self.pipe_config_test_dict['repositories'] = repo_test_dict
         self.cp.load_config_from_dict(self.pipe_config_test_dict)
@@ -71,7 +71,7 @@ class CobPipeTest(unittest.TestCase):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                                         'matrix_distro_arch': None, 'dependencies': None,
+                                         'regular_matrix': None, 'dependencies': None,
                                          'jobs': None, 'robots': None}}
         self.pipe_config_test_dict['repositories'] = repo_test_dict
         self.cp.load_config_from_dict(self.pipe_config_test_dict)
@@ -81,7 +81,7 @@ class CobPipeTest(unittest.TestCase):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                                         'matrix_distro_arch': None, 'dependencies': None,
+                                         'regular_matrix': None, 'dependencies': None,
                                          'jobs': [], 'robots': ['test-robot']}}
         self.pipe_config_test_dict['repositories'] = repo_test_dict
         self.assertRaises(cob_pipe.CobPipeException, self.cp.load_config_from_dict, self.pipe_config_test_dict)
@@ -90,7 +90,7 @@ class CobPipeTest(unittest.TestCase):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                                         'matrix_distro_arch': None, 'dependencies': None,
+                                         'regular_matrix': None, 'dependencies': None,
                                          'jobs': ['automatic_hw_test'], 'robots': None}}
         self.pipe_config_test_dict['repositories'] = repo_test_dict
         self.assertRaises(cob_pipe.CobPipeException, self.cp.load_config_from_dict, self.pipe_config_test_dict)
@@ -99,7 +99,7 @@ class CobPipeTest(unittest.TestCase):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                                         'matrix_distro_arch': None, 'dependencies': None,
+                                         'regular_matrix': None, 'dependencies': None,
                                          'jobs': ['interactive_hw_test'], 'robots': None}}
         self.pipe_config_test_dict['repositories'] = repo_test_dict
         self.assertRaises(cob_pipe.CobPipeException, self.cp.load_config_from_dict, self.pipe_config_test_dict)
@@ -116,7 +116,7 @@ class CobPipeTest(unittest.TestCase):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                                         'matrix_distro_arch': None, 'dependencies': dep_test_dict,
+                                         'regular_matrix': None, 'dependencies': dep_test_dict,
                                          'jobs': None, 'robots': None}}
         self.pipe_config_test_dict['repositories'] = repo_test_dict
         self.cp.load_config_from_dict(self.pipe_config_test_dict)
@@ -131,12 +131,12 @@ class CobPipeTest(unittest.TestCase):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                                         'matrix_distro_arch': None, 'dependencies': dep_test_dict,
+                                         'regular_matrix': None, 'dependencies': dep_test_dict,
                                          'jobs': None, 'robots': None},
                           'cob_driver': {'type': 'git', 'url': 'git://github.com/ipa320/cob_driver.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                                         'matrix_distro_arch': None, 'dependencies': dep_test_dict,
+                                         'regular_matrix': None, 'dependencies': dep_test_dict,
                                          'jobs': None, 'robots': None}}
         self.pipe_config_test_dict['repositories'] = repo_test_dict
         self.cp.load_config_from_dict(self.pipe_config_test_dict)
@@ -151,12 +151,12 @@ class CobPipeTest(unittest.TestCase):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                                         'matrix_distro_arch': None, 'dependencies': dep_test_dict,
+                                         'regular_matrix': None, 'dependencies': dep_test_dict,
                                          'jobs': None, 'robots': None},
                           'cob_driver': {'type': 'git', 'url': 'git://github.com/ipa320/cob_driver.git',
                                          'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
                                          'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                                         'matrix_distro_arch': None, 'dependencies': dep_test_dict,
+                                         'regular_matrix': None, 'dependencies': dep_test_dict,
                                          'jobs': None, 'robots': None}}
         self.pipe_config_test_dict['repositories'] = repo_test_dict
         self.cp.load_config_from_dict(self.pipe_config_test_dict)
@@ -200,7 +200,7 @@ class CobPipeRepoTest(unittest.TestCase):
         data_test_dict = {'type': 'git', 'url': 'git://github.com/ipa320/test.git',
                           'poll': True, 'ros_distro': ['groovy'],
                           'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                          'matrix_distro_arch': None, 'dependencies': None,
+                          'regular_matrix': None, 'dependencies': None,
                           'jobs': None, 'robots': None}
         cpr = cob_pipe.CobPipeRepo('test', data_test_dict)
         self.assertEqual(cpr.poll, True)
@@ -209,7 +209,7 @@ class CobPipeRepoTest(unittest.TestCase):
         data_test_dict = {'type': 'git', 'url': 'git://github.com/ipa320/test.git',
                           'poll': True, 'ros_distro': ['groovy'],
                           'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                          'matrix_distro_arch': None, 'dependencies': None,
+                          'regular_matrix': None, 'dependencies': None,
                           'jobs': None, 'robots': None}
         cpr = cob_pipe.CobPipeRepo('test', data_test_dict)
         self.assertEqual(cpr.ros_distro, ['groovy'])
@@ -218,7 +218,7 @@ class CobPipeRepoTest(unittest.TestCase):
         data_test_dict = {'type': 'git', 'url': 'git://github.com/ipa320/test.git',
                           'poll': True, 'ros_distro': ['groovy'],
                           'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                          'matrix_distro_arch': None, 'dependencies': None,
+                          'regular_matrix': None, 'dependencies': None,
                           'jobs': None, 'robots': None}
         cpr = cob_pipe.CobPipeRepo('test', data_test_dict)
         self.assertEqual(cpr.prio_ubuntu_distro, 'oneiric')
@@ -227,26 +227,26 @@ class CobPipeRepoTest(unittest.TestCase):
         data_test_dict = {'type': 'git', 'url': 'git://github.com/ipa320/test.git',
                           'poll': True, 'ros_distro': ['groovy'],
                           'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                          'matrix_distro_arch': None, 'dependencies': None,
+                          'regular_matrix': None, 'dependencies': None,
                           'jobs': None, 'robots': None}
         cpr = cob_pipe.CobPipeRepo('test', data_test_dict)
         self.assertEqual(cpr.prio_arch, 'amd64')
 
-    def test__init__input_name_str_pipeconf_dict__check_additional_matrix_distro_arch(self):
+    def test__init__input_name_str_pipeconf_dict__check_additional_regular_matrix(self):
         data_test_dict = {'type': 'git', 'url': 'git://github.com/ipa320/test.git',
                           'poll': True, 'ros_distro': ['groovy'],
                           'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                          'matrix_distro_arch': {'oneiric': ['i386'], 'lucid': ['amd64', 'i386']},
+                          'regular_matrix': {'oneiric': ['i386'], 'lucid': ['amd64', 'i386']},
                           'dependencies': None, 'jobs': ['regular_build'], 'robots': None}
         cpr = cob_pipe.CobPipeRepo('test', data_test_dict)
-        self.assertEqual(cpr.matrix_distro_arch,
+        self.assertEqual(cpr.regular_matrix,
                          {'oneiric': ['i386'], 'lucid': ['amd64', 'i386']})
 
     def test__init__input_name_str_pipeconf_dict__raise_exception(self):
         data_test_dict = {'type': 'git', 'url': 'git://github.com/ipa320/test.git',
                           'poll': True, 'ros_distro': ['groovy'],
                           'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                          'matrix_distro_arch': {'oneiric': ['i386'], 'lucid': ['amd64', 'i386']},
+                          'regular_matrix': {'oneiric': ['i386'], 'lucid': ['amd64', 'i386']},
                           'dependencies': None, 'jobs': None, 'robots': None}
         self.assertRaises(cob_pipe.CobPipeException, cob_pipe.CobPipeRepo, 'test', data_test_dict)
 
@@ -254,7 +254,7 @@ class CobPipeRepoTest(unittest.TestCase):
         data_test_dict = {'type': 'git', 'url': 'git://github.com/ipa320/test.git',
                           'poll': True, 'ros_distro': ['groovy'],
                           'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                          'matrix_distro_arch': None, 'dependencies': None,
+                          'regular_matrix': None, 'dependencies': None,
                           'jobs': ['job_1', 'job_2'], 'robots': None}
         cpr = cob_pipe.CobPipeRepo('test', data_test_dict)
         self.assertEqual(cpr.jobs, ['job_1', 'job_2'])
@@ -267,7 +267,7 @@ class CobPipeRepoTest(unittest.TestCase):
         data_test_dict = {'type': 'git', 'url': 'git://github.com/ipa320/test.git',
                           'poll': True, 'ros_distro': ['groovy'],
                           'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                          'matrix_distro_arch': None, 'jobs': None,
+                          'regular_matrix': None, 'jobs': None,
                           'dependencies': dep_test_dict, 'robots': None}
         cpr = cob_pipe.CobPipeRepo('test', data_test_dict)
         self.assertTrue(isinstance(cpr.dependencies['dep_1'], cob_pipe.CobPipeDependencyRepo))
@@ -281,7 +281,7 @@ class CobPipeRepoTest(unittest.TestCase):
         data_test_dict = {'type': 'git', 'url': 'git://github.com/ipa320/test.git',
                           'poll': True, 'ros_distro': ['groovy'],
                           'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
-                          'matrix_distro_arch': None, 'jobs': None,
+                          'regular_matrix': None, 'jobs': None,
                           'dependencies': dep_test_dict, 'robots': None}
         cpr = cob_pipe.CobPipeRepo('test', data_test_dict)
         self.assertEqual(cpr.dependencies['dep_2'].url, 'git://github.com/ipa320/dep_2.git')

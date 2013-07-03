@@ -131,6 +131,7 @@ def main():
     print datetime.datetime.now()
     (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_dry)
     if build_repo in stacks:
+        # get list of dependencies to test
         test_repos_list = []
         for dep in pipe_repos[build_identifier].dependencies:
             if dep.name in stacks and dep.test:

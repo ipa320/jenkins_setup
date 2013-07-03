@@ -240,7 +240,7 @@ class JenkinsJob(object):
                 ubuntu_distros.append(repo_data.prio_ubuntu_distro)
             if repo_data.prio_arch not in archs:
                 archs.append(repo_data.prio_arch)
-            for ubuntu_distro, repo_archs in repo_data.matrix_distro_arch.iteritems():
+            for ubuntu_distro, repo_archs in repo_data.regular_matrix.iteritems():
                 if ubuntu_distro not in ubuntu_distros:
                     ubuntu_distros.append(ubuntu_distro)
                 for arch in repo_archs:
@@ -720,7 +720,7 @@ class RegularBuildJob(BuildJob):
         subset_filter_input = []
         for repo in self.pipe_inst.repositories.keys():
             for rosdistro in self.pipe_inst.repositories[repo].ros_distro:
-                for ubuntu_distro, repo_archs in self.pipe_inst.repositories[repo].matrix_distro_arch.iteritems():
+                for ubuntu_distro, repo_archs in self.pipe_inst.repositories[repo].regular_matrix.iteritems():
                     for repo_arch in repo_archs:
                         subset_filter_input_entry = {}
                         subset_filter_input_entry['repository'] = repo
