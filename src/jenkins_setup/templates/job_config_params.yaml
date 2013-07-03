@@ -6,7 +6,7 @@
     'daily': ' <triggers class="vector"> <hudson.triggers.TimerTrigger> <spec>0 13 * * *</spec> </hudson.triggers.TimerTrigger> </triggers>'
     'weekly': ' <triggers class="vector"> <hudson.triggers.TimerTrigger> <spec>0 2 * * 0</spec> </hudson.triggers.TimerTrigger> </triggers>'
     'monthly': ' <triggers class="vector"> <hudson.triggers.TimerTrigger> <spec>0 4 1 * *</spec> </hudson.triggers.TimerTrigger> </triggers>'
-  'vcs': '<triggers class="vector"> <hudson.triggers.SCMTrigger> <spec>*/10 * * * *</spec> </hudson.triggers.SCMTrigger> </triggers>'
+  'vcs': '<triggers class="vector"> <hudson.triggers.SCMTrigger> <spec>H/10 * * * *</spec> </hudson.triggers.SCMTrigger> </triggers>'
   'resulttrigger': '<triggers class="vector"> <org.jenkinsci.plugins.buildresulttrigger.BuildResultTrigger> <spec>* * * * *</spec> <jobsInfo> <org.jenkinsci.plugins.buildresulttrigger.model.BuildResultTriggerInfo> <jobName>@(RESULTTRIGGER)</jobName> <checkedResults> @(RESULTS) </checkedResults> </org.jenkinsci.plugins.buildresulttrigger.model.BuildResultTriggerInfo> </jobsInfo> </org.jenkinsci.plugins.buildresulttrigger.BuildResultTrigger> </triggers>'
   'resulttrigger_results': '<org.jenkinsci.plugins.buildresulttrigger.model.CheckedResult> <checked>@(RESULT_STATUS)</checked> </org.jenkinsci.plugins.buildresulttrigger.model.CheckedResult>'
 

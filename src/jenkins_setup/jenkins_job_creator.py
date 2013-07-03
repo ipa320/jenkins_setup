@@ -497,6 +497,7 @@ class JenkinsJob(object):
         shell_script = shell_script.replace('@(USERNAME)', self.pipe_inst.user_name)
         shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.job_type)
         shell_script = shell_script.replace('@(PIPELINEREPOSOWNER)', self.pipe_inst.pipeline_repos_owner)
+        shell_script = shell_script.replace('@(CONFIG_FOLDER)', self.pipe_inst.config_folder)
 
         return shell_script
 
@@ -899,7 +900,7 @@ class GraphicsTestJob(TestJob):
 
 class HardwareBuildJob(JenkinsJob):
     """
-    Class for hardware build job
+    Class for hardware build jobs
     """
     def __init__(self, jenkins_instance, pipeline_config):
         """
@@ -933,7 +934,7 @@ class HardwareBuildJob(JenkinsJob):
         self.set_pipelinetrigger_param(['interactive_hw_test'])
 
 
-class HardwareJob(JenkinsJob):
+class HardwareTestJob(JenkinsJob):
     """
     Class for hardware test jobs
     """
@@ -947,7 +948,10 @@ class HardwareJob(JenkinsJob):
         @type  pipeline_config: dict
         """
 
-        super(HardwareJob, self).__init__(jenkins_instance, pipeline_config)
+        super(HardwareTestJob, self).__init__(jenkins_instance, pipeline_config)
+
+        self.job_type = 'hardware_test'
+        self.job_name = self.generate_job_name(self.job_type)
 
     def set_job_type_params(self):
         """
@@ -957,6 +961,14 @@ class HardwareJob(JenkinsJob):
         self.params['PROJECT'] = 'project'  # TODO 'matrix-project'
 
         #self.set_junit_testresults_param()  # TODO
+
+        # email
+        self.set_mailer_param('Hardware Test')
+
+        # set execute shell TODO
+
+        # set pipeline trigger
+        self.set_pipelinetrigger_param(['release'])
 
     def get_hardware_matrix_entries(self):
         """
@@ -968,76 +980,6 @@ class HardwareJob(JenkinsJob):
         dict_list = []
         dict_list.append({'repository': self.repo_list})
         # TODO
-
-
-class AutomaticHWTestJob(HardwareJob):
-    """
-    Class for automatic hardware test jobs
-    """
-    def __init__(self, jenkins_instance, pipeline_config):
-        """
-        Creates a automatic hardware test job
-
-        @param jenkins_instance: Jenkins instance
-        @type  jenkins_instance: jenkins.Jenkins
-        @param pipeline_config: pipeline configuration
-        @type  pipeline_config: dict
-        """
-
-        super(AutomaticHWTestJob, self).__init__(jenkins_instance, pipeline_config)
-
-        self.job_type = 'automatic_hw_test'
-        self.job_name = self.generate_job_name(self.job_type)
-
-    def set_job_type_params(self):
-        """
-        Sets automatic hardware test job specific job configuration parameters
-        """
-
-        super(AutomaticHWTestJob, self).set_job_type_params()
-
-        # email
-        self.set_mailer_param('Automatic Hardware Test')
-
-        # set execute shell TODO
-
-        # set pipeline trigger
-        self.set_pipelinetrigger_param(['release'])
-
-
-class InteractiveHWTestJob(HardwareJob):
-    """
-    Class for interactive hardware test jobs
-    """
-    def __init__(self, jenkins_instance, pipeline_config):
-        """
-        Creates a interactive hardware test job
-
-        @param jenkins_instance: Jenkins instance
-        @type  jenkins_instance: jenkins.Jenkins
-        @param pipeline_config: pipeline configuration
-        @type  pipeline_config: dict
-        """
-
-        super(InteractiveHWTestJob, self).__init__(jenkins_instance, pipeline_config)
-
-        self.job_type = 'interactive_hw_test'
-        self.job_name = self.generate_job_name(self.job_type)
-
-    def set_job_type_params(self):
-        """
-        Sets interactive hardware test job specific job configuration parameters
-        """
-
-        super(InteractiveHWTestJob, self).set_job_type_params()
-
-        # email
-        self.set_mailer_param('Interactive Hardware Test')
-
-        # set execute shell TODO
-
-        # set pipeline trigger
-        self.set_pipelinetrigger_param(['release'])
 
 
 class ReleaseJob(JenkinsJob):

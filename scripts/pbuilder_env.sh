@@ -14,40 +14,41 @@ export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
 
 env
 
-echo "Set up git and ssh"
-cp $WORKSPACE/.gitconfig ~/.gitconfig
-cp -a $WORKSPACE/.ssh /root
-ls -la /root/
-chown -R root.root /root/.ssh
+case $JOBTYPE in
+    prio_build | regular_build)
+        echo "Set up git and ssh"
+        cp $WORKSPACE/.gitconfig ~/.gitconfig
+        cp -a $WORKSPACE/.ssh /root
+        ls -la /root/
+        chown -R root.root /root/.ssh
+        ;;
+    graphic_test)
+        echo "Set up graphic"
+        export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 
-#echo "Install python-catkin-pkg python-rosdistro rosinstall"
-#apt-get update
-#apt-get upgrade -y
-#apt-get install python-catkin-pkg python-rosdistro -y
-#apt-get install openssh-client -y
+        . $DIR/remoteX.bash
 
-#pip install -U rosinstall
+        $DIR/checkDisplayNull.bash &&
+        $DIR/setupSources.bash &&
+        $DIR/../tvnc/installTurboVNC.bash &&
+        $DIR/../vgl/installVirtualGL.bash &&
+        $DIR/installNvidia.bash &&
+        startX &&
+        ;;
+esac
 
 echo "============================================================"
 echo "==== Begin" $SCRIPT "script.    Ignore the output above ===="
 echo "============================================================"
 
 date
-$WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
+if [ $JOBTYPE == "graphic_test" ]; then
+    $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY false
+    stopX
+else
+    $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY true
+fi
 date
 echo "============================================================"
 echo "==== End" $SCRIPT "script.    Ignore the output below ======"
 echo "============================================================"
-
-
-#echo "============================================================"
-#echo "DEBUG"
-#rospack list
-
-#echo "============================================================"
-#rosstack list
-
-#apt-get install tree
-#tree $WORKSPACE
-
-#tree /tmp/test_repositories
