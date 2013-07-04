@@ -787,9 +787,7 @@ class DownstreamBuildJob(BuildJob):
         self.set_shell_param(shell_script)
 
         # set parameterized triggers
-        nongraphics_test_trigger = self.get_single_parameterizedtrigger(['nongraphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
-        graphics_test_trigger = self.get_single_parameterizedtrigger(['graphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
-        self.set_parameterizedtrigger_param([nongraphics_test_trigger, graphics_test_trigger])
+        self.set_parameterizedtrigger_param([self.get_single_parameterizedtrigger(['downstream_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')])
 
 
 class TestJob(JenkinsJob):
