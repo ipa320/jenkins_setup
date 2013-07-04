@@ -669,12 +669,15 @@ class PriorityBuildJob(BuildJob):
         self.set_shell_param(shell_script)
 
         # set pipeline trigger
-        self.set_pipelinetrigger_param(['hardware_build'])
+        self.set_pipelinetrigger_param(['hardware_build', 'nongraphics_test', 'graphics_test'])
 
         # set parameterized triggers
-        regular_trigger = self.get_single_parameterizedtrigger(['regular_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
-        downstream_build_trigger = self.get_single_parameterizedtrigger(['downstream_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
-        self.set_parameterizedtrigger_param([regular_trigger, downstream_build_trigger])
+        parameterized_triggers = []
+        parameterized_triggers.append(self.get_single_parameterizedtrigger(['regular_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        parameterized_triggers.append(self.get_single_parameterizedtrigger(['downstream_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        parameterized_triggers.append(self.get_single_parameterizedtrigger(['nongraphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        parameterized_triggers.append(self.get_single_parameterizedtrigger(['graphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        self.set_parameterizedtrigger_param(parameterized_triggers)
 
 
 class RegularBuildJob(BuildJob):
@@ -711,6 +714,15 @@ class RegularBuildJob(BuildJob):
         # set execute shell
         shell_script = self.get_shell_script()
         self.set_shell_param(shell_script)
+
+        # set pipeline trigger
+        self.set_pipelinetrigger_param(['nongraphics_test', 'graphics_test'])
+
+        # set parameterized triggers
+        parameterized_triggers = []
+        parameterized_triggers.append(self.get_single_parameterizedtrigger(['nongraphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        parameterized_triggers.append(self.get_single_parameterizedtrigger(['graphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        self.set_parameterizedtrigger_param(parameterized_triggers)
 
     def get_regular_subset_filter(self):
         """
