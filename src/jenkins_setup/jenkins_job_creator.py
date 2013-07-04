@@ -821,7 +821,8 @@ class TestJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
-        #self.set_junit_testresults_param()  TODO
+        # junit test result location
+        self.set_junit_testresults_param()
 
         matrix_filter = self.generate_matrix_filter(self.get_prio_subset_filter())
 
@@ -906,6 +907,46 @@ class GraphicsTestJob(TestJob):
 
         # set pipeline trigger
         self.set_pipelinetrigger_param(['release'])
+
+
+class DownstreamTestJob(TestJob):
+    """
+    Class for downstream test job
+    """
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
+        """
+        Creates a downstream test job instance
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        @param repo_list: repositories this job will build
+        @typo  repo_list: list
+        """
+
+        super(DownstreamTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
+
+        self.repo_list = execute_repo_list
+
+        self.job_type = 'downstream_test'
+        self.job_name = self.generate_job_name(self.job_type)
+
+    def set_job_type_params(self):
+        """
+        Set downstream test job specific job configuration parameters
+        """
+
+        matrix_filter = self.generate_matrix_filter(self.get_prio_subset_filter())
+
+        super(DownstreamTestJob, self).set_job_type_params(matrix_filter)  # TODO enable parameter in super class
+
+        # email
+        self.set_mailer_param('Downstream Test')
+
+        # set execute shell
+        shell_script = self.get_shell_script()
+        self.set_shell_param(shell_script)
 
 
 class HardwareBuildJob(JenkinsJob):
