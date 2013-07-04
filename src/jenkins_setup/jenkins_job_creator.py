@@ -111,6 +111,7 @@ class JenkinsJob(object):
         self.params['MAILER'] = ''
         self.params['POSTBUILD_TASK'] = ''
         self.params['AUTHORIZATIONMATRIX'] = ''
+        self.params['CONCURRENT_BUILD'] = 'true'
 
     ###########################################################################
     # helper methods - parameter generation
@@ -659,6 +660,9 @@ class PriorityBuildJob(BuildJob):
         matrix_filter = self.generate_matrix_filter(self.get_prio_subset_filter())
 
         super(PriorityBuildJob, self).set_job_type_params(matrix_filter)
+
+        # no concurrent build
+        self.params['CONCURRENT_BUILD'] = 'false'
 
         # email
         self.set_mailer_param('Priority Build')

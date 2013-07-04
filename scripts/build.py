@@ -101,7 +101,7 @@ def main():
     # create repo sourcespace directory 'src_repository'
     os.makedirs(repo_sourcespace)
     # rosinstall repos
-    common.call("rosinstall %s %s/repo.rosinstall /opt/ros/%s"
+    common.call("rosinstall --verbose --continue-on-error %s %s/repo.rosinstall /opt/ros/%s"
                 % (repo_sourcespace, workspace, ros_distro))
 
     # get the repositories build dependencies
@@ -173,7 +173,7 @@ def main():
             f.write(rosinstall)
         print "Install user-defined build dependencies from source"
         # rosinstall depends
-        common.call("rosinstall %s %s/repo.rosinstall /opt/ros/%s"
+        common.call("rosinstall --verbose --continue-on-error %s %s/repo.rosinstall /opt/ros/%s"
                     % (repo_sourcespace, workspace, ros_distro))
 
         # get also deps of just installed user-defined/customized dependencies
@@ -233,7 +233,7 @@ def main():
                 rosinstall = "\n- git: {local-name: catkin, uri: 'git://github.com/ros/catkin.git', version: fuerte-devel}"
                 print "Install catkin"
                 # rosinstall catkin
-                common.call("rosinstall %s %s/repo.rosinstall /opt/ros/%s"
+                common.call("rosinstall --verbose %s %s/repo.rosinstall /opt/ros/%s"
                             % (repo_sourcespace_wet, workspace, ros_distro))
 
             print "Create a CMakeLists.txt for catkin packages"
@@ -292,6 +292,12 @@ def main():
     ### rosbuild repositories
     print datetime.datetime.now()
     if build_repo_type == 'dry':
+        # get list of dependencies to test
+        test_repos_list = []
+        for dep in pipe_repos[build_identifier].dependencies:
+            if dep.name in stacks:
+                test_repos_list.append(dep.name)
+
         ros_env_repo = common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
         ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_sourcespace, ros_package_path])
         if options.verbose:
@@ -316,7 +322,7 @@ def main():
                 raise common.BuildException("Failed to rosmake %s" % build_repo)
         try:
             common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" %
-                        (dry_build_logs, build_repo), ros_env_repo)
+                        (dry_build_logs, " ".join(test_repos_list + [build_repo])), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
 
