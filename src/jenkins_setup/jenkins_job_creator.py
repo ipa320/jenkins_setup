@@ -622,8 +622,6 @@ class BuildJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
-        self.set_junit_testresults_param()
-
         # set matrix
         matrix_entries_dict_list = self.get_matrix_entries()
         self.set_matrix_param(matrix_entries_dict_list, matrix_filter)
@@ -775,9 +773,6 @@ class DownstreamBuildJob(BuildJob):
         matrix_filter = self.generate_matrix_filter(self.get_prio_subset_filter())
 
         super(DownstreamBuildJob, self).set_job_type_params(matrix_filter)
-
-        # TODO remove
-        self.params['JUNIT_TESTRESULTS'] = ''
 
         # email
         self.set_mailer_param('Downstream Build')
