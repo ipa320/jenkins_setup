@@ -2,7 +2,6 @@
 
 import datetime
 import socket
-import os
 import pkg_resources
 import yaml
 import re
@@ -17,27 +16,12 @@ class JenkinsJob(object):
         Sets up Jenkins job object
         """
 
-        self.JOB_TYPE_NAMES = {'pipe': 'pipe_starter',
-                               'prio': 'prio_build',
-                               'normal': 'normal_build',
-                               'downstream_build': 'downstream_build',
-                               'nongraphics_test': 'nongraphics_test',
-                               'graphics_test': 'graphics_test',
-                               'clean': 'clean_up',
-                               'hardware_build': 'hardware_build',
-                               'automatic_hw_test': 'automatic_hw_test',
-                               'interactive_hw_test': 'interactive_hw_test',
-                               'release': 'release'}
-
         self.jenkins_instance = jenkins_instance
         self.pipe_inst = pipeline_instance
 
         self.job_config_params = pkg_resources.resource_string('jenkins_setup', 'templates/job_config_params.yaml')
         self.job_config_params = yaml.load(self.job_config_params)
         self.job_config = pkg_resources.resource_string('jenkins_setup', 'templates/job_config.xml')
-
-        with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
-            self.network_config = yaml.load(f)
 
         self.params = {}
 
@@ -55,19 +39,17 @@ class JenkinsJob(object):
         if self.jenkins_instance.job_exists(self.job_name):
             try:
                 self.jenkins_instance.reconfig_job(self.job_name, self.job_config)
-                print "Reconfigured job %s" % self.job_name
-                return 'reconfigured'
+                return "Reconfigured job %s" % self.job_name
             except Exception as ex:
                 print ex
-                return 'reconfiguration failed: %s' % ex
+                return 'Reconfiguration of %s failed: %s' % (self.job_name, ex)
         else:
             try:
                 self.jenkins_instance.create_job(self.job_name, self.job_config)
-                print "Created job %s" % self.job_name
-                return 'created'
+                return "Created job %s" % self.job_name
             except Exception as ex:
                 print ex
-                return 'creation failed: %s' % ex
+                return 'Creation of %s failed: %s' % (self.job_name, ex)
 
     def create_job(self):
         """
@@ -109,8 +91,8 @@ class JenkinsJob(object):
         """
 
         self.params['USERNAME'] = self.pipe_inst.user_name
-        #self.params['JOB_TYPE_NAME'] = self.JOB_TYPE_NAMES[self.job_type]
-        self.params['SCRIPT'] = self.JOB_TYPE_NAMES[self.job_type]
+        #self.params['JOB_TYPE_NAME'] = self.job_type
+        self.params['SCRIPT'] = self.job_type
         self.params['NODE_LABEL'] = self.job_type
         self.params['TIME'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M')
         self.params['HOSTNAME'] = socket.gethostname()
@@ -127,6 +109,9 @@ class JenkinsJob(object):
         self.params['PARAMETERIZED_TRIGGER'] = ''
         self.params['JUNIT_TESTRESULTS'] = ''
         self.params['MAILER'] = ''
+        self.params['POSTBUILD_TASK'] = ''
+        self.params['AUTHORIZATIONMATRIX'] = ''
+        self.params['CONCURRENT_BUILD'] = 'true'
 
     ###########################################################################
     # helper methods - parameter generation
@@ -153,12 +138,9 @@ class JenkinsJob(object):
         '''
 
         if suffix != '':
-            return '__'.join([self.pipe_inst.user_name,
-                              self.JOB_TYPE_NAMES[job_type],
-                              suffix])
+            return '__'.join([self.pipe_inst.user_name, job_type, suffix])
         else:
-            return '__'.join([self.pipe_inst.user_name,
-                              self.JOB_TYPE_NAMES[job_type]])
+            return '__'.join([self.pipe_inst.user_name, job_type])
 
     def generate_job_list(self, job_type_list):
         '''
@@ -207,7 +189,7 @@ class JenkinsJob(object):
         if value_list == []:
             raise Exception('No values given')
         axis = self.job_config_params['matrix']['axis'].replace('@(NAME)', axis_name)
-        values = ' '.join([self.job_config_params['matrix']['value'].replace('@(VALUE)', value) for value in value_list])
+        values = ' '.join([self.job_config_params['matrix']['value'].replace('@(VALUE)', value) for value in sorted(value_list)])
         axis = axis.replace('@(VALUES)', values)
 
         return axis
@@ -225,14 +207,14 @@ class JenkinsJob(object):
         axes = ''
         if name_value_dict_list == []:
             return ''
-        for name_value_dict in name_value_dict_list:
+        for name_value_dict in sorted(name_value_dict_list):
             axes += ' '.join([self.generate_matrix_axis(axis_name, axis_values)
                               for axis_name, axis_values in name_value_dict.iteritems()])
         if axes == '':
             return ''
 
         matrix = self.job_config_params['matrix']['basic']
-        matrix = matrix.replace('@(NODE)', self.JOB_TYPE_NAMES[self.job_type])
+        matrix = matrix.replace('@(NODE)', self.job_type)
         matrix = matrix.replace('@(AXES)', axes)
         if filter:
             matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', filter)
@@ -412,19 +394,36 @@ class JenkinsJob(object):
 
         self.params['PARAMETERIZED_TRIGGER'] = self.get_parameterizedtrigger_param(trigger_list)
 
-    def set_mailer_param(self):
+    def set_mailer_param(self, job_name):
         """
         Sets config for mailer
+
+        @param job_name: name of job to be shown in email subject
+        @type  job_name: string
         """
 
-        mailer = self.job_config_params['mailer']
+        mailer = self.job_config_params['emailext']
         mailer = mailer.replace('@(EMAIL)', self.pipe_inst.email)
+        mailer = mailer.replace('@(JOBNAME)', job_name)
         if self.pipe_inst.committer_email_enabled:
             mailer = mailer.replace('@(EMAIL_TO_COMMITTER)', 'true')
         else:
             mailer = mailer.replace('@(EMAIL_TO_COMMITTER)', 'false')
 
         self.params['MAILER'] = mailer
+
+    def set_authorization_matrix_param(self, job):
+        """
+        Sets config for authorization matrix plugin
+
+        @param job: [build|starter]
+        @type  job: string
+        """
+
+        authorization = self.job_config_params['authorizationmatrix'][job]
+        authorization = authorization.replace('@(USERNAME)', self.pipe_inst.user_name)
+
+        self.params['AUTHORIZATIONMATRIX'] = authorization
 
     def set_junit_testresults_param(self):
         """
@@ -495,10 +494,10 @@ class JenkinsJob(object):
         else:
             shell_script = shell_temp[self.job_type]
         shell_script = shell_script.replace('@(SERVERNAME)', self.pipe_inst.server_name)
-        shell_script = shell_script.replace('@(STORAGE)', 'jenkins@%s:%s' % (self.network_config['tarball_host'],
-                                                                             self.network_config['tarball_folderpath']))
+        shell_script = shell_script.replace('@(STORAGE)', self.tarball_location)
         shell_script = shell_script.replace('@(USERNAME)', self.pipe_inst.user_name)
-        shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.JOB_TYPE_NAMES[self.job_type])
+        shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.job_type)
+        shell_script = shell_script.replace('@(PIPELINEREPOSOWNER)', self.pipe_inst.pipeline_repos_owner)
 
         return shell_script
 
@@ -524,7 +523,7 @@ class PipeStarterGeneralJob(JenkinsJob):
     """
     Object representation of a general Pipe Starter Job
     """
-    def __init__(self, jenkins_instance, pipeline_config, repo_list, manual_jobs_list):
+    def __init__(self, jenkins_instance, pipeline_config, repo_list):
         """
         :param jenkins_instance: object of Jenkins server
         :param pipeline_config: config dict, ``dict``
@@ -533,11 +532,10 @@ class PipeStarterGeneralJob(JenkinsJob):
 
         super(PipeStarterGeneralJob, self).__init__(jenkins_instance, pipeline_config)
 
-        self.job_type = 'pipe'
+        self.job_type = 'pipe_starter'
         self.job_name = self.generate_job_name(self.job_type, suffix='general')
 
         self.repo_list = repo_list
-        self.manual_jobs_list = manual_jobs_list
 
     def set_job_type_params(self):
         """
@@ -547,23 +545,21 @@ class PipeStarterGeneralJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
 
-        # set groovy postbuild script
-        self.set_groovypostbuild_param('disable', self.manual_jobs_list, 2)
-
         # set parameterized trigger
         prio_triggers = []
         for repo in self.repo_list:
-            prio_triggers.append(self.get_single_parameterizedtrigger(['prio'],
+            prio_triggers.append(self.get_single_parameterizedtrigger(['prio_build'],
                                                                       subset_filter=self.generate_matrix_filter(self.get_prio_subset_filter()),
                                                                       predefined_param='POLL=manually triggered' + '\nREPOSITORY=%s' % repo + '\nREPOSITORY_FILTER=repository=="%s"' % repo))
         self.set_parameterizedtrigger_param(prio_triggers)
+        self.set_authorization_matrix_param('starter')
 
 
 class PipeStarterJob(PipeStarterGeneralJob):
     """
     Object representation of Pipe Starter Job
     """
-    def __init__(self, jenkins_instance, pipeline_config, repo_list, poll, manual_jobs_list):
+    def __init__(self, jenkins_instance, pipeline_config, repo_list, poll):
         """
         :param jenkins_instance: object of Jenkins server
         :param pipeline_config: config dict, ``dict``
@@ -571,9 +567,9 @@ class PipeStarterJob(PipeStarterGeneralJob):
         :param poll: name of repository to monitor for changes, ``str``
         """
 
-        super(PipeStarterJob, self).__init__(jenkins_instance, pipeline_config, repo_list, manual_jobs_list)
+        super(PipeStarterJob, self).__init__(jenkins_instance, pipeline_config, repo_list)
 
-        self.job_type = 'pipe'
+        self.job_type = 'pipe_starter'
         self.job_name = self.generate_job_name(self.job_type, suffix=poll)
 
         self.repo_list = repo_list
@@ -595,7 +591,7 @@ class PipeStarterJob(PipeStarterGeneralJob):
         # generate parameterized triggers
         prio_triggers = []
         for repo in self.repo_list:
-            prio_triggers.append(self.get_single_parameterizedtrigger(['prio'], subset_filter='(repository=="%s")' % repo,
+            prio_triggers.append(self.get_single_parameterizedtrigger(['prio_build'], subset_filter='(repository=="%s")' % repo,
                                                                       predefined_param='POLL=' + self.poll + '\nREPOSITORY=%s' % repo))
         self.set_parameterizedtrigger_param(prio_triggers)
 
@@ -604,7 +600,7 @@ class BuildJob(JenkinsJob):
     """
     Class for build jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
         """
         Creates a build job instance
 
@@ -616,26 +612,30 @@ class BuildJob(JenkinsJob):
 
         super(BuildJob, self).__init__(jenkins_instance, pipeline_config)
 
+        self.tarball_location = tarball_location
+
     def set_job_type_params(self, matrix_filter=None):
         """
         Sets build job specific job configuration parameters
         """
 
         self.params['NODE_LABEL'] = 'master'
+        self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
-        self.set_mailer_param()
         self.set_junit_testresults_param()
 
         # set matrix
         matrix_entries_dict_list = self.get_matrix_entries()
         self.set_matrix_param(matrix_entries_dict_list, matrix_filter)
 
+        self.set_authorization_matrix_param('build')
+
 
 class PriorityBuildJob(BuildJob):
     """
     Class for priority build jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
         Creates a priority build job instance
 
@@ -645,11 +645,11 @@ class PriorityBuildJob(BuildJob):
         @type  pipeline_config: dict
         """
 
-        super(PriorityBuildJob, self).__init__(jenkins_instance, pipeline_config)
+        super(PriorityBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
 
         self.repo_list = execute_repo_list
 
-        self.job_type = 'prio'
+        self.job_type = 'prio_build'
         self.job_name = self.generate_job_name(self.job_type)
 
     def set_job_type_params(self):
@@ -661,6 +661,12 @@ class PriorityBuildJob(BuildJob):
 
         super(PriorityBuildJob, self).set_job_type_params(matrix_filter)
 
+        # no concurrent build
+        self.params['CONCURRENT_BUILD'] = 'false'
+
+        # email
+        self.set_mailer_param('Priority Build')
+
         # set execute shell
         shell_script = self.get_shell_script()
         self.set_shell_param(shell_script)
@@ -669,18 +675,18 @@ class PriorityBuildJob(BuildJob):
         self.set_pipelinetrigger_param(['hardware_build'])
 
         # set parameterized triggers
-        normal_trigger = self.get_single_parameterizedtrigger(['normal'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
+        regular_trigger = self.get_single_parameterizedtrigger(['regular_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
         downstream_build_trigger = self.get_single_parameterizedtrigger(['downstream_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')
-        self.set_parameterizedtrigger_param([normal_trigger, downstream_build_trigger])
+        self.set_parameterizedtrigger_param([regular_trigger, downstream_build_trigger])
 
 
-class NormalBuildJob(BuildJob):
+class RegularBuildJob(BuildJob):
     """
-    Class for normal build jobs
+    Class for regular build jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
         """
-        Creates a normal  build job instance
+        Creates a regular  build job instance
 
         @param jenkins_instance: Jenkins instance
         @type  jenkins_instance: jenkins.Jenkins
@@ -688,27 +694,30 @@ class NormalBuildJob(BuildJob):
         @type  pipeline_config: dict
         """
 
-        super(NormalBuildJob, self).__init__(jenkins_instance, pipeline_config)
+        super(RegularBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
 
-        self.job_type = 'normal'
+        self.job_type = 'regular_build'
         self.job_name = self.generate_job_name(self.job_type)
 
     def set_job_type_params(self):
         """
-        Sets normal build job specific job configuration parameters
+        Sets regular build job specific job configuration parameters
         """
 
-        matrix_filter = self.generate_matrix_filter(self.get_normal_subset_filter())
+        matrix_filter = self.generate_matrix_filter(self.get_regular_subset_filter())
 
-        super(NormalBuildJob, self).set_job_type_params(matrix_filter)
+        super(RegularBuildJob, self).set_job_type_params(matrix_filter)
+
+        # email
+        self.set_mailer_param('Regular Build')
 
         # set execute shell
         shell_script = self.get_shell_script()
         self.set_shell_param(shell_script)
 
-    def get_normal_subset_filter(self):
+    def get_regular_subset_filter(self):
         """
-        Gets subset filter for normal build
+        Gets subset filter for regular build
         """
 
         subset_filter_input = []
@@ -730,7 +739,7 @@ class DownstreamBuildJob(BuildJob):
     """
     Class for downstream build job
     """
-    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
         Creates a downstream build job instance
 
@@ -742,7 +751,7 @@ class DownstreamBuildJob(BuildJob):
         @typo  repo_list: list
         """
 
-        super(DownstreamBuildJob, self).__init__(jenkins_instance, pipeline_config)
+        super(DownstreamBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
 
         self.repo_list = execute_repo_list
 
@@ -761,7 +770,10 @@ class DownstreamBuildJob(BuildJob):
         # TODO remove
         self.params['JUNIT_TESTRESULTS'] = ''
 
-        # set execute shell TODO
+        # email
+        self.set_mailer_param('Downstream Build')
+
+        # set execute shell
         shell_script = self.get_shell_script()
         self.set_shell_param(shell_script)
 
@@ -775,7 +787,7 @@ class TestJob(JenkinsJob):
     """
     Class for test jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
         Creates a test job instance
 
@@ -800,8 +812,8 @@ class TestJob(JenkinsJob):
         """
 
         self.params['NODE_LABEL'] = 'master'
+        self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
-        self.set_mailer_param()
         #self.set_junit_testresults_param()  TODO
 
         matrix_filter = self.generate_matrix_filter(self.get_prio_subset_filter())
@@ -815,7 +827,7 @@ class NongraphicsTestJob(TestJob):
     """
     Class for nongraphics test job
     """
-    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
         Creates a nongraphics test job instance
 
@@ -825,7 +837,7 @@ class NongraphicsTestJob(TestJob):
         @type  pipeline_config: dict
         """
 
-        super(NongraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
+        super(NongraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
 
         self.job_type = 'nongraphics_test'
         self.job_name = self.generate_job_name(self.job_type)
@@ -839,6 +851,9 @@ class NongraphicsTestJob(TestJob):
 
         self.params['NODE_LABEL'] = 'nongraphics_test'  # TODO check labels
 
+        # email
+        self.set_mailer_param('Non-Graphics Test')
+
         # set execute shell TODO
         shell_script = self.get_shell_script('test')
         self.set_shell_param(shell_script)
@@ -851,7 +866,7 @@ class GraphicsTestJob(TestJob):
     """
     Class for graphics test job
     """
-    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
         Creates a graphics test job instance
 
@@ -861,7 +876,7 @@ class GraphicsTestJob(TestJob):
         @type  pipeline_config: dict
         """
 
-        super(GraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
+        super(GraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
 
         self.job_type = 'graphics_test'
         self.job_name = self.generate_job_name(self.job_type)
@@ -874,6 +889,9 @@ class GraphicsTestJob(TestJob):
         super(GraphicsTestJob, self).set_job_type_params()
 
         self.params['NODE_LABEL'] = 'graphics_test'  # TODO check labels
+
+        # email
+        self.set_mailer_param('Graphics Test')
 
         # set execute shell TODO
         shell_script = self.get_shell_script('test')
@@ -899,12 +917,18 @@ class HardwareBuildJob(JenkinsJob):
 
         super(HardwareBuildJob, self).__init__(jenkins_instance, pipeline_config)
 
+        self.job_type = 'hardware_build'
+        self.job_name = self.generate_job_name(self.job_type)
+
     def set_job_type_params(self):
         """
         Sets hardware build job specific job configuration parameters
         """
 
         self.params['PROJECT'] = 'project'  # TODO 'matrix-project' ??
+
+        # email
+        self.set_mailer_param('Hardware Build')
 
         # set execute shell TODO
 
@@ -976,6 +1000,9 @@ class AutomaticHWTestJob(HardwareJob):
 
         super(AutomaticHWTestJob, self).set_job_type_params()
 
+        # email
+        self.set_mailer_param('Automatic Hardware Test')
+
         # set execute shell TODO
 
         # set pipeline trigger
@@ -1008,6 +1035,9 @@ class InteractiveHWTestJob(HardwareJob):
 
         super(InteractiveHWTestJob, self).set_job_type_params()
 
+        # email
+        self.set_mailer_param('Interactive Hardware Test')
+
         # set execute shell TODO
 
         # set pipeline trigger
@@ -1018,7 +1048,7 @@ class ReleaseJob(JenkinsJob):
     """
     Class for release jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
         """
         Creates a release job
 
@@ -1042,12 +1072,15 @@ class ReleaseJob(JenkinsJob):
 
         self.params['NODE_LABEL'] = 'release'
 
+        # email
+        self.set_mailer_param('Release')
+
 
 class CleanUpJob(JenkinsJob):
     """
     Class for clean up jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
         """
         Creates a clean up job
 

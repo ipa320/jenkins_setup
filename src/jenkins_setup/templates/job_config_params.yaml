@@ -6,7 +6,7 @@
     'daily': ' <triggers class="vector"> <hudson.triggers.TimerTrigger> <spec>0 13 * * *</spec> </hudson.triggers.TimerTrigger> </triggers>'
     'weekly': ' <triggers class="vector"> <hudson.triggers.TimerTrigger> <spec>0 2 * * 0</spec> </hudson.triggers.TimerTrigger> </triggers>'
     'monthly': ' <triggers class="vector"> <hudson.triggers.TimerTrigger> <spec>0 4 1 * *</spec> </hudson.triggers.TimerTrigger> </triggers>'
-  'vcs': '<triggers class="vector"> <hudson.triggers.SCMTrigger> <spec>*/10 * * * *</spec> </hudson.triggers.SCMTrigger> </triggers>'
+  'vcs': '<triggers class="vector"> <hudson.triggers.SCMTrigger> <spec>H/10 * * * *</spec> </hudson.triggers.SCMTrigger> </triggers>'
   'resulttrigger': '<triggers class="vector"> <org.jenkinsci.plugins.buildresulttrigger.BuildResultTrigger> <spec>* * * * *</spec> <jobsInfo> <org.jenkinsci.plugins.buildresulttrigger.model.BuildResultTriggerInfo> <jobName>@(RESULTTRIGGER)</jobName> <checkedResults> @(RESULTS) </checkedResults> </org.jenkinsci.plugins.buildresulttrigger.model.BuildResultTriggerInfo> </jobsInfo> </org.jenkinsci.plugins.buildresulttrigger.BuildResultTrigger> </triggers>'
   'resulttrigger_results': '<org.jenkinsci.plugins.buildresulttrigger.model.CheckedResult> <checked>@(RESULT_STATUS)</checked> </org.jenkinsci.plugins.buildresulttrigger.model.CheckedResult>'
 
@@ -20,9 +20,69 @@
 
 'mailer': '<hudson.tasks.Mailer> <recipients>@(EMAIL)</recipients> <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild> <sendToIndividuals>@(EMAIL_TO_COMMITTER)</sendToIndividuals> </hudson.tasks.Mailer>'
 
+'emailext': '<hudson.plugins.emailext.ExtendedEmailPublisher>
+      <recipientList>@(EMAIL)</recipientList>
+      <configuredTriggers>
+        <hudson.plugins.emailext.plugins.trigger.UnstableTrigger>
+          <email>
+            <recipientList></recipientList>
+            <subject>$PROJECT_DEFAULT_SUBJECT</subject>
+            <body>$PROJECT_DEFAULT_CONTENT</body>
+            <sendToDevelopers>@(EMAIL_TO_COMMITTER)</sendToDevelopers>
+            <sendToRequester>false</sendToRequester>
+            <includeCulprits>false</includeCulprits>
+            <sendToRecipientList>true</sendToRecipientList>
+            <attachmentsPattern></attachmentsPattern>
+            <attachBuildLog>false</attachBuildLog>
+            <replyTo></replyTo>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.UnstableTrigger>
+        <hudson.plugins.emailext.plugins.trigger.FailureTrigger>
+          <email>
+            <recipientList></recipientList>
+            <subject>$PROJECT_DEFAULT_SUBJECT</subject>
+            <body>$PROJECT_DEFAULT_CONTENT</body>
+            <sendToDevelopers>@(EMAIL_TO_COMMITTER)</sendToDevelopers>
+            <sendToRequester>false</sendToRequester>
+            <includeCulprits>false</includeCulprits>
+            <sendToRecipientList>true</sendToRecipientList>
+            <attachmentsPattern></attachmentsPattern>
+            <attachBuildLog>false</attachBuildLog>
+            <replyTo></replyTo>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.FailureTrigger>
+        <hudson.plugins.emailext.plugins.trigger.FixedTrigger>
+          <email>
+            <recipientList></recipientList>
+            <subject>$PROJECT_DEFAULT_SUBJECT</subject>
+            <body>$PROJECT_DEFAULT_CONTENT</body>
+            <sendToDevelopers>@(EMAIL_TO_COMMITTER)</sendToDevelopers>
+            <sendToRequester>false</sendToRequester>
+            <includeCulprits>false</includeCulprits>
+            <sendToRecipientList>true</sendToRecipientList>
+            <attachmentsPattern></attachmentsPattern>
+            <attachBuildLog>false</attachBuildLog>
+            <replyTo></replyTo>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.FixedTrigger>
+      </configuredTriggers>
+      <contentType>text/html</contentType>
+<defaultSubject>$BUILD_STATUS: @(JOBNAME) of ${ENV, var="repository"};  ${ENV, var="ros_distro"}, ${ENV, var="ubuntu_distro"}, ${ENV, var="arch"} - Build # $BUILD_NUMBER!</defaultSubject>
+      <defaultContent>${JELLY_SCRIPT,template=&quot;html-with-health-builds-tests&quot;}</defaultContent>
+      <attachmentsPattern></attachmentsPattern>
+      <presendScript></presendScript>
+      <attachBuildLog>true</attachBuildLog>
+      <replyTo></replyTo>
+      <matrixTriggerMode>ONLY_CONFIGURATIONS</matrixTriggerMode>
+    </hudson.plugins.emailext.ExtendedEmailPublisher>'
+
 'parameters':
   'block': '<hudson.model.ParametersDefinitionProperty> <parameterDefinitions> @(PARAMS) </parameterDefinitions> </hudson.model.ParametersDefinitionProperty>'
   'param': '<hudson.model.StringParameterDefinition> <name>@(PARAM)</name> <description> </description> <defaultValue> </defaultValue>  </hudson.model.StringParameterDefinition>'
+
+'authorizationmatrix':
+    'build': '<hudson.security.AuthorizationMatrixProperty> <permission>hudson.model.Item.Read:@(USERNAME)</permission> </hudson.security.AuthorizationMatrixProperty>'
+    'starter': '<hudson.security.AuthorizationMatrixProperty> <permission>hudson.model.Item.Build:@(USERNAME)</permission> </hudson.security.AuthorizationMatrixProperty>'
 
 'parameterizedtrigger':
   'basic':
@@ -50,6 +110,8 @@
         'disable': "for (project in @(PROJECT_LIST)) {\n manager.listener.logger.println('Disable ' + project + ' job')\n manager.hudson.getItem(project).disable()\n}"
 
 'postbuildtrigger': '<hudson.tasks.BuildTrigger> <childProjects>@(CHILD_PROJECTS)</childProjects> <threshold> <name>@(THRESHOLD)</name> </threshold> </hudson.tasks.BuildTrigger>'
+
+'postbuildtask': "<hudson.plugins.postbuildtask.PostbuildTask> <tasks> <hudson.plugins.postbuildtask.TaskProperties> <logTexts> <hudson.plugins.postbuildtask.LogProperties> <logText>Building remotely on</logText> <operator>AND</operator> </hudson.plugins.postbuildtask.LogProperties> </logTexts> <EscalateStatus>false</EscalateStatus> <RunIfJobSuccessful>false</RunIfJobSuccessful> <script>#!/bin/bash\nif [ -d $WORKSPACE/../aux ]; then\nsudo rm -rf $WORKSPACE/../aux\nfi</script> </hudson.plugins.postbuildtask.TaskProperties> </tasks> </hudson.plugins.postbuildtask.PostbuildTask>"
 
 'pipelinetrigger': '<au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger> <downstreamProjectNames>@(PIPELINETRIGGER_PROJECT)</downstreamProjectNames> </au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger>'
 

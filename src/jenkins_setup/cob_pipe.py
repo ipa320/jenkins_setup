@@ -29,19 +29,22 @@ class CobPipe(object):
             repo = CobPipeRepo(repo_name, data)
             self.repositories[repo_name] = repo
 
-    def load_config_from_url(self, server_name, user_name):
+    def load_config_from_url(self, pipeline_repos_owner, server_name, user_name):
         """
         Gets the buildpipeline configuration by the given server and user name
         and sets up the pipeline object
 
+        @param pipeline_repos_owner: address of config repo
+        @type  pipeline_repos_owner: str
         @param server_name: name of server
         @type  server_name: str
         @param user_name: name of user
         @type  user_name: str
         """
 
-        pipeline_config = common.get_buildpipeline_configs(server_name, user_name)
+        pipeline_config = common.get_buildpipeline_configs("git@github.com:%s/jenkins_config.git" % pipeline_repos_owner, server_name, user_name)
         self.load_config_from_dict(pipeline_config)
+        self.pipeline_repos_owner = pipeline_repos_owner
 
     def get_jobs_to_create(self):
         """
@@ -98,7 +101,10 @@ class CobPipeDependencyRepo(object):
         @type  data: dict
         """
 
-        self.name = name
+        if name is None or name == "":
+            raise CobPipeException("No Name given!")
+        else:
+            self.name = name
         self.type = data['type']
         self.url = data['url']
         self.version = None
@@ -170,8 +176,8 @@ class CobPipeRepo(CobPipeDependencyRepo):
             raise CobPipeException("Found robot to build on, but job is missing")
         if ('automatic_hw_test' in self.jobs or 'interactive_hw_test' in self.jobs) and self.robots == []:
             raise CobPipeException("Hardware tests defined but no robot to run them on")
-        if self.matrix_distro_arch != {} and 'normal' not in self.jobs:
-            raise CobPipeException("Configuration for normal build found, but no normal build job")
+        if self.matrix_distro_arch != {} and 'regular_build' not in self.jobs:
+            raise CobPipeException("Configuration for regular build found, but no regular build job")
 
 
 class CobPipeException(Exception):
