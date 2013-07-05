@@ -1004,11 +1004,12 @@ class HardwareBuildJob(JenkinsJob):
         # email
         self.set_mailer_param('Hardware Build')
 
-        # set execute shell TODO
+        # set execute shell
+        shell_script = self.get_shell_script()
+        self.set_shell_param(shell_script)
 
         # set pipeline trigger
-        self.set_pipelinetrigger_param(['automatic_hw_test'])
-        self.set_pipelinetrigger_param(['interactive_hw_test'])
+        self.set_pipelinetrigger_param(['hardware_test'])
 
 
 class HardwareTestJob(JenkinsJob):
@@ -1037,12 +1038,15 @@ class HardwareTestJob(JenkinsJob):
 
         self.params['PROJECT'] = 'project'  # TODO 'matrix-project'
 
-        #self.set_junit_testresults_param()  # TODO
+        # junit test result location
+        self.set_junit_testresults_param()
 
         # email
         self.set_mailer_param('Hardware Test')
 
-        # set execute shell TODO
+        # set execute shell
+        shell_script = self.get_shell_script()
+        self.set_shell_param(shell_script)
 
         # set pipeline trigger
         self.set_pipelinetrigger_param(['release'])
