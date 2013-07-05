@@ -622,9 +622,9 @@ class BuildJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
-        self._set_junit_testresults_param()
-
         # set matrix
+		if not matrix_filter:
+            matrix_filter = self.generate_matrix_filter(self._get_prio_subset_filter())
         matrix_entries_dict_list = self._get_matrix_entries()
         self._set_matrix_param(matrix_entries_dict_list, matrix_filter)
 
@@ -657,9 +657,7 @@ class PriorityBuildJob(BuildJob):
         Sets priority build job specific job configuration parameters
         """
 
-        matrix_filter = self._generate_matrix_filter(self._get_prio_subset_filter())
-
-        super(PriorityBuildJob, self)._set_job_type_params(matrix_filter)
+        super(PriorityBuildJob, self)._set_job_type_params()
 
         # email
         self._set_mailer_param('Priority Build')
@@ -757,7 +755,7 @@ class DownstreamBuildJob(BuildJob):
         @param pipeline_config: pipeline configuration
         @type  pipeline_config: dict
         @param repo_list: repositories this job will build
-        @typo  repo_list: list
+        @type  repo_list: list
         """
 
         super(DownstreamBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
@@ -772,12 +770,7 @@ class DownstreamBuildJob(BuildJob):
         Sets downstream build job specific job configuration parameters
         """
 
-        matrix_filter = self._generate_matrix_filter(self._get_prio_subset_filter())
-
-        super(DownstreamBuildJob, self)._set_job_type_params(matrix_filter)
-
-        # TODO remove
-        self.params['JUNIT_TESTRESULTS'] = ''
+        super(DownstreamBuildJob, self)._set_job_type_params()
 
         # email
         self._set_mailer_param('Downstream Build')
@@ -803,7 +796,7 @@ class TestJob(JenkinsJob):
         @param pipeline_config: pipeline configuration
         @type  pipeline_config: dict
         @param repo_list: repositories this job will build
-        @typo  repo_list: list
+        @type  repo_list: list
         """
 
         super(TestJob, self).__init__(jenkins_instance, pipeline_config)
@@ -813,7 +806,7 @@ class TestJob(JenkinsJob):
         self.job_type = 'test'
         self.job_name = self._generate_job_name(self.job_type)
 
-    def _set_job_type_params(self):
+    def _set_job_type_params(self, matrix_filter=None):
         """
         Sets test job specific job configuration parameters
         """
@@ -821,13 +814,47 @@ class TestJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
-        #self._set_junit_testresults_param()  TODO
-
-        matrix_filter = self._generate_matrix_filter(self._get_prio_subset_filter())
+        # junit test result location
+        self._set_junit_testresults_param()
 
         # set matrix
+        if not matrix_filter:
+            matrix_filter = self._generate_matrix_filter(self._get_test_subset_filter())
         matrix_entries_dict_list = self._get_matrix_entries()
         self._set_matrix_param(matrix_entries_dict_list, matrix_filter)
+
+        # TODO authorization matrix; see BuildJob
+
+    def _get_test_subset_filter(self, test_type):
+        """
+        Gets the subset filter of the given test job (non/graphics_test)
+
+        @param test_type: test job type to calculate subset filter for
+        @type  test_type: string
+
+        @return type: list of dicts of subset filter entries
+        """
+
+        subset_filter_input = []
+        for repo in self.pipe_inst.repositories.keys():
+            if self.pipe_inst.repositories[repo].test_type == test_type:
+                for rosdistro in self.pipe_inst.repositories[repo].ros_distro:
+                    subset_filter_input_entry = {}
+                    subset_filter_input_entry['repository'] = repo
+                    subset_filter_input_entry['ros_distro'] = rosdistro
+                    subset_filter_input_entry['ubuntu_distro'] = self.pipe_inst.repositories[repo].prio_ubuntu_distro
+                    subset_filter_input_entry['arch'] = self.pipe_inst.repositories[repo].prio_arch
+                    subset_filter_input.append(subset_filter_input_entry)
+                    for ubuntu_distro, repo_archs in self.pipe_inst.repositories[repo].matrix_distro_arch.iteritems():
+                        for repo_arch in repo_archs:
+                            subset_filter_input_entry = {}
+                            subset_filter_input_entry['repository'] = repo
+                            subset_filter_input_entry['ros_distro'] = rosdistro
+                            subset_filter_input_entry['ubuntu_distro'] = ubuntu_distro
+                            subset_filter_input_entry['arch'] = repo_arch
+                            subset_filter_input.append(subset_filter_input_entry)
+
+        return subset_filter_input
 
 
 class NongraphicsTestJob(TestJob):
@@ -906,6 +933,46 @@ class GraphicsTestJob(TestJob):
 
         # set pipeline trigger
         self._set_pipelinetrigger_param(['release'])
+
+
+class DownstreamTestJob(TestJob):
+    """
+    Class for downstream test job
+    """
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
+        """
+        Creates a downstream test job instance
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        @param repo_list: repositories this job will build
+        @type  repo_list: list
+        """
+
+        super(DownstreamTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
+
+        self.repo_list = execute_repo_list
+
+        self.job_type = 'downstream_test'
+        self.job_name = self.generate_job_name(self.job_type)
+
+    def _set_job_type_params(self):
+        """
+        Set downstream test job specific job configuration parameters
+        """
+
+        matrix_filter = self._generate_matrix_filter(self._get_prio_subset_filter())
+
+        super(DownstreamTestJob, self)._set_job_type_params(matrix_filter)
+
+        # email
+        self._set_mailer_param('Downstream Test')
+
+        # set execute shell
+        shell_script = self._get_shell_script()
+        self._set_shell_param(shell_script)
 
 
 class HardwareBuildJob(JenkinsJob):
