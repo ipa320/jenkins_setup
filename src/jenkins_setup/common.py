@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import urllib2
+import contextlib
 import os
 import subprocess
 import sys
@@ -56,26 +57,35 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
 
     rosdep_pkgs = []
     aptget_pkgs = []
+    unavailable_pkgs = []
 
+    import apt
     for pkg in pkgs:
-        if rosdep:
-            if rosdep.has_ros(pkg):
-                rosdep_pkgs.append(pkg)
-                continue
-        # TODO use python apt module to check if Debian package exists
-        aptget_pkgs.append('-'.join(['ros', ros_distro, pkg.replace('_', '-')]))
+        if rosdep and rosdep.has_ros(pkg):
+            debian_pkgs = rosdep.to_apt(pkg)
+            rosdep_pkgs.append(pkg)
+        else:
+            debian_pkgs = ['-'.join(['ros', ros_distro, pkg.replace('_', '-')])]
+            aptget_pkgs += debian_pkgs
+        # use python apt module to check if Debian package exists
+        for debian_pkg in debian_pkgs:
+            if debian_pkg not in apt.Cache():
+                unavailable_pkgs.append(debian_pkg)
+
+    if unavailable_pkgs != []:
+        raise BuildException("Some dependencies are not available: %s" % (', '.join(unavailable_pkgs)))
 
     if rosdep_pkgs != []:
         try:
             apt_get_install(rosdep_pkgs, rosdep, sudo)
         except:
-            BuildException("Failed to apt-get install rosdep packages.")
+            raise BuildException("Failed to apt-get install rosdep packages")
 
     if aptget_pkgs != []:
         try:
             apt_get_install(aptget_pkgs, sudo=sudo)
         except:
-            BuildException("Failed to apt-get install ros repositories")
+            raise BuildException("Failed to apt-get install ros repositories")
 
 
 def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):
@@ -347,8 +357,9 @@ def get_buildpipeline_configs(config_repo, server_name, user_name):
     pipeconfig_url = pipeconfig_url + "/master/%s/%s/pipeline_config.yaml" % (server_name, user_name)
     print "Parsing buildpipeline configuration file for %s stored at:\n%s" % (user_name, pipeconfig_url)
     try:
-        f = urllib2.urlopen(pipeconfig_url)
-        bpl_configs = yaml.load(f.read())
+        #f = urllib2.urlopen(pipeconfig_url)
+        with contextlib.closing(urllib2.urlopen(pipeconfig_url)) as f:
+            bpl_configs = yaml.load(f.read())
     except Exception as ex:
         print "While downloading and parsing the buildpipeline configuration \
                file from\n%s\nthe following error occured:\n%s" % (pipeconfig_url, ex)

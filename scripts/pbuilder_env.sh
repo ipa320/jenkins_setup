@@ -1,5 +1,6 @@
 #!/bin/bash -e
 echo "vvvvvvvvvvvvvvvvvvv  pbuilder_env.sh vvvvvvvvvvvvvvvvvvvvvv"
+date
 export WORKSPACE=$1
 echo $WORKSPACE
 
@@ -16,13 +17,14 @@ env
 echo "Set up git and ssh"
 cp $WORKSPACE/.gitconfig ~/.gitconfig
 cp -a $WORKSPACE/.ssh /root
+ls -la /root/
 chown -R root.root /root/.ssh
 
 #echo "Install python-catkin-pkg python-rosdistro rosinstall"
 #apt-get update
 #apt-get upgrade -y
 #apt-get install python-catkin-pkg python-rosdistro -y
-apt-get install openssh-client -y
+#apt-get install openssh-client -y
 
 #pip install -U rosinstall
 
@@ -30,23 +32,22 @@ echo "============================================================"
 echo "==== Begin" $SCRIPT "script.    Ignore the output above ===="
 echo "============================================================"
 
-$WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $CONFIG_REPO $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
-
+date
+$WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
+date
 echo "============================================================"
 echo "==== End" $SCRIPT "script.    Ignore the output below ======"
 echo "============================================================"
 
 
-echo "============================================================"
-echo "DEBUG"
+#echo "============================================================"
+#echo "DEBUG"
+#rospack list
 
-rospack list
+#echo "============================================================"
+#rosstack list
 
-echo "============================================================"
+#apt-get install tree
+#tree $WORKSPACE
 
-rosstack list
-
-apt-get install tree
-tree $WORKSPACE
-
-tree /tmp/test_repositories
+#tree /tmp/test_repositories

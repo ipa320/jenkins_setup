@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<matrix-project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <axes>
+    <hudson.matrix.TextAxis>
+      <name>ubuntu_distro</name>
+      <values>
+        <string>(!!UBUNTU!!)</string>
+        <string>(!!UBUNTU!!)</string>
+      </values>
+    </hudson.matrix.TextAxis>
+    <hudson.matrix.TextAxis>
+      <name>arch</name>
+      <values>
+        <string>(!!ARCHITECTURE!!)</string>
+        <string>(!!ARCHITECTURE!!)</string>
+      </values>
+    </hudson.matrix.TextAxis>
+    <hudson.matrix.LabelAxis>
+      <name>label</name>
+      <values>
+        <string>update</string>
+      </values>
+    </hudson.matrix.LabelAxis>
+  </axes>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+
+echo $WORKSPACE
+sudo rm -rf $WORKSPACE/*
+
+git clone git://github.com/(!!FORKOWNER!!)/jenkins_setup.git $WORKSPACE/jenkins_setup
+
+cd $WORKSPACE/jenkins_setup/scripts
+
+nice -n19 ionice -c2 -n7 ./update_chroot_tarballs.py (!!TARBALL_SSH_ADDRESS!!) (!!TARGET_URL!!) $ubuntu_distro $arch</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+  <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl">
+    <runSequentially>false</runSequentially>
+  </executionStrategy>
+</matrix-project>

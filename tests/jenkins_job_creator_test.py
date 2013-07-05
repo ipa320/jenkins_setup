@@ -39,7 +39,7 @@ class JenkinsJobTest(unittest.TestCase):
 
         #self.test_dict = common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
         self.test_pipe_inst = cob_pipe.CobPipe()
-        self.test_pipe_inst.load_config_from_url('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
+        self.test_pipe_inst.load_config_from_url('fmw-jk', 'jenkins-test-server', 'test-user')
 
         self.job_type_test_list = ['pipe_starter', 'prio_build', 'regular_build']
 
@@ -100,7 +100,8 @@ class JenkinsJobTest(unittest.TestCase):
                                   'GROOVY_POSTBUILD': '',
                                   'PARAMETERIZED_TRIGGER': '',
                                   'JUNIT_TESTRESULTS': '',
-                                  'MAILER': ''
+                                  'MAILER': '',
+                                  'POSTBUILD_TASK': ''
                                   }
         self.jj.set_common_params()
         self.assertEqual(self.jj.params, common_job_config_dict)
@@ -450,11 +451,13 @@ class JenkinsJobTest(unittest.TestCase):
     # Testing get_shell_script
     def test__get_shell_script__result_shell_script_str(self):
         self.jj.job_type = 'prio_build'
+        self.jj.tarball_location = 'jenkins@jenkins-test-server:~/chroot_tarballs'
         result = self.jj.get_shell_script()
         self.assertEqual(result, '#!/bin/bash -e\nnew_basetgz=${ubuntu_distro}__${arch}__${ros_distro}\nbasetgz=test-user__${new_basetgz}__${REPOSITORY}\n\nsudo rm -rf $WORKSPACE/*\nif [ -d $WORKSPACE/../aux ]; then\nsudo rm -rf $WORKSPACE/../aux\nfi\nmkdir $WORKSPACE/../aux\necho "Copying "$new_basetgz" from jenkins@%(server_name)s:~/chroot_tarballs"\nscp jenkins@%(server_name)s:~/chroot_tarballs/$new_basetgz $WORKSPACE/../aux/${basetgz}\nscp jenkins@%(server_name)s:~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig\nscp -r jenkins@%(server_name)s:~/jenkins-config/.ssh $WORKSPACE/.ssh\nls -lah $WORKSPACE\n\necho "Cloning jenkins_setup repository"\ngit clone git@github.com:fmw-jk/jenkins_config.git $WORKSPACE/jenkins_setup\nls -lah $WORKSPACE\n\ncat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM\nJOBNAME=$JOB_NAME\nROSDISTRO=$ros_distro\nREPOSITORY=$REPOSITORY\nUBUNTUDISTRO=$ubuntu_distro\nARCH=$arch\n#TODO\nCONFIG_REPO=git@github.com:fmw-jk/jenkins_config.git\nJENKINS_MASTER=%(server_name)s\nJENKINS_USER=test-user\nJOBTYPE=prio_build\nexport ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO\nexport BUILD_ID=$BUILD_ID\nDELIM\n\nls -lah $WORKSPACE\n\necho "***********ENTER CHROOT************"\necho "*********please be patient*********"\n\nsudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\n\necho "*******CLEANUP WORKSPACE*******"\necho "STORING CHROOT TARBALL ON jenkins@%(server_name)s:~/chroot_tarballs"\nscp $WORKSPACE/../aux/${basetgz} jenkins@%(server_name)s:~/chroot_tarballs/in_use/\nsudo rm -rf $WORKSPACE/../aux' % {'server_name': self.test_pipe_inst.server_name})
 
     def test__get_shell_script__result_shell_script_str2(self):
         self.jj.job_type = 'regular_build'
+        self.jj.tarball_location = 'jenkins@jenkins-test-server:~/chroot_tarballs'
         result = self.jj.get_shell_script()
         self.assertEqual(result, '#!/bin/bash -e\n\nnew_basetgz=${ubuntu_distro}__${arch}__${ros_distro}\nbasetgz=test-user__${new_basetgz}__${repository}\n\nsudo rm -rf $WORKSPACE/*\nif [ -d $WORKSPACE/../aux ]; then\nsudo rm -rf $WORKSPACE/../aux\nfi\nmkdir $WORKSPACE/../aux\n\necho "Copying "$new_basetgz" from jenkins@%(server_name)s:~/chroot_tarballs"\nscp jenkins@%(server_name)s:~/chroot_tarballs/$new_basetgz $WORKSPACE/../aux/${basetgz}\nscp jenkins@%(server_name)s:~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig\nscp -r jenkins@%(server_name)s:~/jenkins-config/.ssh $WORKSPACE/.ssh\nls -lah $WORKSPACE\n\necho "Cloning jenkins_setup repository"\ngit clone git@github.com:fmw-jk/jenkins_config.git $WORKSPACE/jenkins_setup\nls -lah $WORKSPACE\n\ncat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM\nJOBNAME=$JOB_NAME\nROSDISTRO=$ros_distro\nREPOSITORY=$REPOSITORY\nUBUNTUDISTRO=$ubuntu_distro\nARCH=$arch\n#TODO\nCONFIG_REPO=git@github.com:fmw-jk/jenkins_config.git\nJENKINS_MASTER=%(server_name)s\nJENKINS_USER=test-user\nJOBTYPE=regular_build\nexport ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO\nexport BUILD_ID=$BUILD_ID\nDELIM\n\nls -lah $WORKSPACE\n\necho "***********ENTER CHROOT************"\necho "*********please be patient*********"\nsudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\n\necho "*******CLEANUP WORKSPACE*******"\nsudo rm -rf $WORKSPACE/../aux' % {"server_name": self.test_pipe_inst.server_name})
 
@@ -469,7 +472,7 @@ class PipeStarterJobTest(unittest.TestCase):
 
         #self.test_dict = common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
         self.test_pipe_inst = cob_pipe.CobPipe()
-        self.test_pipe_inst.load_config_from_url('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
+        self.test_pipe_inst.load_config_from_url('fmw-jk', 'jenkins-test-server', 'test-user')
 
         self.job_type_test_list = ['pipe_starter', 'prio_build', 'regular_build']
 
@@ -478,13 +481,13 @@ class PipeStarterJobTest(unittest.TestCase):
         self.jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'], info['jenkins_pw'])
 
     def test__get_prio_subset_filter__result_filter_input_dict(self):
-        self.jj = jenkins_job_creator.PipeStarterJob(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1'], 'dep_repo_1', [])
+        self.jj = jenkins_job_creator.PipeStarterJob(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1'], 'dep_repo_1')
         result = self.jj.get_prio_subset_filter()
         self.assertEqual(result, [{'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
                                   {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro_2', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'}])
 
     def test__get_prio_subset_filter__result_filter_input_dict2(self):
-        self.jj = jenkins_job_creator.PipeStarterJob(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1', 'test_repo_2'], 'dep_repo_1', [])
+        self.jj = jenkins_job_creator.PipeStarterJob(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1', 'test_repo_2'], 'dep_repo_1')
         result = self.jj.get_prio_subset_filter()
         self.assertEqual(result, [{'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
                                   {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro_2', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
@@ -501,7 +504,7 @@ class RegularBuildJobTest(unittest.TestCase):
 
         #self.test_dict = common.get_buildpipeline_configs('jenkins-test-server', 'test-user')
         self.test_pipe_inst = cob_pipe.CobPipe()
-        self.test_pipe_inst.load_config_from_url('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
+        self.test_pipe_inst.load_config_from_url('fmw-jk', 'jenkins-test-server', 'test-user')
 
         self.job_type_test_list = ['pipe_starter', 'prio_build', 'regular_build']
 
@@ -509,7 +512,7 @@ class RegularBuildJobTest(unittest.TestCase):
             info = yaml.load(f)
         self.jenkins_instance = jenkins.Jenkins(info['master_url'], info['jenkins_login'], info['jenkins_pw'])
 
-        self.jj = jenkins_job_creator.RegularBuildJob(self.jenkins_instance, self.test_pipe_inst)
+        self.jj = jenkins_job_creator.RegularBuildJob(self.jenkins_instance, self.test_pipe_inst, 'jenkins@jenkins-test-server:~/chroot_tarballs')
 
     def test__get_regular_subset_filter__result_filter_input_dict(self):
         result = self.jj.get_regular_subset_filter()
