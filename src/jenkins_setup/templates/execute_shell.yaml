@@ -445,7 +445,7 @@ ls -lah $WORKSPACE
 echo "***********ENTER CHROOT************"
 
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilderEnv.bash $WORKSPACE
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.bash $WORKSPACE
 
 echo "***********LEAVE CHROOT************"
 '
