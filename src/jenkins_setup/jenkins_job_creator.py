@@ -411,15 +411,15 @@ class JenkinsJob(object):
 
         self.params['MAILER'] = mailer
 
-    def _set_authorization_matrix_param(self, job):
+    def _set_authorization_matrix_param(self, permission):
         """
         Sets config for authorization matrix plugin
 
-        @param job: [build|starter]
-        @type  job: string
+        @param permission: [read|build]
+        @type  permission: string
         """
 
-        authorization = self.job_config_params['authorizationmatrix'][job]
+        authorization = self.job_config_params['authorizationmatrix'][permission]
         authorization = authorization.replace('@(USERNAME)', self.pipe_inst.user_name)
 
         self.params['AUTHORIZATIONMATRIX'] = authorization
@@ -552,7 +552,9 @@ class PipeStarterGeneralJob(JenkinsJob):
                                                                        subset_filter=self._generate_matrix_filter(self._get_prio_subset_filter()),
                                                                        predefined_param='POLL=manually triggered' + '\nREPOSITORY=%s' % repo + '\nREPOSITORY_FILTER=repository=="%s"' % repo))
         self._set_parameterizedtrigger_param(prio_triggers)
-        self._set_authorization_matrix_param('starter')
+
+        # authorization matrix
+        self._set_authorization_matrix_param('build')
 
 
 class PipeStarterJob(PipeStarterGeneralJob):
@@ -623,12 +625,12 @@ class BuildJob(JenkinsJob):
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
         # set matrix
-		if not matrix_filter:
-            matrix_filter = self.generate_matrix_filter(self._get_prio_subset_filter())
+        if not matrix_filter:
+            matrix_filter = self._generate_matrix_filter(self._get_prio_subset_filter())
         matrix_entries_dict_list = self._get_matrix_entries()
         self._set_matrix_param(matrix_entries_dict_list, matrix_filter)
 
-        self._set_authorization_matrix_param('build')
+        self.set_authorization_matrix_param('build')
 
 
 class PriorityBuildJob(BuildJob):
