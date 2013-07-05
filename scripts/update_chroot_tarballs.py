@@ -22,12 +22,19 @@ def main():
     parser = optparse. OptionParser()
     (options, args) = parser.parse_args()
 
-    if len(args) < 2:
-        print "Usage: %s ubuntu_distro architecture" % (sys.argv[0])
+    if len(args) < 4:
+        print "Usage: %s tarball_location_ssh_address target_yaml_url ubuntu_distro architecture" % (sys.argv[0])
         sys.exit()
 
-    # load target platforms
-    target_platforms_url = "https://raw.github.com/fmw-jk/jenkins_setup/master/releases/targets.yaml"
+    print args
+
+    tarball_location_ssh_address = args[0]
+    target_platforms_url = args[1]
+
+    tarball_host = tarball_location_ssh_address.split(':')[0].split('@')[1]
+    tarball_host_username = tarball_location_ssh_address.split('@')[0]
+    tarball_dir = tarball_location_ssh_address.split(':')[1]
+
     try:
         f = urllib2.urlopen(target_platforms_url)
         platforms = yaml.load(f)
@@ -37,30 +44,34 @@ def main():
         raise ex
 
     # check if given ubuntu distro and arch is supported
-    ubuntu_distro = args[0]
+    ubuntu_distro = args[2]
     supported_ubuntu_distros = []
     for ros_distro_dict in platforms:
         for ros_distro, ubuntu_distro_list in ros_distro_dict.iteritems():
-            for supported in ubuntu_distro_list:
-                supported_ubuntu_distros.append(supported)
+            if ros_distro != "backports":
+                for supported in ubuntu_distro_list:
+                    supported_ubuntu_distros.append(supported)
     if ubuntu_distro not in supported_ubuntu_distros:
         print "Ubuntu distro %s not supported! Supported Ubuntu distros :" % ', '.join(sorted(supported_ubuntu_distros))
         sys.exit()
-    arch = args[1]
+    arch = args[3]
     if arch not in ARCH:
         print "Architecture %s not supported! Supported architectures: %s" % (arch, ', '.join(ARCH))
         sys.exit()
 
-    # load slave config
-    with open(os.path.expanduser('~/jenkins-config/slave_config.yaml')) as f:
-        slave_conf = yaml.load(f)
-
+    # set up ssh object
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(slave_conf['tarball_host'], username='jenkins')
+    ssh.connect(tarball_host, username=tarball_host_username)
+
+    # get home folder
+    if tarball_dir.startswith('~/'):
+        tarball_dir = tarball_dir.replace('~/', '')
+    if not tarball_dir.startswith('/'):
+        tarball_dir = os.path.join(get_home_folder(ssh), tarball_dir)
 
     print "\nGet existent chroot tarballs"
-    existent_tarballs = get_existent_tarballs(ssh, slave_conf['tarball_folderpath'])
+    existent_tarballs = get_existent_tarballs(ssh, tarball_dir)
     for tar in existent_tarballs:
         print " ", tar
 
@@ -68,15 +79,14 @@ def main():
     basic_tarball, extended_tarballs = get_tarball_names(platforms, ubuntu_distro, arch)
     print "Basic tarball:"
     print " ", basic_tarball
-    print "Extended tarballs: \n%s" % '\n '.join(extended_tarballs)
+    print "Extended tarballs: \n %s" % '\n '.join(extended_tarballs)
 
     sys.stdout.flush()
 
     print "\nvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
     print "Set up basic chroot %s" % basic_tarball
     result = process_basic_tarball(ssh, basic_tarball, os.getenv("WORKSPACE"),
-                                   os.path.expanduser(slave_conf['tarball_folderpath']),
-                                   extended_tarballs, existent_tarballs)
+                                   tarball_dir, extended_tarballs, existent_tarballs)
     if result != []:
         errors += result
 
@@ -234,6 +244,11 @@ def get_tarball(ssh, tar_name, from_location, to_location):
     print "Copied successfully %s from %s" % (tar_name, ssh.get_host_keys().keys()[0])
 
 
+def get_home_folder(ssh):
+    stdin, stdout, stderr = ssh.exec_command("pwd")
+    return stdout.readline().replace('\n', '')
+
+
 def get_existent_tarballs(ssh, path):
     file_list = []
     stdin, stdout, stderr = ssh.exec_command("ls -1 %s" % path)
@@ -261,7 +276,7 @@ def get_tarball_names(platforms, ubuntu_distro, arch):
     extended_tarballs = []
     for ros_distro_dict in platforms:
         for ros_distro, ubuntu_distro_list in ros_distro_dict.iteritems():
-            if ubuntu_distro in ubuntu_distro_list:
+            if ubuntu_distro in ubuntu_distro_list and ros_distro != "backports":
                 extended_tarballs.append('__'.join([ubuntu_distro, arch,
                                                     ros_distro]))
     return basic_tarball, sorted(extended_tarballs)

@@ -1,8 +1,10 @@
-'prio': '#!/bin/bash -e
+'prio_build': '#!/bin/bash -e
+
+date
 
 new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
 
-basetgz=@(USERNAME)__${new_basetgz}__${REPOSITORY}
+basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
 
 sudo rm -rf $WORKSPACE/*
@@ -21,14 +23,14 @@ scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
 scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
 
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
+scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
 
 ls -lah $WORKSPACE
 
 
 echo "Cloning jenkins_setup repository"
 
-git clone git://github.com/ipa320/jenkins_setup.git $WORKSPACE/jenkins_setup
+git clone git@github.com:@(PIPELINEREPOSOWNER)/jenkins_setup.git $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
@@ -39,13 +41,15 @@ JOBNAME=$JOB_NAME
 
 ROSDISTRO=$ros_distro
 
-REPOSITORY=$REPOSITORY
+REPOSITORY=$repository
 
 UBUNTUDISTRO=$ubuntu_distro
 
 ARCH=$arch
 
 #TODO
+
+PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
 
 JENKINS_MASTER=@(SERVERNAME)
 
@@ -67,19 +71,22 @@ echo "***********ENTER CHROOT************"
 
 echo "*********please be patient*********"
 
+date
 
 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 
 echo "*******CLEANUP WORKSPACE*******"
 
+date
+
 echo "STORING CHROOT TARBALL ON @(STORAGE)"
 
 scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use/
 
-sudo rm -rf $WORKSPACE/../aux'
+date'
 
-'normal': '#!/bin/bash -e
+'regular_build': '#!/bin/bash -e
 
 
 new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
@@ -104,14 +111,14 @@ scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
 scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
 
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
+scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
 
 ls -lah $WORKSPACE
 
 
 echo "Cloning jenkins_setup repository"
 
-git clone git://github.com/ipa320/jenkins_setup.git $WORKSPACE/jenkins_setup
+git clone git@github.com:@(PIPELINEREPOSOWNER)/jenkins_setup.git $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
@@ -122,13 +129,15 @@ JOBNAME=$JOB_NAME
 
 ROSDISTRO=$ros_distro
 
-REPOSITORY=$REPOSITORY
+REPOSITORY=$repository
 
 UBUNTUDISTRO=$ubuntu_distro
 
 ARCH=$arch
 
 #TODO
+
+PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
 
 JENKINS_MASTER=@(SERVERNAME)
 
@@ -150,18 +159,13 @@ echo "***********ENTER CHROOT************"
 
 echo "*********please be patient*********"
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
-
-
-echo "*******CLEANUP WORKSPACE*******"
-
-sudo rm -rf $WORKSPACE/../aux'
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE'
 
 'downstream_build': '#!/bin/bash -e
 
 new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
 
-basetgz=@(USERNAME)__${new_basetgz}__${REPOSITORY}
+basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
 
 sudo rm -rf $WORKSPACE/*
@@ -181,14 +185,14 @@ scp @(STORAGE)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
 
 scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
 
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
+scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
 
 ls -lah $WORKSPACE
 
 
 echo "Cloning jenkins_setup repository"
 
-git clone git://github.com/ipa320/jenkins_setup.git $WORKSPACE/jenkins_setup
+git clone git@github.com:@(PIPELINEREPOSOWNER)/jenkins_setup.git $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
@@ -199,13 +203,15 @@ JOBNAME=$JOB_NAME
 
 ROSDISTRO=$ros_distro
 
-REPOSITORY=$REPOSITORY
+REPOSITORY=$repository
 
 UBUNTUDISTRO=$ubuntu_distro
 
 ARCH=$arch
 
 #TODO
+
+PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
 
 JENKINS_MASTER=@(SERVERNAME)
 
@@ -228,18 +234,13 @@ echo "***********ENTER CHROOT************"
 echo "*********please be patient*********"
 
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
-
-
-echo "*******CLEANUP WORKSPACE*******"
-
-sudo rm -rf $WORKSPACE/../aux'
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE'
 
 'test': '#!/bin/bash -e
 
 new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
 
-basetgz=@(USERNAME)__${new_basetgz}__${REPOSITORY}
+basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
 
 sudo rm -rf $WORKSPACE/*
@@ -259,14 +260,14 @@ scp @(STORAGE)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
 
 scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
 
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/.ssh
+scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
 
 ls -lah $WORKSPACE
 
 
 echo "Cloning jenkins_setup repository"
 
-git clone git://github.com/ipa320/jenkins_setup.git $WORKSPACE/jenkins_setup
+git clone git@github.com:@(PIPELINEREPOSOWNER)/jenkins_setup.git $WORKSPACE/jenkins_setup
 
 ls -lah $WORKSPACE
 
@@ -277,13 +278,15 @@ JOBNAME=$JOB_NAME
 
 ROSDISTRO=$ros_distro
 
-REPOSITORY=$REPOSITORY
+REPOSITORY=$repository
 
 UBUNTUDISTRO=$ubuntu_distro
 
 ARCH=$arch
 
 #TODO
+
+PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
 
 JENKINS_MASTER=@(SERVERNAME)
 
@@ -306,12 +309,7 @@ echo "***********ENTER CHROOT************"
 echo "*********please be patient*********"
 
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
-
-
-echo "*******CLEANUP WORKSPACE*******"
-
-sudo rm -rf $WORKSPACE/../aux'
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE'
 
 'nongraphics_test': '#!/bin/bash -e'
 

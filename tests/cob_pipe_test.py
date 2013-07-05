@@ -10,7 +10,7 @@ class CobPipeTest(unittest.TestCase):
         self.MaxDiff = None
 
         self.cp = cob_pipe.CobPipe()
-        self.cp.load_config_from_url('jenkins-test-server', 'test-user')
+        self.cp.load_config_from_url('fmw-jk', 'jenkins-test-server', 'test-user')
 
         self.repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
                                               'version': 'master', 'poll': True, 'ros_distro': ['groovy'],
@@ -34,7 +34,7 @@ class CobPipeTest(unittest.TestCase):
         self.assertEqual(self.cp.committer_email_enabled, False)
 
     def test__get_jobs_to_create__result_job_list(self):
-        self.assertEqual(self.cp.get_jobs_to_create(), {'normal': ['test_repo_1', 'test_repo_3'], 'nongraphics_test': ['test_repo_1'], 'hardware_build': ['test_repo_1'], 'automatic_hw_test': ['test_repo_1'], 'downstream_build': ['test_repo_1'], 'release': ['test_repo_1'], 'graphics_test': ['test_repo_1'], 'interactive_hw_test': ['test_repo_1']})
+        self.assertEqual(self.cp.get_jobs_to_create(), {'regular_build': ['test_repo_1', 'test_repo_3'], 'nongraphics_test': ['test_repo_1'], 'hardware_build': ['test_repo_1'], 'automatic_hw_test': ['test_repo_1'], 'downstream_build': ['test_repo_1'], 'release': ['test_repo_1'], 'graphics_test': ['test_repo_1'], 'interactive_hw_test': ['test_repo_1']})
 
     def test__load_config_from_dict__input_repo_dict__check_repo(self):
         repo_test_dict = {'cob_extern': {'type': 'git', 'url': 'git://github.com/ipa320/cob_extern.git',
@@ -105,7 +105,7 @@ class CobPipeTest(unittest.TestCase):
         self.assertRaises(cob_pipe.CobPipeException, self.cp.load_config_from_dict, self.pipe_config_test_dict)
 
     def test__load_config_from_url__input_repo_dict__check_repo(self):
-        self.cp.load_config_from_url('jenkins-test-server', 'test-user')
+        self.cp.load_config_from_url('fmw-jk', 'jenkins-test-server', 'test-user')
         self.assertTrue('test_repo_1' in self.cp.repositories)
 
     def test__get_custom_dependencies__return_dependency_dict(self):
@@ -237,7 +237,7 @@ class CobPipeRepoTest(unittest.TestCase):
                           'poll': True, 'ros_distro': ['groovy'],
                           'prio_ubuntu_distro': 'oneiric', 'prio_arch': 'amd64',
                           'matrix_distro_arch': {'oneiric': ['i386'], 'lucid': ['amd64', 'i386']},
-                          'dependencies': None, 'jobs': ['normal'], 'robots': None}
+                          'dependencies': None, 'jobs': ['regular_build'], 'robots': None}
         cpr = cob_pipe.CobPipeRepo('test', data_test_dict)
         self.assertEqual(cpr.matrix_distro_arch,
                          {'oneiric': ['i386'], 'lucid': ['amd64', 'i386']})
