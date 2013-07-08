@@ -181,6 +181,15 @@ def build_downstream_post_fuerte(ros_distro, build_repo, workspace, server):
             print "Install all test dependencies of the depends_on list: %s" % (', '.join(dependson_test_dependencies))
             common.apt_get_install_also_nonrosdep(dependson_test_dependencies, rosdep_resolver)
 
+            # test repositories
+            try:
+                common.call("make run_tests", ros_env_dependson)
+            except common.BuildException as ex:
+                print ex.msg
+
+        # copy test results
+        common.copy_test_results(workspace, dependson_buildspace)
+
     ### rosbuild repositories
     if stacks != {}:
         # env
@@ -203,6 +212,14 @@ def build_downstream_post_fuerte(ros_distro, build_repo, workspace, server):
                 common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_dependson)
             except:
                 raise common.BuildException("Failed to rosmake %s" % b_r_short)
+            try:
+                common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" % (dry_test_results_dir, b_r_short), ros_env_dependson)
+                # TODO output dir ??
+            except:
+                print "Failed to test %s" % dry_dependson
+        # copy test results
+        common.call("rosrun rosunit clean_junit_xml.py", ros_env_dependson)
+        common.copy_test_results(workspace, dependson_sourcespace_dry)
 
 
 if __name__ == "__main__":
