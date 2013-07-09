@@ -110,7 +110,7 @@ class JenkinsJob(object):
         self.params['JUNIT_TESTRESULTS'] = ''
         self.params['MAILER'] = ''
         self.params['POSTBUILD_TASK'] = ''
-        self.params['AUTHORIZATIONMATRIX'] = self._set_authorization_matrix_param('read')
+        self._set_authorization_matrix_param('read')
 
     ###########################################################################
     # helper methods - parameter generation
