@@ -673,8 +673,8 @@ class PriorityBuildJob(BuildJob):
         parameterized_triggers = []
         parameterized_triggers.append(self._get_single_parameterizedtrigger(['regular_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
         parameterized_triggers.append(self._get_single_parameterizedtrigger(['downstream_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['nongraphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['graphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['nongraphics_test'], subset_filter='(ubuntu_distro=="$UBUNTUDISTRO" && arch=="$ARCH" && ros_distro=="$ROSDISTRO" && repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['graphics_test'], subset_filter='(ubuntu_distro=="$UBUNTUDISTRO" && arch=="$ARCH" && ros_distro=="$ROSDISTRO" && repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
         self._set_parameterizedtrigger_param(parameterized_triggers)
 
 
@@ -718,8 +718,8 @@ class RegularBuildJob(BuildJob):
 
         # set parameterized triggers
         parameterized_triggers = []
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['nongraphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['graphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['nongraphics_test'], subset_filter='(ubuntu_distro=="$UBUNTUDISTRO" && arch=="$ARCH" && ros_distro=="$ROSDISTRO" && repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['graphics_test'], subset_filter='(ubuntu_distro=="$UBUNTUDISTRO" && arch=="$ARCH" && ros_distro=="$ROSDISTRO" && repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
         self._set_parameterizedtrigger_param(parameterized_triggers)
 
     def _get_regular_subset_filter(self):
