@@ -110,7 +110,7 @@ class JenkinsJob(object):
         self.params['JUNIT_TESTRESULTS'] = ''
         self.params['MAILER'] = ''
         self.params['POSTBUILD_TASK'] = ''
-        self.params['AUTHORIZATIONMATRIX'] = ''
+        self.params['AUTHORIZATIONMATRIX'] = self._set_authorization_matrix_param('read')
 
     ###########################################################################
     # helper methods - parameter generation
@@ -629,8 +629,6 @@ class BuildJob(JenkinsJob):
             matrix_filter = self._generate_matrix_filter(self._get_prio_subset_filter())
         matrix_entries_dict_list = self._get_matrix_entries()
         self._set_matrix_param(matrix_entries_dict_list, matrix_filter)
-
-        self.set_authorization_matrix_param('build')
 
 
 class PriorityBuildJob(BuildJob):
