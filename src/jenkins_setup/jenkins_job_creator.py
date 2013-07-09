@@ -823,8 +823,6 @@ class TestJob(JenkinsJob):
         matrix_entries_dict_list = self._get_matrix_entries()
         self._set_matrix_param(matrix_entries_dict_list, matrix_filter)
 
-        # TODO authorization matrix; see BuildJob
-
     def _get_test_subset_filter(self, test_type):
         """
         Gets the subset filter of the given test job (non/graphics_test)
@@ -888,8 +886,8 @@ class NongraphicsTestJob(TestJob):
         # email
         self._set_mailer_param('Non-Graphics Test')
 
-        # set execute shell TODO
-        shell_script = self._get_shell_script('test')
+        # set execute shell
+        shell_script = self._get_shell_script('nongraphics_test')
         self._set_shell_param(shell_script)
 
         # set pipeline trigger
@@ -927,8 +925,8 @@ class GraphicsTestJob(TestJob):
         # email
         self._set_mailer_param('Graphics Test')
 
-        # set execute shell TODO
-        shell_script = self._get_shell_script('test')
+        # set execute shell
+        shell_script = self._get_shell_script('graphics_test')
         self._set_shell_param(shell_script)
 
         # set pipeline trigger
