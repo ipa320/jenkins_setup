@@ -823,6 +823,9 @@ class TestJob(JenkinsJob):
         matrix_entries_dict_list = self._get_matrix_entries()
         self._set_matrix_param(matrix_entries_dict_list, matrix_filter)
 
+        # set pipeline trigger
+        self._set_pipelinetrigger_param(['release'])
+
     def _get_test_subset_filter(self, test_type):
         """
         Gets the subset filter of the given test job (non/graphics_test)
@@ -881,7 +884,7 @@ class NongraphicsTestJob(TestJob):
 
         super(NongraphicsTestJob, self)._set_job_type_params()
 
-        self.params['NODE_LABEL'] = 'nongraphics_test'  # TODO check labels
+        self.params['NODE_LABEL'] = 'nongraphics_test'
 
         # email
         self._set_mailer_param('Non-Graphics Test')
@@ -889,9 +892,6 @@ class NongraphicsTestJob(TestJob):
         # set execute shell
         shell_script = self._get_shell_script('nongraphics_test')
         self._set_shell_param(shell_script)
-
-        # set pipeline trigger
-        self._set_pipelinetrigger_param(['release'])
 
 
 class GraphicsTestJob(TestJob):
@@ -920,7 +920,7 @@ class GraphicsTestJob(TestJob):
 
         super(GraphicsTestJob, self)._set_job_type_params()
 
-        self.params['NODE_LABEL'] = 'graphics_test'  # TODO check labels
+        self.params['NODE_LABEL'] = 'graphics_test'
 
         # email
         self._set_mailer_param('Graphics Test')
@@ -928,9 +928,6 @@ class GraphicsTestJob(TestJob):
         # set execute shell
         shell_script = self._get_shell_script('graphics_test')
         self._set_shell_param(shell_script)
-
-        # set pipeline trigger
-        self._set_pipelinetrigger_param(['release'])
 
 
 class DownstreamTestJob(TestJob):
