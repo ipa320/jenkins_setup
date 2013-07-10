@@ -673,8 +673,8 @@ class PriorityBuildJob(BuildJob):
         parameterized_triggers = []
         parameterized_triggers.append(self._get_single_parameterizedtrigger(['regular_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
         parameterized_triggers.append(self._get_single_parameterizedtrigger(['downstream_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['nongraphics_test'], subset_filter='(ubuntu_distro=="$ubuntu_distro" &amp;&amp; arch=="$arch" &amp;&amp; ros_distro=="$ros_distro" &amp;&amp; repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['graphics_test'], subset_filter='(ubuntu_distro=="$ubuntu_distro" &amp;&amp; arch=="$arch" &amp;&amp; ros_distro=="$ros_distro" &amp;&amp; repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['prio_nongraphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['prio_graphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
         self._set_parameterizedtrigger_param(parameterized_triggers)
 
 
@@ -718,8 +718,8 @@ class RegularBuildJob(BuildJob):
 
         # set parameterized triggers
         parameterized_triggers = []
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['nongraphics_test'], subset_filter='(ubuntu_distro=="$ubuntu_distro" &amp;&amp; arch=="$arch" &amp;&amp; ros_distro=="$ros_distro" &amp;&amp; repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['graphics_test'], subset_filter='(ubuntu_distro=="$ubuntu_distro" &amp;&amp; arch=="$arch" &amp;&amp; ros_distro=="$ros_distro" &amp;&amp; repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['regular_nongraphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['regular_graphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
         self._set_parameterizedtrigger_param(parameterized_triggers)
 
     def _get_regular_subset_filter(self):
@@ -832,41 +832,45 @@ class TestJob(JenkinsJob):
         """
         Gets the subset filter of the given test job (non/graphics_test)
 
-        @param test_type: test job type to calculate subset filter for
-        @type  test_type: string
-
         @return type: list of dicts of subset filter entries
         """
 
         subset_filter_input = []
         for repo in self.pipe_inst.repositories.keys():
-            if self.pipe_inst.repositories[repo].test_type == self.job_type:
-                for rosdistro in self.pipe_inst.repositories[repo].ros_distro:
-                    subset_filter_input_entry = {}
-                    subset_filter_input_entry['repository'] = repo
-                    subset_filter_input_entry['ros_distro'] = rosdistro
-                    subset_filter_input_entry['ubuntu_distro'] = self.pipe_inst.repositories[repo].prio_ubuntu_distro
-                    subset_filter_input_entry['arch'] = self.pipe_inst.repositories[repo].prio_arch
-                    subset_filter_input.append(subset_filter_input_entry)
-                    for ubuntu_distro, repo_archs in self.pipe_inst.repositories[repo].regular_matrix.iteritems():
-                        for repo_arch in repo_archs:
-                            subset_filter_input_entry = {}
-                            subset_filter_input_entry['repository'] = repo
-                            subset_filter_input_entry['ros_distro'] = rosdistro
-                            subset_filter_input_entry['ubuntu_distro'] = ubuntu_distro
-                            subset_filter_input_entry['arch'] = repo_arch
-                            subset_filter_input.append(subset_filter_input_entry)
+            if self.pipe_inst.repositories[repo].test_type == '_'.join(self.job_type.split('_')[0:]):
+                if self.job_type.split('_')[0] == 'prio':
+                    for rosdistro in self.pipe_inst.repositories[repo].ros_distro:
+                        subset_filter_input_entry = {}
+                        subset_filter_input_entry['repository'] = repo
+                        subset_filter_input_entry['ros_distro'] = rosdistro
+                        subset_filter_input_entry['ubuntu_distro'] = self.pipe_inst.repositories[repo].prio_ubuntu_distro
+                        subset_filter_input_entry['arch'] = self.pipe_inst.repositories[repo].prio_arch
+                        subset_filter_input.append(subset_filter_input_entry)
+
+                elif self.job_type.split('_')[0] == 'regular':
+                    for rosdistro in self.pipe_inst.repositories[repo].ros_distro:
+                        for ubuntu_distro, repo_archs in self.pipe_inst.repositories[repo].regular_matrix.iteritems():
+                            for repo_arch in repo_archs:
+                                subset_filter_input_entry = {}
+                                subset_filter_input_entry['repository'] = repo
+                                subset_filter_input_entry['ros_distro'] = rosdistro
+                                subset_filter_input_entry['ubuntu_distro'] = ubuntu_distro
+                                subset_filter_input_entry['arch'] = repo_arch
+                                subset_filter_input.append(subset_filter_input_entry)
+
+                else:
+                    raise Exception("Unknown build job type: %s" % self.job_type.split('_')[0])
 
         return subset_filter_input
 
 
-class NongraphicsTestJob(TestJob):
+class PriorityNongraphicsTestJob(TestJob):
     """
-    Class for nongraphics test job
+    Class for priority nongraphics test job
     """
     def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
-        Creates a nongraphics test job instance
+        Creates a nongraphics test job instance for the priority builds
 
         @param jenkins_instance: Jenkins instance
         @type  jenkins_instance: jenkins.Jenkins
@@ -874,9 +878,9 @@ class NongraphicsTestJob(TestJob):
         @type  pipeline_config: dict
         """
 
-        super(NongraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
+        super(PriorityNongraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
 
-        self.job_type = 'nongraphics_test'
+        self.job_type = 'prio_nongraphics_test'
         self.job_name = self._generate_job_name(self.job_type)
 
     def _set_job_type_params(self):
@@ -884,25 +888,25 @@ class NongraphicsTestJob(TestJob):
         Sets nongraphics test job specific job configuration parameters
         """
 
-        super(NongraphicsTestJob, self)._set_job_type_params()
+        super(PriorityNongraphicsTestJob, self)._set_job_type_params()
 
         self.params['NODE_LABEL'] = 'nongraphics_test'
 
         # email
-        self._set_mailer_param('Non-Graphics Test')
+        self._set_mailer_param('Priority Non-Graphics Test')
 
         # set execute shell
         shell_script = self._get_shell_script('nongraphics_test')
         self._set_shell_param(shell_script)
 
 
-class GraphicsTestJob(TestJob):
+class RegularNongraphicsTestJob(TestJob):
     """
-    Class for graphics test job
+    Class for regular nongraphics test job
     """
     def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
-        Creates a graphics test job instance
+        Creates a nongraphics test job instance for the regular builds
 
         @param jenkins_instance: Jenkins instance
         @type  jenkins_instance: jenkins.Jenkins
@@ -910,9 +914,45 @@ class GraphicsTestJob(TestJob):
         @type  pipeline_config: dict
         """
 
-        super(GraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
+        super(RegularNongraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
 
-        self.job_type = 'graphics_test'
+        self.job_type = 'regular_nongraphics_test'
+        self.job_name = self._generate_job_name(self.job_type)
+
+    def _set_job_type_params(self):
+        """
+        Sets nongraphics test job specific job configuration parameters
+        """
+
+        super(RegularNongraphicsTestJob, self)._set_job_type_params()
+
+        self.params['NODE_LABEL'] = 'nongraphics_test'
+
+        # email
+        self._set_mailer_param('Regular Non-Graphics Test')
+
+        # set execute shell
+        shell_script = self._get_shell_script('nongraphics_test')
+        self._set_shell_param(shell_script)
+
+
+class PriorityGraphicsTestJob(TestJob):
+    """
+    Class for priority graphics test job
+    """
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
+        """
+        Creates a graphics test job instance for the priority builds
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(PriorityGraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
+
+        self.job_type = 'prio_graphics_test'
         self.job_name = self._generate_job_name(self.job_type)
 
     def _set_job_type_params(self):
@@ -920,12 +960,48 @@ class GraphicsTestJob(TestJob):
         Sets graphics test job specific job configuration parameters
         """
 
-        super(GraphicsTestJob, self)._set_job_type_params()
+        super(PriorityGraphicsTestJob, self)._set_job_type_params()
 
         self.params['NODE_LABEL'] = 'graphics_test'
 
         # email
-        self._set_mailer_param('Graphics Test')
+        self._set_mailer_param('Priority Graphics Test')
+
+        # set execute shell
+        shell_script = self._get_shell_script('graphics_test')
+        self._set_shell_param(shell_script)
+
+
+class RegularGraphicsTestJob(TestJob):
+    """
+    Class for regular graphics test job
+    """
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
+        """
+        Creates a graphics test job instance for the regular builds
+
+        @param jenkins_instance: Jenkins instance
+        @type  jenkins_instance: jenkins.Jenkins
+        @param pipeline_config: pipeline configuration
+        @type  pipeline_config: dict
+        """
+
+        super(RegularGraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
+
+        self.job_type = 'regular_graphics_test'
+        self.job_name = self._generate_job_name(self.job_type)
+
+    def _set_job_type_params(self):
+        """
+        Sets graphics test job specific job configuration parameters
+        """
+
+        super(RegularGraphicsTestJob, self)._set_job_type_params()
+
+        self.params['NODE_LABEL'] = 'graphics_test'
+
+        # email
+        self._set_mailer_param('Regular Graphics Test')
 
         # set execute shell
         shell_script = self._get_shell_script('graphics_test')
