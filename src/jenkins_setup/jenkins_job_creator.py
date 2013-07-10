@@ -801,6 +801,8 @@ class TestJob(JenkinsJob):
 
         super(TestJob, self).__init__(jenkins_instance, pipeline_config)
 
+        self.tarball_location = tarball_location
+
         self.repo_list = execute_repo_list
 
         self.job_type = 'test'
