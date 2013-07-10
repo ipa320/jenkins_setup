@@ -33,7 +33,7 @@ case $JOBTYPE in
         $DIR/../tvnc/installTurboVNC.bash &&
         $DIR/../vgl/installVirtualGL.bash &&
         $DIR/installNvidia.bash &&
-        startX &&
+        startX
         ;;
 esac
 
