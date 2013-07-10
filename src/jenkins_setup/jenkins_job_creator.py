@@ -838,7 +838,8 @@ class TestJob(JenkinsJob):
 
         subset_filter_input = []
         for repo in self.pipe_inst.repositories.keys():
-            if self.pipe_inst.repositories[repo].test_type == self.job_type:
+            #if self.pipe_inst.repositories[repo].test_type == self.job_type:
+            if self.job_type in self.pipe_inst.repositories[repo].jobs:
                 for rosdistro in self.pipe_inst.repositories[repo].ros_distro:
                     subset_filter_input_entry = {}
                     subset_filter_input_entry['repository'] = repo
