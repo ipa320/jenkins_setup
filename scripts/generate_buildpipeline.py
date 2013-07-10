@@ -146,12 +146,12 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### downstream build
-    if 'downstream_build' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.DownstreamBuildJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['downstream_build'])
-        if options.delete:
-            modified_jobs.append(job_creator_instance.delete_job())
-        else:
-            modified_jobs.append(job_creator_instance.create_job())
+    #if 'downstream_build' in job_type_dict:
+    #    job_creator_instance = jenkins_job_creator.DownstreamBuildJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['downstream_build'])
+    #    if options.delete:
+    #        modified_jobs.append(job_creator_instance.delete_job())
+    #    else:
+    #        modified_jobs.append(job_creator_instance.create_job())
 
     ### nongraphics test
     if 'nongraphics_test' in job_type_dict:
