@@ -846,7 +846,7 @@ class TestJob(JenkinsJob):
                     subset_filter_input_entry['ubuntu_distro'] = self.pipe_inst.repositories[repo].prio_ubuntu_distro
                     subset_filter_input_entry['arch'] = self.pipe_inst.repositories[repo].prio_arch
                     subset_filter_input.append(subset_filter_input_entry)
-                    for ubuntu_distro, repo_archs in self.pipe_inst.repositories[repo].matrix_distro_arch.iteritems():
+                    for ubuntu_distro, repo_archs in self.pipe_inst.repositories[repo].regular_matrix.iteritems():
                         for repo_arch in repo_archs:
                             subset_filter_input_entry = {}
                             subset_filter_input_entry['repository'] = repo
