@@ -826,7 +826,7 @@ class TestJob(JenkinsJob):
         # set pipeline trigger
         self._set_pipelinetrigger_param(['release'])
 
-    def _get_test_subset_filter(self, test_type):
+    def _get_test_subset_filter(self):
         """
         Gets the subset filter of the given test job (non/graphics_test)
 
@@ -838,7 +838,7 @@ class TestJob(JenkinsJob):
 
         subset_filter_input = []
         for repo in self.pipe_inst.repositories.keys():
-            if self.pipe_inst.repositories[repo].test_type == test_type:
+            if self.pipe_inst.repositories[repo].test_type == self.job_type:
                 for rosdistro in self.pipe_inst.repositories[repo].ros_distro:
                     subset_filter_input_entry = {}
                     subset_filter_input_entry['repository'] = repo
