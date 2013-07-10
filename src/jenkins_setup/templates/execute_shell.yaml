@@ -70,8 +70,14 @@ sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec -
 
 echo "***********LEAVE CHROOT************"
 
+date
 
-date'
+echo "*******CLEANUP WORKSPACE*******"
+
+echo "STORING CHROOT TARBALL ON @(STORAGE)"
+
+scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use/
+'
 
 
 #######regular_build#######
@@ -143,6 +149,14 @@ echo "***********ENTER CHROOT************"
 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 echo "***********LEAVE CHROOT************"
+
+date
+
+echo "*******CLEANUP WORKSPACE*******"
+
+echo "STORING CHROOT TARBALL ON @(STORAGE)"
+
+scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use/
 '
 
 
