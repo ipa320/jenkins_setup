@@ -832,6 +832,9 @@ class TestJob(JenkinsJob):
         """
         Gets the subset filter of the given test job (non/graphics_test)
 
+        @param test_type: test job type to calculate subset filter for
+        @type  test_type: string
+
         @return type: list of dicts of subset filter entries
         """
 
