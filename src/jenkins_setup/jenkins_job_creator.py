@@ -110,7 +110,7 @@ class JenkinsJob(object):
         self.params['JUNIT_TESTRESULTS'] = ''
         self.params['MAILER'] = ''
         self.params['POSTBUILD_TASK'] = ''
-        self._set_authorization_matrix_param('read')
+        self._set_authorization_matrix_param('build')
 
     ###########################################################################
     # helper methods - parameter generation
@@ -552,9 +552,6 @@ class PipeStarterGeneralJob(JenkinsJob):
                                                                        subset_filter=self._generate_matrix_filter(self._get_prio_subset_filter()),
                                                                        predefined_param='POLL=manually triggered' + '\nREPOSITORY=%s' % repo + '\nREPOSITORY_FILTER=repository=="%s"' % repo))
         self._set_parameterizedtrigger_param(prio_triggers)
-
-        # authorization matrix
-        self._set_authorization_matrix_param('build')
 
 
 class PipeStarterJob(PipeStarterGeneralJob):
