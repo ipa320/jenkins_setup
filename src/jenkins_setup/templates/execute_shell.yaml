@@ -89,7 +89,7 @@ date
 
 echo "STORING CHROOT TARBALL ON @(STORAGE)"
 
-scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/@(SERVERNAME)/in_use/
+scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use_on__@(SERVERNAME)/
 
 date'
 
@@ -194,9 +194,9 @@ fi
 mkdir $WORKSPACE/../aux
 
 
-echo "Copying "$basetgz" from @(STORAGE)/@(SERVERNAME)/in_use"
+echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
-scp @(STORAGE)/@(SERVERNAME)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
+scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 
 scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
 
@@ -269,9 +269,9 @@ fi
 mkdir $WORKSPACE/../aux
 
 
-echo "Copying "$basetgz" from @(STORAGE)/@(SERVERNAME)/in_use"
+echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
-scp @(STORAGE)/@(SERVERNAME)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
+scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 
 scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
 
