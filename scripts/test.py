@@ -134,7 +134,7 @@ def main():
         # get list of dependencies to test
         test_repos_list = []
         for dep in pipe_repos[build_identifier].dependencies:
-            if dep in stacks and dep.test:
+            if dep in stacks:  # TODO option to select deps to build
                 test_repos_list.append(dep)
 
         ros_env_repo = common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
