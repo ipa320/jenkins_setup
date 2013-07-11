@@ -145,8 +145,8 @@ def main():
         # test dry repositories
         print "Test repository %s" % build_repo
         try:
-            common.call("%s rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" %
-                        ("/opt/VirtualGL/bin/vglrun" if graphic_test else "", dry_build_logs,
+            common.call("%srosmake -rV --profile --pjobs=8 --test-only --output=%s %s" %
+                        ("/opt/VirtualGL/bin/vglrun " if graphic_test else "", dry_build_logs,
                          " ".join(test_repos_list + [build_repo])), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
