@@ -89,7 +89,7 @@ date
 
 echo "STORING CHROOT TARBALL ON @(STORAGE)"
 
-scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use/
+scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/@(SERVERNAME)/in_use/
 
 date'
 
