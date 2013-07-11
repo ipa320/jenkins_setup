@@ -498,11 +498,6 @@ echo "***********LEAVE CHROOT************"
 '
 
 
-#######automatic_hw_test#######
+#######hardware_test#######
 
-'automatic_hw_test': '#!/bin/bash -e'
-
-
-#######interactive_hw_test#######
-
-'interactive_hw_test,': '#!/bin/bash -e'
+'hardware_test': '#!/bin/bash -e'
