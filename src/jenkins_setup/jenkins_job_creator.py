@@ -628,7 +628,7 @@ class BuildJob(JenkinsJob):
         matrix_entries_dict_list = self.get_matrix_entries()
         self.set_matrix_param(matrix_entries_dict_list, matrix_filter)
 
-        self.set_authorization_matrix_param('build')
+        self.set_authorization_matrix_param('starter')
 
 
 class PriorityBuildJob(BuildJob):
