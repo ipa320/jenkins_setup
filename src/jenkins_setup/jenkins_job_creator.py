@@ -667,7 +667,7 @@ class PriorityBuildJob(BuildJob):
         self._set_shell_param(shell_script)
 
         # set pipeline trigger
-        self._set_pipelinetrigger_param(['hardware_build', 'nongraphics_test', 'graphics_test'])
+        self._set_pipelinetrigger_param(['hardware_build_trigger', 'nongraphics_test', 'graphics_test'])
 
         # set parameterized triggers
         parameterized_triggers = []
@@ -1043,6 +1043,28 @@ class DownstreamTestJob(TestJob):
         self._set_shell_param(shell_script)
 
 
+class HardwareBuildTrigger(JenkinsJob):
+    """
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        super(HardwareBuildJob, self).__init__(jenkins_instance, pipeline_config)
+
+        self.job_type = 'hardware_build_trigger'
+        self.job_name = self._generate_job_name(self.job_type)
+
+    def _set_job_type_params(self):
+        """
+        Sets hardware build trigger job specific job configuration parameters
+        """
+
+        self.params['PROJECT'] = 'project'
+
+        # set parameterized triggers
+        parameterized_triggers = []
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['hardware_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        self._set_parameterizedtrigger_param(parameterized_triggers)
+
+
 class HardwareBuildJob(JenkinsJob):
     """
     Class for hardware build jobs
@@ -1066,8 +1088,6 @@ class HardwareBuildJob(JenkinsJob):
         """
         Sets hardware build job specific job configuration parameters
         """
-
-        self.params['PROJECT'] = 'project'  # TODO 'matrix-project' ??
 
         # email
         self._set_mailer_param('Hardware Build')
