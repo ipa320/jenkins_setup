@@ -162,7 +162,7 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### regular nongraphics test
-    if 'nongraphics_test' and 'regular_build' in job_type_dict:
+    if 'nongraphics_test' in job_type_dict and 'regular_build' in job_type_dict:
         job_creator_instance = jenkins_job_creator.RegularNongraphicsTestJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['nongraphics_test'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
@@ -178,7 +178,7 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### regular graphics test
-    if 'graphics_test' and 'regular_build' in job_type_dict:
+    if 'graphics_test' in job_type_dict and 'regular_build' in job_type_dict:
         job_creator_instance = jenkins_job_creator.RegularGraphicsTestJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['graphics_test'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
@@ -194,7 +194,7 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### interactive hardware test
-    if 'hardware_build' and 'interactive_hw_test' in job_type_dict:
+    if 'hardware_build' in job_type_dict and 'interactive_hw_test' in job_type_dict:
         job_creator_instance = jenkins_job_creator.InteractiveHWTestJob(jenkins_instance, plc_instance)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
@@ -202,9 +202,10 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### release job
-    if ('release' and 'downstream_build' and 'nongraphics_test' and 'graphics_test'
-            and 'hardware_build' and 'interactive_hw_test' in job_type_dict):
-        print "Create release job"
+    # TODO fix if statement
+    #if ('release' and 'downstream_build' and 'nongraphics_test' and 'graphics_test'
+    #        and 'hardware_build' and 'interactive_hw_test' in job_type_dict):
+    #    print "Create release job"
         # TODO
 
     ### clean up
