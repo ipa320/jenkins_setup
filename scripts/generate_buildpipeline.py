@@ -146,24 +146,40 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### downstream build
-    if 'downstream_build' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.DownstreamBuildJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['downstream_build'])
+    #if 'downstream_build' in job_type_dict:
+    #    job_creator_instance = jenkins_job_creator.DownstreamBuildJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['downstream_build'])
+    #    if options.delete:
+    #        modified_jobs.append(job_creator_instance.delete_job())
+    #    else:
+    #        modified_jobs.append(job_creator_instance.create_job())
+
+    ### priority nongraphics test
+    if 'nongraphics_test' in job_type_dict:
+        job_creator_instance = jenkins_job_creator.PriorityNongraphicsTestJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['nongraphics_test'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
             modified_jobs.append(job_creator_instance.create_job())
 
-    ### nongraphics test
-    if 'downstream_build' and 'nongraphics_test' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.NongraphicsTestJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['nongraphics_test'])
+    ### regular nongraphics test
+    if 'nongraphics_test' in job_type_dict and 'regular_build' in job_type_dict:
+        job_creator_instance = jenkins_job_creator.RegularNongraphicsTestJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['nongraphics_test'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
             modified_jobs.append(job_creator_instance.create_job())
 
-    ### graphics test
-    if 'downstream_build' and 'graphics_test' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.GraphicsTestJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['graphics_test'])
+    ### priority graphics test
+    if 'graphics_test' in job_type_dict:
+        job_creator_instance = jenkins_job_creator.PriorityGraphicsTestJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['graphics_test'])
+        if options.delete:
+            modified_jobs.append(job_creator_instance.delete_job())
+        else:
+            modified_jobs.append(job_creator_instance.create_job())
+
+    ### regular graphics test
+    if 'graphics_test' in job_type_dict and 'regular_build' in job_type_dict:
+        job_creator_instance = jenkins_job_creator.RegularGraphicsTestJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['graphics_test'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -178,7 +194,7 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### interactive hardware test
-    if 'hardware_build' and 'interactive_hw_test' in job_type_dict:
+    if 'hardware_build' in job_type_dict and 'interactive_hw_test' in job_type_dict:
         job_creator_instance = jenkins_job_creator.InteractiveHWTestJob(jenkins_instance, plc_instance)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
@@ -186,9 +202,10 @@ def main():
             modified_jobs.append(job_creator_instance.create_job())
 
     ### release job
-    if ('release' and 'downstream_build' and 'nongraphics_test' and 'graphics_test'
-            and 'hardware_build' and 'interactive_hw_test' in job_type_dict):
-        print "Create release job"
+    # TODO fix if statement
+    #if ('release' and 'downstream_build' and 'nongraphics_test' and 'graphics_test'
+    #        and 'hardware_build' and 'interactive_hw_test' in job_type_dict):
+    #    print "Create release job"
         # TODO
 
     ### clean up
