@@ -893,8 +893,6 @@ class PriorityNongraphicsTestJob(TestJob):
 
         super(PriorityNongraphicsTestJob, self)._set_job_type_params()
 
-        self.params['NODE_LABEL'] = 'nongraphics_test'
-
         # email
         self._set_mailer_param('Priority Non-Graphics Test')
 
@@ -928,8 +926,6 @@ class RegularNongraphicsTestJob(TestJob):
         """
 
         super(RegularNongraphicsTestJob, self)._set_job_type_params()
-
-        self.params['NODE_LABEL'] = 'nongraphics_test'
 
         # email
         self._set_mailer_param('Regular Non-Graphics Test')
@@ -965,8 +961,6 @@ class PriorityGraphicsTestJob(TestJob):
 
         super(PriorityGraphicsTestJob, self)._set_job_type_params()
 
-        self.params['NODE_LABEL'] = 'graphics_test'
-
         # email
         self._set_mailer_param('Priority Graphics Test')
 
@@ -1000,8 +994,6 @@ class RegularGraphicsTestJob(TestJob):
         """
 
         super(RegularGraphicsTestJob, self)._set_job_type_params()
-
-        self.params['NODE_LABEL'] = 'graphics_test'
 
         # email
         self._set_mailer_param('Regular Graphics Test')
