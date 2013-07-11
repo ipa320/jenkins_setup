@@ -185,7 +185,7 @@ def main():
         else:
             modified_jobs.append(job_creator_instance.create_job())
 
-    ### hardware build
+    ### hardware build and test
     if 'hardware_build' in job_type_dict:
         job_creator_instance = jenkins_job_creator.HardwareBuildJob(jenkins_instance, plc_instance)
         if options.delete:
@@ -193,9 +193,7 @@ def main():
         else:
             modified_jobs.append(job_creator_instance.create_job())
 
-    ### interactive hardware test
-    if 'hardware_build' in job_type_dict and 'interactive_hw_test' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.InteractiveHWTestJob(jenkins_instance, plc_instance)
+        job_creator_instance = jenkins_job_creator.HardwareTestJob(jenkins_instance, plc_instance)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
