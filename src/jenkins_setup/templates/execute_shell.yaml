@@ -308,7 +308,7 @@ fi
 echo "***********ENTER CHROOT************"
 
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts "$WORKSPACE /tmp/.X11-unix /tmp/nvidia" -- $WORKSPACE/jenkins_setup/scripts/graphicTest/chroot/setupGraphicEnv.bash $WORKSPACE
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts "$WORKSPACE /tmp/.X11-unix /tmp/nvidia" -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 echo "***********LEAVE CHROOT************"
 '
