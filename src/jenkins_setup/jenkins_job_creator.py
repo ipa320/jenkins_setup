@@ -662,7 +662,7 @@ class PriorityBuildJob(BuildJob):
         super(PriorityBuildJob, self).set_job_type_params(matrix_filter)
 
         # no concurrent build
-        self.params['CONCURRENT_BUILD'] = 'false'
+        #self.params['CONCURRENT_BUILD'] = 'false'
 
         # email
         self.set_mailer_param('Priority Build')
