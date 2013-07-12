@@ -234,8 +234,13 @@ class JenkinsJob(object):
         ros_distros = []
         ubuntu_distros = []
         archs = []
+        i = 0
+        if job_type and job_type != 'prio_build':
+            for repo in self.pipe_inst.repositories.keys():
+                if job_type in self.pipe_inst.repositories[repo].jobs:
+                    i += 1
         for repo_name, repo_data, in self.pipe_inst.repositories.iteritems():
-            if job_type and job_type != 'prio_build':
+            if i > 5 and job_type and job_type != 'prio_build':
                 if job_type not in self.pipe_inst.repositories[repo_name].jobs:
                     continue
             if repo_name not in repositories:
