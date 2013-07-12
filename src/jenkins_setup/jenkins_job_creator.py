@@ -193,12 +193,14 @@ class JenkinsJob(object):
 
         return axis
 
-    def _set_matrix_param(self, name_value_dict_list, filter=None):
+    def _set_matrix_param(self, name_value_dict_list, labels=None, filter=None):
         """
         Returns matrix config for given dictionary containing names and values
 
         @param name_value_dict_list: matrix parameter config
         @type  name_value_dict_list: list
+        @param labels: node labels to run builds on
+        @type  labels: list
         @param filter: combination filter
         @type  filter: str
         """
@@ -213,8 +215,12 @@ class JenkinsJob(object):
             return ''
 
         matrix = self.job_config_params['matrix']['basic']
-        matrix = matrix.replace('@(NODE)', self.job_type)
         matrix = matrix.replace('@(AXES)', axes)
+        if labels:
+            matrix = matrix.replace('@(NODE)', '<string>%s</string>' % '</string> <string>'.join(label for label in labels))
+        else:
+            matrix = matrix.replace('@(NODE)', '<string>%s</string>' % self.job_type)
+        #same in short: matrix = matrix.replace('@(NODE)', '<string>%s</string>' % ('</string> <string>'.join(label for label in labels) if labels else self.job_type))
         if filter:
             matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', filter)
         elif filter == '':
@@ -641,7 +647,7 @@ class BuildJob(JenkinsJob):
         if not matrix_filter:
             matrix_filter = self._generate_matrix_filter(self._get_prio_subset_filter())
         matrix_entries_dict_list = self._get_matrix_entries(matrix_job_type)
-        self._set_matrix_param(matrix_entries_dict_list, matrix_filter)
+        self._set_matrix_param(matrix_entries_dict_list, filter=matrix_filter)
 
 
 class PriorityBuildJob(BuildJob):
@@ -836,7 +842,7 @@ class TestJob(JenkinsJob):
         if not matrix_filter:
             matrix_filter = self._generate_matrix_filter(self._get_test_subset_filter())
         matrix_entries_dict_list = self._get_matrix_entries(matrix_job_type)
-        self._set_matrix_param(matrix_entries_dict_list, matrix_filter)
+        self._set_matrix_param(matrix_entries_dict_list, filter=matrix_filter)
 
         # set pipeline trigger
         self._set_pipelinetrigger_param(['release'])
@@ -1107,7 +1113,8 @@ class HardwareBuildJob(JenkinsJob):
 
         # set matrix
         matrix_filter = self._generate_matrix_filter(self._get_hardware_subset_filter())
-        self._set_matrix_param(self._get_hardware_matrix_entries(), matrix_filter)
+        (matrix_entries_dict_list, robots) = self._get_hardware_matrix_entries()
+        self._set_matrix_param(matrix_entries_dict_list, labels=robots, filter=matrix_filter)
 
         # email
         self._set_mailer_param('Hardware Build')
@@ -1140,9 +1147,8 @@ class HardwareBuildJob(JenkinsJob):
                         robots.append(robot)
 
         dict_list.append({'repository': repositories})
-        dict_list.append({'robot': robots})
 
-        return dict_list
+        return (dict_list, robots)
 
     def _get_hardware_subset_filter(self):
         """
