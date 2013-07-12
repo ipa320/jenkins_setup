@@ -1154,7 +1154,7 @@ class HardwareTestJob(JenkinsJob):
         self.params['PROJECT'] = 'project'  # TODO 'matrix-project'
 
         # junit test result location
-        self.set_junit_testresults_param()
+        self._set_junit_testresults_param()
 
         # email
         self._set_mailer_param('Hardware Test')
