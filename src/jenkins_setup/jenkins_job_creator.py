@@ -495,11 +495,14 @@ class JenkinsJob(object):
         else:
             shell_script = shell_temp[self.job_type]
         shell_script = shell_script.replace('@(SERVERNAME)', self.pipe_inst.server_name)
-        shell_script = shell_script.replace('@(STORAGE)', self.tarball_location)
         shell_script = shell_script.replace('@(USERNAME)', self.pipe_inst.user_name)
         shell_script = shell_script.replace('@(JOB_TYPE_NAME)', self.job_type)
         shell_script = shell_script.replace('@(PIPELINEREPOSOWNER)', self.pipe_inst.pipeline_repos_owner)
         shell_script = shell_script.replace('@(CONFIG_FOLDER)', self.pipe_inst.config_folder)
+
+        # if not a hardware job where no chroot is used
+        if 'hardware' not in self.job_type:
+            shell_script = shell_script.replace('@(STORAGE)', self.tarball_location)
 
         return shell_script
 
