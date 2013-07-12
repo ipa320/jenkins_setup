@@ -1099,7 +1099,7 @@ class HardwareBuildJob(JenkinsJob):
         self._set_shell_param(shell_script)
 
         # set pipeline trigger
-        self.set_pipelinetrigger_param(['hardware_test_trigger'])
+        self._set_pipelinetrigger_param(['hardware_test_trigger'])
 
         # authorization matrix
         self._set_authorization_matrix_param('read')
