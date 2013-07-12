@@ -469,34 +469,6 @@ echo "***********LEAVE CHROOT************"
 
 'hardware_build': '#!/bin/bash -e
 
-    if [ -d @(USERNAME)/${repository} ]; then
-
-        sudo cp -r @(USERNAME)/${repository} @(USERNAME)/${repository}_backup
-
-    fi
-
-    mkdir @(USERNAME)/${repository}
-
-
-    echo "============================================================"
-    echo "==== Begin" $SCRIPT "script.    Ignore the output above ===="
-    echo "============================================================"
-
-    python hardware_build.py
-
-    echo "============================================================"
-    echo "==== Begin" $SCRIPT "script.    Ignore the output above ===="
-    echo "============================================================"
-
-
-    if [[ $? != 0 ]]; then
-
-        sudo cp -rf @(USERNAME)/${repository}_backup @(USERNAME)/${repository}
-
-    fi
-
-    sudo rm -r @(USERNAME)/${repository}_backup
-
     #TODO
 
 '
@@ -504,4 +476,8 @@ echo "***********LEAVE CHROOT************"
 
 #######hardware_test#######
 
-'hardware_test': '#!/bin/bash -e'
+'hardware_test': '#!/bin/bash -e
+
+    #TODO
+
+'
