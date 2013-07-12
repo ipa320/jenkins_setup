@@ -1092,7 +1092,7 @@ class HardwareBuildJob(JenkinsJob):
         self._set_mailer_param('Hardware Build')
 
         # set execute shell
-        shell_script = self.get_shell_script()
+        shell_script = self._get_shell_script()
         self.set_shell_param(shell_script)
 
         # set pipeline trigger
@@ -1157,7 +1157,7 @@ class HardwareTestJob(JenkinsJob):
         self._set_mailer_param('Hardware Test')
 
         # set execute shell
-        shell_script = self.get_shell_script()
+        shell_script = self._get_shell_script()
         self.set_shell_param(shell_script)
 
         # set pipeline trigger
