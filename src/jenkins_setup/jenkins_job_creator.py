@@ -1104,6 +1104,28 @@ class HardwareBuildJob(JenkinsJob):
         # authorization matrix
         self._set_authorization_matrix_param('read')
 
+    def _get_hardware_matrix_entries(self):
+        """
+        Gets all repository to build and all robots to build on
+
+        @return type: list of dicts
+        """
+
+        dict_list = []
+        repositories = []
+        robots = []
+        for repo in self.pipe_inst.repositories.keys():
+            if 'hardware_build' in self.pipe_inst.repositories[repo].jobs:
+                repositories.append(repo)
+                for robot in self.pipe_inst.repositories[repo].robots:
+                    if robot not in robots:
+                        robots.append(robot)
+
+        dict_list.append({'repository': repositories})
+        dict_list.append({'robot': robots})
+
+        return dict_list
+
 
 class HardwareTestTrigger(JenkinsJob):
     """
