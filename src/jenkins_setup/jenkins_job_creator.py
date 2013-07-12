@@ -222,7 +222,7 @@ class JenkinsJob(object):
 
         self.params['MATRIX'] = matrix
 
-    def _get_matrix_entries(self):
+    def _get_matrix_entries(self, job_type=None):
         """
         Gets all repository, ros_distro, ubuntu_distro and arch entries of
         pipeline configuration
@@ -230,11 +230,16 @@ class JenkinsJob(object):
         @return type: list of dicts
         """
         dict_list = []
-        dict_list.append({'repository': self.pipe_inst.repositories.keys()})
+        repositories = []
         ros_distros = []
         ubuntu_distros = []
         archs = []
         for repo_name, repo_data, in self.pipe_inst.repositories.iteritems():
+            if job_type and job_type != 'prio_build':
+                if job_type not in self.pipe_inst.repositories[repo_name].jobs:
+                    continue
+            if repo_name not in repositories:
+                repositories.append(repo_name)
             for ros_distro in repo_data.ros_distro:
                 if ros_distro not in ros_distros:
                     ros_distros.append(ros_distro)
@@ -249,6 +254,7 @@ class JenkinsJob(object):
                     if arch not in archs:
                         archs.append(arch)
 
+        dict_list.append({'repository': repositories})
         dict_list.append({'ros_distro': ros_distros})
         dict_list.append({'ubuntu_distro': ubuntu_distros})
         dict_list.append({'arch': archs})
@@ -615,7 +621,7 @@ class BuildJob(JenkinsJob):
 
         self.tarball_location = tarball_location
 
-    def _set_job_type_params(self, matrix_filter=None):
+    def _set_job_type_params(self, matrix_filter=None, matrix_job_type=None):
         """
         Sets build job specific job configuration parameters
         """
@@ -626,7 +632,7 @@ class BuildJob(JenkinsJob):
         # set matrix
         if not matrix_filter:
             matrix_filter = self._generate_matrix_filter(self._get_prio_subset_filter())
-        matrix_entries_dict_list = self._get_matrix_entries()
+        matrix_entries_dict_list = self._get_matrix_entries(matrix_job_type)
         self._set_matrix_param(matrix_entries_dict_list, matrix_filter)
 
 
@@ -703,7 +709,7 @@ class RegularBuildJob(BuildJob):
 
         matrix_filter = self._generate_matrix_filter(self._get_regular_subset_filter())
 
-        super(RegularBuildJob, self)._set_job_type_params(matrix_filter)
+        super(RegularBuildJob, self)._set_job_type_params(matrix_filter=matrix_filter, matrix_job_type='regular_build')
 
         # email
         self._set_mailer_param('Regular Build')
@@ -769,7 +775,7 @@ class DownstreamBuildJob(BuildJob):
         Sets downstream build job specific job configuration parameters
         """
 
-        super(DownstreamBuildJob, self)._set_job_type_params()
+        super(DownstreamBuildJob, self)._set_job_type_params(matrix_job_type='downstream_build')
 
         # email
         self._set_mailer_param('Downstream Build')
@@ -807,7 +813,7 @@ class TestJob(JenkinsJob):
         self.job_type = 'test'
         self.job_name = self._generate_job_name(self.job_type)
 
-    def _set_job_type_params(self, matrix_filter=None):
+    def _set_job_type_params(self, matrix_filter=None, matrix_job_type=None):
         """
         Sets test job specific job configuration parameters
         """
@@ -821,7 +827,7 @@ class TestJob(JenkinsJob):
         # set matrix
         if not matrix_filter:
             matrix_filter = self._generate_matrix_filter(self._get_test_subset_filter())
-        matrix_entries_dict_list = self._get_matrix_entries()
+        matrix_entries_dict_list = self._get_matrix_entries(matrix_job_type)
         self._set_matrix_param(matrix_entries_dict_list, matrix_filter)
 
         # set pipeline trigger
@@ -890,7 +896,7 @@ class PriorityNongraphicsTestJob(TestJob):
         Sets nongraphics test job specific job configuration parameters
         """
 
-        super(PriorityNongraphicsTestJob, self)._set_job_type_params()
+        super(PriorityNongraphicsTestJob, self)._set_job_type_params(matrix_job_type='nongraphics_test')
 
         # email
         self._set_mailer_param('Priority Non-Graphics Test')
@@ -924,7 +930,7 @@ class RegularNongraphicsTestJob(TestJob):
         Sets nongraphics test job specific job configuration parameters
         """
 
-        super(RegularNongraphicsTestJob, self)._set_job_type_params()
+        super(RegularNongraphicsTestJob, self)._set_job_type_params(matrix_job_type='nongraphics_test')
 
         # email
         self._set_mailer_param('Regular Non-Graphics Test')
@@ -958,7 +964,7 @@ class PriorityGraphicsTestJob(TestJob):
         Sets graphics test job specific job configuration parameters
         """
 
-        super(PriorityGraphicsTestJob, self)._set_job_type_params()
+        super(PriorityGraphicsTestJob, self)._set_job_type_params(matrix_job_type='graphics_test')
 
         # email
         self._set_mailer_param('Priority Graphics Test')
@@ -992,7 +998,7 @@ class RegularGraphicsTestJob(TestJob):
         Sets graphics test job specific job configuration parameters
         """
 
-        super(RegularGraphicsTestJob, self)._set_job_type_params()
+        super(RegularGraphicsTestJob, self)._set_job_type_params(matrix_job_type='graphics_test')
 
         # email
         self._set_mailer_param('Regular Graphics Test')
@@ -1032,7 +1038,7 @@ class DownstreamTestJob(TestJob):
 
         matrix_filter = self._generate_matrix_filter(self._get_prio_subset_filter())
 
-        super(DownstreamTestJob, self)._set_job_type_params(matrix_filter)
+        super(DownstreamTestJob, self)._set_job_type_params(matrix_filter, matrix_job_type='downstream_build')
 
         # email
         self._set_mailer_param('Downstream Test')
