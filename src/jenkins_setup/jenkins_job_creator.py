@@ -1094,10 +1094,32 @@ class HardwareBuildJob(JenkinsJob):
         self.set_shell_param(shell_script)
 
         # set pipeline trigger
-        self.set_pipelinetrigger_param(['hardware_test'])
+        self.set_pipelinetrigger_param(['hardware_test_trigger'])
 
         # authorization matrix
         self._set_authorization_matrix_param('build')
+
+
+class HardwareTestTrigger(JenkinsJob):
+    """
+    """
+    def __init__(self, jenkins_instance, pipeline_config):
+        super(HardwareTestJob, self).__init__(jenkins_instance, pipeline_config)
+
+        self.job_type = 'hardware_test_trigger'
+        self.job_name = self._generate_job_name(self.job_type)
+
+    def _set_job_type_params(self):
+        """
+        Sets hardware test trigger job specific job configuration parameters
+        """
+
+        self.params['PROJECT'] = 'project'
+
+        # set parameterized triggers
+        parameterized_triggers = []
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['hardware_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        self._set_parameterizedtrigger_param(parameterized_triggers)
 
 
 class HardwareTestJob(JenkinsJob):
