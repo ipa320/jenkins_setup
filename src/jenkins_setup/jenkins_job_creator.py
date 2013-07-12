@@ -1097,7 +1097,7 @@ class HardwareBuildJob(JenkinsJob):
         self.set_pipelinetrigger_param(['hardware_test_trigger'])
 
         # authorization matrix
-        self._set_authorization_matrix_param('build')
+        self._set_authorization_matrix_param('read')
 
 
 class HardwareTestTrigger(JenkinsJob):
@@ -1162,7 +1162,7 @@ class HardwareTestJob(JenkinsJob):
         self._set_pipelinetrigger_param(['release'])
 
         # authorization matrix
-        self._set_authorization_matrix_param('build')
+        self._set_authorization_matrix_param('read')
 
     def _get_hardware_matrix_entries(self):
         """
