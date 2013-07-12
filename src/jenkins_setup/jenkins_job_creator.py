@@ -1091,6 +1091,10 @@ class HardwareBuildJob(JenkinsJob):
         Sets hardware build job specific job configuration parameters
         """
 
+        # set matrix
+        matrix_filter = self._generate_matrix_filter(self._get_hardware_subset_filter())
+        self._set_matrix_param(self._get_hardware_matrix_entries(), matrix_filter)
+
         # email
         self._set_mailer_param('Hardware Build')
 
@@ -1125,6 +1129,20 @@ class HardwareBuildJob(JenkinsJob):
         dict_list.append({'robot': robots})
 
         return dict_list
+
+    def _get_hardware_subset_filter(self):
+        """
+        Gets subset filter for hardware jobs
+        """
+
+        subset_filter_input = []
+        for repo in self.pipe_inst.repositories.keys():
+            subset_filter_input_entry = {}
+            subset_filter_input_entry['repository'] = repo
+            subset_filter_input_entry['robot'] = self.pipe_inst.repositories[repo].robots[0]  # FIXME hack as long as robots attribute is list not str
+            subset_filter_input.append(subset_filter_input_entry)
+
+        return subset_filter_input
 
 
 class HardwareTestTrigger(JenkinsJob):
