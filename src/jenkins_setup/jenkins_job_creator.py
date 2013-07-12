@@ -1168,7 +1168,7 @@ class HardwareTestTrigger(JenkinsJob):
         self._set_parameterizedtrigger_param(parameterized_triggers)
 
 
-class HardwareTestJob(JenkinsJob):
+class HardwareTestJob(HardwareBuildJob):
     """
     Class for hardware test jobs
     """
@@ -1192,7 +1192,7 @@ class HardwareTestJob(JenkinsJob):
         Sets hardware job specific job configuration parameters
         """
 
-        self.params['PROJECT'] = 'project'  # TODO 'matrix-project'
+        super(HardwareTestJob, self)._set_job_type_params()
 
         # junit test result location
         self._set_junit_testresults_param()
@@ -1209,17 +1209,6 @@ class HardwareTestJob(JenkinsJob):
 
         # authorization matrix
         self._set_authorization_matrix_param('read')
-
-    def _get_hardware_matrix_entries(self):
-        """
-        Gets all repository to build and all robots to build on
-
-        @return type: list of dicts
-        """
-
-        dict_list = []
-        dict_list.append({'repository': self.repo_list})
-        # TODO
 
 
 class ReleaseJob(JenkinsJob):
