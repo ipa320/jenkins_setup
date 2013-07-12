@@ -1096,7 +1096,7 @@ class HardwareBuildJob(JenkinsJob):
 
         # set execute shell
         shell_script = self._get_shell_script()
-        self.set_shell_param(shell_script)
+        self._set_shell_param(shell_script)
 
         # set pipeline trigger
         self.set_pipelinetrigger_param(['hardware_test_trigger'])
@@ -1161,7 +1161,7 @@ class HardwareTestJob(JenkinsJob):
 
         # set execute shell
         shell_script = self._get_shell_script()
-        self.set_shell_param(shell_script)
+        self._set_shell_param(shell_script)
 
         # set pipeline trigger
         self._set_pipelinetrigger_param(['release'])
