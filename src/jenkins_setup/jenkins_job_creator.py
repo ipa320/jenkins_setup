@@ -217,6 +217,8 @@ class JenkinsJob(object):
         matrix = matrix.replace('@(AXES)', axes)
         if filter:
             matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', filter)
+        elif filter == '':
+            matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', 'repository=="NO_ENTRY"')
 
         self.params['MATRIX'] = matrix
 
