@@ -1070,6 +1070,7 @@ class HardwareBuildTrigger(JenkinsJob):
         Sets hardware build trigger job specific job configuration parameters
         """
 
+        self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
 
         # set parameterized triggers
@@ -1101,6 +1102,8 @@ class HardwareBuildJob(JenkinsJob):
         """
         Sets hardware build job specific job configuration parameters
         """
+
+        self.params['NODE_LABEL'] = 'master'
 
         # set matrix
         matrix_filter = self._generate_matrix_filter(self._get_hardware_subset_filter())
@@ -1171,6 +1174,7 @@ class HardwareTestTrigger(JenkinsJob):
         Sets hardware test trigger job specific job configuration parameters
         """
 
+        self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
 
         # set parameterized triggers
@@ -1279,4 +1283,4 @@ class CleanUpJob(JenkinsJob):
 
         self.params['NODE_LABEL'] = 'clean_up'
 
-# TODO classes: test jobs, hardware jobs, release
+# TODO classes: release
