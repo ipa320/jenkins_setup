@@ -187,7 +187,19 @@ def main():
 
     ### hardware build and test
     if 'hardware_build' in job_type_dict:
+        job_creator_instance = jenkins_job_creator.HardwareBuildTrigger(jenkins_instance, plc_instance)
+        if options.delete:
+            modified_jobs.append(job_creator_instance.delete_job())
+        else:
+            modified_jobs.append(job_creator_instance.create_job())
+
         job_creator_instance = jenkins_job_creator.HardwareBuildJob(jenkins_instance, plc_instance)
+        if options.delete:
+            modified_jobs.append(job_creator_instance.delete_job())
+        else:
+            modified_jobs.append(job_creator_instance.create_job())
+
+        job_creator_instance = jenkins_job_creator.HardwareTestTrigger(jenkins_instance, plc_instance)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
