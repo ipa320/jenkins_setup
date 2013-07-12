@@ -478,11 +478,15 @@ echo "***********LEAVE CHROOT************"
     mkdir @(USERNAME)/${repository}
 
 
-    echo "============================================================\n==== Begin" $SCRIPT "script.    Ignore the output above ====\n============================================================"
+    echo "============================================================"
+    echo "==== Begin" $SCRIPT "script.    Ignore the output above ===="
+    echo "============================================================"
 
     python hardware_build.py
 
-    echo "============================================================\n==== Begin" $SCRIPT "script.    Ignore the output above ====\n============================================================"
+    echo "============================================================"
+    echo "==== Begin" $SCRIPT "script.    Ignore the output above ===="
+    echo "============================================================"
 
 
     if [[ $? != 0 ]]; then
@@ -493,7 +497,7 @@ echo "***********LEAVE CHROOT************"
 
     sudo rm -r @(USERNAME)/${repository}_backup
 
-    TODO
+    #TODO
 
 '
 
