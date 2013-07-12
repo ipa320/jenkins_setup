@@ -1046,7 +1046,7 @@ class HardwareBuildTrigger(JenkinsJob):
     """
     """
     def __init__(self, jenkins_instance, pipeline_config):
-        super(HardwareBuildJob, self).__init__(jenkins_instance, pipeline_config)
+        super(HardwareBuildTrigger, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'hardware_build_trigger'
         self.job_name = self._generate_job_name(self.job_type)
@@ -1106,7 +1106,7 @@ class HardwareTestTrigger(JenkinsJob):
     """
     """
     def __init__(self, jenkins_instance, pipeline_config):
-        super(HardwareTestJob, self).__init__(jenkins_instance, pipeline_config)
+        super(HardwareTestTrigger, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'hardware_test_trigger'
         self.job_name = self._generate_job_name(self.job_type)
