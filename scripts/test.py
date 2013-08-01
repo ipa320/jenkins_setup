@@ -42,6 +42,7 @@ def main():
     print datetime.datetime.now()
     print "\nTesting on ros distro:  %s" % ros_distro
     print "Testing repository: %s" % build_repo
+    print "Graphic Test: %s" % graphic_test
     if build_repo != build_identifier:
         print "       with suffix: %s" % build_identifier.split('__')[1]
     print "Using source: %s" % pipe_repos[build_identifier].url
