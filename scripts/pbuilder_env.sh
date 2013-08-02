@@ -3,10 +3,10 @@ echo "vvvvvvvvvvvvvvvvvvv  pbuilder_env.sh vvvvvvvvvvvvvvvvvvvvvv"
 date
 export WORKSPACE=$1
 echo $WORKSPACE
-echo "Job-Type: $JOBTYPE"
 
 echo "Set up environment variables"
 . $WORKSPACE/env_vars.sh
+echo "Job-Type: $JOBTYPE"
 
 export PATH=$PATH:/usr/local/bin
 . /opt/ros/$ROSDISTRO/setup.sh
@@ -21,7 +21,7 @@ cp -a $WORKSPACE/.ssh /root
 ls -la /root/
 chown -R root.root /root/.ssh
 case $JOBTYPE in
-    graphic_test)
+    graphic_test|prio_graphics_test)
         echo "Set up graphic"
         export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 
@@ -48,7 +48,7 @@ echo "==== Begin" $SCRIPT "script.    Ignore the output above ===="
 echo "============================================================"
 
 date
-if [ $JOBTYPE == "graphic_test" ]; then
+if [ $JOBTYPE == "graphic_test" ] || [ $JOBTYPE == "prio_graphics_test" ]; then
     $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY true
     stopX
 else
