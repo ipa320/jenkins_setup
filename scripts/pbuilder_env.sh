@@ -25,14 +25,17 @@ case $JOBTYPE in
         echo "Set up graphic"
         export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 
-        . $DIR/remoteX.bash
-
         $DIR/checkDisplayNull.bash &&
         $DIR/setupSources.bash &&
         $DIR/../tvnc/installTurboVNC.bash &&
         $DIR/../vgl/installVirtualGL.bash &&
         $DIR/installNvidia.bash &&
-        startX
+        $DIR/remoteX start
+        export DISPLAY=$?
+        if [ "$DISPLAY" == 100 ]; then
+            echo "Could not start VNC Server"
+            exit 1;
+        fi
         ;;
 esac
 
@@ -50,7 +53,7 @@ echo "============================================================"
 date
 if [ $JOBTYPE == "graphic_test" ] || [ $JOBTYPE == "prio_graphics_test" ]; then
     $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY true
-    stopX
+    $DIR/remoteX stop
 else
     $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY false
 fi
