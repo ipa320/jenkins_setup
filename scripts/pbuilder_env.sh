@@ -30,12 +30,13 @@ case $JOBTYPE in
         $DIR/../tvnc/installTurboVNC.bash &&
         $DIR/../vgl/installVirtualGL.bash &&
         $DIR/installNvidia.bash &&
-        $DIR/remoteX start
+        $DIR/remoteX.py start
         export DISPLAY=$?
         if [ "$DISPLAY" == 100 ]; then
             echo "Could not start VNC Server"
             exit 1;
         fi
+        echo "Using Display: $DISPLAY"
         ;;
 esac
 
@@ -53,7 +54,7 @@ echo "============================================================"
 date
 if [ $JOBTYPE == "graphic_test" ] || [ $JOBTYPE == "prio_graphics_test" ]; then
     $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY true
-    $DIR/remoteX stop
+    $DIR/remoteX.py stop
 else
     $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY false
 fi
