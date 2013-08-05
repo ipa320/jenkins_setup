@@ -31,8 +31,10 @@ case $JOBTYPE in
         $DIR/setupSources.bash &&
         $DIR/../tvnc/installTurboVNC.bash &&
         $DIR/../vgl/installVirtualGL.bash &&
+        $DIR/installSimulationPrerequisites.bash &&
         $DIR/distUpgrade.bash &&
         $DIR/installNvidia.bash &&
+        $DIR/setupOGRE.bash
         if [ $? != 0 ]; then
             echo "Could not successfully prepare chroot"
             exit 1
