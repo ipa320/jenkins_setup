@@ -13,6 +13,7 @@ $DIR/../vgl/installVirtualGL.bash &&
 $DIR/installNvidia.bash &&
 $DIR/installLatestRosRepos.bash &&
 $DIR/installSimulator.bash &&
+$DIR/setupOGRE.bash &&
 $DIR/installTest.bash &&
 startX &&
 $DIR/startTest.bash;
