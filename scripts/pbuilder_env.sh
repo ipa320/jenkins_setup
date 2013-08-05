@@ -20,11 +20,12 @@ cp $WORKSPACE/.gitconfig ~/.gitconfig
 cp -a $WORKSPACE/.ssh /root
 ls -la /root/
 chown -R root.root /root/.ssh
-startedVnc=false
 case $JOBTYPE in
     graphic_test|prio_graphics_test)
         echo "Set up graphic"
         export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
+
+        . $IDR/remoteX.bash
 
         $DIR/checkDisplayNull.bash &&
         $DIR/setupSources.bash &&
@@ -32,13 +33,7 @@ case $JOBTYPE in
         $DIR/../vgl/installVirtualGL.bash &&
         $DIR/distUpgrade.bas &&
         $DIR/installNvidia.bash &&
-        $DIR/remoteX.py start && startedVnc=true
-        
-        export DISPLAY=$?
-        if [ "$DISPLAY" == 100 ]; then
-            echo "Could not start VNC Server"
-            exit 1;
-        fi
+        startX
         echo "Using Display: $DISPLAY"
         ;;
 esac
@@ -69,8 +64,8 @@ fi
 $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY $graphic_test $build_repo_only
 
 
-if $startedVnc; then
-    $DIR/remoteX.py stop
+if [ -z "$DISPLAY" ] && [ "$DISPLAY" != ":0" ]; then
+    stopX
 fi
 
 
