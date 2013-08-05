@@ -27,6 +27,7 @@ def main():
     build_identifier = args[4]                      # repository + suffix
     build_repo = build_identifier.split('__')[0]    # only repository to build
     graphic_test = True if args[5] == "true" else False  # TODO optional
+    build_repo_only = True if args[6] == "true" else False
     # environment variables
     workspace = os.environ['WORKSPACE']
     ros_package_path = os.environ['ROS_PACKAGE_PATH']
@@ -43,6 +44,7 @@ def main():
     print "\nTesting on ros distro:  %s" % ros_distro
     print "Testing repository: %s" % build_repo
     print "Graphic Test: %s" % graphic_test
+    print "Build Repo Only: %s" % build_repo_only
     if build_repo != build_identifier:
         print "       with suffix: %s" % build_identifier.split('__')[1]
     print "Using source: %s" % pipe_repos[build_identifier].url
@@ -146,9 +148,12 @@ def main():
         # test dry repositories
         print "Test repository %s" % build_repo
         try:
+            build_list = " ".join(test_repos_list + [build_repo])
+            if build_repo_only:
+                build_list = build_rep
             common.call("%srosmake -rV --profile --pjobs=8 --test-only --output=%s %s" %
                         ("/opt/VirtualGL/bin/vglrun " if graphic_test else "", dry_build_logs,
-                         " ".join(test_repos_list + [build_repo])), ros_env_repo)
+                         build_list ), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
 

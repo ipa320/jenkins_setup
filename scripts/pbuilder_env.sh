@@ -20,6 +20,7 @@ cp $WORKSPACE/.gitconfig ~/.gitconfig
 cp -a $WORKSPACE/.ssh /root
 ls -la /root/
 chown -R root.root /root/.ssh
+startedVnc=false
 case $JOBTYPE in
     graphic_test|prio_graphics_test)
         echo "Set up graphic"
@@ -30,7 +31,8 @@ case $JOBTYPE in
         $DIR/../tvnc/installTurboVNC.bash &&
         $DIR/../vgl/installVirtualGL.bash &&
         $DIR/installNvidia.bash &&
-        $DIR/remoteX.py start
+        $DIR/remoteX.py start && startedVnc=true
+        
         export DISPLAY=$?
         if [ "$DISPLAY" == 100 ]; then
             echo "Could not start VNC Server"
@@ -53,11 +55,25 @@ echo "============================================================"
 
 date
 if [ $JOBTYPE == "graphic_test" ] || [ $JOBTYPE == "prio_graphics_test" ]; then
-    $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY true
-    $DIR/remoteX.py stop
+    graphic_test="true"
 else
-    $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY false
+    graphic_test="false"
 fi
+if [ "$BUILD_REPO_ONLY" == true ]; then
+    build_repo_only="true";
+else
+    build_repo_only="false";
+fi
+
+$WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY $graphic_test $build_repo_only
+
+
+if $startedVnc; then
+    $DIR/remoteX.py stop
+fi
+
+
+
 date
 echo "============================================================"
 echo "==== End" $SCRIPT "script.    Ignore the output below ======"
