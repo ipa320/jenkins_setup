@@ -151,9 +151,9 @@ def main():
             build_list = " ".join(test_repos_list + [build_repo])
             if build_repo_only:
                 build_list = build_repo
-            common.call("%srosmake -rV --profile %s --test-only --output=%s %s" %
+            common.call("%srosmake -rV --profile %s--test-only --output=%s %s" %
                         ("/opt/VirtualGL/bin/vglrun " if graphic_test else "", 
-                         "--pjobs=8" if not grahic_test else "",
+                         "--pjobs=8 " if not graphic_test else "",
                          dry_build_logs, build_list ), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
