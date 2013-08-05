@@ -30,6 +30,7 @@ case $JOBTYPE in
         $DIR/setupSources.bash &&
         $DIR/../tvnc/installTurboVNC.bash &&
         $DIR/../vgl/installVirtualGL.bash &&
+        $DIR/distUpgrade.bas &&
         $DIR/installNvidia.bash &&
         $DIR/remoteX.py start && startedVnc=true
         
