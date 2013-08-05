@@ -70,7 +70,7 @@ fi
 $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY $graphic_test $build_repo_only
 
 
-if [ -z "$DISPLAY" ] && [ "$DISPLAY" != ":0" ]; then
+if [ ! -z "$DISPLAY" ] && [ "$DISPLAY" != ":0" ]; then
     stopX
 fi
 
