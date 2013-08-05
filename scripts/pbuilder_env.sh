@@ -33,6 +33,10 @@ case $JOBTYPE in
         $DIR/../vgl/installVirtualGL.bash &&
         $DIR/distUpgrade.bash &&
         $DIR/installNvidia.bash &&
+        if [ $? != 0 ]; then
+            echo "Could not successfully prepare chroot"
+            exit 1
+        fi
         startX
         echo "Using Display: $DISPLAY"
         ;;
