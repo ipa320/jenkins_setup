@@ -150,7 +150,7 @@ def main():
         try:
             build_list = " ".join(test_repos_list + [build_repo])
             if build_repo_only:
-                build_list = build_rep
+                build_list = build_repo
             common.call("%srosmake -rV --profile --pjobs=8 --test-only --output=%s %s" %
                         ("/opt/VirtualGL/bin/vglrun " if graphic_test else "", dry_build_logs,
                          build_list ), ros_env_repo)

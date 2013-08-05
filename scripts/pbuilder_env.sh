@@ -25,13 +25,13 @@ case $JOBTYPE in
         echo "Set up graphic"
         export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 
-        . $IDR/remoteX.bash
+        . $DIR/remoteX.bash
 
         $DIR/checkDisplayNull.bash &&
         $DIR/setupSources.bash &&
         $DIR/../tvnc/installTurboVNC.bash &&
         $DIR/../vgl/installVirtualGL.bash &&
-        $DIR/distUpgrade.bas &&
+        $DIR/distUpgrade.bash &&
         $DIR/installNvidia.bash &&
         startX
         echo "Using Display: $DISPLAY"
