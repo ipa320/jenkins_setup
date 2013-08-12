@@ -14,6 +14,16 @@ Master:
 
 ###Install Jenkins CI:
 
+###Set up Jenkins configurations
+All configurations should be stored in a common folder in the
+`$HOME`-folder called `jenkins-config':
+```mkdir ~/jenkins-config```
+
+####SSH configurations
+A `.ssh`-folder is needed which contains a ssh-key to access the GitHub-repositories. Either you generate a new key with `ssh-keygen` or you just copy the `~/.ssh` of the master. You have to add this key to your GitHub user (http://github.com/settings/ssh). This user should have read-access to all repositories you want to build.
+It is very important that 'github.com' belongs to *known hosts*. Therefore the `.ssh`-folder should contain a `known\_hosts` file. If 'github.com' is already known can be checked by entering:
+```ssh-keygen -H -f <known_host_PATH> -F github.com```
+If it is not known TODO
 
 Slaves:
 -------
@@ -40,11 +50,11 @@ Go back with twice `CTRL-D`.
 apt-get install pbuilder debootstrap devscripts
 ```
 
-###Performance improvement
+####Performance improvement
 For the configurations a file called `~/.pbuilderrc` in the slaves $HOME-folder is
 needed (`/etc/pbuilder/pbuilderrc` is an alternative).
 
-####Don't use pbuilders aptcache
+#####Don't use pbuilders aptcache
 The aptcach of pbuilder is very useful but when the cache is getting
 bigger gradually it takes quite a while to open a chroot from the
 tarball. If you don't want to use it (for instance if you use an
@@ -55,7 +65,7 @@ external apt-cacher), add the following to
 APTCACHE=""
 ```
 
-####Use ccache for build
+#####Use ccache for build
 To use ccache inside the pbuilder add the following to `~/.pbuilderrc`:
 ```conf
 \# ccache
@@ -68,7 +78,7 @@ BINDMOUNTS="${CCACHE_DIR}"
 ```
 
 
-####Use multi-core zipping
+#####Use multi-core zipping
 To speedup the zipping and unzipping of the chroot tarballs, install `pigz`:
 ```bash
 apt-get install pigz debootstrap devscripts
@@ -80,7 +90,7 @@ And add the following to .pbuilderrc:
 COMPRESSPROG=pigz
 ```
 
-####Mount memory to run the pbuilder chroots in it
+#####Mount memory to run the pbuilder chroots in it
 Installations and builds inside the chroot need quite a lot write accesses. If you don't have a SSD installed, you can use the memory for this. Therefore you have to create a filesystem in your RAM, using `tmpfs` by adding the following to the slaves `/etc/fstab`:
 ```fstab
 \# pbuilder
