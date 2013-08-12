@@ -7,9 +7,7 @@ cob-Jenkins CI server.
 
 SETUP:
 ======
-Description how to set up the Jenkins master and its slaves. This manual
-is made and tested for Ubuntu 12.04. Especially for older versions there
-might occure some problems.
+Description how to set up the Jenkins master and its slaves. This manual is made and tested for Ubuntu 12.04. Especially for older versions there might occure some problems.
 
 Master:
 -------
@@ -19,6 +17,24 @@ Master:
 
 Slaves:
 -------
+
+###Sudo commands without password on slave
+To be able to run sudo commands without the need to enter the password each time, enter
+```sudo visudo```
+and add
+```<JENKINS-USER>    ALL=(ALL) NOPASSWD: ALL```
+at the end. Exit with `CTRL-X`. After re-login you won't need a password anymore.
+
+###SSH access without password to master (and the otherway around)
+The slave has to be able the access the master via SSH without a password (and the otherway around). Enter the following command on each slave, login to the master and run the command again.
+```
+ssh-copy-id <master> (on slave)
+ssh <master> (on slave)
+ssh-copy-id <slave> (on master)
+```
+Go back with twice `CTRL-D`.
+
+###`Pbuilder`
 `Pbuilder` is recommended! If not present, install it:
 ```bash
 apt-get install pbuilder debootstrap devscripts
