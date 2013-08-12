@@ -1,8 +1,7 @@
 jenkins\_setup
 =============
 
-This repository contains the code (config, src and script files) to setup and run a
-cob-Jenkins CI server.
+This repository contains the code (config, src and script files) to set up and run a cob-Jenkins CI server. Below the setup process is described in detail.
 
 
 SETUP:
