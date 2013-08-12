@@ -5,7 +5,88 @@ This repository contains the code (config, src and script files) to setup and ru
 cob-Jenkins CI server.
 
 
-Generate pipeline (workaround):
+SETUP:
+======
+Description how to set up the Jenkins master and its slaves. This manual
+is made and tested for Ubuntu 12.04. Especially for older versions there
+might occure some problems.
+
+Master:
+-------
+
+###Install Jenkins CI:
+
+
+Slaves:
+-------
+`Pbuilder` is recommended! If not present, install it:
+```bash
+apt-get install pbuilder debootstrap devscripts
+```
+
+###Performance improvement
+For the configurations a file called `~/.pbuilderrc` in the slaves $HOME-folder is
+needed (`/etc/pbuilder/pbuilderrc` is an alternative).
+
+####Don't use pbuilders aptcache
+The aptcach of pbuilder is very useful but when the cache is getting
+bigger gradually it takes quite a while to open a chroot from the
+tarball. If you don't want to use it (for instance if you use an
+external apt-cacher), add the following to
+`~/.pbuilderrc`:
+```conf
+\# don't use aptcache
+APTCACHE=""
+```
+
+####Use ccache for build
+To use ccache inside the pbuilder add the following to `~/.pbuilderrc`:
+```conf
+\# ccache
+sudo mkdir -p /var/cache/pbuilder/ccache
+sudo chmod a+w /var/cache/pbuilder/ccache
+export CCACHE_DIR="/var/cache/pbuilder/ccache"
+export PATH="/usr/lib/ccache:${PATH}"
+EXTRAPACKAGES=ccache
+BINDMOUNTS="${CCACHE_DIR}"
+```
+
+
+####Use multi-core zipping
+To speedup the zipping and unzipping of the chroot tarballs, install `pigz`:
+```bash
+apt-get install pigz debootstrap devscripts
+```
+
+And add the following to .pbuilderrc:
+```conf
+\# pigz; multicore zipping
+COMPRESSPROG=pigz
+```
+
+####Mount memory to run the pbuilder chroots in it
+Installations and builds inside the chroot need quite a lot write accesses. If you don't have a SSD installed, you can use the memory for this. Therefore you have to create a filesystem in your RAM, using `tmpfs` by adding the following to the slaves `/etc/fstab`:
+```fstab
+\# pbuilder
+tmpfs   /var/cache/pbuilder/build   tmpfs   defaults,size=32000M    0   0
+```
+*The size depends on the size of the chroot you will work with (at least 3G, more is better). It can be larger then the RAM size. If the chroot size exceeds the RAM size it will use the SWAP as well.*
+
+Additionally you have to add the following to `~/pbuilderrc`:
+```
+\# tmpfs
+APTCACHEHARDLINK=no
+```
+
+Finally you have to mount `tmpfs` by entering:
+```
+mount -a
+```
+
+___
+
+
+Generate pipeline manually (deprecated):
 ===============================
 
 1. Checkout this repository:
