@@ -12,6 +12,10 @@ Description how to set up the Jenkins master and its slaves. This manual is made
 Master:
 -------
 
+###Preparations:
+Install Git:
+```apt-get install git"
+
 ###Install Jenkins CI:
 TODO
 
@@ -28,6 +32,22 @@ If it is not known TODO
 
 ####Git configurations
 TODO
+
+####jenkins\_config repository
+Clone the `jenkins\_config` repository into the `jenkins-config` folder:
+```git clone git@github.com:ipa320/jenkins_config.git ~/jenkins-config/jenkins_config```
+*Adapt the GitHub user if you forked the repository*
+TODO
+
+####jenkins\_setup repository
+Clone the `jenkins\_setup` repository into the `jenkins-config` folder:
+```git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup```
+*Adapt the GitHub user if you forked the repository*
+
+#####PYTHONPATH
+Add the `jenkins\_setup` module to the `$PYTHONPATH`:
+```echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src \nsource /opt/ros/<ROS_RELEASE>/setup.sh" > /etc/profile.d/python_path.sh```
+
 
 Tarball Server:
 ---------------
