@@ -13,6 +13,7 @@ Master:
 -------
 
 ###Install Jenkins CI:
+TODO
 
 ###Set up Jenkins configurations
 All configurations should be stored in a common folder in the
@@ -24,6 +25,14 @@ A `.ssh`-folder is needed which contains a ssh-key to access the GitHub-reposito
 It is very important that 'github.com' belongs to *known hosts*. Therefore the `.ssh`-folder should contain a `known\_hosts` file. If 'github.com' is already known can be checked by entering:
 ```ssh-keygen -H -f <known_host_PATH> -F github.com```
 If it is not known TODO
+
+####Git configurations
+TODO
+
+Tarball Server:
+---------------
+The tarball server stores all the chroot tarball which will be used during the build process. It can be the Jenkins master or another server. In both cases you have to create a `chroot\_tarballs`-folder in `$HOME` which contains another folder where the used chroot tarballs will be stored:
+```mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>```
 
 Slaves:
 -------
