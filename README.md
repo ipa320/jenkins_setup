@@ -26,9 +26,8 @@ your browser via \<SERVER_IP\>:8080.
 
 ###Required Jenkins plugins
 Go to Jenkins plugin manager (\<YOUR_JENKINS_MASTER\>:8080/pluginManager/available) and install the following plugins:
-- Parameterized Trigger Plugin [website](https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin)
-- 
-**TODO**
+* Parameterized Trigger Plugin [website](https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin)
+* **TODO**
 
 
 ###Set up Jenkins configurations
