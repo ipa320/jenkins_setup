@@ -82,6 +82,14 @@ echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh
 ```
 Afterwards reboot the server.
 
+####Mailer template
+A
+[template](templates/email-templates/html-with-health-builds-tests.jelly) for the
+Mailer plugin is provided in this repository. Copy it into
+`$JENKINS\_HOME/email-templates/`. You can adapt it to your
+requirements.
+**TODO** jenkins config
+
 
 Tarball Server:
 ---------------
