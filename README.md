@@ -75,7 +75,7 @@ git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup
 *!!!Adapt the GitHub user if you forked the repository!!!*
 
 #####PYTHONPATH
-Add the `jenkins\_setup` module to the `$PYTHONPATH`:
+Add the ```jenkins_setup``` module to the `$PYTHONPATH`:
 ```bash
 echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh
 echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh
@@ -86,7 +86,7 @@ Afterwards reboot the server.
 A
 [template](templates/email-templates/html-with-health-builds-tests.jelly) for the
 Mailer plugin is provided in this repository. Copy it into
-`$JENKINS\_HOME/email-templates/`. You can adapt it to your
+```$JENKINS_HOME/email-templates/```. You can adapt it to your
 requirements.
 **TODO** jenkins config
 
