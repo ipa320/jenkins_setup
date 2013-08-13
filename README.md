@@ -4,8 +4,8 @@ jenkins\_setup
 This repository contains the code (config, src and script files) to set up and run a cob-Jenkins CI server. Below the setup process is described in detail.
 
 
-SETUP:
-======
+SETUP
+=====
 Description how to set up the Jenkins master and its slaves. This manual is made and tested for Ubuntu 12.04. Especially for older versions there might occur some problems.
 
 Master:
@@ -20,7 +20,7 @@ TODO
 
 ###Set up Jenkins configurations
 All configurations should be stored in a common folder in the
-`$HOME`-folder called `jenkins-config':
+`$HOME`-folder called `jenkins-config`:
 ```mkdir ~/jenkins-config```
 
 ####SSH configurations
@@ -49,12 +49,16 @@ Clone the `jenkins\_setup` repository into the `jenkins-config` folder:
 
 #####PYTHONPATH
 Add the `jenkins\_setup` module to the `$PYTHONPATH`:
-```echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src \nsource /opt/ros/<ROS_RELEASE>/setup.sh" > /etc/profile.d/python_path.sh```
+```echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh
+echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh```
 
 
 Tarball Server:
 ---------------
-The tarball server stores all the chroot tarball which will be used during the build process. It can be the Jenkins master or another server. In both cases you have to create a `chroot\_tarballs`-folder in `$HOME` which contains another folder where the used chroot tarballs will be stored:
+The tarball server stores all the chroot tarball which will be used during the build
+process. It can be the Jenkins master or another server. In both cases you have to
+create a `chroot\_tarballs`-folder in `$HOME` which contains another folder where
+the used chroot tarballs will be stored:
 ```mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>```
 
 Slaves:
@@ -65,11 +69,12 @@ To be able to run sudo commands without the need to enter the password each time
 ```sudo visudo```
 and add
 ```<JENKINS-USER>    ALL=(ALL) NOPASSWD: ALL```
-
 at the end. Exit with `CTRL-X`. After re-login you won't need a password anymore.
 
 ###SSH access without password to master (and the otherway around)
-The slave has to be able the access the master via SSH without a password (and the otherway around). Enter the following command on each slave, login to the master and run the command again.
+The slave has to be able the access the master via SSH without a password (and the
+otherway around). Enter the following command on each slave, login to the master and
+run the command again.
 ```
 ssh-copy-id <master> (on slave)
 ssh <master> (on slave)
@@ -78,14 +83,14 @@ ssh-copy-id <slave> (on master)
 
 Go back with twice `CTRL-D`.
 
-###`Pbuilder`
-`Pbuilder` is recommended! If not present, install it:
+###Pbuilder
+Pbuilder is recommended! If not present, install it:
 ```bash
 apt-get install pbuilder debootstrap devscripts
 ```
 
 ####Performance improvement
-For the configurations a file called `~/.pbuilderrc` in the slaves $HOME-folder is
+For the configurations a file called `~/.pbuilderrc` in the slaves `$HOME`-folder is
 needed (`/etc/pbuilder/pbuilderrc` is an alternative).
 
 #####Don't use pbuilders aptcache
