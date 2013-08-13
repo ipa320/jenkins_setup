@@ -26,7 +26,12 @@ your browser via \<SERVER_IP\>:8080.
 
 ###Required Jenkins plugins
 Go to Jenkins plugin manager (\<YOUR_JENKINS_MASTER\>:8080/pluginManager/available) and install the following plugins:
-* Parameterized Trigger Plugin [website](https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin)
+* Parameterized Trigger Plugin ([website](wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin))
+* Build Pipeline Plugin
+  ([website](code.google.com/p/build-pipeline-plugin))
+* Matrix Reloaded Plugin
+  ([website](wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin))
+* Mailer ([website](wiki.jenkins-ci.org/display/JENKINS/Mailer))
 * **TODO**
 
 
@@ -111,7 +116,7 @@ ssh-copy-id <slave>     # on master
 Go back with twice `CTRL-D`.
 
 ###Pbuilder
-Pbuilder is recommended! If not present, install it:
+Pbuilder is required! If not present, install it:
 ```bash
 apt-get install pbuilder devscripts
 ```
