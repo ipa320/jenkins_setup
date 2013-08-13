@@ -13,7 +13,9 @@ Master:
 
 ###Preparations:
 Install Git:
-```apt-get install git```
+```bash
+apt-get install git
+```
 
 ###Install Jenkins CI:
 TODO
@@ -21,36 +23,45 @@ TODO
 ###Set up Jenkins configurations
 All configurations should be stored in a common folder in the
 `$HOME`-folder called `jenkins-config`:
-```mkdir ~/jenkins-config```
+```bash
+mkdir ~/jenkins-config
+```
 
 ####SSH configurations
 A `.ssh`-folder is needed which contains a ssh-key to access the GitHub-repositories. Either you generate a new key with `ssh-keygen` or you just copy the `~/.ssh` of the master. You have to add this key to your GitHub user (http://github.com/settings/ssh). This user should have read-access to all repositories you want to build.
 It is very important that 'github.com' belongs to the *known hosts*. Therefore the `.ssh`-folder should contain a `known\_hosts` file. Whether 'github.com' is already known can be checked by entering:
-```ssh-keygen -H -f <known_hosts_PATH> -F github.com```
-
+```bash
+ssh-keygen -H -f <known_hosts_PATH> -F github.com
+```
 If it is not known, you can add 'github.com' to the `known\_hosts` by entering:
-```ssh-keyscan -H github.com > <known_hosts_PATH>```
+```bash
+ssh-keyscan -H github.com > <known_hosts_PATH>
+```
 
 ####Git configurations
 **TODO**
 
 ####jenkins\_config repository
 Clone the `jenkins\_config` repository into the `jenkins-config` folder:
-```git clone git@github.com:ipa320/jenkins_config.git ~/jenkins-config/jenkins_config```
-
+```bash
+git clone git@github.com:ipa320/jenkins_config.git ~/jenkins-config/jenkins_config
+```
 *!!!Adapt the GitHub user if you forked the repository!!!*
 **TODO**
 
 ####jenkins\_setup repository
 Clone the `jenkins\_setup` repository into the `jenkins-config` folder:
-```git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup```
-
+```bash
+git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup
+```
 *!!!Adapt the GitHub user if you forked the repository!!!*
 
 #####PYTHONPATH
 Add the `jenkins\_setup` module to the `$PYTHONPATH`:
-```echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh
-echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh```
+```bash
+echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh
+echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh
+```
 
 
 Tarball Server:
@@ -59,28 +70,30 @@ The tarball server stores all the chroot tarball which will be used during the b
 process. It can be the Jenkins master or another server. In both cases you have to
 create a `chroot\_tarballs`-folder in `$HOME` which contains another folder where
 the used chroot tarballs will be stored:
-```mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>```
+```bash
+mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>
+```
 
 Slaves:
 -------
 
 ###Sudo commands without password on slave
 To be able to run sudo commands without the need to enter the password each time, enter
-```sudo visudo```
-and add
-```<JENKINS-USER>    ALL=(ALL) NOPASSWD: ALL```
+```sudo visudo``` and add
+```conf
+<JENKINS-USER>    ALL=(ALL) NOPASSWD: ALL
+```
 at the end. Exit with `CTRL-X`. After re-login you won't need a password anymore.
 
 ###SSH access without password to master (and the otherway around)
 The slave has to be able the access the master via SSH without a password (and the
 otherway around). Enter the following command on each slave, login to the master and
 run the command again.
+```bash
+ssh-copy-id <master>    # on slave
+ssh <master>            # on slave
+ssh-copy-id <slave>     # on master
 ```
-ssh-copy-id <master> (on slave)
-ssh <master> (on slave)
-ssh-copy-id <slave> (on master)
-```
-
 Go back with twice `CTRL-D`.
 
 ###Pbuilder
@@ -144,7 +157,7 @@ Additionally you have to add the following to `~/pbuilderrc`:
 APTCACHEHARDLINK=no
 ```
 
-Finally you have to mount `tmpfs` by entering:
+Finally mount `tmpfs` by entering:
 ```bash
 mount -a
 ```
