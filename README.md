@@ -99,7 +99,7 @@ Go back with twice `CTRL-D`.
 ###Pbuilder
 Pbuilder is recommended! If not present, install it:
 ```bash
-apt-get install pbuilder debootstrap devscripts
+apt-get install pbuilder devscripts
 ```
 
 ####Performance improvement
