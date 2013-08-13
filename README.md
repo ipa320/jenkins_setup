@@ -16,6 +16,8 @@ Install Git:
 ```bash
 apt-get install git
 ```
+Install ROS [groovy](www.ros.org/wiki/groovy/Installation/Ubuntu) or
+[fuerte](www.ros.org/wiki/fuerte/Installation/Ubuntu) as described.
 
 ###Install Jenkins CI
 To install Jenkins follow the [official website](http://jenkins-ci.org/).
@@ -23,6 +25,9 @@ To add the official package source on Debian/Ubuntu follow
 [this description](http://pkg.jenkins-ci.org/debian/).
 After a successful installation you can access the Jenkins server in
 your browser on \<YOUR_JENKINS_SERVER_IP\>:8080.
+
+*!!!Be careful with updating your Jenkins server. If you do, check if
+everything works still properly!!!*
 
 ###Required Jenkins plugins
 Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/available) and install the following plugins:
