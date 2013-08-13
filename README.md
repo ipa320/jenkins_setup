@@ -97,8 +97,7 @@ If it is not known, you can add 'github.com' to the ```known_hosts``` by enterin
 ssh-keyscan -H github.com > <known_hosts_PATH>
 ```
 
-####Git configurations
-**TODO**
+~~####Git configurations~~
 
 ####jenkins\_config repository
 Clone the ```jenkins_config``` repository into the `jenkins-config` folder:
