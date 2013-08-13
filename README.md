@@ -86,6 +86,16 @@ All configurations should be stored in a common folder in the
 mkdir ~/jenkins-config
 ```
 
+####Git configurations
+Set up the GitHub user. This user has to have read-access to all
+repositories to build and write-access to your ```jenkins_config```
+repository.
+```bash
+git config --global user.name "<USER_NAME>"
+git config --global user.email "<EMAIL>"
+```
+**TODO** what is necessary?
+
 ####SSH configurations
 A `.ssh`-folder is needed which contains a ssh-key to access the GitHub-repositories. Either you generate a new key with `ssh-keygen` or you just copy the `~/.ssh` of the master. You have to add this key to your GitHub user (http://github.com/settings/ssh). This user should have read-access to all repositories you want to build.
 It is very important that 'github.com' belongs to the *known hosts*. Therefore the `.ssh`-folder should contain a ```known_hosts``` file. Whether 'github.com' is already known can be checked by entering:
@@ -96,8 +106,6 @@ If it is not known, you can add 'github.com' to the ```known_hosts``` by enterin
 ```bash
 ssh-keyscan -H github.com > <known_hosts_PATH>
 ```
-
-~~####Git configurations~~
 
 ####jenkins\_config repository
 Clone the ```jenkins_config``` repository into the `jenkins-config` folder:
