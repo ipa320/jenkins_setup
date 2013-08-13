@@ -37,6 +37,8 @@ Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/avai
 * Matrix Reloaded Plugin
   ([website](wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin))
 * Mailer ([website](wiki.jenkins-ci.org/display/JENKINS/Mailer))
+* View Job Filters
+  ([website](wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters))
 * **TODO**
 
 ###Install the Cob-Pipeline Plugin
@@ -53,6 +55,7 @@ everything.
 **TODO**
 
 ####Configure Plugins
+#####Basic configurations
 **TODO**
 #####Cob-Pipeline Plugin
 **TODO**
