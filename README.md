@@ -18,15 +18,15 @@ apt-get install git
 ```
 
 ###Install Jenkins CI
-To install Jenkins follow the (official website)[http://jenkins-ci.org/].
+To install Jenkins follow the [official website](http://jenkins-ci.org/).
 To add the official package source on Debian/Ubuntu follow
-(this description)[http://pkg.jenkins-ci.org/debian/].
+[this description](http://pkg.jenkins-ci.org/debian/).
 After a successful installation you can access the Jenkins server in
-your browser via <SERVER_IP>:8080.
+your browser via \<SERVER_IP\>:8080.
 
 ###Required Jenkins plugins
-Go to Jenkins plugin manager (<YOUR_JENKINS_MASTER>:8080/pluginManager/available) and install the following plugins:
-- Parameterized Trigger Plugin (website)[https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin]
+Go to Jenkins plugin manager (\<YOUR_JENKINS_MASTER\>:8080/pluginManager/available) and install the following plugins:
+- Parameterized Trigger Plugin [website](https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin)
 - 
 **TODO**
 
