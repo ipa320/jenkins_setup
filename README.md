@@ -6,21 +6,35 @@ This repository contains the code (config, src and script files) to set up and r
 
 SETUP
 =====
-Description how to set up the Jenkins master and its slaves. This manual is made and tested for Ubuntu 12.04. Especially for older versions there might occur some problems.
+Description how to set up the Jenkins master and its slaves. This manual is made and tested for Ubuntu 12.04 Precise. Especially for older versions there might occur some problems.
 
 Master:
 -------
 
-###Preparations:
+###Preparations
 Install Git:
 ```bash
 apt-get install git
 ```
 
-###Install Jenkins CI:
-TODO
+###Install Jenkins CI
+To install Jenkins follow the (official website)[http://jenkins-ci.org/].
+To add the official package source on Debian/Ubuntu follow
+(this description)[http://pkg.jenkins-ci.org/debian/].
+After a successful installation you can access the Jenkins server in
+your browser via <SERVER_IP>:8080.
+
+###Required Jenkins plugins
+Go to Jenkins plugin manager (<YOUR_JENKINS_MASTER>:8080/pluginManager/available) and install the following plugins:
+- Parameterized Trigger Plugin (website)[https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin]
+- 
+**TODO**
+
 
 ###Set up Jenkins configurations
+
+
+###Set up Cob-Pipeline specific configurations
 All configurations should be stored in a common folder in the
 `$HOME`-folder called `jenkins-config`:
 ```bash
@@ -62,6 +76,7 @@ Add the `jenkins\_setup` module to the `$PYTHONPATH`:
 echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh
 echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh
 ```
+Afterwards reboot the server.
 
 
 Tarball Server:
