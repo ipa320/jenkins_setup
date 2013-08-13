@@ -22,10 +22,10 @@ To install Jenkins follow the [official website](http://jenkins-ci.org/).
 To add the official package source on Debian/Ubuntu follow
 [this description](http://pkg.jenkins-ci.org/debian/).
 After a successful installation you can access the Jenkins server in
-your browser via \<SERVER_IP\>:8080.
+your browser on \<YOUR_JENKINS_SERVER_IP\>:8080.
 
 ###Required Jenkins plugins
-Go to Jenkins plugin manager (\<YOUR_JENKINS_MASTER\>:8080/pluginManager/available) and install the following plugins:
+Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/available) and install the following plugins:
 * Parameterized Trigger Plugin ([website](wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin))
 * Build Pipeline Plugin
   ([website](code.google.com/p/build-pipeline-plugin))
@@ -34,9 +34,26 @@ Go to Jenkins plugin manager (\<YOUR_JENKINS_MASTER\>:8080/pluginManager/availab
 * Mailer ([website](wiki.jenkins-ci.org/display/JENKINS/Mailer))
 * **TODO**
 
+###Install the Cob-Pipeline Plugin
+**TODO**
+
 
 ###Set up Jenkins configurations
+To manage your Jenkins server go to
+\<YOUR_JENKINS_SERVER_IP\>:8080/manage. From here you can configure
+everything.
+**TODO**
 
+####Configure Security
+**TODO**
+
+####Configure Plugins
+**TODO**
+#####Cob-Pipeline Plugin
+**TODO**
+
+#####Mailer
+**TODO**
 
 ###Set up Cob-Pipeline specific configurations
 All configurations should be stored in a common folder in the
@@ -100,6 +117,8 @@ the used chroot tarballs will be stored:
 ```bash
 mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>
 ```
+
+___
 
 Slaves:
 -------
