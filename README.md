@@ -66,6 +66,9 @@ everything.
 ####Configure Plugins
 #####Basic configurations
 **TODO**
+######Jenkins Location
+Enter here the URL of your Jenkins server and the admins email address.
+
 #####Cob-Pipeline Plugin
 **TODO**
 
