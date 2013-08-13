@@ -47,11 +47,11 @@ mkdir ~/jenkins-config
 
 ####SSH configurations
 A `.ssh`-folder is needed which contains a ssh-key to access the GitHub-repositories. Either you generate a new key with `ssh-keygen` or you just copy the `~/.ssh` of the master. You have to add this key to your GitHub user (http://github.com/settings/ssh). This user should have read-access to all repositories you want to build.
-It is very important that 'github.com' belongs to the *known hosts*. Therefore the `.ssh`-folder should contain a `known\_hosts` file. Whether 'github.com' is already known can be checked by entering:
+It is very important that 'github.com' belongs to the *known hosts*. Therefore the `.ssh`-folder should contain a ```known_hosts``` file. Whether 'github.com' is already known can be checked by entering:
 ```bash
 ssh-keygen -H -f <known_hosts_PATH> -F github.com
 ```
-If it is not known, you can add 'github.com' to the `known\_hosts` by entering:
+If it is not known, you can add 'github.com' to the ```known_hosts``` by entering:
 ```bash
 ssh-keyscan -H github.com > <known_hosts_PATH>
 ```
@@ -60,7 +60,7 @@ ssh-keyscan -H github.com > <known_hosts_PATH>
 **TODO**
 
 ####jenkins\_config repository
-Clone the `jenkins\_config` repository into the `jenkins-config` folder:
+Clone the ```jenkins_config``` repository into the `jenkins-config` folder:
 ```bash
 git clone git@github.com:ipa320/jenkins_config.git ~/jenkins-config/jenkins_config
 ```
@@ -68,7 +68,7 @@ git clone git@github.com:ipa320/jenkins_config.git ~/jenkins-config/jenkins_conf
 **TODO**
 
 ####jenkins\_setup repository
-Clone the `jenkins\_setup` repository into the `jenkins-config` folder:
+Clone the ```jenkins_setup``` repository into the `jenkins-config` folder:
 ```bash
 git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup
 ```
@@ -95,7 +95,7 @@ Tarball Server:
 ---------------
 The tarball server stores all the chroot tarball which will be used during the build
 process. It can be the Jenkins master or another server. In both cases you have to
-create a `chroot\_tarballs`-folder in `$HOME` which contains another folder where
+create a ```chroot_tarballs```-folder in `$HOME` which contains another folder where
 the used chroot tarballs will be stored:
 ```bash
 mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>
