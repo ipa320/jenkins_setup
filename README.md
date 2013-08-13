@@ -6,14 +6,14 @@ This repository contains the code (config, src and script files) to set up and r
 
 SETUP:
 ======
-Description how to set up the Jenkins master and its slaves. This manual is made and tested for Ubuntu 12.04. Especially for older versions there might occure some problems.
+Description how to set up the Jenkins master and its slaves. This manual is made and tested for Ubuntu 12.04. Especially for older versions there might occur some problems.
 
 Master:
 -------
 
 ###Preparations:
 Install Git:
-```apt-get install git"
+```apt-get install git```
 
 ###Install Jenkins CI:
 TODO
@@ -25,23 +25,27 @@ All configurations should be stored in a common folder in the
 
 ####SSH configurations
 A `.ssh`-folder is needed which contains a ssh-key to access the GitHub-repositories. Either you generate a new key with `ssh-keygen` or you just copy the `~/.ssh` of the master. You have to add this key to your GitHub user (http://github.com/settings/ssh). This user should have read-access to all repositories you want to build.
-It is very important that 'github.com' belongs to *known hosts*. Therefore the `.ssh`-folder should contain a `known\_hosts` file. If 'github.com' is already known can be checked by entering:
-```ssh-keygen -H -f <known_host_PATH> -F github.com```
-If it is not known TODO
+It is very important that 'github.com' belongs to the *known hosts*. Therefore the `.ssh`-folder should contain a `known\_hosts` file. Whether 'github.com' is already known can be checked by entering:
+```ssh-keygen -H -f <known_hosts_PATH> -F github.com```
+
+If it is not known, you can add 'github.com' to the `known\_hosts` by entering:
+```ssh-keyscan -H github.com > <known_hosts_PATH>```
 
 ####Git configurations
-TODO
+**TODO**
 
 ####jenkins\_config repository
 Clone the `jenkins\_config` repository into the `jenkins-config` folder:
 ```git clone git@github.com:ipa320/jenkins_config.git ~/jenkins-config/jenkins_config```
-*Adapt the GitHub user if you forked the repository*
-TODO
+
+*!!!Adapt the GitHub user if you forked the repository!!!*
+**TODO**
 
 ####jenkins\_setup repository
 Clone the `jenkins\_setup` repository into the `jenkins-config` folder:
 ```git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup```
-*Adapt the GitHub user if you forked the repository*
+
+*!!!Adapt the GitHub user if you forked the repository!!!*
 
 #####PYTHONPATH
 Add the `jenkins\_setup` module to the `$PYTHONPATH`:
@@ -61,6 +65,7 @@ To be able to run sudo commands without the need to enter the password each time
 ```sudo visudo```
 and add
 ```<JENKINS-USER>    ALL=(ALL) NOPASSWD: ALL```
+
 at the end. Exit with `CTRL-X`. After re-login you won't need a password anymore.
 
 ###SSH access without password to master (and the otherway around)
@@ -70,6 +75,7 @@ ssh-copy-id <master> (on slave)
 ssh <master> (on slave)
 ssh-copy-id <slave> (on master)
 ```
+
 Go back with twice `CTRL-D`.
 
 ###`Pbuilder`
@@ -89,14 +95,14 @@ tarball. If you don't want to use it (for instance if you use an
 external apt-cacher), add the following to
 `~/.pbuilderrc`:
 ```conf
-\# don't use aptcache
+# don't use aptcache
 APTCACHE=""
 ```
 
 #####Use ccache for build
 To use ccache inside the pbuilder add the following to `~/.pbuilderrc`:
 ```conf
-\# ccache
+# ccache
 sudo mkdir -p /var/cache/pbuilder/ccache
 sudo chmod a+w /var/cache/pbuilder/ccache
 export CCACHE_DIR="/var/cache/pbuilder/ccache"
@@ -114,26 +120,27 @@ apt-get install pigz debootstrap devscripts
 
 And add the following to .pbuilderrc:
 ```conf
-\# pigz; multicore zipping
+# pigz; multicore zipping
 COMPRESSPROG=pigz
 ```
 
 #####Mount memory to run the pbuilder chroots in it
 Installations and builds inside the chroot need quite a lot write accesses. If you don't have a SSD installed, you can use the memory for this. Therefore you have to create a filesystem in your RAM, using `tmpfs` by adding the following to the slaves `/etc/fstab`:
-```fstab
-\# pbuilder
+```conf
+# pbuilder
 tmpfs   /var/cache/pbuilder/build   tmpfs   defaults,size=32000M    0   0
 ```
+
 *The size depends on the size of the chroot you will work with (at least 3G, more is better). It can be larger then the RAM size. If the chroot size exceeds the RAM size it will use the SWAP as well.*
 
 Additionally you have to add the following to `~/pbuilderrc`:
-```
-\# tmpfs
+```conf
+# tmpfs
 APTCACHEHARDLINK=no
 ```
 
 Finally you have to mount `tmpfs` by entering:
-```
+```bash
 mount -a
 ```
 
