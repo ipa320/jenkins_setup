@@ -1,7 +1,7 @@
 jenkins\_setup
 =============
 
-This repository contains the code (config, src and script files) to set up and run a cob-Jenkins CI server. Below the setup process is described in detail.
+This repository contains the code (config, src and script files) to set up and run a cob-Jenkins CI server using the Cob-Pipeline plugin. Below the setup process is described in detail.
 
 
 SETUP
@@ -108,10 +108,11 @@ Afterwards reboot the server.
 A
 [template](templates/email-templates/html-with-health-builds-tests.jelly) for the
 Mailer plugin is provided in this repository. Copy it into
-```$JENKINS_HOME/email-templates/```. You can adapt it to your
-requirements.
+```$JENKINS_HOME/email-templates/``` (```$JENKINS_HOME``` is usually `/var/lib/jenkins`).
+You can adapt the template to your requirements.
 **TODO** jenkins config
 
+___
 
 Tarball Server:
 ---------------
