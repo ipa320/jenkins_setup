@@ -71,6 +71,10 @@ everything.
 
 #####Mailer
 **TODO**
+######Default Subject
+For example: ```$BUILD_STATUS: $PROJECT_NAME - Build # $BUILD_NUMBER!```
+A complete list of tokens can be found at the help of the last entry
+(Content Token Reference).
 
 ###Set up Cob-Pipeline specific configurations
 All configurations should be stored in a common folder in the
@@ -109,7 +113,8 @@ git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup
 *!!!Adapt the GitHub user if you forked the repository!!!*
 
 #####PYTHONPATH
-Add the ```jenkins_setup``` module to the `$PYTHONPATH`:
+Add the ```jenkins_setup``` module to the `$PYTHONPATH` (*adapt the
+ROS\_RELEASE*):
 ```bash
 echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh
 echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh
