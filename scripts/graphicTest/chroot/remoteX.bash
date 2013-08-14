@@ -3,13 +3,16 @@ export TURBO="/opt/TurboVNC/bin"
 export VGL="/opt/VirtualGL/bin"
 startX(){
     for i in $(seq 1 20); do
-        echo "Starting VNC on :$i"
-        echo "Running $TURBO/vncserver -noauth :$i"
-        $TURBO/vncserver :$i -noauth
-        if [ $? -eq 0 ]; then break; fi
+        if [ -e "/tmp/.X$i-lock" ]; then
+            echo "DISPLAY :$i already used. Trying next one"
+        else
+            echo "Starting display on $i"
+            $TURBO/vncserver :$i -noauth
+            break;
+        fi
     done
-    echo "VNC okay."
     export DISPLAY=:$i
+    echo "VNC okay. New DISPLAY is $DISPLAY"
 }
 stopX(){
     if [ -z "$DISPLAY" ]; then
