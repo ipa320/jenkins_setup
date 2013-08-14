@@ -21,7 +21,6 @@ def getFreeDisplay():
     disp = 1
     stdout, stderr = p.communicate()
     while True:
-
         if stdout.find( 'Xvnc :%s' % disp ) == -1:
             return disp
         disp += 1
@@ -58,7 +57,7 @@ if __name__ == '__main__':
         if action == 'start':
             display = start()
             with file( '/tmp/vncDisplay', 'w' ) as f:
-                f.write( str( display ))
+                f.write( ':%s' % display )
         else:
             stop()
             sys.exit( 0 )
