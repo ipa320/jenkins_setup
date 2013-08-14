@@ -25,8 +25,6 @@ case $JOBTYPE in
         echo "Set up graphic"
         export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 
-        . $DIR/remoteX.bash
-
         $DIR/checkDisplayNull.bash &&
         $DIR/setupSources.bash &&
         $DIR/../tvnc/installTurboVNC.bash &&
@@ -39,7 +37,9 @@ case $JOBTYPE in
             echo "Could not successfully prepare chroot"
             exit 1
         fi
-        startX
+
+        $DIR/remoteX.py start
+        export DISPLAY=`cat /tmp/vncDisplay`
         echo "Using Display: $DISPLAY"
         ;;
 esac
@@ -71,7 +71,7 @@ $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MA
 
 
 if [ ! -z "$DISPLAY" ] && [ "$DISPLAY" != ":0" ]; then
-    stopX
+    $DIR/remoteX.py stop
 fi
 
 

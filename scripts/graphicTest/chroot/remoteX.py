@@ -15,17 +15,23 @@ def startVNConDisplay( i ):
     args = ':%s -noauth' % i
     return runVNCCmdWithArgs( args )
 
-def start():
-    success = False
-    for i in xrange( 1, 20 ):
-        if startVNConDisplay( i ): 
-            success = True
-            break
-        print 'Trying next display'
+def getFreeDisplay():
+    args = [ 'ps', 'ax' ]
+    p    = subprocess.Popen( args, stdout=subprocess.PIPE )
+    disp = 1
+    stdout, stderr = p.communicate()
+    while True:
 
-    if not success:
+        if stdout.find( 'Xvnc :%s' % disp ) == -1:
+            return disp
+        disp += 1
+
+def start():
+    disp = getFreeDisplay()
+    if not startVNConDisplay( disp ):
         raise Exception( 'Could not start VNC Server' )
-    return i
+
+    return disp
 
 def stop():
     if not 'DISPLAY' in os.environ:
@@ -51,7 +57,8 @@ if __name__ == '__main__':
     try:
         if action == 'start':
             display = start()
-            sys.exit( display )
+            with file( '/tmp/vncDisplay', 'w' ) as f:
+                f.write( str( display ))
         else:
             stop()
             sys.exit( 0 )
