@@ -212,7 +212,7 @@ BINDMOUNTS="${CCACHE_DIR}"
 #####Use multi-core zipping
 To speedup the zipping and unzipping of the chroot tarballs, install `pigz`:
 ```bash
-apt-get install pigz debootstrap devscripts
+apt-get install pigz
 ```
 
 And add the following to .pbuilderrc:
@@ -236,7 +236,7 @@ Additionally you have to add the following to `~/pbuilderrc`:
 APTCACHEHARDLINK=no
 ```
 
-Finally mount `tmpfs` by entering:
+Finally mount `tmpfs` by entering (**as root**):
 ```bash
 mount -a
 ```
