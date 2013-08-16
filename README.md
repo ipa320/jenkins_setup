@@ -241,6 +241,14 @@ Finally mount `tmpfs` by entering:
 mount -a
 ```
 
+###Slave setup on master
+**TODO**
+* Labels
+* Configurations
+* Connect slave
+* Troubleshooting
+
+
 ___
 
 
