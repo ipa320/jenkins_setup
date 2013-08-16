@@ -62,6 +62,7 @@ everything.
 
 ####Configure Security
 **TODO**
+Choose 'Project-based Matrix Authorization Strategy'
 
 ####Configure Plugins
 #####Basic configurations
@@ -97,7 +98,7 @@ git config --global user.email "<EMAIL>"
 **TODO** what is necessary?
 
 ####SSH configurations
-A `.ssh`-folder is needed which contains a ssh-key to access the GitHub-repositories. Either you generate a new key with `ssh-keygen` or you just copy the `~/.ssh` of the master. You have to add this key to your GitHub user (http://github.com/settings/ssh). This user should have read-access to all repositories you want to build.
+A `.ssh`-folder is needed inside the ```~/jenkins-config/```-folder which contains a ssh-key to access the GitHub-repositories. Either you generate a new key with `ssh-keygen` or you just copy the `~/.ssh` of the master. You have to add this key to your GitHub user (http://github.com/settings/ssh). This user should have read-access to all repositories you want to build.
 It is very important that 'github.com' belongs to the *known hosts*. Therefore the `.ssh`-folder should contain a ```known_hosts``` file. Whether 'github.com' is already known can be checked by entering:
 ```bash
 ssh-keygen -H -f <known_hosts_PATH> -F github.com
@@ -106,6 +107,10 @@ If it is not known, you can add 'github.com' to the ```known_hosts``` by enterin
 ```bash
 ssh-keyscan -H github.com > <known_hosts_PATH>
 ```
+
+Furthermore the Jenkins masters SSH key itself has to be an authorized
+one.
+**TODO**
 
 ####jenkins\_config repository
 Clone the ```jenkins_config``` repository into the `jenkins-config` folder:
@@ -236,7 +241,7 @@ Additionally you have to add the following to `~/pbuilderrc`:
 APTCACHEHARDLINK=no
 ```
 
-Finally mount `tmpfs` by entering (**as root**):
+Finally mount `tmpfs` by entering **(as root)**:
 ```bash
 mount -a
 ```
@@ -249,6 +254,9 @@ mount -a
 * Troubleshooting
 
 
+**TODO**
+* github.com to known_hosts
+* upload ssh key
 ___
 
 
