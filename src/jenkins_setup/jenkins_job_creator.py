@@ -445,7 +445,7 @@ class JenkinsJob(object):
             authorization += self.job_config_params['authorizationmatrix'][permission]
             authorization = authorization.replace('@(USERNAME)', self.pipe_inst.user_name)
 
-        self.params['AUTHORIZATIONMATRIX'] = authorizations
+        self.params['AUTHORIZATIONMATRIX'] = authorizations.replace('@(PERMISSION)', authorization)
 
     def _set_junit_testresults_param(self):
         """
