@@ -81,8 +81,10 @@
   'param': '<hudson.model.StringParameterDefinition> <name>@(PARAM)</name> <description> </description> <defaultValue> </defaultValue>  </hudson.model.StringParameterDefinition>'
 
 'authorizationmatrix':
-    'read': '<hudson.security.AuthorizationMatrixProperty> <permission>hudson.model.Item.Read:@(USERNAME)</permission> </hudson.security.AuthorizationMatrixProperty>'
-    'build': '<hudson.security.AuthorizationMatrixProperty> <permission>hudson.model.Item.Build:@(USERNAME)</permission> </hudson.security.AuthorizationMatrixProperty>'
+    'basic': '<hudson.security.AuthorizationMatrixProperty> @(PERMISSION) </hudson.security.AuthorizationMatrixProperty>'
+    'read': '<permission>hudson.model.Item.Read:@(USERNAME)</permission>'
+    'build': '<permission>hudson.model.Item.Build:@(USERNAME)</permission>'
+    'workspace': '<permission>hudson.model.Item.Workspace:@(USERNAME)</permission>'
 
 'parameterizedtrigger':
   'basic':

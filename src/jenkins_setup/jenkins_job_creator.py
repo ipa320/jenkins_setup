@@ -110,7 +110,7 @@ class JenkinsJob(object):
         self.params['JUNIT_TESTRESULTS'] = ''
         self.params['MAILER'] = ''
         self.params['POSTBUILD_TASK'] = ''
-        self._set_authorization_matrix_param('build')
+        self._set_authorization_matrix_param(['read', 'workspace'])
 
     ###########################################################################
     # helper methods - parameter generation
@@ -430,18 +430,22 @@ class JenkinsJob(object):
 
         self.params['MAILER'] = mailer
 
-    def _set_authorization_matrix_param(self, permission):
+    def _set_authorization_matrix_param(self, permission_list):
         """
         Sets config for authorization matrix plugin
 
-        @param permission: [read|build]
-        @type  permission: string
+        @param permission_list: [read|build|workspace]
+        @type  permission_list: list
         """
 
-        authorization = self.job_config_params['authorizationmatrix'][permission]
-        authorization = authorization.replace('@(USERNAME)', self.pipe_inst.user_name)
+        authorizations = self.job_config_params['authorizationmatrix']['basic']
 
-        self.params['AUTHORIZATIONMATRIX'] = authorization
+        authorization = ''
+        for permission in permission_list:
+            authorization += self.job_config_params['authorizationmatrix'][permission]
+            authorization = authorization.replace('@(USERNAME)', self.pipe_inst.user_name)
+
+        self.params['AUTHORIZATIONMATRIX'] = authorizations
 
     def _set_junit_testresults_param(self):
         """
@@ -574,6 +578,9 @@ class PipeStarterGeneralJob(JenkinsJob):
                                                                        subset_filter=self._generate_matrix_filter(self._get_prio_subset_filter()),
                                                                        predefined_param='POLL=manually triggered' + '\nREPOSITORY=%s' % repo + '\nREPOSITORY_FILTER=repository=="%s"' % repo))
         self._set_parameterizedtrigger_param(prio_triggers)
+
+        # authorization matrix
+        self._set_authorization_matrix_param(['read', 'build', 'workspace'])
 
 
 class PipeStarterJob(PipeStarterGeneralJob):
@@ -1084,6 +1091,9 @@ class HardwareBuildTrigger(JenkinsJob):
         parameterized_triggers.append(self._get_single_parameterizedtrigger(['hardware_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
         self._set_parameterizedtrigger_param(parameterized_triggers)
 
+        # authorization matrix
+        self._set_authorization_matrix_param(['read', 'build', 'workspace'])
+
 
 class HardwareBuildJob(JenkinsJob):
     """
@@ -1127,7 +1137,7 @@ class HardwareBuildJob(JenkinsJob):
         self._set_pipelinetrigger_param(['hardware_test_trigger'])
 
         # authorization matrix
-        self._set_authorization_matrix_param('read')
+        self._set_authorization_matrix_param(['read', 'workspace'])
 
     def _get_hardware_matrix_entries(self):
         """
@@ -1188,6 +1198,9 @@ class HardwareTestTrigger(JenkinsJob):
         parameterized_triggers.append(self._get_single_parameterizedtrigger(['hardware_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
         self._set_parameterizedtrigger_param(parameterized_triggers)
 
+        # authorization matrix
+        self._set_authorization_matrix_param(['read', 'build', 'workspace'])
+
 
 class HardwareTestJob(HardwareBuildJob):
     """
@@ -1229,7 +1242,7 @@ class HardwareTestJob(HardwareBuildJob):
         self._set_pipelinetrigger_param(['release'])
 
         # authorization matrix
-        self._set_authorization_matrix_param('read')
+        self._set_authorization_matrix_param(['read', 'workspace'])
 
 
 class ReleaseJob(JenkinsJob):
