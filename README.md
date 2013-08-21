@@ -55,14 +55,21 @@ Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/avai
 
 
 ###Set up Jenkins configurations
-To manage your Jenkins server go to
-\<YOUR_JENKINS_SERVER_IP\>:8080/manage. From here you can configure
-everything.
-**TODO**
+To manage your Jenkins server, go to
+\<YOUR_JENKINS_SERVER_IP\>:8080/manage or follow "Manage Jenkins" in the sidebar.
+From here you can configure everything.
 
 ####Configure Security
-**TODO**
-Choose 'Project-based Matrix Authorization Strategy'
+Follow **Configure Global Security**.
+The **Access Control** section gives opportunity to select the **Security Realm**. It defines how the users can login.
+Furthermore you can define the permission a specific user or a user
+group gets granted. Therefore choose the 'Project-based Matrix Authorization Strategy' in the **Authorization** subsection.
+The user gets the permission to see the workspace for all his own jobs. For the 'Pipestarter'
+and 'Trigger' job he has also 'Build'-permission.
+If you want to grant further permissions you can do it here.
+
+####Set up view
+Create new view. **TODO**
 
 ####Configure Plugins
 #####Basic configurations
