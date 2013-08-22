@@ -122,7 +122,7 @@ def get_ros_env(setup_file):
     proc.communicate()
     if proc.returncode != 0:
         msg = "Failed to source %s" % setup_file
-        print "/!\  %s" % msg
+        print r"/!\  %s" % msg
         raise BuildException(msg)
     return res
 
@@ -146,7 +146,7 @@ def call_with_list(command, envir=None, verbose=True):
 
     if helper.returncode != 0:
         msg = "Failed to execute command '%s'" % command
-        print "/!\  %s" % msg
+        print r"/!\  %s" % msg
         raise BuildException(msg)
     return res
 
