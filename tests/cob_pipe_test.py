@@ -169,6 +169,16 @@ class CobPipeDependencyRepoTest(unittest.TestCase):
     def setUp(self):
         self.MaxDiff = None
 
+    def test__init__without_name__raise_exception(self):
+        data_test_dict = {'type': 'git', 'url': 'git://github.com/ipa320/test.git', 'version': 'master'}
+
+        self.assertRaises(cob_pipe.CobPipeException, cob_pipe.CobPipeDependencyRepo, '', data_test_dict)
+
+    def test__init__without_name__raise_exception2(self):
+        data_test_dict = {'type': 'git', 'url': 'git://github.com/ipa320/test.git', 'version': 'master'}
+
+        self.assertRaises(cob_pipe.CobPipeException, cob_pipe.CobPipeDependencyRepo, None, data_test_dict)
+
     def test__get_rosinstall__init__return_rosinstall_yaml_string(self):
         data_test_dict = {'type': 'git', 'url': 'git://github.com/ipa320/test.git', 'version': 'master'}
         self.cdr = cob_pipe.CobPipeDependencyRepo('test', data_test_dict)
