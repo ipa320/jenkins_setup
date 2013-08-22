@@ -45,6 +45,7 @@ Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/avai
   ([website](wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters))
     * Provides comprehensive possibilities to filter the jobs that can
       be seen by the specific user.
+
 * Matrix Reloaded Plugin
   ([website](wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin))
     * To start one or more entries of a matrix job.
@@ -64,14 +65,16 @@ To manage your Jenkins server, go to
 From here you can configure everything.
 
 ####Configure Security
-Follow **Configure Global Security**.
+Follow **Configure Global Security** and check **Enable Security**.
 The **Access Control** section gives opportunity to select the **Security Realm**. It defines how the users can login.
 Furthermore you can define the permission a specific user or a user group gets granted.
 Therefore choose the 'Project-based Matrix Authorization Strategy' in the **Authorization** subsection.
 The user gets the permission to see the workspace for all his own jobs. For the 'Pipestarter' and 'Trigger' job he has also 'Build'-permission.
 If you want to grant further permissions you can do it here.
 
-**For Administration add one user that has all permissions!**
+**For administration purposes add one user that has all permissions!**
+This one will also later be used to create the pipeline jobs
+automatically.
 
 ####Set up view
 Create new view. **TODO**
@@ -83,6 +86,11 @@ Create new view. **TODO**
 Enter here the URL of your Jenkins server and the admins email address.
 
 #####Cob-Pipeline Plugin
+Download the plugin (*.hpi file) from [here**TODO**]() and place it in
+```<JENKINS_HOME>/plugins/```. After you restarted Jenkins the plugin
+should be available and the **Pipeline Configuration** link should be
+present in the sidebar (see picture).
+![sidebar](./sidebar.png "sidebar with cob-pipeline-plugin")
 **TODO**
 
 #####Mailer
