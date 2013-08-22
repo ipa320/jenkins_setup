@@ -371,3 +371,4 @@ def get_buildpipeline_configs(config_repo, server_name, user_name):
 class BuildException(Exception):
     def __init__(self, msg):
         self.msg = msg
+        super(BuildException, self).__init__(msg)

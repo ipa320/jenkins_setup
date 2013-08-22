@@ -190,3 +190,4 @@ class CobPipeException(Exception):
     def __init__(self, msg):
         print msg
         self.msg = msg
+        super(CobPipeException, self).__init__(msg)
