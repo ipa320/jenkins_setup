@@ -448,7 +448,7 @@ class JenkinsJobTest(unittest.TestCase):
         self.jj.repo_list = ['test_repo_2']
         self.jj.poll = self.jj.repo_list[0]
         self.jj.set_trigger_param('vcs')
-        self.assertEqual(self.jj.params['TRIGGER'], '<triggers class="vector"> <hudson.triggers.SCMTrigger> <spec>*/10 * * * *</spec> </hudson.triggers.SCMTrigger> </triggers>')
+        self.assertEqual(self.jj.params['TRIGGER'], '<triggers class="vector"> <hudson.triggers.SCMTrigger> <spec>H/10 * * * *</spec> </hudson.triggers.SCMTrigger> </triggers>')
         self.assertTrue(self.jj.params['VCS'] != '')
 
     def test__set_trigger_param__input_resulttrigger__check_set_param(self):
