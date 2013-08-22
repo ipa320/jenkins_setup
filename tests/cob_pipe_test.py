@@ -119,6 +119,7 @@ class CobPipeTest(unittest.TestCase):
                                          'matrix_distro_arch': None, 'dependencies': dep_test_dict,
                                          'jobs': None, 'robots': None}}
         self.pipe_config_test_dict['repositories'] = repo_test_dict
+        self.cp = cob_pipe.CobPipe()
         self.cp.load_config_from_dict(self.pipe_config_test_dict)
         result = self.cp.get_custom_dependencies()
         self.assertEqual(result, {'dep_1': ['cob_extern'], 'dep_2': ['cob_extern']})
@@ -139,6 +140,7 @@ class CobPipeTest(unittest.TestCase):
                                          'matrix_distro_arch': None, 'dependencies': dep_test_dict,
                                          'jobs': None, 'robots': None}}
         self.pipe_config_test_dict['repositories'] = repo_test_dict
+        self.cp = cob_pipe.CobPipe()
         self.cp.load_config_from_dict(self.pipe_config_test_dict)
         result = self.cp.get_custom_dependencies()
         self.assertEqual(result, {'dep_1': ['cob_extern', 'cob_driver'], 'dep_2': ['cob_extern', 'cob_driver']})
@@ -159,6 +161,7 @@ class CobPipeTest(unittest.TestCase):
                                          'matrix_distro_arch': None, 'dependencies': dep_test_dict,
                                          'jobs': None, 'robots': None}}
         self.pipe_config_test_dict['repositories'] = repo_test_dict
+        self.cp = cob_pipe.CobPipe()
         self.cp.load_config_from_dict(self.pipe_config_test_dict)
         result = self.cp.get_custom_dependencies(polled_only=True)
         self.assertEqual(result, {'dep_1': ['cob_extern', 'cob_driver']})
