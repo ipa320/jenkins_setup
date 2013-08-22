@@ -10,6 +10,14 @@ class CobPipe(object):
     Pipeline configuration class
     """
 
+    def __init__(self):
+        self.user_name = ""
+        self.server_name = ""
+        self.email = ""
+        self.committer_email_enabled = ""
+        self.repositories = {}
+        self.pipeline_repos_owner = ""
+
     def load_config_from_dict(self, pipeline_config):
         """
         Sets up a pipeline object derived from the given dictionary
@@ -22,8 +30,6 @@ class CobPipe(object):
         self.server_name = pipeline_config['server_name']
         self.email = pipeline_config['email']
         self.committer_email_enabled = pipeline_config['committer_email_enabled']
-
-        self.repositories = {}
 
         for repo_name, data in pipeline_config['repositories'].iteritems():
             repo = CobPipeRepo(repo_name, data)
