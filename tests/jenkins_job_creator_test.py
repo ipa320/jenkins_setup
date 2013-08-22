@@ -97,6 +97,7 @@ class JenkinsJobTest(unittest.TestCase):
                                   'POSTBUILD_TRIGGER': '',
                                   'JOIN_TRIGGER': '',
                                   'PIPELINE_TRIGGER': '',
+                                  'AUTHORIZATIONMATRIX': '',
                                   'GROOVY_POSTBUILD': '',
                                   'PARAMETERIZED_TRIGGER': '',
                                   'JUNIT_TESTRESULTS': '',
