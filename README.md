@@ -38,9 +38,6 @@ Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/avai
     * Provides a view where all pipeline jobs and their dependencies are
       shown. It also gives the opportunity to trigger the hardware test
       jobs manually.
-* Matrix Reloaded Plugin
-  ([website](wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin))
-    * To start one or more entries of a matrix job.
 * Mailer ([website](wiki.jenkins-ci.org/display/JENKINS/Mailer))
     * Generates the email content depending on the build/test results
       and sends the emails.
@@ -48,6 +45,13 @@ Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/avai
   ([website](wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters))
     * Provides comprehensive possibilities to filter the jobs that can
       be seen by the specific user.
+* Matrix Reloaded Plugin
+  ([website](wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin))
+    * To start one or more entries of a matrix job.
+* *Github OAuth Plugin* (not required but maybe useful)
+  ([website](wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin))
+    * Authentication of users is delegated to Github using the OAuth
+      protocol.
 * **TODO**
 
 ###Install the Cob-Pipeline Plugin
