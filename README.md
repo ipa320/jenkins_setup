@@ -56,7 +56,14 @@ Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/avai
 * **TODO**
 
 ###Install the Cob-Pipeline Plugin
-**TODO**
+Download the plugin (*.hpi file) from [here**TODO**]() and place it in
+```<JENKINS_HOME>/plugins/```. After you restarted Jenkins the plugin
+should be available and the **Pipeline Configuration** link should be
+present in the sidebar (see picture).
+
+![sidebar](./sidebar.png "sidebar with cob-pipeline-plugin")
+
+Configure Jenkins as described below before you use the plugin.
 
 
 ###Set up Jenkins configurations
@@ -86,11 +93,6 @@ Create new view. **TODO**
 Enter here the URL of your Jenkins server and the admins email address.
 
 #####Cob-Pipeline Plugin
-Download the plugin (*.hpi file) from [here**TODO**]() and place it in
-```<JENKINS_HOME>/plugins/```. After you restarted Jenkins the plugin
-should be available and the **Pipeline Configuration** link should be
-present in the sidebar (see picture).
-![sidebar](./sidebar.png "sidebar with cob-pipeline-plugin")
 **TODO**
 
 #####Mailer
