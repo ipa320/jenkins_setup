@@ -11,24 +11,17 @@ Description how to set up the Jenkins master and its slaves. This manual is made
 Master:
 -------
 
-###Preparations
-Install Git:
-```bash
-apt-get install git
-```
-Install ROS [groovy](www.ros.org/wiki/groovy/Installation/Ubuntu) or
-[fuerte](www.ros.org/wiki/fuerte/Installation/Ubuntu) as described.
-
 ###Install Jenkins CI
 To install Jenkins follow the [official website](http://jenkins-ci.org/).
 To add the official package source on Debian/Ubuntu follow
 [this description](http://pkg.jenkins-ci.org/debian/).
 After a successful installation you can access the Jenkins server in
 your browser on \<YOUR_JENKINS_SERVER_IP\>:8080.
+
 *!!!Be careful with updating your Jenkins server. If you do, check if
 everything works still properly!!!*
 
-###Required Jenkins plugins
+###Install required Jenkins plugins
 Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/available) and install the following plugins:
 * Parameterized Trigger Plugin ([website](wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin))
     * Is used to transfer build parameters from one job to the next.
@@ -56,7 +49,7 @@ Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/avai
 * **TODO**
 
 ###Install the Cob-Pipeline Plugin
-Download the plugin (*.hpi file) from [here**TODO**]() and place it in
+Download the plugin (\*.hpi file) from [here**TODO**]() and place it in
 ```<JENKINS_HOME>/plugins/```. After you restarted Jenkins the plugin
 should be available and the **Pipeline Configuration** link should be
 present in the sidebar (see picture).
@@ -65,6 +58,13 @@ present in the sidebar (see picture).
 
 Configure Jenkins as described below before you use the plugin.
 
+###Install additional software
+* Install Git: ```apt-get install git```
+
+* Install ROS [groovy](www.ros.org/wiki/groovy/Installation/Ubuntu) or
+[fuerte](www.ros.org/wiki/fuerte/Installation/Ubuntu) as described.
+
+___
 
 ###Set up Jenkins configurations
 To manage your Jenkins server, go to
@@ -101,6 +101,8 @@ Enter here the URL of your Jenkins server and the admins email address.
 For example: ```$BUILD_STATUS: $PROJECT_NAME - Build # $BUILD_NUMBER!```
 A complete list of tokens can be found at the help of the last entry
 (Content Token Reference).
+
+___
 
 ###Set up Cob-Pipeline specific configurations
 All configurations should be stored in a common folder in the
