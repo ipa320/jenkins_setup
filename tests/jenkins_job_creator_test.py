@@ -510,25 +510,25 @@ class JenkinsJobTest(unittest.TestCase):
         self.jj.job_type = 'prio_build'
         self.jj.tarball_location = 'jenkins@jenkins-test-server:~/chroot_tarballs'
         result = self.jj.get_shell_script()
-        self.assertIn('jenkins@jenkins-test-server:~/chroot_tarballs', result)
+        self.assertTrue('jenkins@jenkins-test-server:~/chroot_tarballs' in result)
 
     def test__get_shell_script__check_result_shell_script_str2(self):
         self.jj.job_type = 'prio_build'
         self.jj.tarball_location = 'jenkins@jenkins-test-server:~/chroot_tarballs'
         result = self.jj.get_shell_script()
-        self.assertIn('JENKINS_MASTER=jenkins-test-server', result)
+        self.assertTrue('JENKINS_MASTER=jenkins-test-server' in result)
 
     def test__get_shell_script__check_result_shell_script_str3(self):
         self.jj.job_type = 'prio_build'
         self.jj.tarball_location = 'jenkins@jenkins-test-server:~/chroot_tarballs'
         result = self.jj.get_shell_script()
-        self.assertIn('JOBTYPE=prio_build', result)
+        self.assertTrue('JOBTYPE=prio_build' in result)
 
     def test__get_shell_script__check_result_shell_script_str4(self):
         self.jj.job_type = 'regular_build'
         self.jj.tarball_location = 'jenkins@jenkins-test-server:~/chroot_tarballs'
         result = self.jj.get_shell_script()
-        self.assertIn('JOBTYPE=regular_build', result)
+        self.assertTrue('JOBTYPE=regular_build' in result)
 
 
 class PipeStarterJobTest(unittest.TestCase):
