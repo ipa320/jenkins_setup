@@ -430,7 +430,7 @@ class JenkinsJobTest(unittest.TestCase):
  </hudson.plugins.emailext.plugins.trigger.FixedTrigger>\
  </configuredTriggers>\
  <contentType>text/html</contentType>\
-<defaultSubject>$BUILD_STATUS: Priority Build of ${ENV, var="repository"};  ${ENV, var="ros_distro"}, ${ENV, var="ubuntu_distro"}, ${ENV, var="arch"} - Build # $BUILD_NUMBER!</defaultSubject>\
+ <defaultSubject>$BUILD_STATUS: Priority Build of ${ENV, var="repository"};  ${ENV, var="ros_distro"}, ${ENV, var="ubuntu_distro"}, ${ENV, var="arch"} - Build # $BUILD_NUMBER!</defaultSubject>\
  <defaultContent>${JELLY_SCRIPT,template=&quot;html-with-health-builds-tests&quot;}</defaultContent>\
  <attachmentsPattern></attachmentsPattern>\
  <presendScript></presendScript>\
