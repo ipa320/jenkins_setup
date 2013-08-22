@@ -1,5 +1,5 @@
 import os
-from common import *
+from common import apt_get_install, call
 
 
 class RosDepResolver:
