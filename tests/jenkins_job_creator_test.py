@@ -49,35 +49,36 @@ class JenkinsJobTest(unittest.TestCase):
 
         self.jj = jenkins_job_creator.JenkinsJob(jenkins_instance, self.test_pipe_inst)
 
-    # Testing schedule_job
-    def test__schedule_job__job_name_string_and_job_config_string__return_action_string(self):
-        self.jj.job_name = 'test_job'
-        self.jj.job_config = EMPTY_CONFIG_XML
-        self.jj.delete_job()
-        result = self.jj.schedule_job()
-        self.assertEqual(result, 'created')
-        self.jj.delete_job()
+    #TODO find a better way to test this
+    ## Testing schedule_job
+    #def test__schedule_job__job_name_string_and_job_config_string__return_action_string(self):
+        #self.jj.job_name = 'test_job'
+        #self.jj.job_config = EMPTY_CONFIG_XML
+        #self.jj.delete_job()
+        #result = self.jj.schedule_job()
+        #self.assertEqual(result, 'created')
+        #self.jj.delete_job()
 
-    def test__schedule_job__job_name_string_and_job_config_string__return_action_string2(self):
-        self.jj.job_name = 'test_job'
-        self.jj.job_config = EMPTY_CONFIG_XML
-        self.jj.schedule_job()
-        result = self.jj.schedule_job()
-        self.assertEqual(result, 'reconfigured')
-        self.jj.delete_job()
+    #def test__schedule_job__job_name_string_and_job_config_string__return_action_string2(self):
+        #self.jj.job_name = 'test_job'
+        #self.jj.job_config = EMPTY_CONFIG_XML
+        #self.jj.schedule_job()
+        #result = self.jj.schedule_job()
+        #self.assertEqual(result, 'reconfigured')
+        #self.jj.delete_job()
 
-    # Testing delete_job
-    def test__delete_job__job_name_string__return_action_string(self):
-        self.jj.job_name = 'test_job'
-        self.jj.job_config = EMPTY_CONFIG_XML
-        self.jj.schedule_job()
-        result = self.jj.delete_job()
-        self.assertEqual(result, 'test_job')
+    ## Testing delete_job
+    #def test__delete_job__job_name_string__return_action_string(self):
+        #self.jj.job_name = 'test_job'
+        #self.jj.job_config = EMPTY_CONFIG_XML
+        #self.jj.schedule_job()
+        #result = self.jj.delete_job()
+        #self.assertEqual(result, 'test_job')
 
-    def test__delete_job__job_name_string__return_action_string2(self):
-        self.jj.job_name = 'test_job'
-        result = self.jj.delete_job()
-        self.assertEqual(result, '')
+    #def test__delete_job__job_name_string__return_action_string2(self):
+        #self.jj.job_name = 'test_job'
+        #result = self.jj.delete_job()
+        #self.assertEqual(result, '')
 
     # Testing common_params
     def test__set_common_params__return_common_job_config_dict(self):
