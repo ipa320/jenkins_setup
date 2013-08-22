@@ -62,11 +62,12 @@ From here you can configure everything.
 ####Configure Security
 Follow **Configure Global Security**.
 The **Access Control** section gives opportunity to select the **Security Realm**. It defines how the users can login.
-Furthermore you can define the permission a specific user or a user
-group gets granted. Therefore choose the 'Project-based Matrix Authorization Strategy' in the **Authorization** subsection.
-The user gets the permission to see the workspace for all his own jobs. For the 'Pipestarter'
-and 'Trigger' job he has also 'Build'-permission.
+Furthermore you can define the permission a specific user or a user group gets granted.
+Therefore choose the 'Project-based Matrix Authorization Strategy' in the **Authorization** subsection.
+The user gets the permission to see the workspace for all his own jobs. For the 'Pipestarter' and 'Trigger' job he has also 'Build'-permission.
 If you want to grant further permissions you can do it here.
+
+**For Administration add one user that has all permissions!**
 
 ####Set up view
 Create new view. **TODO**
