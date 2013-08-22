@@ -11,24 +11,17 @@ Description how to set up the Jenkins master and its slaves. This manual is made
 Master:
 -------
 
-###Preparations
-Install Git:
-```bash
-apt-get install git
-```
-Install ROS [groovy](www.ros.org/wiki/groovy/Installation/Ubuntu) or
-[fuerte](www.ros.org/wiki/fuerte/Installation/Ubuntu) as described.
-
 ###Install Jenkins CI
 To install Jenkins follow the [official website](http://jenkins-ci.org/).
 To add the official package source on Debian/Ubuntu follow
 [this description](http://pkg.jenkins-ci.org/debian/).
 After a successful installation you can access the Jenkins server in
 your browser on \<YOUR_JENKINS_SERVER_IP\>:8080.
+
 *!!!Be careful with updating your Jenkins server. If you do, check if
 everything works still properly!!!*
 
-###Required Jenkins plugins
+###Install required Jenkins plugins
 Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/available) and install the following plugins:
 * Parameterized Trigger Plugin ([website](wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin))
     * Is used to transfer build parameters from one job to the next.
@@ -38,9 +31,6 @@ Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/avai
     * Provides a view where all pipeline jobs and their dependencies are
       shown. It also gives the opportunity to trigger the hardware test
       jobs manually.
-* Matrix Reloaded Plugin
-  ([website](wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin))
-    * To start one or more entries of a matrix job.
 * Mailer ([website](wiki.jenkins-ci.org/display/JENKINS/Mailer))
     * Generates the email content depending on the build/test results
       and sends the emails.
@@ -48,20 +38,53 @@ Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/avai
   ([website](wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters))
     * Provides comprehensive possibilities to filter the jobs that can
       be seen by the specific user.
+
+* Matrix Reloaded Plugin
+  ([website](wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin))
+    * To start one or more entries of a matrix job.
+* *Github OAuth Plugin* (not required but maybe useful)
+  ([website](wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin))
+    * Authentication of users is delegated to Github using the OAuth
+      protocol.
 * **TODO**
 
 ###Install the Cob-Pipeline Plugin
-**TODO**
+Download the plugin (\*.hpi file) from [here**TODO**]() and place it in
+```<JENKINS_HOME>/plugins/```. After you restarted Jenkins the plugin
+should be available and the **Pipeline Configuration** link should be
+present in the sidebar (see picture).
 
+![sidebar](./sidebar.png "sidebar with cob-pipeline-plugin")
+
+Configure Jenkins as described below before you use the plugin.
+
+###Install additional software
+* Install Git: ```apt-get install git```
+
+* Install ROS [groovy](www.ros.org/wiki/groovy/Installation/Ubuntu) or
+[fuerte](www.ros.org/wiki/fuerte/Installation/Ubuntu) as described.
+
+___
 
 ###Set up Jenkins configurations
-To manage your Jenkins server go to
-\<YOUR_JENKINS_SERVER_IP\>:8080/manage. From here you can configure
-everything.
-**TODO**
+To manage your Jenkins server, go to
+\<YOUR_JENKINS_SERVER_IP\>:8080/manage or follow "Manage Jenkins" in the sidebar.
+From here you can configure everything.
 
 ####Configure Security
-**TODO**
+Follow **Configure Global Security** and check **Enable Security**.
+The **Access Control** section gives opportunity to select the **Security Realm**. It defines how the users can login.
+Furthermore you can define the permission a specific user or a user group gets granted.
+Therefore choose the 'Project-based Matrix Authorization Strategy' in the **Authorization** subsection.
+The user gets the permission to see the workspace for all his own jobs. For the 'Pipestarter' and 'Trigger' job he has also 'Build'-permission.
+If you want to grant further permissions you can do it here.
+
+**For administration purposes add one user that has all permissions!**
+This one will also later be used to create the pipeline jobs
+automatically.
+
+####Set up view
+Create new view. **TODO**
 
 ####Configure Plugins
 #####Basic configurations
@@ -79,6 +102,8 @@ For example: ```$BUILD_STATUS: $PROJECT_NAME - Build # $BUILD_NUMBER!```
 A complete list of tokens can be found at the help of the last entry
 (Content Token Reference).
 
+___
+
 ###Set up Cob-Pipeline specific configurations
 All configurations should be stored in a common folder in the
 `$HOME`-folder called `jenkins-config`:
@@ -86,8 +111,18 @@ All configurations should be stored in a common folder in the
 mkdir ~/jenkins-config
 ```
 
+####Git configurations
+Set up the GitHub user. This user has to have read-access to all
+repositories to build and write-access to your ```jenkins_config```
+repository.
+```bash
+git config --global user.name "<USER_NAME>"
+git config --global user.email "<EMAIL>"
+```
+**TODO** what is necessary?
+
 ####SSH configurations
-A `.ssh`-folder is needed which contains a ssh-key to access the GitHub-repositories. Either you generate a new key with `ssh-keygen` or you just copy the `~/.ssh` of the master. You have to add this key to your GitHub user (http://github.com/settings/ssh). This user should have read-access to all repositories you want to build.
+A `.ssh`-folder is needed inside the ```~/jenkins-config/```-folder which contains a ssh-key to access the GitHub-repositories. Either you generate a new key with `ssh-keygen` or you just copy the `~/.ssh` of the master. You have to add this key to your GitHub user (http://github.com/settings/ssh). This user should have read-access to all repositories you want to build.
 It is very important that 'github.com' belongs to the *known hosts*. Therefore the `.ssh`-folder should contain a ```known_hosts``` file. Whether 'github.com' is already known can be checked by entering:
 ```bash
 ssh-keygen -H -f <known_hosts_PATH> -F github.com
@@ -97,7 +132,8 @@ If it is not known, you can add 'github.com' to the ```known_hosts``` by enterin
 ssh-keyscan -H github.com > <known_hosts_PATH>
 ```
 
-####Git configurations
+Furthermore the Jenkins masters SSH key itself has to be an authorized
+one.
 **TODO**
 
 ####jenkins\_config repository
@@ -205,7 +241,7 @@ BINDMOUNTS="${CCACHE_DIR}"
 #####Use multi-core zipping
 To speedup the zipping and unzipping of the chroot tarballs, install `pigz`:
 ```bash
-apt-get install pigz debootstrap devscripts
+apt-get install pigz
 ```
 
 And add the following to .pbuilderrc:
@@ -229,11 +265,22 @@ Additionally you have to add the following to `~/pbuilderrc`:
 APTCACHEHARDLINK=no
 ```
 
-Finally mount `tmpfs` by entering:
+Finally mount `tmpfs` by entering **(as root)**:
 ```bash
 mount -a
 ```
 
+###Slave setup on master
+**TODO**
+* Labels
+* Configurations
+* Connect slave
+* Troubleshooting
+
+
+**TODO**
+* github.com to known_hosts
+* upload ssh key
 ___
 
 
