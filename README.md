@@ -23,27 +23,27 @@ everything works still properly!!!*
 
 ###Install required Jenkins plugins
 Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/available) and install the following plugins:
-* Parameterized Trigger Plugin ([website](wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin))
+* Parameterized Trigger Plugin ([website](http://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin))
     * Is used to transfer build parameters from one job to the next.
       Here it is used to commit the repository to build or test.
 * Build Pipeline Plugin
-  ([website](code.google.com/p/build-pipeline-plugin))
+  ([website](http://code.google.com/p/build-pipeline-plugin))
     * Provides a view where all pipeline jobs and their dependencies are
       shown. It also gives the opportunity to trigger the hardware test
       jobs manually.
-* Mailer ([website](wiki.jenkins-ci.org/display/JENKINS/Mailer))
+* Mailer ([website](http://wiki.jenkins-ci.org/display/JENKINS/Mailer))
     * Generates the email content depending on the build/test results
       and sends the emails.
 * View Job Filters
-  ([website](wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters))
+  ([website](http://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters))
     * Provides comprehensive possibilities to filter the jobs that can
       be seen by the specific user.
 
 * Matrix Reloaded Plugin
-  ([website](wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin))
+  ([website](http://wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin))
     * To start one or more entries of a matrix job.
 * *Github OAuth Plugin* (not required but maybe useful)
-  ([website](wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin))
+  ([website](http://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin))
     * Authentication of users is delegated to Github using the OAuth
       protocol.
 * **TODO**
@@ -59,10 +59,28 @@ present in the sidebar (see picture).
 Configure Jenkins as described below before you use the plugin.
 
 ###Install additional software
-* Install Git: ```apt-get install git```
+####Install Git:
+```bash
+apt-get install git
+```
 
-* Install ROS [groovy](www.ros.org/wiki/groovy/Installation/Ubuntu) or
-[fuerte](www.ros.org/wiki/fuerte/Installation/Ubuntu) as described.
+####Install ROS
+Install [groovy](http://www.ros.org/wiki/groovy/Installation/Ubuntu) or
+[fuerte](http://www.ros.org/wiki/fuerte/Installation/Ubuntu) as described.
+
+####Setup an **apt-cacher** (optional)
+During the later build process a lot packages will be installed. If
+the build jobs run frequently, the network traffic increases quite
+much. To limit the amount of packages to be downloaded from the
+internet and speed up the installation process a apt-cacher is
+pretty useful. You can for example use the
+[apt-cacher-ng](http://www.unix-ag.uni-kl.de/~bloch/acng/).
+To use the apt-cacher during the build process [edit the
+update_chroot_tarballs.py script **TODO**]() as descripted.
+
+You can also use the apt-cacher of pbuilder. Then you should **NOT** do
+[this](https://github.com/ipa320/jenkins_setup/blob/master/README.md#dont-use-pbuilders-aptcache)
+
 
 ___
 
