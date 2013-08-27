@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import unittest
+import os
+import sys
 from jenkins_setup import common
 
 
@@ -8,6 +10,9 @@ class Common_Test(unittest.TestCase):
 
     def setUp(self):
         self.MaxDiff = None
+
+    def test__append_pymodules_if_needed__check_path(self):
+        self.assertTrue(os.path.abspath("/usr/lib/pymodules/python2.7") in sys.path)
 
     def test__get_all_packages__input_source_folder_str__return_package_dict(self):
         pass
