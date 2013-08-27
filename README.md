@@ -174,7 +174,12 @@ git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup
 #####Adapt apt-cacher address
 *If you use an apt-cacher* you have to enter its address in the
 [install_basics.sh script](./scripts/install_basics.sh). Adapt the
-proxy address ```http://cob-jenkins-server:3142``` to your requirements.
+APT_PROXY_ADDRESS variable to your requirements.
+```bash
+echo "\n***APT-PROXY***"
+APT_PROXY_ADDRESS="http://cob-jenkins-server:3142"
+sh -c 'echo "Acquire::http { Proxy \"'$APT_PROXY_ADDRESS'\"; };" > /etc/apt/apt.conf.d/01proxy'
+```
 
 #####PYTHONPATH
 Add the ```jenkins_setup``` module to the `$PYTHONPATH` (*adapt the
