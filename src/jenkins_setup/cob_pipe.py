@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 
+"""
+This module provides the classes CobPipe, CobPipeDependencyRepo, CobPipeRepo
+and CobPipeException. Those can be used to instance a CobPipe object which
+includes all pipeline configurations of given pipline_config.yaml, locally
+stored or on an GitHub account.
+"""
+
 import yaml
 
 from jenkins_setup import common
@@ -187,6 +194,11 @@ class CobPipeRepo(CobPipeDependencyRepo):
 
 
 class CobPipeException(Exception):
+
+    """
+    CobPipeline specific exception
+    """
+
     def __init__(self, msg):
         print msg
         self.msg = msg
