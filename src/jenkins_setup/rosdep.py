@@ -1,8 +1,14 @@
+"""
+TODO
+"""
 import os
-from common import apt_get_install, call
+from jenkins_setup.common import apt_get_install, call
 
 
 class RosDepResolver:
+    """
+    TODO
+    """
     def __init__(self, ros_distro, sudo=False):
         self.r2a = {}
         self.a2r = {}
@@ -27,15 +33,15 @@ class RosDepResolver:
             ros_entry = split_entry[0]
             apt_entries = split_entry[1].split(' ')
             self.r2a[ros_entry] = apt_entries
-            for a in apt_entries:
-                self.a2r[a] = ros_entry
+            for a_e in apt_entries:
+                self.a2r[a_e] = ros_entry
 
     def to_aptlist(self, ros_entries):
         res = []
-        for r in ros_entries:
-            for a in self.to_apt(r):
-                if not a in res:
-                    res.append(a)
+        for r_e in ros_entries:
+            for apt in self.to_apt(r_e):
+                if not apt in res:
+                    res.append(apt)
         return res
 
     def to_ros(self, apt_entry):
@@ -56,6 +62,9 @@ class RosDepResolver:
 
 
 class RosDep:
+    """
+    TODO
+    """
     def __init__(self, ros_distro):
         self.r2a = {}
         self.a2r = {}
@@ -68,20 +77,20 @@ class RosDep:
         call("rosdep init", self.env)
         call("rosdep update", self.env)
 
-    def to_apt(self, r):
-        if r in self.r2a:
-            return self.r2a[r]
+    def to_apt(self, ros):
+        if ros in self.r2a:
+            return self.r2a[ros]
         else:
-            res = call("rosdep resolve %s" % r, self.env).split('\n')
+            res = call("rosdep resolve %s" % ros, self.env).split('\n')
             if len(res) == 1:
                 raise Exception("Could not resolve rosdep")
-            a = call("rosdep resolve %s" % r, self.env).split('\n')[1]
-            print "Rosdep %s resolved into %s" % (r, a)
-            self.r2a[r] = a
-            self.a2r[a] = r
-            return a
+            apt = call("rosdep resolve %s" % ros, self.env).split('\n')[1]
+            print "Rosdep %s resolved into %s" % (ros, apt)
+            self.r2a[ros] = apt
+            self.a2r[apt] = ros
+            return apt
 
-    def to_stack(self, a):
-        if not a in self.a2r:
-            print "%s not in apt-to-rosdep cache" % a
-        return self.a2r[a]
+    def to_stack(self, apt):
+        if not apt in self.a2r:
+            print "%s not in apt-to-rosdep cache" % apt
+        return self.a2r[apt]
