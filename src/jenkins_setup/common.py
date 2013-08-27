@@ -14,12 +14,21 @@ import time
 
 
 def append_pymodules_if_needed():
+    """
+    Adds pymodules to path if not already included.
+    """
     #TODO: This is a hack, in the chroot, the default python path does not
     if not os.path.abspath("/usr/lib/pymodules/python2.7") in sys.path:
         sys.path.append("/usr/lib/pymodules/python2.7")
 
 
 def apt_get_update(sudo=False):
+    """
+    Updates apt-get.
+
+    @param sudo: call command with sudo (default False)
+    @type  sudo: bool
+    """
     if not sudo:
         call("apt-get update")
     else:
@@ -27,6 +36,16 @@ def apt_get_update(sudo=False):
 
 
 def apt_get_install(pkgs, rosdep=None, sudo=False):
+    """
+    Installs the corresponding apt packages from a list of ROS repositories.
+
+    @param pkgs: names of ros repositories
+    @type  pkgs: list
+    @param rosdep: rosdep resolver object (default None)
+    @type  rosdep: rosdep.RosDepResolver
+    @param sudo: execute command as super-user (default False)
+    @type  sudo: bool
+    """
     cmd = "apt-get install --yes "
     if sudo:
         cmd = "sudo " + cmd
@@ -49,12 +68,11 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
     @type  pkgs: list
     @param ros_distro: name of ros release, e.g. fuerte
     @type  ros_distro: str
-    @param rosdep: rosdep resolver object
+    @param rosdep: rosdep resolver object (default None)
     @type  rosdep: rosdep.RosDepResolver
-    @param sudo: execute command as super-user
+    @param sudo: execute command as super-user (default False)
     @type  sudo: bool
     """
-
     rosdep_pkgs = []
     aptget_pkgs = []
     unavailable_pkgs = []
@@ -349,7 +367,6 @@ def get_buildpipeline_configs(config_repo, server_name, user_name):
     :returns: return :dict: with configurations
     :raises: :exec:`Exception`
     """
-
     pipeconfig_url = config_repo.replace(".git", "")
     pipeconfig_url = pipeconfig_url.replace("https://github.com/", "https://raw.github.com/")
     pipeconfig_url = pipeconfig_url.replace("git://github.com/", "https://raw.github.com/")
