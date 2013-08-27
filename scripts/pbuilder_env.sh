@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 echo "vvvvvvvvvvvvvvvvvvv  pbuilder_env.sh vvvvvvvvvvvvvvvvvvvvvv"
 date
 export WORKSPACE=$1
@@ -68,7 +68,7 @@ else
 fi
 
 $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY $graphic_test $build_repo_only
-
+result=$?
 
 if [ ! -z "$DISPLAY" ] && [ "$DISPLAY" != ":0" ]; then
     $DIR/remoteX.py stop
@@ -80,3 +80,4 @@ date
 echo "============================================================"
 echo "==== End" $SCRIPT "script.    Ignore the output below ======"
 echo "============================================================"
+exit $result
