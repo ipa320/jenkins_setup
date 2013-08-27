@@ -49,8 +49,9 @@ Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/avai
 * **TODO**
 
 ###Install the Cob-Pipeline Plugin
-Download the plugin (\*.hpi file) from [here**TODO**]() and place it in
-```<JENKINS_HOME>/plugins/```. After you restarted Jenkins the plugin
+Download the plugin (\*.hpi file) from
+[here](https://github.com/fmw-jk/cob-pipeline-plugin/releases) and place it
+in ```<JENKINS_HOME>/plugins/```. After you restarted Jenkins the plugin
 should be available and the **Pipeline Configuration** link should be
 present in the sidebar (see picture).
 
@@ -64,22 +65,23 @@ Configure Jenkins as described below before you use the plugin.
 apt-get install git
 ```
 
-####Install ROS
+####Install ROS:
 Install [groovy](http://www.ros.org/wiki/groovy/Installation/Ubuntu) or
 [fuerte](http://www.ros.org/wiki/fuerte/Installation/Ubuntu) as described.
 
-####Setup an **apt-cacher** (optional)
+####Setup an **apt-cacher** (optional):
 During the later build process a lot packages will be installed. If
 the build jobs run frequently, the network traffic increases quite
 much. To limit the amount of packages to be downloaded from the
 internet and speed up the installation process a apt-cacher is
 pretty useful. You can for example use the
 [apt-cacher-ng](http://www.unix-ag.uni-kl.de/~bloch/acng/).
-To use the apt-cacher during the build process [edit the
-update_chroot_tarballs.py script **TODO**]() as descripted.
+To use the apt-cacher during the build process set up an apt-cacher and
+edit the [install_basics.sh script](./scripts/install_basics.sh) as descripted
+[here](./README.md#adapt-apt-cacher-address).
 
 You can also use the apt-cacher of pbuilder. Then you should **NOT** do
-[this](https://github.com/ipa320/jenkins_setup/blob/master/README.md#dont-use-pbuilders-aptcache)
+[this](https://github.com/ipa320/jenkins_setup/blob/master/README.md#dont-use-pbuilders-aptcache).
 
 
 ___
@@ -168,6 +170,11 @@ Clone the ```jenkins_setup``` repository into the `jenkins-config` folder:
 git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup
 ```
 *!!!Adapt the GitHub user if you forked the repository!!!*
+
+#####Adapt apt-cacher address
+*If you use an apt-cacher* you have to enter its address in the
+[install_basics.sh script](./scripts/install_basics.sh). Adapt the
+proxy address ```http://cob-jenkins-server:3142``` to your requirements.
 
 #####PYTHONPATH
 Add the ```jenkins_setup``` module to the `$PYTHONPATH` (*adapt the
