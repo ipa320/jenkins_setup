@@ -55,6 +55,12 @@ class Common_Test(unittest.TestCase):
         real_common.apt_get_install(['test-package'], rosdep=mock_rosdep)
         mock_rosdep.to_aptlist.assert_called_once_with(['test-package'])
 
+    def test__call__input__check_call_with_list_call(self):
+        real_common = common
+        real_common.call_with_list = MagicMock()
+        real_common.call("test command")
+        real_common.call_with_list.assert_called_once_with(['test', 'command'], None, True)
+
     def test__get_all_packages__input_source_folder_str__return_package_dict(self):
         pass
 
