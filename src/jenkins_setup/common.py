@@ -298,6 +298,13 @@ def get_nonlocal_dependencies(catkin_packages, stacks, manifest_packages, build_
 
 def get_dry_packages(source_folder):
     """
+    Get all dry stacks and packages in source folder
+
+    @param source_folder: path to search
+    @type  source_folder: str
+
+    @return param: list of stacks and list of packages
+    @return type: tuple
     """
 
     catkin_packages, stacks, manifest_packages = get_all_packages(source_folder)
@@ -306,6 +313,15 @@ def get_dry_packages(source_folder):
 
 def get_all_packages(source_folder, filter=True):
     """
+    Get all packages (wet and dry)
+
+    @param source_folder: path to search
+    @type  source_folder: str
+    @param filter: filter out dry stacks/packages if also wet
+    @type filter: bool
+
+    @return param: list of catkin packages, dry stacks and dry packages
+    @return type: tuple
     """
     import rospkg
 
