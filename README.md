@@ -113,6 +113,29 @@ Create new view. **TODO**
 Enter here the URL of your Jenkins server and the admins email address.
 
 #####Cob-Pipeline Plugin
+Go to the ***Cob Pipeline Configuration*** section.
+* **Jenkins Admin Login/Password**:
+    This is the user you configured before in the [Configure Security
+part](https://github.com/ipa320/jenkins_setup/blob/master/README.md#configure-security)
+with all the permissions. Enter its login name and password.
+* **Configuration Folder**:
+    Enter the path of the [Cob-Pipeline configuration
+folder](https://github.com/ipa320/jenkins_setup/blob/master/README.md#cob-pipeline-configuration-folder).
+* **Tarball Location**:
+    Enter the [location where the tarballs are
+stored](https://github.com/ipa320/jenkins_setup/blob/master/README.md#tarball-server).
+* **GitHub User Login/Password**:
+    This is the user that has read-permission to all the repositories
+    you want to be tested. It has also write-permission to your
+    jenkins-config repository.
+* **Pipeline Repositories Owner/Fork**:
+    TODO
+* **ROS Releases**:
+    ROS versions that should be supported by your build/test pipeline.
+* **Robots**:
+    TODO
+* **Target Platform Url**:
+    TODO
 **TODO**
 
 #####Mailer
@@ -125,6 +148,7 @@ A complete list of tokens can be found at the help of the last entry
 ___
 
 ###Set up Cob-Pipeline specific configurations
+####Cob-Pipeline configuration folder
 All configurations should be stored in a common folder in the
 `$HOME`-folder called `jenkins-config`:
 ```bash
