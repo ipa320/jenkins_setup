@@ -185,17 +185,17 @@ def call_with_list(command, envir=None, verbose=True):
     helper = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True, env=envir)
     res = ""
     while helper.poll() is None:
-        output = helper.stdout.readline()
+        output_ = helper.stdout.readline()
         res += output
         if verbose:
-            sys.stdout.write(output)
+            sys.stdout.write(output_)
         time.sleep(0.1)  # TODO What is a good value here? Without this delay it's busy looping
 
     #make sure to capture the last line(s)
-    output = helper.stdout.read()
-    res += output
+    output_ = helper.stdout.read()
+    res += output_
     if verbose:
-        print output
+        print output_
 
     if helper.returncode != 0:
         msg = "Failed to execute command '%s'" % command
@@ -311,14 +311,14 @@ def get_dry_packages(source_folder):
     return (stacks, manifest_packages)
 
 
-def get_all_packages(source_folder, filter=True):
+def get_all_packages(source_folder, filter_=True):
     """
     Get all packages (wet and dry)
 
     @param source_folder: path to search
     @type  source_folder: str
-    @param filter: filter out dry stacks/packages if also wet
-    @type filter: bool
+    @param filter_: filter out dry stacks/packages if also wet
+    @type filter_: bool
 
     @return param: list of catkin packages, dry stacks and dry packages
     @return type: tuple
@@ -335,7 +335,7 @@ def get_all_packages(source_folder, filter=True):
 
     # if repo has package.xml and stack.xml/manifest.xml
     # remove stack/manifest entries
-    if filter:
+    if filter_:
         for name, path in catkin_packages.iteritems():
             if name in stacks:
                 del stacks[name]
@@ -355,17 +355,17 @@ def build_local_dependency_graph(catkin_packages, manifest_packages):
     for name, path in catkin_packages.iteritems():
         depends[name] = []
         pkg_info = packages.parse_package(path)
-        for d in pkg_info.buildtool_depends + pkg_info.build_depends + pkg_info.test_depends + pkg_info.run_depends:
-            if d.name in catkin_packages and d.name != name:
-                depends[name].append(d.name)
+        for dep in pkg_info.buildtool_depends + pkg_info.build_depends + pkg_info.test_depends + pkg_info.run_depends:
+            if dep.name in catkin_packages and dep.name != name:
+                depends[name].append(dep.name)
 
     #Next, we build the manifest dep tree
     for name, path in manifest_packages.iteritems():
         manifest = rospkg.parse_manifest_file(path, rospkg.MANIFEST_FILE)
         depends[name] = []
-        for d in manifest.depends + manifest.rosdeps:
-            if (d.name in catkin_packages or d.name in manifest_packages) and d.name != name:
-                depends[name].append(str(d.name))
+        for dep in manifest.depends + manifest.rosdeps:
+            if (dep.name in catkin_packages or dep.name in manifest_packages) and dep.name != name:
+                depends[name].append(str(dep.name))
 
     return depends
 
@@ -430,13 +430,13 @@ def get_dependencies(source_folder, build_depends=True, test_depends=True):
     depends = []
     for name, pkg in pkgs.iteritems():
         if build_depends:
-            for d in pkg.build_depends + pkg.buildtool_depends:
-                if not d.name in depends and not d.name in local_packages:
-                    depends.append(d.name)
+            for dep in pkg.build_depends + pkg.buildtool_depends:
+                if not dep.name in depends and not dep.name in local_packages:
+                    depends.append(dep.name)
         if test_depends:
-            for d in pkg.test_depends + pkg.run_depends:
-                if not d.name in depends and not d.name in local_packages:
-                    depends.append(d.name)
+            for dep in pkg.test_depends + pkg.run_depends:
+                if not dep.name in depends and not dep.name in local_packages:
+                    depends.append(dep.name)
 
     return depends
 
@@ -460,8 +460,8 @@ def get_buildpipeline_configs(config_repo, server_name, user_name):
     print "Parsing buildpipeline configuration file for %s stored at:\n%s" % (user_name, pipeconfig_url)
     try:
         #f = urllib2.urlopen(pipeconfig_url)
-        with contextlib.closing(urllib2.urlopen(pipeconfig_url)) as f:
-            bpl_configs = yaml.load(f.read())
+        with contextlib.closing(urllib2.urlopen(pipeconfig_url)) as file:
+            bpl_configs = yaml.load(file.read())
     except Exception as ex:
         print "While downloading and parsing the buildpipeline configuration \
                file from\n%s\nthe following error occured:\n%s" % (pipeconfig_url, ex)
