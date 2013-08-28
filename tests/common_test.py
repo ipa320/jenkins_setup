@@ -3,6 +3,7 @@
 import unittest
 import os
 import sys
+from mock import MagicMock
 from jenkins_setup import common
 
 
@@ -16,6 +17,43 @@ class Common_Test(unittest.TestCase):
             sys.path.remove("/usr/lib/pymodules/python2.7")
         common.append_pymodules_if_needed()
         self.assertTrue(os.path.abspath("/usr/lib/pymodules/python2.7") in sys.path)
+
+    def test__apt_get_update__check_correct_call_calling(self):
+        real = common
+        real.call = MagicMock()
+        real.apt_get_update()
+        real.call.assert_called_once_with("apt-get update")
+
+    def test__apt_get_update__input_sudo_true__check_correct_call_calling(self):
+        real = common
+        real.call = MagicMock()
+        real.apt_get_update(True)
+        real.call.assert_called_once_with("sudo apt-get update")
+
+    def test__apt_get_install__input_list__check_correct_call_calling(self):
+        real = common
+        real.call = MagicMock()
+        real.apt_get_install(['test-package'])
+        real.call.assert_called_once_with("apt-get install --yes test-package")
+
+    def test__apt_get_install__input_with_sudo__check_correct_call_calling(self):
+        real = common
+        real.call = MagicMock()
+        real.apt_get_install(['test-package'], sudo=True)
+        real.call.assert_called_once_with("sudo apt-get install --yes test-package")
+
+    def test__apt_get_install__input_empty_list__check_correct_call_calling(self):
+        real = common
+        real.call = MagicMock()
+        real.apt_get_install([])
+        self.assertEqual(real.call.call_count, 0)
+
+    def test__apt_get_install__input_with_rosdep__check_(self):
+        real_common = common
+        real_common.call = MagicMock()
+        mock_rosdep = MagicMock()
+        real_common.apt_get_install(['test-package'], rosdep=mock_rosdep)
+        mock_rosdep.to_aptlist.assert_called_once_with(['test-package'])
 
     def test__get_all_packages__input_source_folder_str__return_package_dict(self):
         pass
