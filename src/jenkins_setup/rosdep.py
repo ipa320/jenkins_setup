@@ -7,7 +7,7 @@ import os
 from jenkins_setup.common import apt_get_install, call
 
 
-class RosDepResolver:
+class RosDepResolver(object):
 
     """
     This class allows to initialize a rosdep database and provide the access to
@@ -103,7 +103,7 @@ class RosDepResolver:
         return apt_entry in self.a2r
 
 
-class RosDep:
+class RosDep(object):
 
     """
     This class allows to initialize a rosdep database and provide the access to
