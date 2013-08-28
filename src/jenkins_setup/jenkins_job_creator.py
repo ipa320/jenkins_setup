@@ -167,13 +167,13 @@ class JenkinsJob(object):
         :returns: matrix config, ``str``
         """
 
-        filter = '%s' % ' || '.join(['(%s)' % ' &amp;&amp; '.join(['%s=="%s"' % (key, value)
+        filter_ = '%s' % ' || '.join(['(%s)' % ' &amp;&amp; '.join(['%s=="%s"' % (key, value)
                                                                    for key, value in i.iteritems()])
                                      for i in config])
         if negation:
-            filter = '!(%s)' % filter
+            filter_ = '!(%s)' % filter_
 
-        return filter
+        return filter_
 
     def generate_matrix_axis(self, axis_name, value_list):
         """
@@ -194,14 +194,14 @@ class JenkinsJob(object):
 
         return axis
 
-    def set_matrix_param(self, name_value_dict_list, filter=None):
+    def set_matrix_param(self, name_value_dict_list, filter_=None):
         """
         Returns matrix config for given dictionary containing names and values
 
         @param name_value_dict_list: matrix parameter config
         @type  name_value_dict_list: list
-        @param filter: combination filter
-        @type  filter: str
+        @param filter_: combination filter
+        @type  filter_: str
         """
 
         axes = ''
@@ -216,8 +216,8 @@ class JenkinsJob(object):
         matrix = self.job_config_params['matrix']['basic']
         matrix = matrix.replace('@(NODE)', self.job_type)
         matrix = matrix.replace('@(AXES)', axes)
-        if filter:
-            matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', filter)
+        if filter_:
+            matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', filter_)
 
         self.params['MATRIX'] = matrix
 
