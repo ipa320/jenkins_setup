@@ -15,7 +15,7 @@ import time
 
 def append_pymodules_if_needed():
     """
-    Adds pymodules to path if not already included.
+    Add pymodules to path if not already included.
     """
     #TODO: This is a hack, in the chroot, the default python path does not
     if not os.path.abspath("/usr/lib/pymodules/python2.7") in sys.path:
@@ -24,7 +24,7 @@ def append_pymodules_if_needed():
 
 def apt_get_update(sudo=False):
     """
-    Updates apt-get.
+    Update apt-get.
 
     @param sudo: call command with sudo (default False)
     @type  sudo: bool
@@ -37,7 +37,7 @@ def apt_get_update(sudo=False):
 
 def apt_get_install(pkgs, rosdep=None, sudo=False):
     """
-    Installs the corresponding apt packages from a list of ROS repositories.
+    Install the corresponding apt packages from a list of ROS repositories.
 
     @param pkgs: names of ros repositories
     @type  pkgs: list
@@ -61,7 +61,7 @@ def apt_get_install(pkgs, rosdep=None, sudo=False):
 
 def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
     """
-    Extends common.apt_get_install by trying to guess Debian package names
+    Extend common.apt_get_install by trying to guess Debian package names
     of packages not included in rosdep
 
     @param pkgs: names of ros repositories
@@ -107,6 +107,18 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
 
 
 def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):
+    """
+    Copy test results from buildspace into workspace or create dummy.xml.
+
+    @param workspace: path the test results will copied into
+    @type  workspace: str
+    @param buildspace: path where the test results are stored
+    @type  buildspace: str
+    @param errors: error name in the dummy file (default None)
+    @type  errors: str
+    @param prefix: prefix in the dummy file (default dummy)
+    @type  prefix: str
+    """
     print "Preparing xml test results"
     try:
         os.makedirs(os.path.join(workspace, 'test_results'))
@@ -130,6 +142,14 @@ def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):
 
 
 def get_ros_env(setup_file):
+    """
+    Source the setup_file and return a dictionary of env vars
+
+    @param setup_file: path of file to source
+    @type  setup_file: str
+
+    @return type: dict
+    """
     res = os.environ
     print "Retrieve the ROS build environment by sourcing %s" % setup_file
     command = ['bash', '-c', 'source %s && env' % setup_file]
@@ -146,6 +166,21 @@ def get_ros_env(setup_file):
 
 
 def call_with_list(command, envir=None, verbose=True):
+    """
+    Call a shell command as list.
+
+    @param command: the command to call
+    @type  command: list
+    @param envir: mapping of env variables
+    @type  envir: dict
+    @param verbose: print all
+    @type  verbose: bool
+
+    @return param: command output
+    @return type: str
+
+    @raise type: BuildException
+    """
     print "Executing command '%s'" % ' '.join(command)
     helper = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True, env=envir)
     res = ""
@@ -170,12 +205,25 @@ def call_with_list(command, envir=None, verbose=True):
 
 
 def call(command, envir=None, verbose=True):
+    """
+    Call a shell command.
+
+    @param command: the command to call
+    @type  command: str
+    @param envir: mapping of env variables
+    @type  envir: dict
+    @param verbose: print all
+    @type  verbose: bool
+
+    @return param: command output
+    @return type: str
+    """
     return call_with_list(command.split(' '), envir, verbose)
 
 
 def output(message, decoration='*', blankline='a'):
     """
-    Outputs a message in a prominent way
+    Output a message in a prominent way
 
     @param message: text to print
     @type  message: str
@@ -386,6 +434,11 @@ def get_buildpipeline_configs(config_repo, server_name, user_name):
 
 
 class BuildException(Exception):
+    """
+    Build specific exception
+    """
+
     def __init__(self, msg):
+        print msg
         self.msg = msg
         super(BuildException, self).__init__(msg)
