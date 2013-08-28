@@ -27,7 +27,7 @@ class CobPipe(object):
 
     def load_config_from_dict(self, pipeline_config):
         """
-        Sets up a pipeline object derived from the given dictionary
+        Set up a pipeline object derived from the given dictionary
 
         @param pipeline_config: pipeline configuration
         @type  pipeline_config: dict
@@ -44,8 +44,8 @@ class CobPipe(object):
 
     def load_config_from_url(self, pipeline_repos_owner, server_name, user_name):
         """
-        Gets the buildpipeline configuration by the given server and user name
-        and sets up the pipeline object
+        Get the buildpipeline configuration by the given server and user name
+        and set up the pipeline object
 
         @param pipeline_repos_owner: address of config repo
         @type  pipeline_repos_owner: str
@@ -61,7 +61,7 @@ class CobPipe(object):
 
     def get_jobs_to_create(self):
         """
-        Gets a dict of all job types to create and the repositories which will
+        Get a dict of all job types to create and the repositories which will
         use them
 
         @return type: dict
@@ -79,7 +79,7 @@ class CobPipe(object):
 
     def get_custom_dependencies(self, polled_only=False):
         """
-        Gets all dependencies defined in the pipeline and their corresponding
+        Get all dependencies defined in the pipeline and their corresponding
         repositories
 
         @param polled_only: if set only polled dependencies will be considered
