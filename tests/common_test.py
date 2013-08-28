@@ -3,7 +3,7 @@
 import unittest
 import os
 import sys
-from mock import MagicMock
+from mock import MagicMock, patch
 from jenkins_setup import common
 
 
@@ -18,48 +18,42 @@ class Common_Test(unittest.TestCase):
         common.append_pymodules_if_needed()
         self.assertTrue(os.path.abspath("/usr/lib/pymodules/python2.7") in sys.path)
 
-    def test__apt_get_update__check_correct_call_calling(self):
-        real = common
-        real.call = MagicMock()
-        real.apt_get_update()
-        real.call.assert_called_once_with("apt-get update")
+    @patch('jenkins_setup.common.call')
+    def test__apt_get_update__check_correct_call_calling(self, mock_call):
+        common.apt_get_update()
+        mock_call.assert_called_once_with("apt-get update")
 
-    def test__apt_get_update__input_sudo_true__check_correct_call_calling(self):
-        real = common
-        real.call = MagicMock()
-        real.apt_get_update(True)
-        real.call.assert_called_once_with("sudo apt-get update")
+    @patch('jenkins_setup.common.call')
+    def test__apt_get_update__input_sudo_true__check_correct_call_calling(self, mock_call):
+        common.apt_get_update(True)
+        mock_call.assert_called_once_with("sudo apt-get update")
 
+    # different way of implementing the patch
     def test__apt_get_install__input_list__check_correct_call_calling(self):
-        real = common
-        real.call = MagicMock()
-        real.apt_get_install(['test-package'])
-        real.call.assert_called_once_with("apt-get install --yes test-package")
+        with patch('jenkins_setup.common.call') as mock_call:
+            common.apt_get_install(['test-package'])
+            mock_call.assert_called_once_with("apt-get install --yes test-package")
 
-    def test__apt_get_install__input_with_sudo__check_correct_call_calling(self):
-        real = common
-        real.call = MagicMock()
-        real.apt_get_install(['test-package'], sudo=True)
-        real.call.assert_called_once_with("sudo apt-get install --yes test-package")
+    @patch('jenkins_setup.common.call')
+    def test__apt_get_install__input_with_sudo__check_correct_call_calling(self, mock_call):
+        common.apt_get_install(['test-package'], sudo=True)
+        mock_call.assert_called_once_with("sudo apt-get install --yes test-package")
 
-    def test__apt_get_install__input_empty_list__check_correct_call_calling(self):
-        real = common
-        real.call = MagicMock()
-        real.apt_get_install([])
-        self.assertEqual(real.call.call_count, 0)
+    @patch('jenkins_setup.common.call')
+    def test__apt_get_install__input_empty_list__check_correct_call_calling(self, mock_call):
+        common.apt_get_install([])
+        self.assertEqual(mock_call.call_count, 0)
 
-    def test__apt_get_install__input_with_rosdep__check_(self):
-        real_common = common
-        real_common.call = MagicMock()
+    @patch('jenkins_setup.common.call')
+    def test__apt_get_install__input_with_rosdep__check_(self, mock_call):
         mock_rosdep = MagicMock()
-        real_common.apt_get_install(['test-package'], rosdep=mock_rosdep)
+        common.apt_get_install(['test-package'], rosdep=mock_rosdep)
         mock_rosdep.to_aptlist.assert_called_once_with(['test-package'])
 
-    def test__call__input__check_call_with_list_call(self):
-        real_common = common
-        real_common.call_with_list = MagicMock()
-        real_common.call("test command")
-        real_common.call_with_list.assert_called_once_with(['test', 'command'], None, True)
+    @patch('jenkins_setup.common.call_with_list')
+    def test__call__input_command_string__check_call_with_list_call(self, mock_call_with_list):
+        common.call("test command")
+        mock_call_with_list.assert_called_with(['test', 'command'], None, True)
 
     def test__get_all_packages__input_source_folder_str__return_package_dict(self):
         pass

@@ -371,6 +371,9 @@ def build_local_dependency_graph(catkin_packages, manifest_packages):
 
 
 def reorder_paths(order, packages, paths):
+    """
+    Reorder paths
+    """
     #we want to make sure that we can still associate packages with paths
     new_paths = []
     for package in order:
@@ -381,6 +384,12 @@ def reorder_paths(order, packages, paths):
 
 
 def get_dependency_build_order(depends):
+    """
+    Get order how to build dependencies
+
+    @param depends: packages and their dependencies
+    @type  depends: dict
+    """
     import networkx as nx
     graph = nx.DiGraph()
 
@@ -395,7 +404,19 @@ def get_dependency_build_order(depends):
 
 
 def get_dependencies(source_folder, build_depends=True, test_depends=True):
-    # get the dependencies
+    """
+    Get the dependencies of all packages in the given folder.
+
+    @param source_folder: path of folder to search packages in
+    @type  source_folder: str
+    @param build_depends: get build dependencies
+    @type  build_depends: bool
+    @param test_depends: get test dependencies
+    @type  test_depends: bool
+
+    @return param: build and/or test dependencies
+    @return type:  list
+    """
     print "Get the dependencies of source folder %s" % source_folder
     append_pymodules_if_needed()
     from catkin_pkg import packages
