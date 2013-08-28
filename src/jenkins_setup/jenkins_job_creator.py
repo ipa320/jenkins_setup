@@ -300,7 +300,7 @@ class JenkinsJob(object):
             return ''
         elif threshold_name == '':
             raise Exception('No treshold for postbuildtrigger given')
-        elif threshold_name not in ['SUCCESS', 'UNSTABLE', 'FAILURE']:  # TODO check tresholds
+        elif threshold_name not in ['SUCCESS', 'UNSTABLE', 'FAILURE']:
             raise Exception("Threshold argument invalid")
 
         postbuildtrigger = self.job_config_params['postbuildtrigger'].replace('@(CHILD_PROJECTS)',
@@ -814,8 +814,6 @@ class TestJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
-        #self.set_junit_testresults_param()  TODO
-
         matrix_filter = self.generate_matrix_filter(self.get_prio_subset_filter())
 
         # set matrix
@@ -854,7 +852,7 @@ class NongraphicsTestJob(TestJob):
         # email
         self.set_mailer_param('Non-Graphics Test')
 
-        # set execute shell TODO
+        # set execute shell
         shell_script = self.get_shell_script('test')
         self.set_shell_param(shell_script)
 
@@ -893,7 +891,7 @@ class GraphicsTestJob(TestJob):
         # email
         self.set_mailer_param('Graphics Test')
 
-        # set execute shell TODO
+        # set execute shell
         shell_script = self.get_shell_script('test')
         self.set_shell_param(shell_script)
 
@@ -930,7 +928,7 @@ class HardwareBuildJob(JenkinsJob):
         # email
         self.set_mailer_param('Hardware Build')
 
-        # set execute shell TODO
+        # set execute shell
 
         # set pipeline trigger
         self.set_pipelinetrigger_param(['automatic_hw_test'])
@@ -959,8 +957,6 @@ class HardwareJob(JenkinsJob):
         """
 
         self.params['PROJECT'] = 'project'  # TODO 'matrix-project'
-
-        #self.set_junit_testresults_param()  # TODO
 
     def get_hardware_matrix_entries(self):
         """
@@ -1100,5 +1096,3 @@ class CleanUpJob(JenkinsJob):
         self.params['PROJECT'] = 'project'
 
         self.params['NODE_LABEL'] = 'clean_up'
-
-# TODO classes: test jobs, hardware jobs, release
