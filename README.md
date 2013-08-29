@@ -3,8 +3,7 @@ jenkins\_setup
 
 This repository contains the code (config, src and script files) to set up and run a cob-Jenkins CI server using the Cob-Pipeline plugin. Below the setup process is described in detail.
 
-Table of Contents
------------------
+###Table of Contents
 * [Software structure](#software-structure)
 * [Pipeline structure](#pipeline-structure)
 * [Setup](#setup)
@@ -31,11 +30,13 @@ For the usage of the Cob-Pipeline three parts are necessary:
 
 Pipeline structure
 ==================
+The pipeline is made of multiple, differing Jenkins jobs which monitor
+the source code or build and test it in various envirements.
+**TODO**
 
 
-
-SETUP
-=====
+Installation and Setup
+======================
 Description how to set up the Jenkins master and its slaves. This manual is made and tested for Ubuntu 12.04 Precise. Especially for older versions there might occur some problems.
 
 Master:
