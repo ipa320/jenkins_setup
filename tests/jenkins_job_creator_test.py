@@ -282,6 +282,9 @@ class JenkinsJobTest(unittest.TestCase):
     def test__set_jointrigger_param__input_no_job_type_list_and_empty_parameterized_trigger_str__raise_exception(self):
         self.assertRaises(Exception, self.jj.set_jointrigger_param, [], parameterized_trigger='')
 
+    def test__set_jointrigger_param__input_job_type_list_and_empty_parameterized_trigger_str__raise_exception(self):
+        self.assertRaises(Exception, self.jj.set_jointrigger_param, self.job_type_test_list, parameterized_trigger='')
+
     def test__set_jointrigger_param__input_no_job_type_list_and_no_parameterized_trigger_str__raise_exception(self):
         self.assertRaises(Exception, self.jj.set_jointrigger_param, [], parameterized_trigger=None)
 
