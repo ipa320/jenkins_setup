@@ -440,6 +440,65 @@ class JenkinsJobTest(unittest.TestCase):
  <matrixTriggerMode>ONLY_CONFIGURATIONS</matrixTriggerMode>\
  </hudson.plugins.emailext.ExtendedEmailPublisher>')
 
+    def test__set_mailer_param__check_set_param2(self):
+        self.jj.set_mailer_param('Priority Build')
+        self.test_pipe_inst.committer_email_enabled = True
+        self.assertEqual(self.jj.params['MAILER'], '<hudson.plugins.emailext.ExtendedEmailPublisher>\
+ <recipientList>test@ipa.fhg.de</recipientList>\
+ <configuredTriggers>\
+ <hudson.plugins.emailext.plugins.trigger.UnstableTrigger>\
+ <email>\
+ <recipientList></recipientList>\
+ <subject>$PROJECT_DEFAULT_SUBJECT</subject>\
+ <body>$PROJECT_DEFAULT_CONTENT</body>\
+ <sendToDevelopers>true</sendToDevelopers>\
+ <sendToRequester>false</sendToRequester>\
+ <includeCulprits>false</includeCulprits>\
+ <sendToRecipientList>true</sendToRecipientList>\
+ <attachmentsPattern></attachmentsPattern>\
+ <attachBuildLog>false</attachBuildLog>\
+ <replyTo></replyTo>\
+ </email>\
+ </hudson.plugins.emailext.plugins.trigger.UnstableTrigger>\
+ <hudson.plugins.emailext.plugins.trigger.FailureTrigger>\
+ <email>\
+ <recipientList></recipientList>\
+ <subject>$PROJECT_DEFAULT_SUBJECT</subject>\
+ <body>$PROJECT_DEFAULT_CONTENT</body>\
+ <sendToDevelopers>true</sendToDevelopers>\
+ <sendToRequester>false</sendToRequester>\
+ <includeCulprits>false</includeCulprits>\
+ <sendToRecipientList>true</sendToRecipientList>\
+ <attachmentsPattern></attachmentsPattern>\
+ <attachBuildLog>false</attachBuildLog>\
+ <replyTo></replyTo>\
+ </email>\
+ </hudson.plugins.emailext.plugins.trigger.FailureTrigger>\
+ <hudson.plugins.emailext.plugins.trigger.FixedTrigger>\
+ <email>\
+ <recipientList></recipientList>\
+ <subject>$PROJECT_DEFAULT_SUBJECT</subject>\
+ <body>$PROJECT_DEFAULT_CONTENT</body>\
+ <sendToDevelopers>true</sendToDevelopers>\
+ <sendToRequester>false</sendToRequester>\
+ <includeCulprits>false</includeCulprits>\
+ <sendToRecipientList>true</sendToRecipientList>\
+ <attachmentsPattern></attachmentsPattern>\
+ <attachBuildLog>false</attachBuildLog>\
+ <replyTo></replyTo>\
+ </email>\
+ </hudson.plugins.emailext.plugins.trigger.FixedTrigger>\
+ </configuredTriggers>\
+ <contentType>text/html</contentType>\
+ <defaultSubject>$BUILD_STATUS: Priority Build of ${ENV, var="repository"};  ${ENV, var="ros_distro"}, ${ENV, var="ubuntu_distro"}, ${ENV, var="arch"} - Build # $BUILD_NUMBER!</defaultSubject>\
+ <defaultContent>${JELLY_SCRIPT,template=&quot;html-with-health-builds-tests&quot;}</defaultContent>\
+ <attachmentsPattern></attachmentsPattern>\
+ <presendScript></presendScript>\
+ <attachBuildLog>true</attachBuildLog>\
+ <replyTo></replyTo>\
+ <matrixTriggerMode>ONLY_CONFIGURATIONS</matrixTriggerMode>\
+ </hudson.plugins.emailext.ExtendedEmailPublisher>')
+
     def test__set_junit_testresults__check_set_param(self):
         self.jj.set_junit_testresults_param()
         self.assertEqual(self.jj.params['JUNIT_TESTRESULTS'], '<hudson.tasks.junit.JUnitResultArchiver> <testResults>test_results/*.xml</testResults> <keepLongStdio>false</keepLongStdio> <testDataPublishers/> </hudson.tasks.junit.JUnitResultArchiver>')
