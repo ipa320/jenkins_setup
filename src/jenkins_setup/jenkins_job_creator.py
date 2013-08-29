@@ -29,6 +29,7 @@ class JenkinsJob(object):
         self.job_type = None
         self.poll = None
         self.repo_list = None
+        self.tarball_location = ""
 
     def schedule_job(self):
         """
