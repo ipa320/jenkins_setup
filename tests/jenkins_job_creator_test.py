@@ -444,8 +444,8 @@ class JenkinsJobTest(unittest.TestCase):
  </hudson.plugins.emailext.ExtendedEmailPublisher>')
 
     def test__set_mailer_param__check_set_param2(self):
+        self.jj.pipe_inst.committer_email_enabled = True
         self.jj.set_mailer_param('Priority Build')
-        self.test_pipe_inst.committer_email_enabled = True
         self.assertEqual(self.jj.params['MAILER'], '<hudson.plugins.emailext.ExtendedEmailPublisher>\
  <recipientList>test@ipa.fhg.de</recipientList>\
  <configuredTriggers>\
