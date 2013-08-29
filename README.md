@@ -117,7 +117,7 @@ Configure Jenkins as described below before you use the plugin.
 
 ___
 
-###Set up Jenkins configurations
+###Configure Jenkins
 To manage your Jenkins server, go to
 \<YOUR_JENKINS_SERVER_IP\>:8080/manage or follow "Manage Jenkins" in the sidebar.
 From here you can configure everything.
