@@ -5,12 +5,21 @@ This repository contains the code (config, src and script files) to set up and r
 
 Table of Contents
 -----------------
+* [Software structure](#software-structure)
 * [Pipeline structure](#pipeline-structure)
 * [Setup](#setup)
     * [Master](#master)
     * [Tarball Server](#tarball-server)
     * [Slaves](#slaves)
     * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation)
+
+
+Software structure
+==================
+For the usage of the Cob-Pipeline three parts are necessary:
+* Cob-Pipeline-Plugin in Jenkins
+* jenkins\_setup repository stored on the Jenkins server
+* jenkins\_config repository 
 
 
 Pipeline structure
@@ -130,14 +139,14 @@ Enter here the URL of your Jenkins server and the admins email address.
 Go to the ***Cob Pipeline Configuration*** section.
 * **Jenkins Admin Login/Password**:<br/>
     This is the user you configured before in the [Configure Security
-part](https://github.com/ipa320/jenkins_setup/blob/master/README.md#configure-security)
-with all the permissions. Enter its login name and password.
+    part](https://github.com/ipa320/jenkins_setup/blob/master/README.md#configure-security)
+    with all the permissions. Enter its login name and password.
 * **Configuration Folder**:<br/>
     Enter the path of the [Cob-Pipeline configuration
-folder](https://github.com/ipa320/jenkins_setup/blob/master/README.md#cob-pipeline-configuration-folder).
+    folder](https://github.com/ipa320/jenkins_setup/blob/master/README.md#cob-pipeline-configuration-folder).
 * **Tarball Location**:<br/>
     Enter the [location where the tarballs are
-stored](https://github.com/ipa320/jenkins_setup/blob/master/README.md#tarball-server).
+    stored](https://github.com/ipa320/jenkins_setup/blob/master/README.md#tarball-server).
 * **GitHub User Login/Password**:<br/>
     This is the user that has read-permission to all the repositories
     you want to be tested. It has also write-permission to your
@@ -153,10 +162,11 @@ stored](https://github.com/ipa320/jenkins_setup/blob/master/README.md#tarball-se
     URL where the ROS ```targets.yaml``` is stored, defining the Ubuntu
     target platforms for each ROS Version, [e.g.]
     (https://raw.github.com/ros/rosdistro/master/releases/targets.yaml).
-**TODO**
+
+When you fill out the field, the values will be validated in the
+background.
 
 #####Mailer
-**TODO**
 ######Default Subject
 For example: ```$BUILD_STATUS: $PROJECT_NAME - Build # $BUILD_NUMBER!```
 A complete list of tokens can be found at the help of the last entry
@@ -352,6 +362,7 @@ mount -a
 **TODO**
 * github.com to known_hosts
 * upload ssh key
+
 ___
 
 
