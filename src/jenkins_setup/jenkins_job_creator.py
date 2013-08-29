@@ -5,6 +5,7 @@ import socket
 import pkg_resources
 import yaml
 import re
+from jenkins import JenkinsException
 
 
 class JenkinsJob(object):
@@ -41,14 +42,14 @@ class JenkinsJob(object):
             try:
                 self.jenkins_instance.reconfig_job(self.job_name, self.job_config)
                 return "Reconfigured job %s" % self.job_name
-            except Exception as ex:
+            except JenkinsException as ex:
                 print ex
                 return 'Reconfiguration of %s failed: %s' % (self.job_name, ex)
         else:
             try:
                 self.jenkins_instance.create_job(self.job_name, self.job_config)
                 return "Created job %s" % self.job_name
-            except Exception as ex:
+            except JenkinsException as ex:
                 print ex
                 return 'Creation of %s failed: %s' % (self.job_name, ex)
 
@@ -126,7 +127,7 @@ class JenkinsJob(object):
             if "@(%s)" % key not in self.job_config:
                 raise KeyError("Parameter %s could not be replaced, because it is not existent" % key)
             self.job_config = self.job_config.replace("@(%s)" % key, value)
-        not_replaced_keys = re.findall('@\(([A-Z0-9_]+)\)', self.job_config)
+        not_replaced_keys = re.findall(r'@\(([A-Z0-9_]+)\)', self.job_config)
         if not_replaced_keys != []:
             raise KeyError("The keys %s were not replaced, because the parameters where missing" % (str(not_replaced_keys)))
 
