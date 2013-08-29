@@ -1,12 +1,12 @@
 jenkins\_setup
 =============
 
-This repository contains the code (config, src and script files) to set up and run a cob-Jenkins CI server using the Cob-Pipeline plugin. Below the setup process is described in detail.
+This repository contains the code (config, src and script files) to set up and run a Cob-[Jenkins CI server](http://jenkins-ci.org) using the Cob-Pipeline-Plugin. Below the setup process is described in detail.
 
 ###Table of Contents
 * [Software structure](#software-structure)
 * [Pipeline structure](#pipeline-structure)
-* [Setup](#setup)
+* [Installation and Setup](#installation-and-setup)
     * [Master](#master)
     * [Tarball Server](#tarball-server)
     * [Slaves](#slaves)
@@ -42,7 +42,8 @@ Description how to set up the Jenkins master and its slaves. This manual is made
 Master:
 -------
 
-###Install Jenkins CI
+###Installation of software on Master node
+####Install Jenkins CI
 To install Jenkins follow the [official website](http://jenkins-ci.org/).
 To add the official package source on Debian/Ubuntu follow
 [this description](http://pkg.jenkins-ci.org/debian/).
@@ -52,7 +53,31 @@ your browser on \<YOUR_JENKINS_SERVER_IP\>:8080.
 *!!!Be careful with updating your Jenkins server. If you do, check if
 everything works still properly!!!*
 
-###Install required Jenkins plugins
+####Install Git:
+```bash
+apt-get install git
+```
+
+####Install ROS:
+Install [groovy](http://www.ros.org/wiki/groovy/Installation/Ubuntu) or
+[fuerte](http://www.ros.org/wiki/fuerte/Installation/Ubuntu) as described.
+
+####Install and Setup an **apt-cacher** (optional):
+During the later build process a lot packages will be installed. If
+the build jobs run frequently, the network traffic increases quite
+much. To limit the amount of packages to be downloaded from the
+internet and speed up the installation process a apt-cacher is
+pretty useful. You can for example use the
+[apt-cacher-ng](http://www.unix-ag.uni-kl.de/~bloch/acng/).
+To use the apt-cacher during the build process set up an apt-cacher and
+edit the [install_basics.sh script](./scripts/install_basics.sh) as descripted
+[here](./README.md#adapt-apt-cacher-address).
+
+You can also use the apt-cacher of pbuilder. Then you should **NOT** do
+[this](https://github.com/ipa320/jenkins_setup/blob/master/README.md#dont-use-pbuilders-aptcache).
+
+###Installation of plugins in Jenkins
+####Install required Jenkins plugins
 Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/available) and install the following plugins:
 * **Parameterized Trigger Plugin** ([website](http://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin))<br/>
     Is used to transfer build parameters from one job to the next.
@@ -79,7 +104,7 @@ Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/avai
     protocol.
 * **TODO**
 
-###Install the Cob-Pipeline Plugin
+####Install the Cob-Pipeline Plugin
 Download the plugin (\*.hpi file) from
 [here](https://github.com/fmw-jk/cob-pipeline-plugin/releases) and place it
 in ```<JENKINS_HOME>/plugins/```. After you restarted Jenkins the plugin
@@ -89,31 +114,6 @@ present in the sidebar (see picture).
 ![sidebar](./sidebar.png "sidebar with cob-pipeline-plugin")
 
 Configure Jenkins as described below before you use the plugin.
-
-###Install additional software
-####Install Git:
-```bash
-apt-get install git
-```
-
-####Install ROS:
-Install [groovy](http://www.ros.org/wiki/groovy/Installation/Ubuntu) or
-[fuerte](http://www.ros.org/wiki/fuerte/Installation/Ubuntu) as described.
-
-####Setup an **apt-cacher** (optional):
-During the later build process a lot packages will be installed. If
-the build jobs run frequently, the network traffic increases quite
-much. To limit the amount of packages to be downloaded from the
-internet and speed up the installation process a apt-cacher is
-pretty useful. You can for example use the
-[apt-cacher-ng](http://www.unix-ag.uni-kl.de/~bloch/acng/).
-To use the apt-cacher during the build process set up an apt-cacher and
-edit the [install_basics.sh script](./scripts/install_basics.sh) as descripted
-[here](./README.md#adapt-apt-cacher-address).
-
-You can also use the apt-cacher of pbuilder. Then you should **NOT** do
-[this](https://github.com/ipa320/jenkins_setup/blob/master/README.md#dont-use-pbuilders-aptcache).
-
 
 ___
 
@@ -171,7 +171,7 @@ Go to the ***Cob Pipeline Configuration*** section.
     target platforms for each ROS Version, [e.g.]
     (https://raw.github.com/ros/rosdistro/master/releases/targets.yaml).
 
-When you fill out the field, the values will be validated in the
+When you fill out the fields, the values will be validated in the
 background.
 
 #####Mailer
