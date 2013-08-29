@@ -3,6 +3,20 @@ jenkins\_setup
 
 This repository contains the code (config, src and script files) to set up and run a cob-Jenkins CI server using the Cob-Pipeline plugin. Below the setup process is described in detail.
 
+Table of Contents
+-----------------
+* [Pipeline structure](#pipeline-structure)
+* [Setup](#setup)
+    * [Master](#master)
+    * [Tarball Server](#tarball-server)
+    * [Slaves](#slaves)
+    * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation)
+
+
+Pipeline structure
+==================
+
+
 
 SETUP
 =====
@@ -23,29 +37,29 @@ everything works still properly!!!*
 
 ###Install required Jenkins plugins
 Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/available) and install the following plugins:
-* Parameterized Trigger Plugin ([website](http://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin))
-    * Is used to transfer build parameters from one job to the next.
-      Here it is used to commit the repository to build or test.
-* Build Pipeline Plugin
-  ([website](http://code.google.com/p/build-pipeline-plugin))
-    * Provides a view where all pipeline jobs and their dependencies are
-      shown. It also gives the opportunity to trigger the hardware test
-      jobs manually.
-* Mailer ([website](http://wiki.jenkins-ci.org/display/JENKINS/Mailer))
-    * Generates the email content depending on the build/test results
-      and sends the emails.
-* View Job Filters
-  ([website](http://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters))
-    * Provides comprehensive possibilities to filter the jobs that can
-      be seen by the specific user.
+* **Parameterized Trigger Plugin** ([website](http://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin))<br/>
+    Is used to transfer build parameters from one job to the next.
+    Here it is used to commit the repository to build or test.
+* **Build Pipeline Plugin**
+  ([website](http://code.google.com/p/build-pipeline-plugin))<br/>
+    Provides a view where all pipeline jobs and their dependencies are
+    shown. It also gives the opportunity to trigger the hardware test
+    jobs manually.
+* **Mailer** ([website](http://wiki.jenkins-ci.org/display/JENKINS/Mailer))<br/>
+    Generates the email content depending on the build/test results
+    and sends the emails.
+* **View Job Filters**
+  ([website](http://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters))<br/>
+    Provides comprehensive possibilities to filter the jobs that can
+    be seen by the specific user.
 
-* Matrix Reloaded Plugin
-  ([website](http://wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin))
-    * To start one or more entries of a matrix job.
+* **Matrix Reloaded Plugin**
+  ([website](http://wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin))<br/>
+    To start one or more entries of a matrix job.
 * *Github OAuth Plugin* (not required but maybe useful)
-  ([website](http://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin))
-    * Authentication of users is delegated to Github using the OAuth
-      protocol.
+  ([website](http://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin))<br/>
+    Authentication of users is delegated to Github using the OAuth
+    protocol.
 * **TODO**
 
 ###Install the Cob-Pipeline Plugin
@@ -341,8 +355,10 @@ mount -a
 ___
 
 
-Generate pipeline manually (deprecated):
-===============================
+Manual Pipeline Generation:
+===========================
+(deprecated)
+------------
 
 1. Checkout this repository:
 ----------------------------
