@@ -114,28 +114,31 @@ Enter here the URL of your Jenkins server and the admins email address.
 
 #####Cob-Pipeline Plugin
 Go to the ***Cob Pipeline Configuration*** section.
-* **Jenkins Admin Login/Password**:
+* **Jenkins Admin Login/Password**:<br/>
     This is the user you configured before in the [Configure Security
 part](https://github.com/ipa320/jenkins_setup/blob/master/README.md#configure-security)
 with all the permissions. Enter its login name and password.
-* **Configuration Folder**:
+* **Configuration Folder**:<br/>
     Enter the path of the [Cob-Pipeline configuration
 folder](https://github.com/ipa320/jenkins_setup/blob/master/README.md#cob-pipeline-configuration-folder).
-* **Tarball Location**:
+* **Tarball Location**:<br/>
     Enter the [location where the tarballs are
 stored](https://github.com/ipa320/jenkins_setup/blob/master/README.md#tarball-server).
-* **GitHub User Login/Password**:
+* **GitHub User Login/Password**:<br/>
     This is the user that has read-permission to all the repositories
     you want to be tested. It has also write-permission to your
     jenkins-config repository.
-* **Pipeline Repositories Owner/Fork**:
-    TODO
-* **ROS Releases**:
+* **Pipeline Repositories Owner/Fork**:<br/>
+    GitHub user that ownes the jenkins\_setup and the jenkins\_config
+    repository.
+* **ROS Releases**:<br/>
     ROS versions that should be supported by your build/test pipeline.
-* **Robots**:
-    TODO
-* **Target Platform Url**:
-    TODO
+* **Robots**:<br/>
+    Nodes which can be chosen for Hardware Build/Test jobs.
+* **Target Platform Url**:<br/>
+    URL where the ROS ```targets.yaml``` is stored, defining the Ubuntu
+    target platforms for each ROS Version, [e.g.]
+    (https://raw.github.com/ros/rosdistro/master/releases/targets.yaml).
 **TODO**
 
 #####Mailer
