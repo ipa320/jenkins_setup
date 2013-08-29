@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 
 import urllib2
 import contextlib
@@ -14,12 +14,21 @@ import time
 
 
 def append_pymodules_if_needed():
+    """
+    Add pymodules to path if not already included.
+    """
     #TODO: This is a hack, in the chroot, the default python path does not
     if not os.path.abspath("/usr/lib/pymodules/python2.7") in sys.path:
         sys.path.append("/usr/lib/pymodules/python2.7")
 
 
 def apt_get_update(sudo=False):
+    """
+    Update apt-get.
+
+    @param sudo: call command with sudo (default False)
+    @type  sudo: bool
+    """
     if not sudo:
         call("apt-get update")
     else:
@@ -27,6 +36,16 @@ def apt_get_update(sudo=False):
 
 
 def apt_get_install(pkgs, rosdep=None, sudo=False):
+    """
+    Install the corresponding apt packages from a list of ROS repositories.
+
+    @param pkgs: names of ros repositories
+    @type  pkgs: list
+    @param rosdep: rosdep resolver object (default None)
+    @type  rosdep: rosdep.RosDepResolver
+    @param sudo: execute command as super-user (default False)
+    @type  sudo: bool
+    """
     cmd = "apt-get install --yes "
     if sudo:
         cmd = "sudo " + cmd
@@ -42,19 +61,18 @@ def apt_get_install(pkgs, rosdep=None, sudo=False):
 
 def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
     """
-    Extends common.apt_get_install by trying to guess Debian package names
+    Extend common.apt_get_install by trying to guess Debian package names
     of packages not included in rosdep
 
     @param pkgs: names of ros repositories
     @type  pkgs: list
     @param ros_distro: name of ros release, e.g. fuerte
     @type  ros_distro: str
-    @param rosdep: rosdep resolver object
+    @param rosdep: rosdep resolver object (default None)
     @type  rosdep: rosdep.RosDepResolver
-    @param sudo: execute command as super-user
+    @param sudo: execute command as super-user (default False)
     @type  sudo: bool
     """
-
     rosdep_pkgs = []
     aptget_pkgs = []
     unavailable_pkgs = []
@@ -89,6 +107,18 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
 
 
 def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):
+    """
+    Copy test results from buildspace into workspace or create dummy.xml.
+
+    @param workspace: path the test results will copied into
+    @type  workspace: str
+    @param buildspace: path where the test results are stored
+    @type  buildspace: str
+    @param errors: error name in the dummy file (default None)
+    @type  errors: str
+    @param prefix: prefix in the dummy file (default dummy)
+    @type  prefix: str
+    """
     print "Preparing xml test results"
     try:
         os.makedirs(os.path.join(workspace, 'test_results'))
@@ -112,6 +142,14 @@ def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):
 
 
 def get_ros_env(setup_file):
+    """
+    Source the setup_file and return a dictionary of env vars
+
+    @param setup_file: path of file to source
+    @type  setup_file: str
+
+    @return type: dict
+    """
     res = os.environ
     print "Retrieve the ROS build environment by sourcing %s" % setup_file
     command = ['bash', '-c', 'source %s && env' % setup_file]
@@ -122,42 +160,70 @@ def get_ros_env(setup_file):
     proc.communicate()
     if proc.returncode != 0:
         msg = "Failed to source %s" % setup_file
-        print "/!\  %s" % msg
+        print r"/!\  %s" % msg
         raise BuildException(msg)
     return res
 
 
 def call_with_list(command, envir=None, verbose=True):
+    """
+    Call a shell command as list.
+
+    @param command: the command to call
+    @type  command: list
+    @param envir: mapping of env variables
+    @type  envir: dict
+    @param verbose: print all
+    @type  verbose: bool
+
+    @return param: command output
+    @return type: str
+
+    @raise type: BuildException
+    """
     print "Executing command '%s'" % ' '.join(command)
     helper = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True, env=envir)
     res = ""
     while helper.poll() is None:
-        output = helper.stdout.readline()
+        output_ = helper.stdout.readline()
         res += output
         if verbose:
-            sys.stdout.write(output)
+            sys.stdout.write(output_)
         time.sleep(0.1)  # TODO What is a good value here? Without this delay it's busy looping
 
     #make sure to capture the last line(s)
-    output = helper.stdout.read()
-    res += output
+    output_ = helper.stdout.read()
+    res += output_
     if verbose:
-        print output
+        print output_
 
     if helper.returncode != 0:
         msg = "Failed to execute command '%s'" % command
-        print "/!\  %s" % msg
+        print r"/!\  %s" % msg
         raise BuildException(msg)
     return res
 
 
 def call(command, envir=None, verbose=True):
+    """
+    Call a shell command.
+
+    @param command: the command to call
+    @type  command: str
+    @param envir: mapping of env variables
+    @type  envir: dict
+    @param verbose: print all
+    @type  verbose: bool
+
+    @return param: command output
+    @return type: str
+    """
     return call_with_list(command.split(' '), envir, verbose)
 
 
 def output(message, decoration='*', blankline='a'):
     """
-    Outputs a message in a prominent way
+    Output a message in a prominent way
 
     @param message: text to print
     @type  message: str
@@ -232,14 +298,30 @@ def get_nonlocal_dependencies(catkin_packages, stacks, manifest_packages, build_
 
 def get_dry_packages(source_folder):
     """
+    Get all dry stacks and packages in source folder
+
+    @param source_folder: path to search
+    @type  source_folder: str
+
+    @return param: list of stacks and list of packages
+    @return type: tuple
     """
 
     catkin_packages, stacks, manifest_packages = get_all_packages(source_folder)
     return (stacks, manifest_packages)
 
 
-def get_all_packages(source_folder, filter=True):
+def get_all_packages(source_folder, filter_=True):
     """
+    Get all packages (wet and dry)
+
+    @param source_folder: path to search
+    @type  source_folder: str
+    @param filter_: filter out dry stacks/packages if also wet
+    @type filter_: bool
+
+    @return param: list of catkin packages, dry stacks and dry packages
+    @return type: tuple
     """
     import rospkg
 
@@ -253,7 +335,7 @@ def get_all_packages(source_folder, filter=True):
 
     # if repo has package.xml and stack.xml/manifest.xml
     # remove stack/manifest entries
-    if filter:
+    if filter_:
         for name, path in catkin_packages.iteritems():
             if name in stacks:
                 del stacks[name]
@@ -273,22 +355,25 @@ def build_local_dependency_graph(catkin_packages, manifest_packages):
     for name, path in catkin_packages.iteritems():
         depends[name] = []
         pkg_info = packages.parse_package(path)
-        for d in pkg_info.buildtool_depends + pkg_info.build_depends + pkg_info.test_depends + pkg_info.run_depends:
-            if d.name in catkin_packages and d.name != name:
-                depends[name].append(d.name)
+        for dep in pkg_info.buildtool_depends + pkg_info.build_depends + pkg_info.test_depends + pkg_info.run_depends:
+            if dep.name in catkin_packages and dep.name != name:
+                depends[name].append(dep.name)
 
     #Next, we build the manifest dep tree
     for name, path in manifest_packages.iteritems():
         manifest = rospkg.parse_manifest_file(path, rospkg.MANIFEST_FILE)
         depends[name] = []
-        for d in manifest.depends + manifest.rosdeps:
-            if (d.name in catkin_packages or d.name in manifest_packages) and d.name != name:
-                depends[name].append(str(d.name))
+        for dep in manifest.depends + manifest.rosdeps:
+            if (dep.name in catkin_packages or dep.name in manifest_packages) and dep.name != name:
+                depends[name].append(str(dep.name))
 
     return depends
 
 
 def reorder_paths(order, packages, paths):
+    """
+    Reorder paths
+    """
     #we want to make sure that we can still associate packages with paths
     new_paths = []
     for package in order:
@@ -299,6 +384,12 @@ def reorder_paths(order, packages, paths):
 
 
 def get_dependency_build_order(depends):
+    """
+    Get order how to build dependencies
+
+    @param depends: packages and their dependencies
+    @type  depends: dict
+    """
     import networkx as nx
     graph = nx.DiGraph()
 
@@ -313,7 +404,19 @@ def get_dependency_build_order(depends):
 
 
 def get_dependencies(source_folder, build_depends=True, test_depends=True):
-    # get the dependencies
+    """
+    Get the dependencies of all packages in the given folder.
+
+    @param source_folder: path of folder to search packages in
+    @type  source_folder: str
+    @param build_depends: get build dependencies
+    @type  build_depends: bool
+    @param test_depends: get test dependencies
+    @type  test_depends: bool
+
+    @return param: build and/or test dependencies
+    @return type:  list
+    """
     print "Get the dependencies of source folder %s" % source_folder
     append_pymodules_if_needed()
     from catkin_pkg import packages
@@ -327,13 +430,13 @@ def get_dependencies(source_folder, build_depends=True, test_depends=True):
     depends = []
     for name, pkg in pkgs.iteritems():
         if build_depends:
-            for d in pkg.build_depends + pkg.buildtool_depends:
-                if not d.name in depends and not d.name in local_packages:
-                    depends.append(d.name)
+            for dep in pkg.build_depends + pkg.buildtool_depends:
+                if not dep.name in depends and not dep.name in local_packages:
+                    depends.append(dep.name)
         if test_depends:
-            for d in pkg.test_depends + pkg.run_depends:
-                if not d.name in depends and not d.name in local_packages:
-                    depends.append(d.name)
+            for dep in pkg.test_depends + pkg.run_depends:
+                if not dep.name in depends and not dep.name in local_packages:
+                    depends.append(dep.name)
 
     return depends
 
@@ -349,7 +452,6 @@ def get_buildpipeline_configs(config_repo, server_name, user_name):
     :returns: return :dict: with configurations
     :raises: :exec:`Exception`
     """
-
     pipeconfig_url = config_repo.replace(".git", "")
     pipeconfig_url = pipeconfig_url.replace("https://github.com/", "https://raw.github.com/")
     pipeconfig_url = pipeconfig_url.replace("git://github.com/", "https://raw.github.com/")
@@ -358,8 +460,8 @@ def get_buildpipeline_configs(config_repo, server_name, user_name):
     print "Parsing buildpipeline configuration file for %s stored at:\n%s" % (user_name, pipeconfig_url)
     try:
         #f = urllib2.urlopen(pipeconfig_url)
-        with contextlib.closing(urllib2.urlopen(pipeconfig_url)) as f:
-            bpl_configs = yaml.load(f.read())
+        with contextlib.closing(urllib2.urlopen(pipeconfig_url)) as file:
+            bpl_configs = yaml.load(file.read())
     except Exception as ex:
         print "While downloading and parsing the buildpipeline configuration \
                file from\n%s\nthe following error occured:\n%s" % (pipeconfig_url, ex)
@@ -369,5 +471,11 @@ def get_buildpipeline_configs(config_repo, server_name, user_name):
 
 
 class BuildException(Exception):
+    """
+    Build specific exception
+    """
+
     def __init__(self, msg):
+        print msg
         self.msg = msg
+        super(BuildException, self).__init__(msg)
