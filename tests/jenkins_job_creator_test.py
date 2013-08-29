@@ -286,7 +286,7 @@ class JenkinsJobTest(unittest.TestCase):
         self.assertRaises(Exception, self.jj.set_jointrigger_param, [], parameterized_trigger=None)
 
     def test__set_jointrigger_param__input_unstable_behavior_not_bool__raise_exception(self):
-        self.assertRaises(Exception, self.jj.set_jointrigger_param, self.job_type_test_list, unstable_behavior_test='False', parameterized_trigger='TESTCONFIG')
+        self.assertRaises(Exception, self.jj.set_jointrigger_param, self.job_type_test_list, unstable_behavior='False', parameterized_trigger='TESTCONFIG')
 
     # Testing set_postbuildtrigger_param
     def test__set_postbuildtrigger_param__input_job_type_list_and_threshold_name_string__return_postbuildtrigger_config_string(self):
