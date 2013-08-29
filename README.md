@@ -17,9 +17,16 @@ Table of Contents
 Software structure
 ==================
 For the usage of the Cob-Pipeline three parts are necessary:
-* [Cob-Pipeline-Plugin](https://github.com/fmw-jk/cob-pipeline-plugin) in Jenkins
-* [jenkins\_setup repository](https://github.com/ipa320/jenkins_setup) stored on the Jenkins server
-* [jenkins\_config repository](https://github.com/ipa320/jenkins_config)
+* [Cob-Pipeline-Plugin](https://github.com/fmw-jk/cob-pipeline-plugin) for Jenkins<br/>
+    This plugin allows the user to configure its individual build/test
+    pipeline via the Jenkins web interface. Afterwards the automatic generation
+    of the pipeline can be triggered.
+* [jenkins\_setup repository](https://github.com/ipa320/jenkins_setup)<br/>
+    This repository has to be available on the Jenkins server. It
+    includes the code for the pipeline generation.
+* [jenkins\_config
+  repository](https://github.com/ipa320/jenkins_config)<br>
+    In this repository all the pipeline configurations are stored.
 
 
 Pipeline structure
