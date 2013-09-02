@@ -281,7 +281,7 @@ class JenkinsJob(object):
         else:
             jointrigger = jointrigger.replace('@(JOIN_UNSTABLE)', 'false')
 
-        if parameterized_trigger:
+        if parameterized_trigger is not None:
             if parameterized_trigger == '':
                 raise Exception("Parameterized trigger configuration string is empty")
             jointrigger = jointrigger.replace('@(PARAMETERIZED_TRIGGER)', parameterized_trigger)

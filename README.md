@@ -139,12 +139,12 @@ Create new view. **TODO**
 
 ####Configure Plugins
 #####Basic configurations
-**TODO**
 ######Jenkins Location
 Enter here the URL of your Jenkins server and the admins email address.
 
 #####Cob-Pipeline Plugin
 Go to the ***Cob Pipeline Configuration*** section.
+The following fields are all required for the use.
 * **Jenkins Admin Login/Password**:<br/>
     This is the user you configured before in the [Configure Security
     part](https://github.com/ipa320/jenkins_setup/blob/master/README.md#configure-security)
@@ -179,6 +179,7 @@ background.
 For example: ```$BUILD_STATUS: $PROJECT_NAME - Build # $BUILD_NUMBER!```
 A complete list of tokens can be found at the help of the last entry
 (Content Token Reference).
+Do also [move the mailer template](#mailer-template) as described.
 
 ___
 
@@ -213,7 +214,6 @@ ssh-keyscan -H github.com > <known_hosts_PATH>
 
 Furthermore the Jenkins masters SSH key itself has to be an authorized
 one.
-**TODO**
 
 ####jenkins\_config repository
 Clone the ```jenkins_config``` repository into the `jenkins-config` folder:
@@ -273,8 +273,9 @@ ___
 
 Slaves:
 -------
+###Configure the node
 
-###Sudo commands without password on slave
+####Sudo commands without password on slave
 To be able to run sudo commands without the need to enter the password each time, enter
 ```sudo visudo``` and add
 ```conf
@@ -282,7 +283,7 @@ To be able to run sudo commands without the need to enter the password each time
 ```
 at the end. Exit with `CTRL-X`. After re-login you won't need a password anymore.
 
-###SSH access without password to master (and the otherway around)
+####SSH access without password to master (and the otherway around)
 The slave has to be able the access the master via SSH without a password (and the
 otherway around). Enter the following command on each slave, login to the master and
 run the command again.
@@ -293,17 +294,17 @@ ssh-copy-id <slave>     # on master
 ```
 Go back with twice `CTRL-D`.
 
-###Pbuilder
+####Pbuilder
 Pbuilder is required! If not present, install it:
 ```bash
 apt-get install pbuilder devscripts
 ```
 
-####Performance improvement
+#####Performance improvement
 For the configurations a file called `~/.pbuilderrc` in the slaves `$HOME`-folder is
 needed (`/etc/pbuilder/pbuilderrc` is an alternative).
 
-#####Don't use pbuilders aptcache
+######Don't use pbuilders aptcache
 The aptcach of pbuilder is very useful but when the cache is getting
 bigger gradually it takes quite a while to open a chroot from the
 tarball. If you don't want to use it (for instance if you use an
@@ -314,7 +315,7 @@ external apt-cacher), add the following to
 APTCACHE=""
 ```
 
-#####Use ccache for build
+######Use ccache for build
 To use ccache inside the pbuilder add the following to `~/.pbuilderrc`:
 ```conf
 # ccache
@@ -327,7 +328,7 @@ BINDMOUNTS="${CCACHE_DIR}"
 ```
 
 
-#####Use multi-core zipping
+######Use multi-core zipping
 To speedup the zipping and unzipping of the chroot tarballs, install `pigz`:
 ```bash
 apt-get install pigz
@@ -339,7 +340,7 @@ And add the following to .pbuilderrc:
 COMPRESSPROG=pigz
 ```
 
-#####Mount memory to run the pbuilder chroots in it
+######Mount memory to run the pbuilder chroots in it
 Installations and builds inside the chroot need quite a lot write accesses. If you don't have a SSD installed, you can use the memory for this. Therefore you have to create a filesystem in your RAM, using `tmpfs` by adding the following to the slaves `/etc/fstab`:
 ```conf
 # pbuilder
@@ -359,18 +360,20 @@ Finally mount `tmpfs` by entering **(as root)**:
 mount -a
 ```
 
-###Slave setup on master
+###Create a new slave node in Jenkins (Slave setup on master)
 **TODO**
 * Labels
 * Configurations
 * Connect slave
 * Troubleshooting
 
-
 **TODO**
-* github.com to known_hosts
-* upload ssh key
-
+* github.com to known_hosts<br/>
+    If a git repository is cloned during the job build, github.com has
+    to be a known\_host on each slave the job runs.
+* upload ssh key<br/>
+    Furthermore has the public SSH-key of every slave to be uploaded to
+    the authorized GitHub-account.
 ___
 
 

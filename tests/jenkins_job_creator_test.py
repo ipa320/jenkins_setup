@@ -282,11 +282,14 @@ class JenkinsJobTest(unittest.TestCase):
     def test__set_jointrigger_param__input_no_job_type_list_and_empty_parameterized_trigger_str__raise_exception(self):
         self.assertRaises(Exception, self.jj.set_jointrigger_param, [], parameterized_trigger='')
 
+    def test__set_jointrigger_param__input_job_type_list_and_empty_parameterized_trigger_str__raise_exception(self):
+        self.assertRaises(Exception, self.jj.set_jointrigger_param, self.job_type_test_list, parameterized_trigger='')
+
     def test__set_jointrigger_param__input_no_job_type_list_and_no_parameterized_trigger_str__raise_exception(self):
         self.assertRaises(Exception, self.jj.set_jointrigger_param, [], parameterized_trigger=None)
 
     def test__set_jointrigger_param__input_unstable_behavior_not_bool__raise_exception(self):
-        self.assertRaises(Exception, self.jj.set_jointrigger_param, self.job_type_test_list, unstable_behavior_test='False', parameterized_trigger='TESTCONFIG')
+        self.assertRaises(Exception, self.jj.set_jointrigger_param, self.job_type_test_list, unstable_behavior='False', parameterized_trigger='TESTCONFIG')
 
     # Testing set_postbuildtrigger_param
     def test__set_postbuildtrigger_param__input_job_type_list_and_threshold_name_string__return_postbuildtrigger_config_string(self):
@@ -421,6 +424,65 @@ class JenkinsJobTest(unittest.TestCase):
  <subject>$PROJECT_DEFAULT_SUBJECT</subject>\
  <body>$PROJECT_DEFAULT_CONTENT</body>\
  <sendToDevelopers>false</sendToDevelopers>\
+ <sendToRequester>false</sendToRequester>\
+ <includeCulprits>false</includeCulprits>\
+ <sendToRecipientList>true</sendToRecipientList>\
+ <attachmentsPattern></attachmentsPattern>\
+ <attachBuildLog>false</attachBuildLog>\
+ <replyTo></replyTo>\
+ </email>\
+ </hudson.plugins.emailext.plugins.trigger.FixedTrigger>\
+ </configuredTriggers>\
+ <contentType>text/html</contentType>\
+ <defaultSubject>$BUILD_STATUS: Priority Build of ${ENV, var="repository"};  ${ENV, var="ros_distro"}, ${ENV, var="ubuntu_distro"}, ${ENV, var="arch"} - Build # $BUILD_NUMBER!</defaultSubject>\
+ <defaultContent>${JELLY_SCRIPT,template=&quot;html-with-health-builds-tests&quot;}</defaultContent>\
+ <attachmentsPattern></attachmentsPattern>\
+ <presendScript></presendScript>\
+ <attachBuildLog>true</attachBuildLog>\
+ <replyTo></replyTo>\
+ <matrixTriggerMode>ONLY_CONFIGURATIONS</matrixTriggerMode>\
+ </hudson.plugins.emailext.ExtendedEmailPublisher>')
+
+    def test__set_mailer_param__check_set_param2(self):
+        self.jj.pipe_inst.committer_email_enabled = True
+        self.jj.set_mailer_param('Priority Build')
+        self.assertEqual(self.jj.params['MAILER'], '<hudson.plugins.emailext.ExtendedEmailPublisher>\
+ <recipientList>test@ipa.fhg.de</recipientList>\
+ <configuredTriggers>\
+ <hudson.plugins.emailext.plugins.trigger.UnstableTrigger>\
+ <email>\
+ <recipientList></recipientList>\
+ <subject>$PROJECT_DEFAULT_SUBJECT</subject>\
+ <body>$PROJECT_DEFAULT_CONTENT</body>\
+ <sendToDevelopers>true</sendToDevelopers>\
+ <sendToRequester>false</sendToRequester>\
+ <includeCulprits>false</includeCulprits>\
+ <sendToRecipientList>true</sendToRecipientList>\
+ <attachmentsPattern></attachmentsPattern>\
+ <attachBuildLog>false</attachBuildLog>\
+ <replyTo></replyTo>\
+ </email>\
+ </hudson.plugins.emailext.plugins.trigger.UnstableTrigger>\
+ <hudson.plugins.emailext.plugins.trigger.FailureTrigger>\
+ <email>\
+ <recipientList></recipientList>\
+ <subject>$PROJECT_DEFAULT_SUBJECT</subject>\
+ <body>$PROJECT_DEFAULT_CONTENT</body>\
+ <sendToDevelopers>true</sendToDevelopers>\
+ <sendToRequester>false</sendToRequester>\
+ <includeCulprits>false</includeCulprits>\
+ <sendToRecipientList>true</sendToRecipientList>\
+ <attachmentsPattern></attachmentsPattern>\
+ <attachBuildLog>false</attachBuildLog>\
+ <replyTo></replyTo>\
+ </email>\
+ </hudson.plugins.emailext.plugins.trigger.FailureTrigger>\
+ <hudson.plugins.emailext.plugins.trigger.FixedTrigger>\
+ <email>\
+ <recipientList></recipientList>\
+ <subject>$PROJECT_DEFAULT_SUBJECT</subject>\
+ <body>$PROJECT_DEFAULT_CONTENT</body>\
+ <sendToDevelopers>true</sendToDevelopers>\
  <sendToRequester>false</sendToRequester>\
  <includeCulprits>false</includeCulprits>\
  <sendToRecipientList>true</sendToRecipientList>\
