@@ -1,7 +1,7 @@
 jenkins\_setup
 =============
 
-This repository contains the code (config, src and script files) to set up and run a Cob-[Jenkins CI server](http://jenkins-ci.org) using the Cob-Pipeline-Plugin. Below the setup process is described in detail.
+This repository contains the code (config, src and script files) to set up and run a Cob-[Jenkins CI server](http://jenkins-ci.org) using the Cob-Pipeline-Plugin. Below the purpose of this pipeline and its setup process is described in detail.
 
 ###Table of Contents
 * [Software structure](#software-structure)
@@ -32,6 +32,30 @@ Pipeline structure
 ==================
 The pipeline is made of multiple, differing Jenkins jobs which monitor
 the source code or build and test it in various envirements.
+An authorized Jenkins user can configure its individual pipeline in its
+Jenkins user configurations. The made configurations have to pass a
+validation and afterwards the automatic generation of the pipeline can
+be started.
+
+A fully configured pipeline has always the structure shown in the
+picture below.
+![Build-Pipeline structure](./build_pipeline_structure.png "Structure of a Cob Build-Pipeline")
+
+###Job Types
+####Starter Jobs
+* **Pipestarter Job**
+####Build Jobs
+* **Priority-Build Job**
+* **Regular-Build Job**
+* **Downstream-Build Job**
+####Test Jobs
+* **Non-Graphics-Test Job**
+* **Graphics-Test Job**
+####Hardware Jobs
+* **Hardware-Build Job**
+* **Hardware-Test Job**
+
+
 **TODO**
 
 
