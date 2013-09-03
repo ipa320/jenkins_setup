@@ -7,16 +7,21 @@ This repository contains the code (config, src and script files) to set up and r
 The plugin and this manual are developed and tested for Jenkins CI v1.514.
 
 ###Table of Contents
-* [Software structure](#software-structure)
-* [Pipeline structure](#pipeline-structure)
+* [Quick Setup](#quick-setup)
+* [Software Structure](#software-structure)
+* [Pipeline Structure](#pipeline-structure)
 * [Installation and Setup](#installation-and-setup)
     * [Master](#master)
     * [Tarball Server](#tarball-server)
     * [Slaves](#slaves)
     * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation)
 
+Quick Setup
+===========
+**TODO**
 
-Software structure
+
+Software Structure
 ==================
 For the usage of the Cob-Pipeline three parts are necessary:
 * [Cob-Pipeline-Plugin](https://github.com/fmw-jk/cob-pipeline-plugin) for Jenkins<br/>
@@ -31,7 +36,7 @@ For the usage of the Cob-Pipeline three parts are necessary:
     In this repository all the pipeline configurations are stored.
 
 
-Pipeline structure
+Pipeline Structure
 ==================
 The pipeline is made of multiple, differing Jenkins jobs which monitor
 the source code or build and test it in various envirements.
@@ -182,7 +187,7 @@ The easiest way is to use **Jenkins's own user database**. This option
 should always be available and possible. Now you can decide if every
 user can sign up or if the admin has to do this.
 
-It you use this, you have to create an user before you go on. This user will
+If you use this, you have to create an user before you go on. This user will
 later on act as the admin user. Therefore save the configurations and
 **sign up** (upper right corner). Came back afterwards.
 
@@ -206,10 +211,12 @@ user or a user group gets granted. Therefore choose the
 You have to give permissions to at least the *Anonymous* and the
 *authenticated* user group and an *admin* user. The latter two have to be
 added to the matrix.
+
 > If you use [Jenkins's own user database](#jenkin's-own-user-database)
 > the admin user you just created can be used. If one of the other
 > [Security Realms](#security-realm) is used, take an existing user as
 > admin.
+
 **The *admin* should have all rights.** Otherwise you will
 [lock out yourself](https://wiki.jenkins-ci.org/display/JENKINS/Disable+security).
 This account will also be used to create the pipeline jobs
@@ -217,11 +224,11 @@ automatically.
 The users and groups could get the permissions as shown below.
 ![Project-based Matrix Authorization Strategy](./authentication.png "Example for Project-based Matrix Authorization Strategy")
 
-Every user will get the permission to see the workspace of all its own
-jobs. For the 'Pipestarter' and 'Trigger' job it will also has
+Every user will automatically get the permission to see the workspace of
+all its own jobs. For the 'Pipestarter' and 'Trigger' job it will also has
 'Build'-permission.
 > If you want to grant further permissions or give special permissions to
-> individual users you can do it here.
+> individual users or user groups you can do it here.
 
 
 ####Set up view
