@@ -18,7 +18,7 @@ The plugin and this manual are developed and tested for Jenkins CI v1.514.
     * [Tarball Server](#tarball-server)
     * [Slaves](#slaves)
         * [Configure the node](#configure-the-node)
-        * [Create a new slave node in Jenkins](#create-a-new-slave-node-in-jenkins)
+        * [Create a new slave node in Jenkins](#create-a-new-slave-node-in-jenkins-slave-setup-on-master)
     * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation)
 
 Quick Setup
