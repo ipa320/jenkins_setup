@@ -144,9 +144,10 @@ Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/avai
 ####Install the Cob-Pipeline Plugin
 Download the plugin (\*.hpi file) from
 [here](https://github.com/fmw-jk/cob-pipeline-plugin/releases) and place it
-in ```<JENKINS_HOME>/plugins/```. After you restarted Jenkins the plugin
-should be available and the **Pipeline Configuration** link should be
-present in the sidebar (see picture).
+in ```<JENKINS_HOME>/plugins/```. After you restarted Jenkins
+```/etc/init.d/jenkins restart```
+the plugin should be available and the **Pipeline Configuration** link
+should be present in the sidebar (see picture).
 
 ![sidebar](./sidebar.png "sidebar with cob-pipeline-plugin")
 
