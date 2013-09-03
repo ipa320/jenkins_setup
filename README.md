@@ -3,6 +3,9 @@ jenkins\_setup
 
 This repository contains the code (config, src and script files) to set up and run a Cob-[Jenkins CI server](http://jenkins-ci.org) using the Cob-Pipeline-Plugin. Below the purpose of this pipeline and its setup process is described in detail.
 
+###Version
+The plugin and this manual are developed and tested for Jenkins CI v1.514.
+
 ###Table of Contents
 * [Software structure](#software-structure)
 * [Pipeline structure](#pipeline-structure)
