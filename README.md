@@ -19,7 +19,7 @@ The plugin and this manual are developed and tested for Jenkins CI v1.514.
     * [Slaves](#slaves)
         * [Configure the node](#configure-the-node)
         * [Create a new slave node in Jenkins](#create-a-new-slave-node-in-jenkins-slave-setup-on-master)
-    * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation)
+    * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation-deprecated)
 
 Quick Setup
 ===========
@@ -480,10 +480,8 @@ mount -a
 ___
 
 
-Manual Pipeline Generation:
+Manual Pipeline Generation (deprecated):
 ===========================
-(deprecated)
-------------
 
 1. Checkout this repository:
 ----------------------------
