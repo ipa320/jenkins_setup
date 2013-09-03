@@ -84,8 +84,14 @@ The Cob-Pipeline-Plugin is developed for Jenkins v1.514. If your version
 is older or newer, you can up-/downgrade to another
 one by [downloading the version](http://mirrors.jenkins-ci.org/war)
 you need into ```/user/share/jenkins/```. If you stored it with another
-name than jenkins.war, adapt the ```JENKINS_WAR``` environment variabel
-in ```/etc/default/jenkins```.
+name than jenkins.war, adapt the ```JENKINS_WAR``` environment variable
+in ```/etc/default/jenkins```. After a change, the automatic update is
+not possible anymore. ```JENKINS_WAR``` has to be set back to the default
+```/user/share/jenkins/jenkins.war``` first.
+After all restart the Jenkins server.
+```bash
+/etc/init.d/jenkins restart
+```
 
 *!!!Be careful with updating your Jenkins server. If you do, check if
 everything works still properly!!!*
