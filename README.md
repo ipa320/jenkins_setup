@@ -142,6 +142,9 @@ Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/avai
 * **Matrix Reloaded Plugin**
   ([website](http://wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin))<br/>
     To start one or more entries of a matrix job.
+* *LDAP Plugin* (not required but maybe useful)
+  ([website](https://wiki.jenkins-ci.org/display/JENKINS/LDAP+Plugin))<br/>
+    Authentication of users is delegated to a LDAP server.
 * *Github OAuth Plugin* (not required but maybe useful)
   ([website](http://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin))<br/>
     Authentication of users is delegated to Github using the OAuth
@@ -168,16 +171,58 @@ To manage your Jenkins server, go to
 From here you can configure everything.
 
 ####Configure Security
-Follow **Configure Global Security** and check **Enable Security**.
-The **Access Control** section gives opportunity to select the **Security Realm**. It defines how the users can login.
-Furthermore you can define the permission a specific user or a user group gets granted.
-Therefore choose the 'Project-based Matrix Authorization Strategy' in the **Authorization** subsection.
-The user gets the permission to see the workspace for all his own jobs. For the 'Pipestarter' and 'Trigger' job he has also 'Build'-permission.
-If you want to grant further permissions you can do it here.
+There are multiple ways to configure the global security of your Jenkins
+server. First of all follow **Configure Global Security** and check **Enable Security**.
 
-**For administration purposes add one user that has all permissions!**
-This one will also later be used to create the pipeline jobs
+#####Security Realm
+The **Access Control** section gives opportunity to select the **Security Realm**. It defines how the users can login.
+
+######Jenkins's own user database
+The easiest way is to use **Jenkins's own user database**. This option
+should always be available and possible. Now you can decide if every
+user can sign up or if the admin has to do this.
+
+It you use this, you have to create an user before you go on. This user will
+later on act as the admin user. Therefore save the configurations and
+**sign up** (upper right corner). Came back afterwards.
+
+> ######LDAP
+> If a LDAP server is available, you can use it as the user database.
+> Therefore the [LDAP Plugin](#install-required-jenkins-plugins) is required.
+> How to configure the LDAP access can be found on the [plugin's website]
+> (https://wiki.jenkins-ci.org/display/JENKINS/LDAP+Plugin).
+
+> ######Github Authentication Plugin
+> Another way is to use the GitHub user database for user identification.
+> The [Github OAuth Plugin](#install-required-jenkins-plugins) has to be
+> installed. Configure the plugin as described
+> [here](https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin).
+
+#####Authorization
+In the **Authorization** subsection you can define the permission a specific
+user or a user group gets granted. Therefore choose the
+'Project-based Matrix Authorization Strategy'.
+
+You have to give permissions to at least the *Anonymous* and the
+*authenticated* user group and an *admin* user. The latter two have to be
+added to the matrix.
+> If you use [Jenkins's own user database](#jenkin's-own-user-database)
+> the admin user you just created can be used. If one of the other
+> [Security Realms](#security-realm) is used, take an existing user as
+> admin.
+**The *admin* should have all rights.** Otherwise you will
+[lock out yourself](https://wiki.jenkins-ci.org/display/JENKINS/Disable+security).
+This account will also be used to create the pipeline jobs
 automatically.
+The users and groups could get the permissions as shown below.
+![Project-based Matrix Authorization Strategy](./authentication.png "Example for Project-based Matrix Authorization Strategy")
+
+Every user will get the permission to see the workspace of all its own
+jobs. For the 'Pipestarter' and 'Trigger' job it will also has
+'Build'-permission.
+> If you want to grant further permissions or give special permissions to
+> individual users you can do it here.
+
 
 ####Set up view
 Create new view. **TODO**
