@@ -183,26 +183,26 @@ server. First of all follow **Configure Global Security** and check **Enable Sec
 The **Access Control** section gives the opportunity to select the
 **Security Realm** which defines how the users can login.
 
-* **Jenkins's own user database**
-The easiest way is to use **Jenkins's own user database**. This option
-should always be available and possible. Now you can decide if every
-user can sign up or if the admin has to do this.
+* **Jenkins's own user database**<br/>
+    The easiest way is to use **Jenkins's own user database**. This option
+    should always be available and possible. Now you can decide if every
+    user can sign up or if the admin has to do this.
 
-If you use this, you have to create an user before you go on. This user will
-later on act as the admin user. Therefore save the configurations and
-**sign up** (upper right corner). Came back afterwards.
+    If you use this, you have to create an user before you go on. This user will
+    later on act as the admin user. Therefore save the configurations and
+    **sign up** (upper right corner). Came back afterwards.
 
-> * **LDAP**
-> If a LDAP server is available, you can use it as the user database.
-> Therefore the [LDAP Plugin](#install-required-jenkins-plugins) is required.
-> How to configure the LDAP access can be found on the [plugin's website]
-> (https://wiki.jenkins-ci.org/display/JENKINS/LDAP+Plugin).
+> * **LDAP**<br/>
+>   If a LDAP server is available, you can use it as the user database.
+>   Therefore the [LDAP Plugin](#install-required-jenkins-plugins) is required.
+>   How to configure the LDAP access can be found on the [plugin's website]
+>   (https://wiki.jenkins-ci.org/display/JENKINS/LDAP+Plugin).
 
-> * **Github Authentication Plugin**
-> Another way is to use the GitHub user database for user identification.
-> The [Github OAuth Plugin](#install-required-jenkins-plugins) has to be
-> installed. Configure the plugin as described
-> [here](https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin).
+> * **Github Authentication Plugin**<br/>
+>   Another way is to use the GitHub user database for user identification.
+>   The [Github OAuth Plugin](#install-required-jenkins-plugins) has to be
+>   installed. Configure the plugin as described
+>   [here](https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin).
 
 #####Authorization
 In the **Authorization** subsection you can define the permission a specific
