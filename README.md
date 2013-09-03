@@ -47,13 +47,16 @@ picture below.
 ###Job Types
 ####Starter Jobs
 * **Pipestarter Job**
+
 ####Build Jobs
 * **Priority-Build Job**
 * **Regular-Build Job**
 * **Downstream-Build Job**
+
 ####Test Jobs
 * **Non-Graphics-Test Job**
 * **Graphics-Test Job**
+
 ####Hardware Jobs
 * **Hardware-Build Job**
 * **Hardware-Test Job**
@@ -76,6 +79,13 @@ To add the official package source on Debian/Ubuntu follow
 [this description](http://pkg.jenkins-ci.org/debian/).
 After a successful installation you can access the Jenkins server in
 your browser on \<YOUR_JENKINS_SERVER_IP\>:8080.
+
+The Cob-Pipeline-Plugin is developed for Jenkins v1.514. If your version
+is older or newer, you can up-/downgrade to another
+one by [downloading the version](http://mirrors.jenkins-ci.org/war)
+you need into ```/user/share/jenkins/```. If you stored it with another
+name than jenkins.war, adapt the ```JENKINS_WAR``` environment variabel
+in ```/etc/default/jenkins```.
 
 *!!!Be careful with updating your Jenkins server. If you do, check if
 everything works still properly!!!*
