@@ -80,21 +80,21 @@ To add the official package source on Debian/Ubuntu follow
 After a successful installation you can access the Jenkins server in
 your browser on \<YOUR_JENKINS_SERVER_IP\>:8080.
 
-The Cob-Pipeline-Plugin is developed for Jenkins v1.514. If your version
-is older or newer, you can up-/downgrade to another
-one by [downloading the version](http://mirrors.jenkins-ci.org/war)
-you need into ```/user/share/jenkins/```. If you stored it with another
-name than jenkins.war, adapt the ```JENKINS_WAR``` environment variable
-in ```/etc/default/jenkins```. After a change, the automatic update is
-not possible anymore. ```JENKINS_WAR``` has to be set back to the default
-```/user/share/jenkins/jenkins.war``` first.
-After all restart the Jenkins server.
+> The Cob-Pipeline-Plugin is developed for Jenkins v1.514. If your version
+> is older or newer, you can up-/downgrade to another
+> one by [downloading the version](http://mirrors.jenkins-ci.org/war)
+> you need into ```/user/share/jenkins/```. If you stored it with another
+> name than jenkins.war, adapt the ```JENKINS_WAR``` environment variable
+> in ```/etc/default/jenkins```. After a change, the automatic update is
+> not possible anymore. ```JENKINS_WAR``` has to be set back to the default
+> ```/user/share/jenkins/jenkins.war``` first.
+> **After all restart the Jenkins server**.
 ```bash
 /etc/init.d/jenkins restart
 ```
 
-*!!!Be careful with updating your Jenkins server. If you do, check if
-everything works still properly!!!*
+*!!!In general: Be careful with updating your Jenkins server. If you do, check if
+everything works still properly, especially the plugins!!!*
 
 ####Install Git:
 ```bash
