@@ -12,8 +12,13 @@ The plugin and this manual are developed and tested for Jenkins CI v1.514.
 * [Pipeline Structure](#pipeline-structure)
 * [Installation and Setup](#installation-and-setup)
     * [Master](#master)
+        * [Installation of software on Master node](#installation-of-software-on-master-node)
+        * [Configure Jenkins](#configure-jenkins)
+        * [Set up Cob-Pipeline specific configurations](#set-up-cob-pipeline-specific-configurations)
     * [Tarball Server](#tarball-server)
     * [Slaves](#slaves)
+        * [Configure the node](#configure-the-node)
+        * [Create a new slave node in Jenkins](#create-a-new-slave-node-in-jenkins)
     * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation)
 
 Quick Setup
