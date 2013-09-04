@@ -82,22 +82,22 @@ $ rosdep update
 
 ===== 2.2.2 Environment setup
 ----
-###for fuerte###
+*for fuerte*
 $ echo "source /opt/ros/fuerte/setup.bash" >> ~/.bashrc
 $ source ~/.bashrc
 ----
 ----
-###for groovy###
+*for groovy*
 $ echo "source /opt/ros/groovy/setup.bash" >> ~/.bashrc
 $ source ~/.bashrc
 ----
 if you just want to change the environment of your current shell, you can type:
 ----
-###for fuerte###
+*for fuerte*
 $ source /opt/ros/fuerte/setup.bash
 ----
 ----
-###for groovy###
+*for groovy*
 $ source /opt/ros/groovy/setup.bash
 ----
 
@@ -107,11 +107,11 @@ $ source /opt/ros/groovy/setup.bash
 
 Went to +http://localhost:8080/pluginManager/available+ and "check" the follow PlugIns for installation: 
 
-- Parameterized Trigger Plugin
-- Build Pipeline Plugin
-- Mailer
-- View Job Filters
-- Matrix Reloaded Plugin
+- *Parameterized Trigger Plugin*
+- *Build Pipeline Plugin*
+- *Mailer*
+- *View Job Filters*
+- *Matrix Reloaded Plugin*
 
 *TODO!!!*
 
