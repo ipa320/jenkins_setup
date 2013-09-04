@@ -57,7 +57,7 @@ you can find the war file here: +http://mirrors.jenkins-ci.org/war/+
 ----
 $ cd /user/share/jenkins/
 $ sudo rm -rf jenkins.war
-$ wget http://mirrors.jenkins-ci.org/war/1.514/jenkins.war
+$ sudo wget http://mirrors.jenkins-ci.org/war/1.514/jenkins.war
 ----
 ----
 $ /etc/init.d/jenkins restart
