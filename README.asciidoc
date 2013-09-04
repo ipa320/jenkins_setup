@@ -80,7 +80,7 @@ $ sudo rosdep init
 $ rosdep update
 ----
 
-====== 2.2.2 Environment setup
+===== 2.2.2 Environment setup
 ----
 ###for fuerte###
 $ echo "source /opt/ros/fuerte/setup.bash" >> ~/.bashrc
