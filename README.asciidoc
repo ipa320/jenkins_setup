@@ -113,9 +113,13 @@ Went to +http://localhost:8080/pluginManager/available+ and "check" the follow P
 - View Job Filters
 - Matrix Reloaded Plugin
 
+*TODO!!!*
 
+''''
 
+==== 4. Configure Jenkins
 
+''''
 
 
 
