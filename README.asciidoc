@@ -1,6 +1,6 @@
 === Jenkins Guide
 
-==== Installation
+==== 1. Jenkins Installation
 
 ===== Debian packages "Ubuntu/Debian"
 ----
