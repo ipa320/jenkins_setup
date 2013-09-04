@@ -41,7 +41,7 @@ Individual Package Downloads: +http://pkg.jenkins-ci.org/opensuse/+
 _After a successful installation you can access the Jenkins server in your browser on:_ +http://localhost:8080+
 
 ===== 1.4 Up-/Downgrade
-Upgrade to v1.514 in an ubuntu environment
+Upgrade to v1.514 in an "Ubuntu 12.04 LTS" environment
 
 you can find the war file here: +http://mirrors.jenkins-ci.org/war/+
 
