@@ -17,7 +17,6 @@ deb http://pkg.jenkins-ci.org/debian binary/
 $ sudo apt-get update
 $ sudo apt-get install jenkins
 ----
-
 Individual Package Downloads: +http://pkg.jenkins-ci.org/debian/+
 
 ''''
@@ -30,7 +29,6 @@ $ sudo rpm --import http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key
 ----
 $ yum install jenkins
 ----
-
 Individual Package Downloads: +http://pkg.jenkins-ci.org/redhat//+
 
 ''''
@@ -39,10 +37,9 @@ Individual Package Downloads: +http://pkg.jenkins-ci.org/redhat//+
 ----
 $ sudo zypper addrepo http://pkg.jenkins-ci.org/opensuse/ jenkins
 ----
-With that set up, the Jenkins package can be installed with
 ----
 $ zypper install jenkins
 ----
-
 Individual Package Downloads: +http://pkg.jenkins-ci.org/opensuse/+
 
+''''
