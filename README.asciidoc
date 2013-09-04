@@ -101,6 +101,9 @@ $ source /opt/ros/fuerte/setup.bash
 $ source /opt/ros/groovy/setup.bash
 ----
 
+''''
+
+==== 3. Jenkin PlugIns Installation
 
 
 
