@@ -1,8 +1,8 @@
 === Jenkins Guide
 
-==== 1. Jenkins Installation
-
 ''''
+
+==== 1. Jenkins Installation
 
 ===== 1.1 Debian packages "Ubuntu/Debian"
 ----
@@ -19,8 +19,6 @@ $ sudo apt-get install jenkins
 ----
 Individual Package Downloads: +http://pkg.jenkins-ci.org/debian/+
 
-''''
-
 ===== 1.2 RedHat Linux RPM packages "RedHat/Fedora/CentOS"
 ----
 $ sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
@@ -31,8 +29,6 @@ $ yum install jenkins
 ----
 Individual Package Downloads: +http://pkg.jenkins-ci.org/redhat//+
 
-''''
-
 ===== 1.3 openSUSE Linux RPM packages
 ----
 $ sudo zypper addrepo http://pkg.jenkins-ci.org/opensuse/ jenkins
@@ -42,11 +38,7 @@ $ zypper install jenkins
 ----
 Individual Package Downloads: +http://pkg.jenkins-ci.org/opensuse/+
 
-''''
-
-After a successful installation you can access the Jenkins server in your browser on: +http://localhost:8080+
-
-''''
+_After a successful installation you can access the Jenkins server in your browser on:_ +http://localhost:8080+
 
 ===== 1.4 Up-/Downgrade
 Upgrade to v1.514 in an ubuntu environment
@@ -62,10 +54,14 @@ $ sudo wget http://mirrors.jenkins-ci.org/war/1.514/jenkins.war
 $ /etc/init.d/jenkins restart
 ----
 
+''''
 
+==== 2. Additional Installations
 
-
-
+===== 2.1 Git Installation
+----
+$ sudo apt-get install git
+----
 
 
 
