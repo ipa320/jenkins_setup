@@ -105,6 +105,8 @@ $ source /opt/ros/groovy/setup.bash
 
 ==== 3. Jenkin PlugIns Installation
 
++http://localhost:8080/pluginManager/available+
+
 
 
 
