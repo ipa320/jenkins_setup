@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <vector>
 #include "USBaccess.h"
 
 #define Sleep(ms) usleep( (ms) * 1000)
@@ -32,10 +33,42 @@ main(int argc, char* argv[]) {
 	CUSBaccess CWusb ;
 	
 	printf("Start USB Access Example!\n") ;
-//	int USBcount = CWusb.OpenCleware() ;
-//	printf("OpenCleware fand %d Geräte\n", USBcount) ;
+	int USBcount = CWusb.OpenCleware() ;
+	printf("OpenCleware found %d devices\n", USBcount) ;
 
-//	CWusb.CloseCleware() ;
+	USBcount = 2; //TODO remove
+
+	for (int devID=0 ; devID < USBcount ; devID++) {
+		int devType = CWusb.GetUSBType(devID) ;
+		printf("Device %d: Type=%d, Version=%d, SerNum=%d\n", devID,
+					devType, CWusb.GetVersion(devID),
+					CWusb.GetSerialNumber(devID)) ;
+
+		devType = CUSBaccess::SWITCH1_DEVICE; //TODO remove
+
+		// TODO: implement ampel logic with results of jenkins here
+		std::vector<bool> status(3, false);
+		status[0] = true; // red
+		status[1] = false; // yellow
+		status[2] = false; // green
+
+
+		// TODO: how to distinguish the three lights (red, yellow, green)?
+		if (devType == CUSBaccess::SWITCH1_DEVICE) {
+			printf("old switch setting = %d\n", CWusb.GetSwitch(devID, CUSBaccess::SWITCH_0)) ;
+			
+			printf("turn light on\n");
+			CWusb.SetSwitch(devID, CUSBaccess::SWITCH_0, 1) ;
+			usleep(1000000); // wait 1 sec
+			printf("turn light off\n");
+			CWusb.SetSwitch(devID, CUSBaccess::SWITCH_0, 0) ;
+			break ;
+		}
+		else
+			continue ;
+	}
+
+	CWusb.CloseCleware() ;
 
 	return 0;
 	}
