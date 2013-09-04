@@ -1,3 +1,45 @@
+Installation von Jenkins
+
+Jenkins Debian packages
+   $ wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
+   
+   add the following entry in your /etc/apt/sources.list:
+      deb http://pkg.jenkins-ci.org/debian binary/
+   
+   $ sudo apt-get update
+   $ sudo apt-get install jenkins
+
+RedHat Linux RPM packages for Jenkins
+   $ sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
+   $ sudo rpm --import http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key
+
+   If you've previously imported the key from Jenkins, the "rpm --import" will fail 
+   because you already have a key. Please ignore that and move on.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+
 jenkins\_setup
 =============
 
