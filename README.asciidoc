@@ -107,6 +107,11 @@ $ source /opt/ros/groovy/setup.bash
 
 Went to +http://localhost:8080/pluginManager/available+ and "check" the follow PlugIns for installation: 
 
+- Parameterized Trigger Plugin
+- Build Pipeline Plugin
+- Mailer
+- View Job Filters
+- Matrix Reloaded Plugin
 
 
 
