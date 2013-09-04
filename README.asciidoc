@@ -10,7 +10,7 @@ $ wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-ke
 ----
 ----
 $ sudo nano /etc/apt/sources.list
-# and add the following entry:
+# add the following entry:
 deb http://pkg.jenkins-ci.org/debian binary/
 ----
 ----
@@ -43,3 +43,69 @@ $ zypper install jenkins
 Individual Package Downloads: +http://pkg.jenkins-ci.org/opensuse/+
 
 ''''
+
+After a successful installation you can access the Jenkins server in your browser on:
++<YOUR_JENKINS_SERVER_IP>:8080+
+
+''''
+
+===== 1.4 Up-/Downgrade
+Upgrade to v1.514 in an ubuntu environment
+
+you can find the war file here: +http://mirrors.jenkins-ci.org/war/+
+
+----
+$ cd /user/share/jenkins/
+$ sudo rm -rf jenkins.war
+$ wget http://mirrors.jenkins-ci.org/war/1.514/jenkins.war
+----
+----
+$ /etc/init.d/jenkins restart
+----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
