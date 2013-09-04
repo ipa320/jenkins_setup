@@ -119,23 +119,59 @@ Went to +http://localhost:8080/pluginManager/available+ and "check" the follow P
 
 ==== 4. Configure Jenkins
 
+*TODO!!!*
+
 ''''
 
+==== 5. Configure PlugIns
 
+*TODO!!!*
 
+''''
 
+==== 6. Configure Cob-Pipeline
 
+*TODO!!!*
 
+''''
 
+==== 7. Configure Git
 
+*TODO!!!*
 
+''''
 
+==== 8. Configure SSH
 
+*TODO!!!*
 
+''''
 
+==== 9. Jenkin Repository
 
+===== 9.1 jenkins_config repository
 
+===== 9.2 jenkins_setup repository
 
+===== 9.2.1 Adapt apt-cacher address
+
+===== 9.2.2 PYTHONPATH
+
+*TODO!!!*
+
+''''
+
+==== 10. Mailer template
+
+*TODO!!!*
+
+''''
+
+==== 11. Tarball Server
+
+*TODO!!!*
+
+''''
 
 
 
