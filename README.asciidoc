@@ -71,8 +71,9 @@ $ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/
 $ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 $ sudo apt-get update
 ----
+
 ----
-*fot fuerte*
+*for fuerte*
 $ sudo apt-get install ros-fuerte-desktop-full
 ----
 ----
