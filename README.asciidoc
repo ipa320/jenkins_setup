@@ -72,7 +72,11 @@ $ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 $ sudo apt-get update
 ----
 ----
+*fot fuerte*
 $ sudo apt-get install ros-fuerte-desktop-full
+----
+----
+*for groovy*
 $ sudo apt-get install ros-groovy-desktop-full
 ----
 ----
