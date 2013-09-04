@@ -56,13 +56,50 @@ $ /etc/init.d/jenkins restart
 
 ''''
 
-==== 2. Additional Installations
+==== 2. Additional Installations on an "Ubuntu 12.04 LTS" environment
 
 ===== 2.1 Git Installation
 ----
 $ sudo apt-get install git
 ----
 
+===== 2.2 Install ROS
+
+====== 2.2.1 Install ROS "fuerte" and "groovy" with environment
+----
+$ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
+$ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+$ sudo apt-get update
+----
+----
+$ sudo apt-get install ros-fuerte-desktop-full
+$ sudo apt-get install ros-groovy-desktop-full
+----
+----
+$ sudo rosdep init
+$ rosdep update
+----
+
+======= 2.2.2 Environment setup
+----
+###for fuerte###
+$ echo "source /opt/ros/fuerte/setup.bash" >> ~/.bashrc
+$ source ~/.bashrc
+----
+----
+###for groovy###
+$ echo "source /opt/ros/groovy/setup.bash" >> ~/.bashrc
+$ source ~/.bashrc
+----
+if you just want to change the environment of your current shell, you can type:
+----
+###for fuerte###
+$ source /opt/ros/fuerte/setup.bash
+----
+----
+###for groovy###
+$ source /opt/ros/groovy/setup.bash
+----
 
 
 
