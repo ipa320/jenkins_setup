@@ -2,7 +2,7 @@
 
 ==== Installation
 
-===== Jenkins Debian packages
+===== Debian packages
 ----
 $ wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
 ----
@@ -18,7 +18,7 @@ $ sudo apt-get install jenkins
 
 Individual Package Downloads: +http://pkg.jenkins-ci.org/debian/+
 
-===== RedHat Linux RPM packages for Jenkins
+===== RedHat Linux RPM packages
 ----
 $ sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
 $ sudo rpm --import http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key
