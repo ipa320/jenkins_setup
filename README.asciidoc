@@ -157,10 +157,27 @@ Went to +http://localhost:8080/pluginManager/available+ and "check" the follow P
 ===== 9.1 jenkins_config repository
 
 ===== 9.2 jenkins_setup repository
+----
+$ git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup
+----
 
 ===== 9.2.1 Adapt apt-cacher address
+If you use an apt-cacher you have to enter its address in the install_basics.sh script.
+Adapt the APT_PROXY_ADDRESS variable to your requirements.
+
+The Script: +https://github.com/ipa320/jenkins_setup/blob/master/scripts/install_basics.sh+
+
+----
+$ echo "\n***APT-PROXY***"
+$ APT_PROXY_ADDRESS="http://cob-jenkins-server:3142"
+$ sh -c 'echo "Acquire::http { Proxy \"'$APT_PROXY_ADDRESS'\"; };" > /etc/apt/apt.conf.d/01proxy'
+----
 
 ===== 9.2.2 PYTHONPATH
+----
+$ echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh
+$ echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh
+----
 
 *TODO!!!*
 
