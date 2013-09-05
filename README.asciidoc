@@ -182,8 +182,6 @@ $ echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/p
 $ echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh
 ----
 
-*TODO!!!*
-
 ''''
 
 ==== 10. MailerTemplate
