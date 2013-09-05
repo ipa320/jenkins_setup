@@ -155,6 +155,9 @@ Went to +http://localhost:8080/pluginManager/available+ and "check" the follow P
 ==== 9. Jenkin Repository
 
 ===== 9.1 jenkins_config repository
+----
+$ git clone git@github.com:ipa320/jenkins_config.git ~/jenkins-config/jenkins_config
+----
 
 ===== 9.2 jenkins_setup repository
 ----
