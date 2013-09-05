@@ -166,9 +166,13 @@ Went to +http://localhost:8080/pluginManager/available+ and "check" the follow P
 
 ''''
 
-==== 10. Mailer template
+==== 10. MailerTemplate
 
-*TODO!!!*
+Standart MailerTemplate Folder is:
+----
+$ cd /var/lib/jenkins/email-templates/
+----
+Save all your MailerTemplates in this folder
 
 ''''
 
