@@ -142,13 +142,34 @@ Went to +http://localhost:8080/pluginManager/available+ and "check" the follow P
 
 ==== 7. Configure Git
 
-*TODO!!!*
+Set up the GitHub user.
+This user has to have read-access to all repositories to build and write-access to your jenkins_config repository.
+----
+$ git config --global user.name "<USER_NAME>"
+$ git config --global user.email "<EMAIL>"
+----
 
 ''''
 
 ==== 8. Configure SSH
 
-*TODO!!!*
+A .ssh-folder is needed inside the jenkins-config folder which contains a ssh-key to access the GitHub-repositories.
+Either you generate a new key with ssh-keygen or you just copy the .ssh of the master.
+You have to add this key to your GitHub user (http://github.com/settings/ssh).
+This user should have read-access to all repositories you want to build.
+It is very important that 'github.com' belongs to the known hosts.
+Therefore the .ssh-folder should contain a known_hosts file.
+Whether 'github.com' is already known can be checked by entering:
+----
+$ ssh-keygen -H -f <known_hosts_PATH> -F github.com
+----
+
+If it is not known, you can add 'github.com' to the known_hosts by entering:
+----
+$ ssh-keyscan -H github.com > <known_hosts_PATH>
+----
+
+Furthermore the Jenkins masters SSH key itself has to be an authorized one.
 
 ''''
 
@@ -165,6 +186,7 @@ $ git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_set
 ----
 
 ===== 9.2.1 Adapt apt-cacher address
+
 If you use an apt-cacher you have to enter its address in the install_basics.sh script.
 Adapt the APT_PROXY_ADDRESS variable to your requirements.
 
