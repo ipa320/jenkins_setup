@@ -173,8 +173,9 @@ Went to +http://localhost:8080/pluginManager/available+ and "check" the follow P
 ''''
 
 ==== 11. Tarball Server
-
-*TODO!!!*
+----
+$ mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>
+----
 
 ''''
 
