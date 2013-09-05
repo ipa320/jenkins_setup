@@ -178,9 +178,25 @@ Went to +http://localhost:8080/pluginManager/available+ and "check" the follow P
 
 ''''
 
+==== 12. Slave Configuration
 
+===== 12.1 Sudo commands without password
 
+===== 12.2 SSH access without password
 
+===== 12.3 Pbuilder
+
+===== 12.4 
+
+*TODO!!!*
+
+''''
+
+==== 13. The Pipeline
+
+*TODO!!!*
+
+''''
 
 
 
