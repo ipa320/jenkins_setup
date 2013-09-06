@@ -126,7 +126,7 @@ $ sudo wget http://mirrors.jenkins-ci.org/war/1.514/jenkins.war
 $ /etc/init.d/jenkins restart
 ----
 
-===== 2.5 Start and stop the Jenkins-Server
+===== 2.3 Start and stop the Jenkins-Server
 ----
 $ /etc/init.d/jenkins stop
 $ /etc/init.d/jenkins start
