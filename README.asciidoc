@@ -22,7 +22,7 @@ This Guide proceed for an Ubuntu 12.04 "LTS" environment...
 
 ===== 1.2 Robotic Operating System
 
-===== 1.2.1 Install ROS "fuerte" and "groovy" with environment
+===== 1.2.1 Install ROS "fuerte" and "groovy"
 ----
 $ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
 $ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
