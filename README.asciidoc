@@ -93,6 +93,11 @@ $ sudo apt-get install openjdk-7-jre
 $ sudo apt-get install git-core
 ----
 
+===== 1.5 Maven
+----
+$ sudo apt-get update && sudo apt-get install maven
+----
+
 ''''
 
 ==== 2. Jenkins Installation
