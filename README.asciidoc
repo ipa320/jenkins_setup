@@ -61,91 +61,34 @@ _After a successful installation you can access the JenkinsServer in your browse
 
 ''''
 
-==== 2. Additional Installations on an "Ubuntu 12.04 LTS" environment
+==== 2. Jenkin PlugIns Installation
 
-===== 2.1 Git Installation
-----
-$ sudo apt-get install git
-----
+Went to +http://localhost:8080/pluginManager/available+ and "check" the wanted PlugIns for installation.
 
-===== 2.2 Install ROS
+The Jenkins PlugIns are here listed: +https://wiki.jenkins-ci.org/display/JENKINS/Plugins+
 
-===== 2.2.1 Install ROS "fuerte" and "groovy" with environment
-----
-$ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
-$ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
-$ sudo apt-get update
-----
-
-----
-*for fuerte*
-$ sudo apt-get install ros-fuerte-desktop-full
-----
-----
-*for groovy*
-$ sudo apt-get install ros-groovy-desktop-full
-----
-----
-$ sudo rosdep init
-$ rosdep update
-----
-
-===== 2.2.2 Environment setup
-----
-*for fuerte*
-$ echo "source /opt/ros/fuerte/setup.bash" >> ~/.bashrc
-$ source ~/.bashrc
-----
-----
-*for groovy*
-$ echo "source /opt/ros/groovy/setup.bash" >> ~/.bashrc
-$ source ~/.bashrc
-----
-if you just want to change the environment of your current shell, you can type:
-----
-*for fuerte*
-$ source /opt/ros/fuerte/setup.bash
-----
-----
-*for groovy*
-$ source /opt/ros/groovy/setup.bash
-----
 
 ''''
 
-==== 3. Jenkin PlugIns Installation
-
-Went to +http://localhost:8080/pluginManager/available+ and "check" the follow PlugIns for installation: 
-
-- *Parameterized Trigger Plugin*
-- *Build Pipeline Plugin*
-- *Mailer*
-- *View Job Filters*
-- *Matrix Reloaded Plugin*
+==== 3. Configure Jenkins
 
 *TODO!!!*
 
 ''''
 
-==== 4. Configure Jenkins
+==== 4. Configure PlugIns
 
 *TODO!!!*
 
 ''''
 
-==== 5. Configure PlugIns
+==== 5. Configure Cob-Pipeline
 
 *TODO!!!*
 
 ''''
 
-==== 6. Configure Cob-Pipeline
-
-*TODO!!!*
-
-''''
-
-==== 7. Configure Git
+==== 6. Configure Git
 
 Set up the GitHub user.
 This user has to have read-access to all repositories to build and write-access to your jenkins_config repository.
@@ -156,7 +99,7 @@ $ git config --global user.email "<EMAIL>"
 
 ''''
 
-==== 8. Configure SSH
+==== 7. Configure SSH
 
 A .ssh-folder is needed inside the jenkins-config folder which contains a ssh-key to access the GitHub-repositories.
 Either you generate a new key with ssh-keygen or you just copy the .ssh of the master.
@@ -178,19 +121,19 @@ Furthermore the Jenkins masters SSH key itself has to be an authorized one.
 
 ''''
 
-==== 9. Jenkin Repository
+==== 8. The Jenkins Repository
 
-===== 9.1 jenkins_config repository
+===== 8.1 jenkins_config repository
 ----
 $ git clone git@github.com:ipa320/jenkins_config.git ~/jenkins-config/jenkins_config
 ----
 
-===== 9.2 jenkins_setup repository
+===== 8.2 jenkins_setup repository
 ----
 $ git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup
 ----
 
-===== 9.2.1 Adapt apt-cacher address
+===== 8.2.1 Adapt apt-cacher address
 
 If you use an apt-cacher you have to enter its address in the install_basics.sh script.
 Adapt the APT_PROXY_ADDRESS variable to your requirements.
@@ -203,7 +146,7 @@ $ APT_PROXY_ADDRESS="http://cob-jenkins-server:3142"
 $ sh -c 'echo "Acquire::http { Proxy \"'$APT_PROXY_ADDRESS'\"; };" > /etc/apt/apt.conf.d/01proxy'
 ----
 
-===== 9.2.2 PYTHONPATH
+===== 8.2.2 PYTHONPATH
 ----
 $ echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh
 $ echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh
@@ -211,7 +154,7 @@ $ echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh
 
 ''''
 
-==== 10. MailerTemplate
+==== 9. MailerTemplate
 
 Standart MailerTemplate Folder is:
 ----
@@ -223,28 +166,28 @@ This is how MailerTemplates looks like: +https://github.com/ipa320/jenkins_setup
 
 ''''
 
-==== 11. Tarball Server
+==== 10. Tarball Server
 ----
 $ mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>
 ----
 
 ''''
 
-==== 12. Slave Configuration
+==== 11. Slave Configuration
 
-===== 12.1 Sudo commands without password
+===== 11.1 Sudo commands without password
 
-===== 12.2 SSH access without password
+===== 11.2 SSH access without password
 
-===== 12.3 Pbuilder
+===== 11.3 Pbuilder
 
-===== 12.4 
+===== 11.4 
 
 *TODO!!!*
 
 ''''
 
-==== 13. The Pipeline
+==== 12. The Pipeline
 
 *TODO!!!*
 
