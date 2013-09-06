@@ -35,22 +35,12 @@ Java HotSpot(TM) Client VM (build 20.10-b01, mixed mode, sharing)
 
 ===== 1.3.2 Install Java JRE6
 ----
-$ sudo apt-get install openjdk-6-jre icedtea6-plugin 
-----
-
-===== 1.3.3 Install Java JDK6
-----
-$ sudo apt-get install openjdk-6-jdk openjdk-6-source openjdk-6-doc openjdk-6-jre-headless openjdk-6-jre-lib 
+$ sudo apt-get install openjdk-6-jre
 ----
 
 ===== 1.3.4 Install Java JRE7
 ----
-$ sudo apt-get install openjdk-7-jre icedtea-7-plugin
-----
-
-===== 1.3.4 Install Java JDK7
-----
-$ sudo apt-get install openjdk-7-jdk openjdk-7-source openjdk-7-doc openjdk-7-jre-headless openjdk-7-jre-lib
+$ sudo apt-get install openjdk-7-jre
 ----
 
 ===== 1.4 Git
