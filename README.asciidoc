@@ -74,7 +74,7 @@ _After a successful installation you can access the JenkinsServer in your browse
 
 ''''
 
-==== 3. Configure Jenkins
+==== 3. Configure the Jenkins Server
 
 *TODO!!!*
 
@@ -86,5 +86,13 @@ Went to +http://localhost:8080/pluginManager/available+ and "check" the wanted P
 
 The Jenkins PlugIns are listed here: +https://wiki.jenkins-ci.org/display/JENKINS/Plugins+
 
+
+''''
+
+==== Master Configuration
+
+''''
+
+==== Slave Configuration
 
 ''''
