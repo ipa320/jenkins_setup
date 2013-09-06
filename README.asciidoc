@@ -93,7 +93,7 @@ After a successful installation you can access the Jenkins-Server in your browse
 
 ''''
 
-==== 3. Configure the Jenkins-Server
+==== 3. Jenkins Configuration
 
 *TODO!!!*
 
