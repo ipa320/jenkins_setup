@@ -139,7 +139,7 @@ $ /etc/init.d/jenkins stop
 $ /etc/init.d/jenkins start
 ----
 
-After a successful installation you can access the Jenkins-Server in your browser on: +http://localhost:8080+
+After a successfull installation you can access the Jenkins-Server in your browser: +http://localhost:8080+
 
 ''''
 
