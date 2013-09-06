@@ -18,6 +18,8 @@ Windows
 - Solaris/OpenIndiana
 - Gentoo
 
+This Guide proceed for an Ubuntu 12.04 "LTS" environment...
+
 ===== 1.2 Robotic Operating System
 Install ROS. You can find the Guide here: ++
 
@@ -64,29 +66,10 @@ $ sudo apt-get install jenkins
 ----
 Individual Package Downloads: +http://pkg.jenkins-ci.org/debian/+
 
-===== 2.2 RedHat Linux RPM packages "RedHat/Fedora/CentOS"
-----
-$ sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
-$ sudo rpm --import http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key
-----
-----
-$ yum install jenkins
-----
-Individual Package Downloads: +http://pkg.jenkins-ci.org/redhat//+
+===== 2.2 Up and Downgrade
+Upgrade to v1.514
 
-===== 2.3 openSUSE Linux RPM packages
-----
-$ sudo zypper addrepo http://pkg.jenkins-ci.org/opensuse/ jenkins
-----
-----
-$ zypper install jenkins
-----
-Individual Package Downloads: +http://pkg.jenkins-ci.org/opensuse/+
-
-===== 2.4 Up and Downgrade
-Upgrade to v1.514 in an "Ubuntu 12.04 LTS" environment
-
-you can find the war file here: +http://mirrors.jenkins-ci.org/war/+
+You can find the war file here: +http://mirrors.jenkins-ci.org/war/+
 
 ----
 $ cd /user/share/jenkins/
