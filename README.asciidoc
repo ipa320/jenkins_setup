@@ -7,6 +7,17 @@
 ===== 1.1 Operating System
 Install the Operating System of your choice for your Server.
 
+Supported OS are:
+- Windows
+- Ubuntu/Debian
+- Red Hat/Fedora/CentOS
+- Mac OS X
+- openSUSE
+- FreeBSD
+- OpenBSD
+- Solaris/OpenIndiana
+- Gentoo
+
 ===== 1.2 Robotic Operating System
 Install ROS. You can find the Guide here: ++
 
