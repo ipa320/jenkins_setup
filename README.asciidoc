@@ -112,3 +112,7 @@ For more information visit the Jenkins Wiki for PlugIns: +https://wiki.jenkins-c
 ==== Slave Configuration
 
 ''''
+
+==== IPA Configuration
+
+''''
