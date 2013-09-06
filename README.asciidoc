@@ -22,53 +22,14 @@ Java(TM) SE Runtime Environment (build 1.6.0_35-b10)
 Java HotSpot(TM) Client VM (build 20.10-b01, mixed mode, sharing)
 ----
 
-===== 1.3.2 Find out your System-Architecture:
+===== 1.3.2 Install Java JRE
 ----
-$ lscpu | grep Architecture
-----
-_Output example:_
-----
-Architecture:          x86_64 (= 64-Bit)
+$ sudo apt-get install openjdk-7-jre icedtea-7-plugin
 ----
 
-===== 1.3.3 Install Java 6 JRE
-32-Bit: ^jre-6uVERSION-linux-i586.bin^
-
-64-Bit: ^jre-6uVERSION-linux-x64.bin^
-
-After the download of the file:
+===== 1.3.3 Install Java JDK
 ----
-$ sudo mkdir -p /opt/Oracle_Java
-----
-----
-*for 32bit*
-$ sudo mv ~/Downloads/jre-6uVERSION-linux-i586.bin /opt/Oracle_Java
-*for 64bit*
-$ sudo mv ~/Downloads/jre-6uVERSION-linux-x64.bin /opt/Oracle_Java 
-----
-----
-*for 32bit*
-$ sudo chmod 755 /opt/Oracle_Java/jre-6uVERSION-linux-i586.bin 
-*for 64bit*
-$ sudo chmod 755 /opt/Oracle_Java/jre-6uVERSION-linux-x64.bin
-----
-----
-$ cd /opt/Oracle_Java 
-----
-----
-*for 32bit*
-$ sudo ./jre-6uVERSION-linux-i586.bin 
-*for 64bit*
-$ sudo ./jre-6uVERSION-linux-x64.bin 
-----
-----
-*for 32bit*
-$ sudo rm /opt/Oracle_Java/jre-6uVERSION-linux-i586.bin 
-*for 64bit*
-$ sudo rm /opt/Oracle_Java/jre-6uVERSION-linux-x64.bin
-----
-----
-$ sudo update-alternatives --install "/usr/bin/java" "java" "/opt/Oracle_Java/jre1.6.0_VERSION/bin/java" 1
+$ sudo apt-get install openjdk-7-jdk openjdk-7-source openjdk-7-doc openjdk-7-jre-headless openjdk-7-jre-lib
 ----
 
 ===== 1.4 Git
