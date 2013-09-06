@@ -46,6 +46,9 @@ $ sudo apt-get install openjdk-7-jre
 ----
 
 ===== 1.4 Git
+----
+$ sudo apt-get install git-core
+----
 
 ''''
 
