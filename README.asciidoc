@@ -61,7 +61,7 @@ _After a successful installation you can access the JenkinsServer in your browse
 
 ''''
 
-==== 2. Jenkin PlugIns Installation
+==== 2. Jenkins PlugIns Installation
 
 Went to +http://localhost:8080/pluginManager/available+ and "check" the wanted PlugIns for installation.
 
@@ -74,6 +74,7 @@ The Jenkins PlugIns are here listed: +https://wiki.jenkins-ci.org/display/JENKIN
 
 *TODO!!!*
 
+''''
 ''''
 
 ==== 4. Configure PlugIns
