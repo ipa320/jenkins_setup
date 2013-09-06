@@ -8,7 +8,7 @@
 Install the Operating System of your choice for your Server.
 
 Supported OS are:
-- Windows
+Windows
 - Ubuntu/Debian
 - Red Hat/Fedora/CentOS
 - Mac OS X
