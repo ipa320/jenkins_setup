@@ -11,12 +11,28 @@ Install the Operating System of your choice for your Server.
 Install ROS. You can find the Guide here: ++
 
 ===== 1.3 Java Runtime Environment
-To check your Java Version:
+===== 1.3.1 Check your Java Version:
 ----
 $ java -version
 ----
+*Output example:*
+----
+java version "1.6.0_35"
+Java(TM) SE Runtime Environment (build 1.6.0_35-b10)
+Java HotSpot(TM) Client VM (build 20.10-b01, mixed mode, sharing)
+----
 
-Install Java:
+===== 1.3.2 Find out your System-Architecture:
+----
+$ lscpu | grep Architecture
+----
+*Output example:*
+----
+Architecture:          x86_64 (= 64-Bit)
+----
+
+===== 1.3.3 Install Java 6 JRE
+
 
 ===== 1.4 Git
 
