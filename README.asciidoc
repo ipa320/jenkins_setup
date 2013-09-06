@@ -52,9 +52,10 @@ $ sudo wget http://mirrors.jenkins-ci.org/war/1.514/jenkins.war
 $ /etc/init.d/jenkins restart
 ----
 
-===== 1.5 Start the JenkinsServer
+===== 1.5 Start and stop the Jenkins Server
 ----
-$ sudo service jenkins start
+$ /etc/init.d/jenkins stop
+$ /etc/init.d/jenkins start
 ----
 
 _After a successful installation you can access the JenkinsServer in your browser on:_ +http://localhost:8080+
