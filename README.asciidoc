@@ -16,7 +16,9 @@ Windows
 - Solaris/OpenIndiana
 - Gentoo
 
-This Guide proceed for an Ubuntu 12.04 "LTS" environment...
+Installation Guide for Ubuntu-Server: +http://+
+
+This Guide proceed for an Debian/Ubuntu environment...
 
 ==== 1.2 Java Runtime Environment
 
@@ -75,7 +77,7 @@ $ export JENKINS_HOME=/var/jenkins-data
 $ java -jar ${JENKINS_BASE}/jenkins.war
 ----
 
-==== 2.1 Debian packages "Ubuntu/Debian"
+==== 2.1 Debian packages "Debian/Ubuntu"
 ----
 $ wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
 $ sudo echo "deb http://pkg.jenkins-ci.org/debian binary/" > /etc/apt/sources.list.d/jenkins.list
