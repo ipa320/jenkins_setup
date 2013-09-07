@@ -177,7 +177,7 @@ $ export ANT_OPTS="-Xm512m -XX:MaxPermSize=256m"
 
 === 3. Jenkins Configuration
 
-==== 3.1 Global Properties
+==== 3.1 Configure Global Security
 First off all went to +http://84.200.213.96:8080/configureSecurity/?+ and check under *Security Realm*
 "Jenkins’s own user database".
 
