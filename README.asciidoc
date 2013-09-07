@@ -136,6 +136,8 @@ $ sudo wget http://mirrors.jenkins-ci.org/war/1.514/jenkins.war
 $ /etc/init.d/jenkins restart
 ----
 
+After a successfull installation you can access the Jenkins-Server in your browser: +http://localhost:8080+
+
 ==== 2.3 Port Configuration
 By Stand-Alone Application you can define the Port with this command:
 ----
@@ -170,8 +172,6 @@ $ export JAVA_OPTS=-Djava.awt.headless=true -Xmx512m -DJENKINS_HOME=/data/jenkin
 $ export MAVEN_OPTS="-Xm512m -XX:MaxPermSize=256m"
 $ export ANT_OPTS="-Xm512m -XX:MaxPermSize=256m"
 ----
-
-After a successfull installation you can access the Jenkins-Server in your browser: +http://localhost:8080+
 
 ''''
 
