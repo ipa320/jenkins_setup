@@ -227,7 +227,7 @@ For more information visit the Jenkins Wiki for PlugIns: +https://wiki.jenkins-c
 
 ''''
 
-=== 6. Setting up the Build Jobs
+=== 6. Build Jobs
 
 ==== 6.1 Creating a Build Job
 *TODO*
