@@ -190,7 +190,13 @@ Register with the admin user name you give and insert the password of your choic
 Now your Server is secured standart. You can also use the listed "security methods".
 
 ==== 3.2 System Configuration
-*TODO*
+Under +http://localhost:8080/configure+ you can configure your Jenkins-Server.
+
+On the top you can see where Jenkins have the Home Directory. 
+
+In System Message you can create a Welcome Message for your Jenkins-Server.
+
+On this site will be listed the PlugIn configuration options too!
 
 ==== 3.3 JDKs
 *TODO*
