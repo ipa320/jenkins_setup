@@ -185,7 +185,6 @@ On this site will be listed the PlugIn configuration options too!
 *TODO!!!*
 
 ==== 3.4 Build Tools
-*TODO!!!*
 
 ===== 3.4.1 Ant
 *TODO!!!*
