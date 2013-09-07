@@ -187,6 +187,8 @@ Than under *Authorization* "Project-based Matrix Authorization Strategy" and add
 After that click save and the Jenkins Server will prompt you to register.
 Register with the admin user name you give and insert the password of your choice.
 
+Now your Server is secured standart. You can also use the listed "security methods".
+
 ==== 3.2 System Configuration
 *TODO*
 
