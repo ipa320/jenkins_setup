@@ -176,7 +176,6 @@ After a successfull installation you can access the Jenkins-Server in your brows
 ''''
 
 === 3. Jenkins Configuration
-*TODO*
 
 ==== 3.1 System Environment
 *TODO*
@@ -216,7 +215,6 @@ For more information visit the Jenkins Wiki for PlugIns: +https://wiki.jenkins-c
 ''''
 
 === 5. IPA Configuration
-*TODO*
 
 ==== 5.1 Master
 *TODO*
@@ -224,10 +222,12 @@ For more information visit the Jenkins Wiki for PlugIns: +https://wiki.jenkins-c
 ==== 5.2 Slave
 *TODO*
 
+==== 5.3 The Cob-Pipeline
+*TODO*
+
 ''''
 
 === 6. Setting up the Build Jobs
-*TODO*
 
 ==== 6.1 Creating a Build Job
 *TODO*
