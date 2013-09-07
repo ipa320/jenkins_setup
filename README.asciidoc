@@ -7,16 +7,16 @@ Install the Operating System of your choice for your Server.
 
 Supported OS are:
 Windows
-- Ubuntu/Debian
+- Debian/Ubuntu
 - Red Hat/Fedora/CentOS
-- Mac OS X
+- MacOS X
 - openSUSE
 - FreeBSD
 - OpenBSD
 - Solaris/OpenIndiana
 - Gentoo
 
-Installation Guide for Ubuntu-Server: +http://+
+Installation Guide for Debian/Ubuntu-Server: +http://+
 
 This Guide proceed for an Debian/Ubuntu environment...
 
