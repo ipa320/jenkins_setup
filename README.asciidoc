@@ -135,7 +135,7 @@ $ /etc/init.d/jenkins start
 ----
 
 ==== 2.7 Memory Considerations
-Define the JAVA_OPTS, MAVEN_OPTS and ANT_OPTS:
+Define the ^JAVA_OPTS^, ^MAVEN_OPTS^ and ^ANT_OPTS^:
 ----
 $ export JAVA_OPTS=-Djava.awt.headless=true -Xmx512m -DJENKINS_HOME=/data/jenkins
 $ export MAVEN_OPTS="-Xm512m -XX:MaxPermSize=256m"
@@ -147,16 +147,27 @@ $ export ANT_OPTS="-Xm512m -XX:MaxPermSize=256m"
 === 3. Jenkins Configuration
 
 ==== 3.1 Configure Global Security
-First off all went to +http://localhost:8080/configureSecurity/?+ and check under *Security Realm* section
-"Jenkins’s own user database".
+First off all went to +http://localhost:8080/configureSecurity/?+
 
-Than under *Authorization* section "Project-based Matrix Authorization Strategy" and add an Admin-User by give them the option
-"Administer" in the table.
+The *Access Control* section gives the opportunity to select the *Security Realm* which defines how the users can login.
 
-After that click save and the Jenkins Server will prompt you to register.
-Register with the admin user name you give and insert the password of your choice.
+Check *Jenkins's own user database*.
 
-Now your Server is secured standart. You can also use the listed "security methods".
+The easiest way is to use *Jenkins's own user database*.
+Now you can decide if every user can sign up or if the admin has to do this.
+
+In the *Authorization* subsection you can define the permission a specific user or a user group gets granted.
+Therefore choose the *Project-based Matrix Authorization Strategy*.
+
+Now add an Admin-User and give them all rights!
+
+You have to give permissions to at least the Anonymous and the authenticated user group and an admin user.
+The latter two have to be added to the matrix.
+
+Every user will automatically get the permission to see the workspace of all its own jobs.
+For the 'Pipestarter' and 'Trigger' job it will also has 'Build'-permission.
+
+If you want to grant further permissions or give special permissions to individual users or user groups you can do it.
 
 ==== 3.2 System Configuration
 Under +http://localhost:8080/configure+ you can configure your Jenkins-Server.
