@@ -18,6 +18,8 @@ Windows
 
 Installation Guide for Debian/Ubuntu-Server: +http://+
 
+Installation Guide for Debian/Ubuntu-Client: +http://+
+
 This Guide proceed for an Debian/Ubuntu environment...
 
 ==== 1.2 Java Runtime Environment
