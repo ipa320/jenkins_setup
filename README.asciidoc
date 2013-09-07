@@ -239,6 +239,9 @@ $ sudo apt-get install ros-groovy-openni*
 ==== 5.4 The Cob-Pipeline
 *TODO!!!*
 
+==== 5.5 PlugIns
+*TODO!!!*
+
 ''''
 
 === 6. Build Jobs
