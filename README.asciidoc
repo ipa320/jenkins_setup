@@ -18,54 +18,9 @@ Windows
 
 This Guide proceed for an Ubuntu 12.04 "LTS" environment...
 
-==== 1.2 Robotic Operating System
+==== 1.2 Java Runtime Environment
 
-===== 1.2.1 Install ROS "fuerte" and "groovy"
-----
-$ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
-$ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
-$ sudo apt-get update
-----
-----
-$ sudo apt-get install ros-fuerte-desktop-full
-$ sudo apt-get install ros-groovy-desktop-full
-----
-----
-$ sudo rosdep init
-$ rosdep update
-----
-
-===== 1.2.2 Environment setup
-----
-# for fuerte
-$ echo "source /opt/ros/fuerte/setup.bash" >> ~/.bashrc
-$ source ~/.bashrc
-----
-----
-# for groovy
-$ echo "source /opt/ros/groovy/setup.bash" >> ~/.bashrc
-$ source ~/.bashrc
-----
-if you just want to change the environment of your current shell, you can type:
-----
-# for fuerte
-$ source /opt/ros/fuerte/setup.bash
-----
-----
-# for groovy
-$ source /opt/ros/groovy/setup.bash
-----
-
-===== 1.2.3 Install additional tools
-----
-$ sudo apt-get install python-rosinstall python-rosdep
-$ sudo apt-get install python-setuptools ogre-tools ros-groovy-diagnostics-monitors
-$ sudo apt-get install ros-groovy-rxtools ros-groovy-pr2-* ros-groovy-client-rosjava-jni
-$ sudo apt-get install ros-groovy-openni*
-----
-
-==== 1.3 Java Runtime Environment
-===== 1.3.1 Check your Java Version:
+===== 1.2.1 Check your Java Version:
 ----
 $ java -version
 ----
@@ -76,24 +31,24 @@ Java(TM) SE Runtime Environment (build 1.6.0_35-b10)
 Java HotSpot(TM) Client VM (build 20.10-b01, mixed mode, sharing)
 ----
 
-===== 1.3.2 Install Java6
+===== 1.2.2 Install Java6
 ----
 $ sudo apt-get install openjdk-6-jre
 $ sudo apt-get install openjdk-6-jdk openjdk-6-source openjdk-6-doc openjdk-6-jre-headless openjdk-6-jre-lib 
 ----
 
-===== 1.3.4 Install Java7
+===== 1.2.4 Install Java7
 ----
 $ sudo apt-get install openjdk-7-jre
 $ sudo apt-get install openjdk-7-jdk openjdk-7-source openjdk-7-doc openjdk-7-jre-headless openjdk-7-jre-lib
 ----
 
-==== 1.4 Git
+==== 1.3 Git
 ----
 $ sudo apt-get install git-core
 ----
 
-==== 1.5 Maven
+==== 1.4 Maven
 ----
 $ sudo apt-get update && sudo apt-get install maven
 ----
@@ -229,13 +184,59 @@ For more information visit the Jenkins Wiki for PlugIns: +https://wiki.jenkins-c
 
 === 5. IPA Configuration
 
-==== 5.1 Master
+==== 5.1 Robotic Operating System
+
+===== 5.1.1 Install ROS "fuerte" and "groovy"
+----
+$ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
+$ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+$ sudo apt-get update
+----
+----
+$ sudo apt-get install ros-fuerte-desktop-full
+$ sudo apt-get install ros-groovy-desktop-full
+----
+----
+$ sudo rosdep init
+$ rosdep update
+----
+
+===== 5.1.2 Environment setup
+----
+# for fuerte
+$ echo "source /opt/ros/fuerte/setup.bash" >> ~/.bashrc
+$ source ~/.bashrc
+----
+----
+# for groovy
+$ echo "source /opt/ros/groovy/setup.bash" >> ~/.bashrc
+$ source ~/.bashrc
+----
+if you just want to change the environment of your current shell, you can type:
+----
+# for fuerte
+$ source /opt/ros/fuerte/setup.bash
+----
+----
+# for groovy
+$ source /opt/ros/groovy/setup.bash
+----
+
+===== 5.1.3 Install additional tools
+----
+$ sudo apt-get install python-rosinstall python-rosdep
+$ sudo apt-get install python-setuptools ogre-tools ros-groovy-diagnostics-monitors
+$ sudo apt-get install ros-groovy-rxtools ros-groovy-pr2-* ros-groovy-client-rosjava-jni
+$ sudo apt-get install ros-groovy-openni*
+----
+
+==== 5.2 Master
 *TODO*
 
-==== 5.2 Slave
+==== 5.3 Slave
 *TODO*
 
-==== 5.3 The Cob-Pipeline
+==== 5.4 The Cob-Pipeline
 *TODO*
 
 ''''
