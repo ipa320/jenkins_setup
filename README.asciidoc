@@ -1,10 +1,10 @@
-=== Jenkins Guide
+== Jenkins Guide
 
 ''''
 
-==== 1. Prerequisites
+=== 1. Prerequisites
 
-===== 1.1 Operating System
+==== 1.1 Operating System
 Install the Operating System of your choice for your Server.
 
 Supported OS are:
@@ -20,7 +20,7 @@ Windows
 
 This Guide proceed for an Ubuntu 12.04 "LTS" environment...
 
-===== 1.2 Robotic Operating System
+==== 1.2 Robotic Operating System
 
 ===== 1.2.1 Install ROS "fuerte" and "groovy"
 ----
@@ -66,7 +66,7 @@ $ sudo apt-get install ros-groovy-rxtools ros-groovy-pr2-* ros-groovy-client-ros
 $ sudo apt-get install ros-groovy-openni*
 ----
 
-===== 1.3 Java Runtime Environment
+==== 1.3 Java Runtime Environment
 ===== 1.3.1 Check your Java Version:
 ----
 $ java -version
@@ -90,19 +90,19 @@ $ sudo apt-get install openjdk-7-jre
 $ sudo apt-get install openjdk-7-jdk openjdk-7-source openjdk-7-doc openjdk-7-jre-headless openjdk-7-jre-lib
 ----
 
-===== 1.4 Git
+==== 1.4 Git
 ----
 $ sudo apt-get install git-core
 ----
 
-===== 1.5 Maven
+==== 1.5 Maven
 ----
 $ sudo apt-get update && sudo apt-get install maven
 ----
 
 ''''
 
-==== 2. Jenkins Installation
+=== 2. Jenkins Installation
 
 Define standart directories:
 ----
@@ -111,7 +111,7 @@ $ export JENKINS_HOME=/var/jenkins-data
 $ java -jar ${JENKINS_BASE}/jenkins.war
 ----
 
-===== 2.1 Debian packages "Ubuntu/Debian"
+==== 2.1 Debian packages "Ubuntu/Debian"
 ----
 $ wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
 $ sudo echo "deb http://pkg.jenkins-ci.org/debian binary/" > /etc/apt/sources.list.d/jenkins.list
@@ -122,7 +122,7 @@ $ sudo apt-get update && sudo apt-get install -y jenkins
 
 Individual Package Downloads: +http://pkg.jenkins-ci.org/debian/+
 
-===== 2.2 Up and Downgrade
+==== 2.2 Up and Downgrade
 Upgrade to v1.514
 
 You can find the war file here: +http://mirrors.jenkins-ci.org/war/+
@@ -136,7 +136,7 @@ $ sudo wget http://mirrors.jenkins-ci.org/war/1.514/jenkins.war
 $ /etc/init.d/jenkins restart
 ----
 
-===== 2.3 Port Configuration
+==== 2.3 Port Configuration
 By Stand-Alone Application you can define the Port with this command:
 ----
 $ java -jar jenkins.war --httpPort=8081
@@ -157,13 +157,13 @@ Runing behind an Apache-Server
 $ java -jar jenkins.war --httpPort=8081 --ajp13Port=8010 --prefix=jenkins
 ----
 
-===== 2.4 Start and stop the Jenkins-Server on an Application-Server
+==== 2.4 Start and stop the Jenkins-Server on an Application-Server
 ----
 $ /etc/init.d/jenkins stop
 $ /etc/init.d/jenkins start
 ----
 
-===== 2.5 Memory Considerations
+==== 2.5 Memory Considerations
 Define the JAVA_OPTS, MAVEN_OPTS and ANT_OPTS:
 ----
 $ export JAVA_OPTS=-Djava.awt.headless=true -Xmx512m -DJENKINS_HOME=/data/jenkins
@@ -175,15 +175,15 @@ After a successfull installation you can access the Jenkins-Server in your brows
 
 ''''
 
-==== 3. Jenkins Configuration
+=== 3. Jenkins Configuration
 
-===== 3.1 System Environment
+==== 3.1 System Environment
 
-===== 3.2 Global Properties
+==== 3.2 Global Properties
 
-===== 3.3 JDKs
+==== 3.3 JDKs
 
-===== 3.4 Build Tools
+==== 3.4 Build Tools
 
 ===== 3.4.1 Ant
 
@@ -191,13 +191,13 @@ After a successfull installation you can access the Jenkins-Server in your brows
 
 ===== 3.4.3 Shell-Scripting
 
-===== 3.5 Version Control Tools
+==== 3.5 Version Control Tools
 
-===== 3.6 Mail-Server
+==== 3.6 Mail-Server
 
 ''''
 
-==== 4. Jenkins-PlugIns Installation
+=== 4. Jenkins-PlugIns Installation
 
 Went to +http://localhost:8080/pluginManager/available+ and "check" the wanted PlugIns for installation.
 
@@ -205,10 +205,48 @@ For more information visit the Jenkins Wiki for PlugIns: +https://wiki.jenkins-c
 
 ''''
 
-==== 5. IPA Configuration
+=== 5. IPA Configuration
 
-===== 5.1 Master
+==== 5.1 Master
 
-===== 5.2 Slave
+==== 5.2 Slave
+
+''''
+
+=== 6. Setting up the Build Jobs
+
+==== 6.1 Creating a Build Job
+
+===== 6.1.1 General Options
+
+===== 6.1.2 Advanced Project Options
+
+==== 6.2 Configuring Source Code Management
+
+===== 6.2.1 Subversion
+
+===== 6.2.2 Git
+
+==== 6.3 Build Triggers
+
+===== 6.3.1 Scheduled Build Jobs
+
+===== 6.3.2 Polling the SCM
+
+===== 6.3.3 Triggering Builds Remotely
+
+===== 6.3.4 Manual Build Jobs
+
+==== 6.4 Build Steps
+
+===== 6.4.1 Ant Build Steps
+
+===== 6.4.2 Maven Build Steps
+
+===== 6.4.3 Executing a Shell or Windows Batch Command
+
+===== 6.4.4 Using Jenkins Environment Variables in Builds
+
+===== 6.4.5 Runing Groovy Scripts
 
 ''''
