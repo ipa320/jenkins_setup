@@ -73,7 +73,7 @@ $ export JAVA_HOME=/usr/local/java/<YOUR JAVA VERSION> *like: jdk1.6.0
 $ export PATH=$JAVA_HOME/bin:$PATH
 ----
 
-==== 2.2Define Standart Directories
+==== 2.2 Define Standart Directories
 ----
 $ export JENKINS_BASE=/usr/local/jenkins
 $ export JENKINS_HOME=/var/jenkins-data
