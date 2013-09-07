@@ -176,24 +176,34 @@ After a successfull installation you can access the Jenkins-Server in your brows
 ''''
 
 === 3. Jenkins Configuration
+*TODO*
 
 ==== 3.1 System Environment
+*TODO*
 
 ==== 3.2 Global Properties
+*TODO*
 
 ==== 3.3 JDKs
+*TODO*
 
 ==== 3.4 Build Tools
+*TODO*
 
 ===== 3.4.1 Ant
+*TODO*
 
 ===== 3.4.2 Maven
+*TODO*
 
 ===== 3.4.3 Shell-Scripting
+*TODO*
 
 ==== 3.5 Version Control Tools
+*TODO*
 
 ==== 3.6 Mail-Server
+*TODO*
 
 ''''
 
@@ -206,47 +216,68 @@ For more information visit the Jenkins Wiki for PlugIns: +https://wiki.jenkins-c
 ''''
 
 === 5. IPA Configuration
+*TODO*
 
 ==== 5.1 Master
+*TODO*
 
 ==== 5.2 Slave
+*TODO*
 
 ''''
 
 === 6. Setting up the Build Jobs
+*TODO*
 
 ==== 6.1 Creating a Build Job
+*TODO*
 
 ===== 6.1.1 General Options
+*TODO*
 
 ===== 6.1.2 Advanced Project Options
+*TODO*
 
 ==== 6.2 Configuring Source Code Management
+*TODO*
 
 ===== 6.2.1 Subversion
+*TODO*
 
 ===== 6.2.2 Git
+*TODO*
 
 ==== 6.3 Build Triggers
+*TODO*
 
 ===== 6.3.1 Scheduled Build Jobs
+*TODO*
 
 ===== 6.3.2 Polling the SCM
+*TODO*
 
 ===== 6.3.3 Triggering Builds Remotely
+*TODO*
 
 ===== 6.3.4 Manual Build Jobs
+*TODO*
 
 ==== 6.4 Build Steps
+*TODO*
 
 ===== 6.4.1 Ant Build Steps
+*TODO*
 
 ===== 6.4.2 Maven Build Steps
+*TODO*
 
 ===== 6.4.3 Executing a Shell or Windows Batch Command
+*TODO*
 
 ===== 6.4.4 Using Jenkins Environment Variables in Builds
+*TODO*
 
 ===== 6.4.5 Runing Groovy Scripts
+*TODO*
 
 ''''
