@@ -107,16 +107,12 @@ $ sudo apt-get update && sudo apt-get install maven
 ===== 2.1 Debian packages "Ubuntu/Debian"
 ----
 $ wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
+$ sudo echo "deb http://pkg.jenkins-ci.org/debian binary/" > /etc/apt/sources.list.d/jenkins.list
 ----
 ----
-$ sudo nano /etc/apt/sources.list
-# add the following entry:
-deb http://pkg.jenkins-ci.org/debian binary/
+$ sudo apt-get update && sudo apt-get install -y jenkins
 ----
-----
-$ sudo apt-get update
-$ sudo apt-get install jenkins
-----
+
 Individual Package Downloads: +http://pkg.jenkins-ci.org/debian/+
 
 ===== 2.2 Up and Downgrade
@@ -145,7 +141,7 @@ After a successfull installation you can access the Jenkins-Server in your brows
 
 ==== 3. Jenkins Configuration
 
-*TODO!!!*
+===== 3.1 
 
 ''''
 
