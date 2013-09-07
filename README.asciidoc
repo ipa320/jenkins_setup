@@ -178,7 +178,7 @@ $ export ANT_OPTS="-Xm512m -XX:MaxPermSize=256m"
 === 3. Jenkins Configuration
 
 ==== 3.1 Configure Global Security
-First off all went to +http://84.200.213.96:8080/configureSecurity/?+ and check under *Security Realm*
+First off all went to +http://localhost:8080/configureSecurity/?+ and check under *Security Realm*
 "Jenkins’s own user database".
 
 Than under *Authorization* "Project-based Matrix Authorization Strategy" and add an Admin-User by give them the option
