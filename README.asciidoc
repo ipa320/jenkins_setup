@@ -161,6 +161,9 @@ Therefore choose the *Project-based Matrix Authorization Strategy*.
 
 Now add an Admin-User and give them all rights!
 
+After click save the Server will throw you to a Login screen. Just register with the username of the admin you insert in
+the table.
+
 You have to give permissions to at least the Anonymous and the authenticated user group and an admin user.
 The latter two have to be added to the matrix.
 
