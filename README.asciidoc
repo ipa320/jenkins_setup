@@ -56,6 +56,17 @@ $ sudo apt-get update && sudo apt-get install maven
 ''''
 
 === 2. Jenkins Installation
+For isolated environment use:
+----
+$ sudo groupadd build
+$ sudo adduser --create-home --shell /bin/bash --groups build jenkins
+----
+
+Define your JAVA_HOME:
+----
+$ export JAVA_HOME=/usr/local/java/<YOUR JAVA VERSION> *like: jdk1.6.0
+$ export PATH=$JAVA_HOME/bin:$PATH
+----
 
 Define standart directories:
 ----
