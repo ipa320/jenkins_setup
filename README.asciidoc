@@ -144,7 +144,7 @@ By Stand-Alone Application you can define the Port with this command:
 $ java -jar jenkins.war --httpPort=8081
 ----
 
-if you run more Applications on the Server, you have to override the ajp13 Port:
+If you run more Applications on the Server, you have to override the ajp13 Port:
 ----
 $ java -jar jenkins.war --httpPort=8081 --ajp13Port=8010
 ----
