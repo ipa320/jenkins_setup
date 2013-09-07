@@ -152,25 +152,25 @@ In System Message you can create a Welcome Message for your Jenkins-Server.
 On this site will be listed the PlugIn configuration options too!
 
 ==== 3.3 JDKs
-*TODO*
+*TODO!!!*
 
 ==== 3.4 Build Tools
-*TODO*
+*TODO!!!*
 
 ===== 3.4.1 Ant
-*TODO*
+*TODO!!!*
 
 ===== 3.4.2 Maven
-*TODO*
+*TODO!!!*
 
 ===== 3.4.3 Shell-Scripting
-*TODO*
+*TODO!!!*
 
 ==== 3.5 Version Control Tools
-*TODO*
+*TODO!!!*
 
 ==== 3.6 Mail-Server
-*TODO*
+*TODO!!!*
 
 ''''
 
@@ -231,67 +231,67 @@ $ sudo apt-get install ros-groovy-openni*
 ----
 
 ==== 5.2 Master
-*TODO*
+*TODO!!!*
 
 ==== 5.3 Slave
-*TODO*
+*TODO!!!*
 
 ==== 5.4 The Cob-Pipeline
-*TODO*
+*TODO!!!*
 
 ''''
 
 === 6. Build Jobs
 
 ==== 6.1 Creating a Build Job
-*TODO*
+*TODO!!!*
 
 ===== 6.1.1 General Options
-*TODO*
+*TODO!!!*
 
 ===== 6.1.2 Advanced Project Options
-*TODO*
+*TODO!!!*
 
 ==== 6.2 Configuring Source Code Management
-*TODO*
+*TODO!!!*
 
 ===== 6.2.1 Subversion
-*TODO*
+*TODO!!!*
 
 ===== 6.2.2 Git
-*TODO*
+*TODO!!!*
 
 ==== 6.3 Build Triggers
-*TODO*
+*TODO!!!*
 
 ===== 6.3.1 Scheduled Build Jobs
-*TODO*
+*TODO!!!*
 
 ===== 6.3.2 Polling the SCM
-*TODO*
+*TODO!!!*
 
 ===== 6.3.3 Triggering Builds Remotely
-*TODO*
+*TODO!!!*
 
 ===== 6.3.4 Manual Build Jobs
-*TODO*
+*TODO!!!*
 
 ==== 6.4 Build Steps
-*TODO*
+*TODO!!!*
 
 ===== 6.4.1 Ant Build Steps
-*TODO*
+*TODO!!!*
 
 ===== 6.4.2 Maven Build Steps
-*TODO*
+*TODO!!!*
 
 ===== 6.4.3 Executing a Shell or Windows Batch Command
-*TODO*
+*TODO!!!*
 
 ===== 6.4.4 Using Jenkins Environment Variables in Builds
-*TODO*
+*TODO!!!*
 
 ===== 6.4.5 Runing Groovy Scripts
-*TODO*
+*TODO!!!*
 
 ''''
