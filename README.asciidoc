@@ -104,6 +104,13 @@ $ sudo apt-get update && sudo apt-get install maven
 
 ==== 2. Jenkins Installation
 
+Define standart directories:
+----
+$ export JENKINS_BASE=/usr/local/jenkins
+$ export JENKINS_HOME=/var/jenkins-data
+$ java -jar ${JENKINS_BASE}/jenkins.war
+----
+
 ===== 2.1 Debian packages "Ubuntu/Debian"
 ----
 $ wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
