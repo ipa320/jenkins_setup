@@ -16,11 +16,11 @@ Windows
 - Solaris/OpenIndiana
 - Gentoo
 
-Installation Guide for Debian/Ubuntu-Server: +http://+
+Installation Guide for Ubuntu-Server: +https://github.com/ipa-fmw-ak/Administration/wiki/01.-Ubuntu-Server-IPA-Guide[Ubuntu Server IPA Guide]+
 
-Installation Guide for Debian/Ubuntu-Client: +http://+
+Installation Guide for Ubuntu-Client: +https://github.com/ipa-fmw-ak/Administration/wiki/02.-Ubuntu-Client---IPA-Guide[Ubuntu Client IPA Guide]+
 
-This Guide proceed for an Debian/Ubuntu environment...
+This Guide proceed for an Ubuntu-Environment...
 
 ==== 1.2 Java Runtime Environment
 
@@ -99,7 +99,7 @@ Upgrade to v1.514
 You can find the war file here: +http://mirrors.jenkins-ci.org/war/+
 
 ----
-$ cd /user/share/jenkins/
+$ cd /usr/share/jenkins/
 $ sudo rm -rf jenkins.war
 $ sudo wget http://mirrors.jenkins-ci.org/war/1.514/jenkins.war
 ----
@@ -137,9 +137,8 @@ $ /etc/init.d/jenkins start
 ----
 
 ==== 2.7 Memory Considerations
-Define the ^JAVA_OPTS^, ^MAVEN_OPTS^ and ^ANT_OPTS^:
+Define the ^MAVEN_OPTS^ and ^ANT_OPTS^:
 ----
-$ export JAVA_OPTS=-Djava.awt.headless=true -Xmx512m -DJENKINS_HOME=/data/jenkins
 $ export MAVEN_OPTS="-Xm512m -XX:MaxPermSize=256m"
 $ export ANT_OPTS="-Xm512m -XX:MaxPermSize=256m"
 ----
@@ -148,7 +147,7 @@ $ export ANT_OPTS="-Xm512m -XX:MaxPermSize=256m"
 
 === 3. Jenkins Configuration
 
-==== 3.1 Configure Global Security
+==== 3.1 Global Security
 First off all went to +http://localhost:8080/configureSecurity/?+
 
 The *Access Control* section gives the opportunity to select the *Security Realm* which defines how the users can login.
@@ -174,33 +173,50 @@ For the 'Pipestarter' and 'Trigger' job it will also has 'Build'-permission.
 
 If you want to grant further permissions or give special permissions to individual users or user groups you can do it.
 
-==== 3.2 System Configuration
+==== 3.2 Manage Jenkins
+
 Under +http://localhost:8080/configure+ you can configure your Jenkins-Server.
 
-On the top you can see where Jenkins have the Home Directory. 
+===== 3.2.1 Basic
 
-In System Message you can create a Welcome Message for your Jenkins-Server.
+- Home Directory
 
-On this site will be listed the PlugIn configuration options too!
+- System Message
 
-==== 3.3 JDKs
+- # of executors
+
+- Quite Period
+
+- SCM Checkout retry count 
+
+===== 3.2.2 Global Properties
 *TODO!!!*
 
-==== 3.4 Build Tools
-
-===== 3.4.1 Ant
+===== 3.2.3 JDKs
 *TODO!!!*
 
-===== 3.4.2 Maven
+===== 3.2.4 Ant
 *TODO!!!*
 
-===== 3.4.3 Shell-Scripting
+===== 3.2.5 Maven
 *TODO!!!*
 
-==== 3.5 Version Control Tools
+===== 3.2.6 Maven Project Configuration
 *TODO!!!*
 
-==== 3.6 Mail-Server
+===== 3.2.7 SSH Server
+*TODO!!!*
+
+===== 3.2.8 CVS
+*TODO!!!*
+
+===== 3.2.9 Subversion
+*TODO!!!*
+
+===== 3.2.10 Shell
+*TODO!!!*
+
+===== 3.2.11 E-Mail Notification
 *TODO!!!*
 
 ''''
@@ -209,57 +225,14 @@ On this site will be listed the PlugIn configuration options too!
 
 Went to +http://localhost:8080/pluginManager/available+ and "check" the wanted PlugIns for installation.
 
-For more information visit the Jenkins Wiki for PlugIns: +https://wiki.jenkins-ci.org/display/JENKINS/Plugins+
+For more information visit the *https://wiki.jenkins-ci.org/display/JENKINS/Plugins[Jenkins Wiki]*
 
 ''''
 
 === 5. IPA Configuration
 
 ==== 5.1 Robotic Operating System
-
-===== 5.1.1 Install ROS "fuerte" and "groovy"
-----
-$ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
-$ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
-$ sudo apt-get update
-----
-----
-$ sudo apt-get install ros-fuerte-desktop-full
-$ sudo apt-get install ros-groovy-desktop-full
-----
-----
-$ sudo rosdep init
-$ rosdep update
-----
-
-===== 5.1.2 Environment setup
-----
-# for fuerte
-$ echo "source /opt/ros/fuerte/setup.bash" >> ~/.bashrc
-$ source ~/.bashrc
-----
-----
-# for groovy
-$ echo "source /opt/ros/groovy/setup.bash" >> ~/.bashrc
-$ source ~/.bashrc
-----
-if you just want to change the environment of your current shell, you can type:
-----
-# for fuerte
-$ source /opt/ros/fuerte/setup.bash
-----
-----
-# for groovy
-$ source /opt/ros/groovy/setup.bash
-----
-
-===== 5.1.3 Install additional tools
-----
-$ sudo apt-get install python-rosinstall python-rosdep
-$ sudo apt-get install python-setuptools ogre-tools ros-groovy-diagnostics-monitors
-$ sudo apt-get install ros-groovy-rxtools ros-groovy-pr2-* ros-groovy-client-rosjava-jni
-$ sudo apt-get install ros-groovy-openni*
-----
++https://github.com/ipa-fmw-ak/Administration/wiki/05.-ROS-Guide[ROS Guide]+
 
 ==== 5.2 Master
 *TODO!!!*
