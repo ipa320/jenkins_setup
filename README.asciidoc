@@ -268,6 +268,21 @@ $ sudo apt-get install ros-groovy-openni*
 *TODO!!!*
 
 ==== 5.4 The Cob-Pipeline
+
+===== 5.4.1 Install the Cob-Pipeline
+
+Download the +*.hpi+ file from +https://github.com/fmw-jk/cob-pipeline-plugin/releases+
+and place it in +<JENKINS_HOME>/plugins+. After that restart your Jenkins-Server.
+
+----
+$ cd /var/jenkins-data/plugins
+$ sudo wget https://github.com/fmw-jk/cob-pipeline-plugin/releases/download/v0.9.5-alpha/cob-pipeline.hpi
+----
+----
+$ /etc/init.d/jenkins restart
+----
+
+===== 5.4.2 Configure the Cob-Pipeline
 *TODO!!!*
 
 ==== 5.5 PlugIns
