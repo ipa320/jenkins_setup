@@ -339,13 +339,13 @@ In this repository all the pipeline configurations are stored.
 Download the *.hpi* file from +https://github.com/fmw-jk/cob-pipeline-plugin/releases+
 and place it in +<JENKINS_HOME>/plugins+.
 ----
-$ cd /var/jenkins-data/plugins
-$ sudo wget https://github.com/fmw-jk/cob-pipeline-plugin/releases/download/v0.9.5-alpha/cob-pipeline.hpi
+cd /var/lib/jenkins/plugins
+sudo wget https://github.com/fmw-jk/cob-pipeline-plugin/releases/download/v0.9.5-alpha/cob-pipeline.hpi
 ----
 
 Restart your Jenkins-Server
 ----
-$ /etc/init.d/jenkins restart
+sudo /etc/init.d/jenkins restart
 ----
 
 ===== 5.4.2 Configure the Cob-Pipeline
@@ -523,55 +523,3 @@ _More PlugIns will follow..._
 ==== 5.7 Backup your Jenkins-Server
 *TODO!!!*
 
-''''
-
-=== 6. Build Jobs
-
-==== 6.1 Creating a Build Job
-
-===== 6.1.1 General Options
-*TODO!!!*
-
-===== 6.1.2 Advanced Project Options
-*TODO!!!*
-
-==== 6.2 Configuring Source Code Management
-
-===== 6.2.1 Subversion
-*TODO!!!*
-
-===== 6.2.2 Git
-*TODO!!!*
-
-==== 6.3 Build Triggers
-
-===== 6.3.1 Scheduled Build Jobs
-*TODO!!!*
-
-===== 6.3.2 Polling the SCM
-*TODO!!!*
-
-===== 6.3.3 Triggering Builds Remotely
-*TODO!!!*
-
-===== 6.3.4 Manual Build Jobs
-*TODO!!!*
-
-==== 6.4 Build Steps
-
-===== 6.4.1 Ant Build Steps
-*TODO!!!*
-
-===== 6.4.2 Maven Build Steps
-*TODO!!!*
-
-===== 6.4.3 Executing a Shell or Windows Batch Command
-*TODO!!!*
-
-===== 6.4.4 Using Jenkins Environment Variables in Builds
-*TODO!!!*
-
-===== 6.4.5 Runing Groovy Scripts
-*TODO!!!*
-
-''''
