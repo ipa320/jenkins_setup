@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <vector>
+#include <iostream>
 #include "USBaccess.h"
 
 #define Sleep(ms) usleep( (ms) * 1000)
@@ -35,6 +36,12 @@ main(int argc, char* argv[]) {
 	printf("Start USB Access Example!\n") ;
 	int USBcount = CWusb.OpenCleware() ;
 	printf("OpenCleware found %d devices\n", USBcount) ;
+
+	printf("argc=%d\n", argc) ;
+	if (argc == 2) 
+	{
+		std::cout << argc << std::endl;
+	}
 
 	USBcount = 2; //TODO remove
 
