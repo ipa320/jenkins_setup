@@ -556,7 +556,7 @@ jenkins_config
 | | |-pipeline_config.yaml
 ----
 
-You have to create a folder according to your Jenkins masters name (if not existent yet). Inside create a folder with your user name. Within this folder set up a pipeline_config.yaml file with your configurations. You can use the <jenkins_config_repository_location>/jenkins-test-server/test-user as an example.
+You have to create a folder according to your Jenkins masters name (if not existent yet). Inside create a folder with your user name. Within this folder set up a ^pipeline_config.yaml^ file with your configurations. You can use the <jenkins_config_repository_location>/jenkins-test-server/test-user as an example.
 
 _When your done push it to GitHub!_
 
