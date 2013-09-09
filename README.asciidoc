@@ -248,7 +248,8 @@ For more information visit the *https://wiki.jenkins-ci.org/display/JENKINS/Plug
 === 5. IPA Configuration
 
 ==== 5.1 Robotic Operating System
-+https://github.com/ipa-fmw-ak/Administration/wiki/05.-ROS-Guide[ROS Guide]+
+
+Install ROS following https://github.com/ipa-fmw-ak/Administration/wiki/05.-ROS-Guide[this] Guide.
 
 ==== 5.2 Master
 
@@ -424,12 +425,13 @@ In this repository all the pipeline configurations are stored.
 ===== 5.4.1 Install the Cob-Pipeline
 
 Download the *.hpi* file from +https://github.com/fmw-jk/cob-pipeline-plugin/releases+
-and place it in ^<JENKINS_HOME>/plugins^. After that restart your Jenkins-Server.
-
+and place it in +<JENKINS_HOME>/plugins+.
 ----
 $ cd /var/jenkins-data/plugins
 $ sudo wget https://github.com/fmw-jk/cob-pipeline-plugin/releases/download/v0.9.5-alpha/cob-pipeline.hpi
 ----
+
+Restart your Jenkins-Server
 ----
 $ /etc/init.d/jenkins restart
 ----
@@ -456,7 +458,7 @@ This is the user that has read-permission to all the repositories you want to be
     
 - *Pipeline Repositories Owner/Fork*
     
-GitHub user that ownes the jenkins_setup and the jenkins_config repository.
+GitHub user that ownes the ^jenkins_setup^ and the ^jenkins_config^ repository.
     
 - *ROS Releases*
     
@@ -544,22 +546,14 @@ $ git clone git@github.com:config/jenkins_config.git
 Repository structure:
 ----
 jenkins_config
-
 |-jenkins_master_name1
-
-| |- user_name1
-
-| |  |-pipeline_config.yaml
-
-| |- user_name2
-
-| |  |-pipeline_config.yaml
-
+| |-user_name1
+| | |-pipeline_config.yaml
+| |-user_name2
+| | |-pipeline_config.yaml
 |-jenkins_master_name2
-
-| |- user_name3
-
-| |  |-pipeline_config.yaml
+| |-user_name3
+| | |-pipeline_config.yaml
 ----
 
 You have to create a folder according to your Jenkins masters name (if not existent yet). Inside create a folder with your user name. Within this folder set up a pipeline_config.yaml file with your configurations. You can use the <jenkins_config_repository_location>/jenkins-test-server/test-user as an example.
@@ -669,4 +663,3 @@ _More PlugIns will follow..._
 *TODO!!!*
 
 ''''
-
