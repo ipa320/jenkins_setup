@@ -249,7 +249,7 @@ For more information visit the *https://wiki.jenkins-ci.org/display/JENKINS/Plug
 
 ==== 5.1 Robotic Operating System
 
-Install ROS following https://github.com/ipa-fmw-ak/Administration/wiki/05.-ROS-Guide[this] Guide.
+Install ROS following +https://github.com/ipa-fmw-ak/Administration/wiki/05.-ROS-Guide+
 
 ==== 5.2 Master
 
