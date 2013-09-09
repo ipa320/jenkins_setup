@@ -11,62 +11,50 @@ import time
 from bs4 import BeautifulSoup
 
 
-def get_colors(url):
+def get_state(url):
 	req = urllib2.urlopen(url)
 	res = req.read()
 
 	xml = BeautifulSoup(res)
 	xml_colors = xml.find_all("color")
 
-	colors = []
+	state = []
 	for color in xml_colors:
-		colors.append(str(color.string))
-	return colors
+		state.append(str(color.string))
+	return state
 
 # color: (0=red, 1=yellow, 2=blue)
 # mode: (0=off, 1=on, 2=flash)
-# returns [color,mode]
-def get_state(colors):
-	if "red_anime" in colors:
-		return [0, 2]  # [color,mode]
-	if "red" in colors:
-		return [0, 1]
-	if "yellow_anime" in colors:
-		return [1, 2]
-	if "yellow" in colors:
-		return [1, 1]
-	if "blue_anime" in colors:
-		return [2, 2]
-	if "blue" in colors:
-		return [2, 1]
-	
-	#no match, all lights off
-	return [0,0]
-
-def set_leds(state):
+def set_ampel(state):
 	message = "Ampel is "
-	if state[0] == 0:
+	if "red_anime" in state:
+		message += "red and flashing"
+		set_cleware(0, 2)
+	elif "red" in state:
 		message += "red"
-	elif state[0] == 1:
+		set_cleware(0, 1)
+	elif "yellow_anime" in state:
+		message += "yellow and flashing"
+		set_cleware(1, 2)
+	elif "yellow" in state:
 		message += "yellow"
-	elif state[0] == 2:
+		set_cleware(1, 1)
+	elif "blue_anime" in state:
+		message += "blue and flashing"
+		set_cleware(2, 2)
+	elif "blue" in state:
 		message += "blue"
+		set_cleware(2, 1)
 	else:
-		message = "Error: invalid color."
-		return message
-
-	if state[1] == 0:
-		return message + "off."
-	elif state[1] == 1:
-		return message + "."
-	elif state[1] == 2:
-		return message + " and flashing."
-	else:
-		message = "Error: invalid mode."
-		return message
-	
+		message = "Error: invalid status."
+		set_cleware("all",2)
 	return message
 
+
+def set_cleware(color,mode):
+	print "setting ampel to color: " + str(color) + " in mode: " + str(mode) # TODO: remove
+	#TODO: add clewarecontrol commands here
+	#clewarecontrol -as color, mode
 	
 
 
@@ -75,9 +63,8 @@ if __name__ == "__main__":
 	while True:
 		#url = 'http://localhost:8080/view/my_view/api/xml'
 		url = 'http://cob-jenkins-server:8080/view/u_320/api/xml'
-		colors = get_colors(url)
-		state = get_state(colors)
+		state = get_state(url)
 	
-		print set_leds(state)
+		print set_ampel(state)
 		time.sleep(1)
 	
