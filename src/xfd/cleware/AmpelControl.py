@@ -1,6 +1,11 @@
 #!/usr/bin/python
 
 
+
+### TODO ###
+# -make the jenkins url an input parameter
+# -add clewarecontrol command to light up the ampel
+
 import urllib2
 import time
 from bs4 import BeautifulSoup
@@ -68,7 +73,8 @@ def set_leds(state):
 if __name__ == "__main__":
 
 	while True:
-		url = 'http://localhost:8080/view/my_view/api/xml'
+		#url = 'http://localhost:8080/view/my_view/api/xml'
+		url = 'http://cob-jenkins-server:8080/view/u_320/api/xml'
 		colors = get_colors(url)
 		state = get_state(colors)
 	
