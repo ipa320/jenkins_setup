@@ -313,6 +313,96 @@ $ mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>
 ----
 
 ==== 5.3 Slave
+
+===== 5.3.1 Sudo Rights
+To be able to run *sudo commands* without the need to enter the password each time:
+----
+$ sudo visudo -f /etc/sudoers
+----
+----
+<JENKINS-USER>    ALL=(ALL) NOPASSWD: ALL
+----
+
+===== 5.3.2 SSH Access
+The slave has to be able the access the master via SSH without a password (and the otherway around). Enter the following command on each slave, login to the master and run the command again.
+----
+$ ssh-copy-id <master>    # _on slave_
+$ ssh <master>            # _on slave_
+$ ssh-copy-id <slave>     # _on master_
+----
+
+===== 5.3.3 Pbuilder
+
+----
+$ sudo apt-get install pbuilder devscripts
+----
+
+*Performance Improvement*
+
+For configurations a file called ^~/.pbuilderrc^ in the slaves +$HOME+ folder is needed (+/etc/pbuilder/pbuilderrc+ is an alternative).
+
+*Pbuilders aptcache*
+
+The aptcach of pbuilder is very useful but when the cache is getting bigger gradually it takes quite a while to open a chroot from the tarball. If you don't want to use it (for instance if you use an external apt-cacher), add the following to ^~/.pbuilderrc^:
+
+----
+# don't use aptcache
+APTCACHE=""
+----
+
+*Use ccache for build*
+
+To use ccache inside the pbuilder add the following to ^~/.pbuilderrc^:
+
+----
+# ccache
+sudo mkdir -p /var/cache/pbuilder/ccache
+sudo chmod a+w /var/cache/pbuilder/ccache
+export CCACHE_DIR="/var/cache/pbuilder/ccache"
+export PATH="/usr/lib/ccache:${PATH}"
+EXTRAPACKAGES=ccache
+BINDMOUNTS="${CCACHE_DIR}"
+----
+
+*Use multi-core zipping*
+
+To speedup the zipping and unzipping of the chroot tarballs, install *pigz*.
+----
+$ sudo apt-get install pigz
+----
+
+And add the following to ^~/.pbuilderrc^:
+
+----
+# pigz; multicore zipping
+COMPRESSPROG=pigz
+----
+
+*Mount memory to run the pbuilder chroots in it*
+
+Installations and builds inside the chroot need quite a lot write accesses. If you don't have a SSD installed, you can use the memory for this. Therefore you have to create a filesystem in your RAM, using +tmpfs+ by adding the following to the slaves +/etc/fstab+:
+
+----
+# pbuilder
+tmpfs   /var/cache/pbuilder/build   tmpfs   defaults,size=32000M    0   0
+----
+
+The size depends on the size of the chroot you will work with (at least 3G, more is better). It can be larger then the RAM size. If the chroot size exceeds the RAM size it will use the SWAP as well.
+
+Additionally you have to add the following to ^~/pbuilderrc^:
+
+----
+# tmpfs
+APTCACHEHARDLINK=no
+----
+
+Finally mount +tmpfs+ by entering (as root):
+
+----
+$ mount -a
+----
+
+===== 5.3.4 Slave setup on Master
 *TODO!!!*
 
 ==== 5.4 The Cob-Pipeline
@@ -525,3 +615,4 @@ _More PlugIns will follow..._
 *TODO!!!*
 
 ''''
+
