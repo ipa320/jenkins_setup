@@ -203,17 +203,7 @@ Clone the ^jenkins_setup^ repository into the +jenkins-config+ folder.
 git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup
 ----
 
-===== 5.2.6 PYTHONPATH
-
-Add the ^jenkins_setup^ module to the +$PYTHONPATH+ (adapt the ROS_RELEASE).
-----
-echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh
-echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh
-----
-
-Afterwards reboot the Jenkins-Server!
-
-===== 5.2.7 Tarball Server
+===== 5.2.6 Tarball Server
 
 The tarball server stores all the chroot tarball which will be used during the build process. It can be the Jenkins master or another server. In both cases you have to create a ^chroot_tarballs^ folder in *$HOME* which contains another folder where the used chroot tarballs will be stored.
 ----
