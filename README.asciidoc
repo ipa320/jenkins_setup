@@ -51,12 +51,12 @@ $ sudo apt-get install openjdk-7-jdk openjdk-7-source openjdk-7-doc openjdk-7-jr
 
 ==== 1.3 Git
 ----
-$ sudo apt-get update && sudo apt-get install git-core
+$ sudo apt-get install git-core
 ----
 
 ==== 1.4 Maven
 ----
-$ sudo apt-get update && sudo apt-get install maven
+$ sudo apt-get install maven
 ----
 
 ''''
@@ -72,19 +72,7 @@ $ sudo groupadd build
 $ sudo adduser jenkins build
 ----
 
-Define your ^JAVA_HOME^
-----
-$ export JAVA_HOME=/usr/local/java/<YOUR JAVA VERSION> *like: jdk1.6.0
-$ export PATH=$JAVA_HOME/bin:$PATH
-----
-
-==== 2.2 Define Standart Directories
-----
-$ export JENKINS_BASE=/usr/local/jenkins
-$ export JENKINS_HOME=/var/jenkins-data
-----
-
-==== 2.3 Debian packages "Debian/Ubuntu"
+==== 2.2 Debian packages "Debian/Ubuntu"
 ----
 $ wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
 $ sudo echo "deb http://pkg.jenkins-ci.org/debian binary/" > /etc/apt/sources.list.d/jenkins.list
@@ -95,7 +83,7 @@ $ sudo apt-get update && sudo apt-get install -y jenkins
 
 Individual Package Downloads: +http://pkg.jenkins-ci.org/debian/+
 
-==== 2.4 Up and Downgrade
+==== 2.3 Up and Downgrade
 Upgrade to v1.514
 
 You can find the war file here: +http://mirrors.jenkins-ci.org/war/+
@@ -110,40 +98,6 @@ $ /etc/init.d/jenkins restart
 ----
 
 After a successfull installation you can access the Jenkins-Server in your browser: +http://localhost:8080+
-
-==== 2.5 Port Configuration
-By Stand-Alone Application you can define the Port with this command:
-----
-$ java -jar jenkins.war --httpPort=8081
-----
-
-If you run more Applications on the Server, you have to override the ajp13 Port:
-----
-$ java -jar jenkins.war --httpPort=8081 --ajp13Port=8010
-----
-
-To start from implemented Winston-Server just define the control Port:
-----
-$ java -jar jenkins.war --controlPort=8001
-----
-
-Runing behind an Apache-Server
-----
-$ java -jar jenkins.war --httpPort=8081 --ajp13Port=8010 --prefix=jenkins
-----
-
-==== 2.6 Start and stop the Jenkins-Server on an Application-Server
-----
-$ /etc/init.d/jenkins stop
-$ /etc/init.d/jenkins start
-----
-
-==== 2.7 Memory Considerations
-Define the ^MAVEN_OPTS^ and ^ANT_OPTS^:
-----
-$ export MAVEN_OPTS="-Xm512m -XX:MaxPermSize=256m"
-$ export ANT_OPTS="-Xm512m -XX:MaxPermSize=256m"
-----
 
 ''''
 
@@ -173,73 +127,53 @@ The latter two have to be added to the matrix.
 Every user will automatically get the permission to see the workspace of all its own jobs.
 For the 'Pipestarter' and 'Trigger' job it will also has 'Build'-permission.
 
-If you want to grant further permissions or give special permissions to individual users or user groups you can do it.
-
 ==== 3.2 Manage Jenkins
 
 Under +http://localhost:8080/configure+ you can configure your Jenkins-Server.
 
 ===== 3.2.1 Basic
 
-- *Home Directory* is a reference to the JENKINS_HOME directory.
-
-- *System Message* is for welcome messages.
-
-- *# of executors* gives the number of simultaneously build job can start.
-
-- *Quite Period* are the seconds for Jenkins to wait until triggering a build job.
-
-- *SCM Checkout retry count* determines the number of attempts Jenkins make to check
-out any updates when polling the SCM system for changes and finds the system to be unavailable.
-
-===== 3.2.2 Global Properties
-The *Global Properties* section lets you define variables that can be managed centrally but used in all of
-your build jobs.
-
-===== 3.2.3 JDKs
-Select your version of Java or just download a new one.
-
-===== 3.2.4 Ant
-Ant is a flexible, extensible, relatively low-level scripting language used in a large number of open source projects.
-
-If Ant is available on the system path, Jenkins will find it.
-
-If you want you can configure as many installations of Ant as required. Just provide a name and installation directory for each version. 
-
-===== 3.2.5 Maven
-Maven is high-level scripting framework for Java.
-
-You can either get Jenkins to install a specific version of Maven automatically or provide a path to a local Maven installation.
-
-===== 3.2.6 Maven Project Configuration
-Here you can configure the default values for Maven. They will be used in every build step.
-
-===== 3.2.7 SSH Server
-Here you can configure the SSH Server. Default is Random.
-
-===== 3.2.8 CVS
-Jenkins comes with preinstalled PlugIns for CVS and Subversion. Other Version Control Systems can be downloaded from the Manage PlugIns screen.
-
-CVS needs little or no configuration. By default Jenkins will look for tools like CVS on the system path.
-
-===== 3.2.9 Subversion
-Subversion needs no special configuration.
-
-===== 3.2.10 Shell
-If you are running your build server on Unix or Linux Jenkins lets you insert shell scripts into your build jobs. In Windows, the Shell section does not apply. You use Windows batch scripting instead.
-
-===== 3.2.11 E-Mail Notification
-The last of the basic configurations is to setup the email server.
-
-The *System Admin E-Mail Address* is the address from which the notifications will be sent.
-
-You can also configure in this section the SMTP-Server.
+- *# of executors* gives the number of simultaneously build job can start. Set it to 1!
 
 ''''
 
 === 4. Jenkins-PlugIns Installation
 
 Went to +http://localhost:8080/pluginManager/available+ and "check" the wanted PlugIns for installation.
+
+- https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin[*Parameterized Trigger PlugIn*]
+
+Is used to transfer build parameters from one job to the next. Here it is used to commit the repository to build or test.
+
+- http://code.google.com/p/build-pipeline-plugin/[*Build Pipeline PlugIn*]
+
+Provides a view where all pipeline jobs and their dependencies are shown. It also gives the opportunity to trigger the hardware test jobs manually.
+
+- https://wiki.jenkins-ci.org/display/JENKINS/Mailer[*Mailer*]
+
+Generates the email content depending on the build/test results and sends the emails.
+
+_CONFIGURATION_:
+
+A template for the Mailer plugin is provided in https://github.com/ipa320/jenkins_setup/blob/master/templates/email-templates/html-with-health-builds-tests.jelly[this] repository. Copy it into +$JENKINS_HOME/email-templates+ (+$JENKINS_HOME+ is usually +/var/lib/jenkins+). You can adapt the template to your requirements.
+
+- https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters[*View Job Filters*]
+
+Provides comprehensive possibilities to filter the jobs that can be seen by the specific user.
+
+- https://wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin[*Matrix Reloaded PlugIn*]
+
+To start one or more entries of a matrix job.
+
+- https://wiki.jenkins-ci.org/display/JENKINS/LDAP+Plugin[*LDAP PlugIn*]
+
+Authentication of users is delegated to a LDAP server.
+
+- https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin[*Github OAuth PlugIn*]
+
+Authentication of users is delegated to Github using the OAuth protocol.
+
+_More PlugIns will follow..._
 
 For more information visit the *https://wiki.jenkins-ci.org/display/JENKINS/Plugins[Jenkins Wiki]*
 
@@ -321,7 +255,7 @@ To be able to run sudo commands without the need to enter the password each time
 $ sudo visudo -f /etc/sudoers
 ----
 ----
-<JENKINS-USER>    ALL=(ALL) NOPASSWD: ALL
+jenkins    ALL=(ALL) NOPASSWD: ALL
 ----
 
 ===== 5.3.2 SSH Access
@@ -474,192 +408,10 @@ URL where the ROS ^targets.yaml^ is stored, defining the Ubuntu target platforms
 
 _When you fill out the fields, the values will be validated in the background._
 
-===== 5.4.3 Pipeline Structure
-
-The pipeline is made of multiple, differing Jenkins jobs which monitor the source code or build and test it in various envirements. An authorized Jenkins user can configure its individual pipeline in its Jenkins user configurations. The made configurations have to pass a validation and afterwards the automatic generation of the pipeline can be started.
-
-A fully configured pipeline has always this structure:
-
-* Starter Jobs
-
-.. Pipestarter Job
-
-* Build Jobs
-
-.. Priority-Build Job
-
-.. Regular-Build Job
-
-.. Downstream-Build Job
-
-* Test Jobs
-
-.. Non-Graphics-Test Job
-
-.. Graphics-Test Job
-
-* Hardware Jobs
-
-.. Hardware-Build Job
-
-.. Hardware-Test Job
-
-===== 5.4.4 Manual Pipeline Generation
-
-*Checkout this Repository*
-
-Clone this repository to your desired location.
-----
-$ git clone git://github.com/ipa320/jenkins_setup.git <path to clone in>
-----
-
-*Setup Slave Config-File*
-
-Create a folder in your +$HOME+ folder called +jenkins-config+
-----
-$ mkdir ~/jenkins-config
-----
-
-Create a so called ^slave_config.yaml^ file with the following entries:
-----
-master: name_of_jenkins_master
-master_uri: "http://url_of_jenkins_master:8080"
-tarball_host: name_of_server_storing_the_chroot_tarballs
-tarball_folderpath: folder_the_tarballs_are_stored
-jenkins_login: user_name_with_right_to_create_jobs
-jenkins_pw: user_password
-----
-
-*Add Repository to PYTHONPATH*
-
-----
-$ export PYTHONPATH=$PYTHONPATH:<repository_path>/src
-----
-
-*Setup Pipeline Configuration
-
-Checkout the repository ^jenkins_config^
-----
-$ git clone git@github.com:config/jenkins_config.git
-----
-
-Repository structure:
-----
-jenkins_config
-|-jenkins_master_name1
-| |-user_name1
-| | |-pipeline_config.yaml
-| |-user_name2
-| | |-pipeline_config.yaml
-|-jenkins_master_name2
-| |-user_name3
-| | |-pipeline_config.yaml
-----
-
-You have to create a folder according to your Jenkins masters name (if not existent yet). Inside create a folder with your user name. Within this folder set up a ^pipeline_config.yaml^ file with your configurations. You can use the <jenkins_config_repository_location>/jenkins-test-server/test-user as an example.
-
-_When your done push it to GitHub!_
-
-*Create Pipeline*
-
-Execute the ^<jenkins_setup_repository_location>/scripts/generate_buildpipeline.py^ script to create all your pipeline jobs on the Jenkins CI Server.
-----
-$ ./generate_buildpipeline.py <user_name>
-----
-
-==== 5.5 PlugIns
-
-Went to +http://localhost:8080/pluginManager/available+
-
-- https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin[*Parameterized Trigger PlugIn*]
-
-Is used to transfer build parameters from one job to the next. Here it is used to commit the repository to build or test.
-
-- http://code.google.com/p/build-pipeline-plugin/[*Build Pipeline PlugIn*]
-
-Provides a view where all pipeline jobs and their dependencies are shown. It also gives the opportunity to trigger the hardware test jobs manually.
-
-- https://wiki.jenkins-ci.org/display/JENKINS/Mailer[*Mailer*]
-
-Generates the email content depending on the build/test results and sends the emails.
-
-_CONFIGURATION_:
-
-A template for the Mailer plugin is provided in https://github.com/ipa320/jenkins_setup/blob/master/templates/email-templates/html-with-health-builds-tests.jelly[this] repository. Copy it into +$JENKINS_HOME/email-templates+ (+$JENKINS_HOME+ is usually +/var/lib/jenkins+). You can adapt the template to your requirements.
-
-- https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters[*View Job Filters*]
-
-Provides comprehensive possibilities to filter the jobs that can be seen by the specific user.
-
-- https://wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin[*Matrix Reloaded PlugIn*]
-
-To start one or more entries of a matrix job.
-
-- https://wiki.jenkins-ci.org/display/JENKINS/LDAP+Plugin[*LDAP PlugIn*]
-
-Authentication of users is delegated to a LDAP server.
-
-- https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin[*Github OAuth PlugIn*]
-
-Authentication of users is delegated to Github using the OAuth protocol.
-
-_More PlugIns will follow..._
-
-==== 5.6 Global and Individual Project List Views
+==== 5.4 Global and Individual Project List Views
 *TODO!!!*
 
-==== 5.7 Backup your Jenkins-Server
-*TODO!!!*
-
-''''
-
-=== 6. Build Jobs
-
-==== 6.1 Creating a Build Job
-
-===== 6.1.1 General Options
-*TODO!!!*
-
-===== 6.1.2 Advanced Project Options
-*TODO!!!*
-
-==== 6.2 Configuring Source Code Management
-
-===== 6.2.1 Subversion
-*TODO!!!*
-
-===== 6.2.2 Git
-*TODO!!!*
-
-==== 6.3 Build Triggers
-
-===== 6.3.1 Scheduled Build Jobs
-*TODO!!!*
-
-===== 6.3.2 Polling the SCM
-*TODO!!!*
-
-===== 6.3.3 Triggering Builds Remotely
-*TODO!!!*
-
-===== 6.3.4 Manual Build Jobs
-*TODO!!!*
-
-==== 6.4 Build Steps
-
-===== 6.4.1 Ant Build Steps
-*TODO!!!*
-
-===== 6.4.2 Maven Build Steps
-*TODO!!!*
-
-===== 6.4.3 Executing a Shell or Windows Batch Command
-*TODO!!!*
-
-===== 6.4.4 Using Jenkins Environment Variables in Builds
-*TODO!!!*
-
-===== 6.4.5 Runing Groovy Scripts
+==== 5.5 Backup your Jenkins-Server
 *TODO!!!*
 
 ''''
