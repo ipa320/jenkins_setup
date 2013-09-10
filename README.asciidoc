@@ -1,4 +1,4 @@
-== Jenkins Guide /minimal/
+== Jenkins Guide ^minimal^
 
 This repository contains the code (config, src and script files) to set up and run a Cob-Jenkins CI Server using the Cob-Pipeline-PlugIn.
 
