@@ -5,7 +5,7 @@ This repository contains the code (config, src and script files) to set up and r
 ## Prerequisites and assumptions
 Before starting with this guide, please setup one machine with the following properties:
 - Operation system: Ubuntu 12.04
-- user: jenkins
+- user: jenkins (admin)
 
 assumptions:
 - we're only using one machine which is master and slave at the same time
@@ -78,9 +78,6 @@ Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/plug
 - Build Pipeline Plugin http://code.google.com/p/build-pipeline-plugin/
 - Mailer https://wiki.jenkins-ci.org/display/JENKINS/Mailer
 - View Job Filters https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters
-- Matrix Reloaded PlugIn https://wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin
-- LDAP PlugIn https://wiki.jenkins-ci.org/display/JENKINS/LDAP+Plugin
-- Github OAuth PlugIn https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin
 
 ### Install `jenkins_setup`, `jeknins_config` and the *cob-pipeline* plugin
 Download the *.hpi* file from https://github.com/fmw-jk/cob-pipeline-plugin/releases and place it in `/var/lib/jenkins/plugins`.
@@ -106,7 +103,7 @@ You have to add this key to your GitHub user http://github.com/settings/ssh.
 
      cat ~/jenkins-config/.ssh/id_rsa.pub
 
-Setup git configurationon master
+Setup git configuration on master
 
     git config --global user.name "<USER_NAME>"
     git config --global user.email "<EMAIL>"
@@ -210,7 +207,7 @@ keep empty if you have no hardware slaves
 - Target Platform Url (URL where the ROS `targets.yaml` is stored, defining the Ubuntu target platforms for each ROS Version.)
 
 ```
-    https://raw.github.com/ros/rosdistro/master/releases/targets.yaml
+    https://raw.github.com/ipa320/jenkins_setup/master/releases/targets.yaml
 ```
 
 ### configure default view
