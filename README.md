@@ -1,30 +1,32 @@
-== Jenkins Guide
+# to be inserted at correct place
+sudo apt-get install git-core
+
+
+
+
+
+# Jenkins Guide
 
 This repository contains the code (config, src and script files) to set up and run a Cob-Jenkins CI Server using the Cob-Pipeline-PlugIn.
 
-=== Prerequisites/assumptions
-One machine which is master and slave at the same time.
+## Prerequisites and assumptions
+Before starting with this guide, please setup one machine with the following properties:
 - Operation system: Ubuntu 12.04
 - user: jenkins
+
+assumptions:
+- we're only using one machine which is master and slave at the same time
 - apt-cacher is running on master
 
 
-==== Git
-----
-sudo apt-get install git-core
-----
 
-''''
-=== Jenkins Installation
 
-==== Debian packages "Debian/Ubuntu"
-----
-wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
-sudo su -c 'echo "deb http://pkg.jenkins-ci.org/debian binary/" > /etc/apt/sources.list.d/jenkins.list'
-----
-----
-sudo apt-get update && sudo apt-get install jenkins
-----
+## Jenkins installation
+
+### Debian packages "Debian/Ubuntu"
+    wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
+    sudo su -c 'echo "deb http://pkg.jenkins-ci.org/debian binary/" > /etc/apt/sources.list.d/jenkins.list'
+    sudo apt-get update && sudo apt-get install jenkins
 
 ==== Up or downgrade jenkins version
 We've tested the setup on Jenkins version v1.514. You can find the war file here: +http://mirrors.jenkins-ci.org/war/+
