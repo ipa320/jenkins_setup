@@ -26,37 +26,6 @@ Install basic ROS packages
     wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
     sudo apt-get update && sudo apt-get install ros-groovy-ros
 
-<<<<<<< HEAD
-#####PYTHONPATH
-Add the ```jenkins_setup``` module to the `$PYTHONPATH` (*adapt the
-ROS\_RELEASE*):
-```bash
-sudo su -c 'echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh'
-sudo su -c 'echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh'
-```
-Afterwards reboot the server.
-
-####Mailer template
-A
-[template](templates/email-templates/html-with-health-builds-tests.jelly) for the
-Mailer plugin is provided in this repository. Copy it into
-```$JENKINS_HOME/email-templates/``` (```$JENKINS_HOME``` is usually `/var/lib/jenkins`).
-You can adapt the template to your requirements.
-**TODO** jenkins config
-
-___
-
-Tarball Server:
----------------
-The tarball server stores all the chroot tarball which will be used during the build
-process. It can be the Jenkins master or another server. In both cases you have to
-create a ```chroot_tarballs```-folder in `$HOME` which contains another folder where
-the used chroot tarballs will be stored:
-```bash
-mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>
-```
-=======
->>>>>>> 0425fce1cd3ee7b131ed1778baf473a534016915
 
 Add the jenkins debian repository and install jenkins
 
