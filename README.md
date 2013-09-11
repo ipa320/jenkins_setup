@@ -1,6 +1,7 @@
 # to be inserted at correct place
 sudo apt-get install git-core
 
+Install ROS following +https://github.com/ipa-fmw-ak/Administration/wiki/05.-ROS-Guide+
 
 
 
@@ -47,64 +48,42 @@ After a successfull installation you can access the jenkins server in your brows
 
 ## Jenkins configuration
 
-### Global Security
-First off all go to [http://localhost:8080/configureSecurity](http://localhost:8080/configureSecurity)
+### Global security
+Go to [http://localhost:8080/configureSecurity](http://localhost:8080/configureSecurity)
 
-The *Access Control* section gives the opportunity to select the *Security Realm* which defines how the users can login.
+- Set *Access Control* to **Security Realm**.
+- Check *Jenkins's own user database*. And check **Allow users to sign up**.
+- Set *Authorization* to **Project-based Matrix Authorization Strategy**.
+- Add an `admin`-user and give him all rights.
+- Add an `anonymous`-group and an `authenticated`-group and give them rights according to the screentshot.
+After click save the Server will throw you to a Login screen. Just register with the username `admin`.
 
-Check *Jenkins's own user database*. And check *Allow users to sign up*.
+**TODO add screenshot**
 
-In the *Authorization* subsection you can define the permission a specific user or a user group gets granted.
-Therefore choose the *Project-based Matrix Authorization Strategy*.
+### Basic configuration
+Go to [http://localhost:8080/configure](http://localhost:8080/configure)
 
-Now add an `admin`-user and give him all rights!
-
-After click save the Server will throw you to a Login screen. Just register with the username of the admin you insert in
-the table.
-
-You have to give permissions to at least the anonymous and the authenticated user group and an admin user.
-The latter two have to be added to the matrix.
-
-Every user will automatically get permission to see the workspace of all its own jobs.
-For the 'Pipestarter' and 'Trigger' job it will also get 'Build'-permission.
-
-==== 3.2 Manage Jenkins
-
-Under +http://localhost:8080/configure+ you can configure your Jenkins-Server.
-
-- *# of executors* gives the number of simultaneously build job can start. *Set to 1*.
-- *Jenkins URL*. Set to your servers name.
+- Set *# of executors* to `1`.
+- Set *Jenkins URL* to your servers name.
 
 You can keep the default values for all other entries.
 
-''''
-=== Jenkins-PlugIns installation
 
-Go to +http://localhost:8080/pluginManager/available+ and install the following plugins:
+### Jenkins plugin installation
+Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/pluginManager/available) and install the following plugins:
 
-- https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin[*Parameterized Trigger PlugIn*]
-- http://code.google.com/p/build-pipeline-plugin/[*Build Pipeline PlugIn*]
-- https://wiki.jenkins-ci.org/display/JENKINS/Mailer[*Mailer*]
-- https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters[*View Job Filters*]
-- https://wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin[*Matrix Reloaded PlugIn*]
-- https://wiki.jenkins-ci.org/display/JENKINS/LDAP+Plugin[*LDAP PlugIn*]
-- https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin[*Github OAuth PlugIn*]
+- Parameterized Trigger Plugin https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin
+- Build Pipeline Plugin http://code.google.com/p/build-pipeline-plugin/
+- Mailer https://wiki.jenkins-ci.org/display/JENKINS/Mailer
+- View Job Filters https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters
+- Matrix Reloaded PlugIn https://wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin
+- LDAP PlugIn https://wiki.jenkins-ci.org/display/JENKINS/LDAP+Plugin
+- Github OAuth PlugIn https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin
 
-''''
-=== IPA Configuration
+### Install *cob-pipeline* plugin
+All scripts and configurations will be stored in a common folder in `/home/jenkins/jenkins-config`.
 
-==== 5.1 Robotic Operating System
-
-Install ROS following +https://github.com/ipa-fmw-ak/Administration/wiki/05.-ROS-Guide+
-
-==== 5.2 Master
-
-===== 5.2.1 Create Cob-Pipeline Configuration Folder
-
-All configurations should be stored in a common folder in the ^$HOME^ folder called +jenkins-config+.
-----
-mkdir ~/jenkins-config
-----
+    mkdir ~/jenkins-config
 
 ===== 5.2.2 Git Configuration
 
