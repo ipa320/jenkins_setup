@@ -212,3 +212,6 @@ keep empty if you have no hardware slaves
 
 ### configure default view
 *TODO!!!*
+
+### configure mailer
+*TODO!!!*
