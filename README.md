@@ -2,95 +2,31 @@
 
 This repository contains the code (config, src and script files) to set up and run a Cob-Jenkins CI Server using the Cob-Pipeline-PlugIn.
 
-=== 1. Prerequisites
+=== Prerequisites/assumptions
+One machine which is master and slave at the same time.
+- Operation system: Ubuntu 12.04
+- user: jenkins
+- apt-cacher is running on master
 
-==== 1.1 Operating System
-Install the Operating System of your choice for your Server.
 
-Supported OS are:
-Windows
-- Debian/Ubuntu
-- Red Hat/Fedora/CentOS
-- MacOS X
-- openSUSE
-- FreeBSD
-- OpenBSD
-- Solaris/OpenIndiana
-- Gentoo
-
-Installation Guide for Ubuntu-Server: +https://github.com/ipa-fmw-ak/Administration/wiki/01.-Ubuntu-Server-IPA-Guide[Ubuntu Server IPA Guide]+
-
-Installation Guide for Ubuntu-Client: +https://github.com/ipa-fmw-ak/Administration/wiki/02.-Ubuntu-Client---IPA-Guide[Ubuntu Client IPA Guide]+
-
-This Guide proceeds for an Ubuntu-Environment...
-
-==== Java Runtime Environment
-
-===== 1.2.1 Check your Java Version:
-----
-java -version
-----
-_Output example:_
-----
-java version "1.6.0_35"
-Java(TM) SE Runtime Environment (build 1.6.0_35-b10)
-Java HotSpot(TM) Client VM (build 20.10-b01, mixed mode, sharing)
-----
-
-===== 1.2.2 Install Java6
-----
-sudo apt-get install openjdk-6-jre
-sudo apt-get install openjdk-6-jdk openjdk-6-source openjdk-6-doc openjdk-6-jre-headless openjdk-6-jre-lib 
-----
-
-===== 1.2.4 Install Java7
-----
-sudo apt-get install openjdk-7-jre
-sudo apt-get install openjdk-7-jdk openjdk-7-source openjdk-7-doc openjdk-7-jre-headless openjdk-7-jre-lib
-----
-
-==== 1.3 Git
+==== Git
 ----
 sudo apt-get install git-core
 ----
 
 ''''
+=== Jenkins Installation
 
-=== 2. Jenkins Installation
-
-==== 2.1 Preparing a Build Server for Jenkins
-
-For isolated environment use:
-----
-sudo adduser jenkins
-sudo groupadd build
-sudo adduser jenkins build
-----
-
-Define your ^JAVA_HOME^
-----
-export JAVA_HOME=/usr/lib/jvm/default-java
-export PATH=$JAVA_HOME/bin:$PATH
-----
-
-==== 2.2 Define Standart Directories
-----
-export JENKINS_BASE=/usr/local/jenkins
-export JENKINS_HOME=/var/jenkins-data
-----
-
-==== 2.3 Debian packages "Debian/Ubuntu"
+==== Debian packages "Debian/Ubuntu"
 ----
 wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
-sudo echo "deb http://pkg.jenkins-ci.org/debian binary/" > /etc/apt/sources.list.d/jenkins.list
+sudo su -c 'echo "deb http://pkg.jenkins-ci.org/debian binary/" > /etc/apt/sources.list.d/jenkins.list'
 ----
 ----
-sudo apt-get update && sudo apt-get install -y jenkins
+sudo apt-get update && sudo apt-get install jenkins
 ----
 
-Individual Package Downloads: +http://pkg.jenkins-ci.org/debian/+
-
-==== 2.4 Up and Downgrade
+==== Up or downgrade jenkins version
 We've tested the setup on Jenkins version v1.514. You can find the war file here: +http://mirrors.jenkins-ci.org/war/+
 
 Switch to v1.514:
@@ -99,6 +35,7 @@ cd /usr/share/jenkins/
 sudo rm -rf jenkins.war
 sudo wget http://mirrors.jenkins-ci.org/war/1.514/jenkins.war
 ----
+
 ----
 sudo /etc/init.d/jenkins restart
 ----
@@ -106,23 +43,19 @@ sudo /etc/init.d/jenkins restart
 After a successfull installation you can access the Jenkins-Server in your browser: +http://localhost:8080+
 
 ''''
+=== Jenkins Configuration
 
-=== 3. Jenkins Configuration
-
-==== 3.1 Global Security
+==== Global Security
 First off all go to +http://localhost:8080/configureSecurity/?+
 
 The *Access Control* section gives the opportunity to select the *Security Realm* which defines how the users can login.
 
-Check *Jenkins's own user database*.
-
-The easiest way is to use *Jenkins's own user database*.
-Now you can decide if every user can sign up or if the admin has to do this.
+Check *Jenkins's own user database*. And check *Allow users to sign up*.
 
 In the *Authorization* subsection you can define the permission a specific user or a user group gets granted.
 Therefore choose the *Project-based Matrix Authorization Strategy*.
 
-Now add an Admin-User and give him all rights!
+Now add an `admin`-user and give him all rights!
 
 After click save the Server will throw you to a Login screen. Just register with the username of the admin you insert in
 the table.
@@ -143,16 +76,20 @@ Under +http://localhost:8080/configure+ you can configure your Jenkins-Server.
 You can keep the default values for all other entries.
 
 ''''
+=== Jenkins-PlugIns installation
 
-=== 4. Jenkins-PlugIns Installation
+Go to +http://localhost:8080/pluginManager/available+ and install the following plugins:
 
-Go to +http://localhost:8080/pluginManager/available+ and "check" the wanted PlugIns for installation.
-
-For more information visit the *https://wiki.jenkins-ci.org/display/JENKINS/Plugins[Jenkins Wiki]*
+- https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin[*Parameterized Trigger PlugIn*]
+- http://code.google.com/p/build-pipeline-plugin/[*Build Pipeline PlugIn*]
+- https://wiki.jenkins-ci.org/display/JENKINS/Mailer[*Mailer*]
+- https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters[*View Job Filters*]
+- https://wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin[*Matrix Reloaded PlugIn*]
+- https://wiki.jenkins-ci.org/display/JENKINS/LDAP+Plugin[*LDAP PlugIn*]
+- https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin[*Github OAuth PlugIn*]
 
 ''''
-
-=== 5. IPA Configuration
+=== IPA Configuration
 
 ==== 5.1 Robotic Operating System
 
