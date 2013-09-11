@@ -53,11 +53,11 @@ After a successfull installation you can access the jenkins server in your brows
 ### Global security
 Go to [http://localhost:8080/configureSecurity](http://localhost:8080/configureSecurity)
 
-- Set *Access Control* to **Security Realm**.
-- Check *Jenkins's own user database*. And check **Allow users to sign up**.
+- Check *Jenkins's own user database* under *Access Control*/*Security Realm*. And check **Allow users to sign up**.
 - Set *Authorization* to **Project-based Matrix Authorization Strategy**.
 - Add an `admin`-user and give him all rights.
 - Add an `anonymous`-group and an `authenticated`-group and give them rights according to the screentshot.
+
 After click save the Server will throw you to a Login screen. Just register with the username `admin`.
 
 **TODO add screenshot**
