@@ -60,7 +60,7 @@ Go to [http://localhost:8080/configureSecurity](http://localhost:8080/configureS
 
 After click save the Server will throw you to a Login screen. Just register with the username `admin`.
 
-**TODO add screenshot**
+![Project-based Matrix Authorization Strategy](./authentication.png "Example for Project-based Matrix Authorization Strategy")
 
 ### Basic configuration
 Go to [http://localhost:8080/configure](http://localhost:8080/configure)
