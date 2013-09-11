@@ -1,11 +1,3 @@
-# to be inserted at correct place
-sudo apt-get install git-core
-
-Install ROS following +https://github.com/ipa-fmw-ak/Administration/wiki/05.-ROS-Guide+
-
-
-
-
 # Jenkins Guide
 
 This repository contains the code (config, src and script files) to set up and run a Cob-Jenkins CI Server using the Cob-Pipeline-PlugIn.
@@ -18,13 +10,23 @@ Before starting with this guide, please setup one machine with the following pro
 assumptions:
 - we're only using one machine which is master and slave at the same time
 - apt-cacher is running on master
-
-
+- there's a github user that has read access to all repositories which should be build and write access to a jenkins_config repository (e.g. http://github.com/ipa320/jenkins_config)
 
 
 ## Jenkins installation
 
-### Debian packages "Debian/Ubuntu"
+### Debian packages for Ubuntu
+Install basic packages
+
+    sudo apt-get install git-core pbuilder devscripts pigz
+    
+Install basic ROS packages
+
+    sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
+    wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+    sudo apt-get update && sudo apt-get install ros-groovy-ros
+
+
 Add the jenkins debian repository and install jenkins
 
     wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
@@ -80,152 +82,92 @@ Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/plug
 - LDAP PlugIn https://wiki.jenkins-ci.org/display/JENKINS/LDAP+Plugin
 - Github OAuth PlugIn https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin
 
-### Install *cob-pipeline* plugin
-All scripts and configurations will be stored in a common folder in `/home/jenkins/jenkins-config`.
+### Install and setup *cob-pipeline* plugin
+All scripts and configurations will be stored in `/home/jenkins/jenkins-config`.
 
     mkdir ~/jenkins-config
 
-===== 5.2.2 Git Configuration
+All tarballs will be stored in ~/chroot_tarballs (adapt the *JENKINS_MASTER_NAME*)
 
-Set up the GitHub user. This user has to have read-access to all repositories to build and write access to your ^jenkins_config^ repository.
-----
-git config --global user.name "<USER_NAME>"
-git config --global user.email "<EMAIL>"
-----
+    mkdir -p ~/chroot_tarballs
+    mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>
 
-===== 5.2.3 SSH Configuration
+Setup ssh configuration
 
-A +.ssh+ folder is needed inside the +jenkins-config+ which contains a ssh-key to access the GitHub-repositories. Either you generate a new key with +ssh-keygen+ or you just copy the +~/.ssh+ of the master. You have to add this key to your GitHub user http://github.com/settings/ssh[SSH Settings]. This user should have read-access to all repositories you want to build. It is very important that 'github.com' belongs to the known hosts. Therefore the +.ssh+ folder should contain a ^known_hosts^ file. Whether 'github.com' is already known can be checked by entering:
-----
-ssh-keygen -H -f <known_hosts_PATH> -F github.com
-----
-If it is not known, you can add 'github.com' to the ^known_hosts^ by entering:
-----
-ssh-keyscan -H github.com > <known_hosts_PATH>
-----
-Furthermore the Jenkins masters SSH key itself has to be an authorized one.
+    ssh-keygen -f ~/jenkins-config
+    ssh-keyscan -H github.com > ~/jenkins-config
 
-===== 5.2.4 jenkins_config Repository
+You have to add this key to your GitHub user http://github.com/settings/ssh. 
 
-Clone the ^jenkins_config^ repository into the +jenkins-config+ folder.
-----
-git clone git@github.com:ipa320/jenkins_config.git ~/jenkins-config/jenkins_config
-----
+     cat ~/jenkins-config/.ssh/id_rsa.pub
 
-===== 5.2.5 jenkins_setup Repository
+Setup git configurationon master
 
-Clone the ^jenkins_setup^ repository into the +jenkins-config+ folder.
-----
-git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup
-----
-_Adapt the GitHub user if you forked the repository!!!_
+    git config --global user.name "<USER_NAME>"
+    git config --global user.email "<EMAIL>"
 
-===== 5.2.6 PYTHONPATH
+Clone the `jenkins_setup` and `jenkins_config` repositories
 
-Add the ^jenkins_setup^ module to the +$PYTHONPATH+ (adapt the ROS_RELEASE).
-----
-echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh
-echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh
-----
+    git clone git@github.com:ipa320/jenkins_config.git ~/jenkins-config/jenkins_config
+    git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup
 
-Afterwards reboot the Jenkins-Server!
+Add the `jenkins_setup` module to the `$PYTHONPATH` (adapt the *ROS_RELEASE*).
 
-===== 5.2.7 Tarball Server
+    echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh
+    echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh
 
-The tarball server stores all the chroot tarball which will be used during the build process. It can be the Jenkins master or another server. In both cases you have to create a ^chroot_tarballs^ folder in *$HOME* which contains another folder where the used chroot tarballs will be stored.
-----
-mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>
-----
 
-==== 5.3 Slave
+Enable passwordless sudo rights for the jenkins user by adding the following line at the end of `/etc/sudoers` (open with `sudo visudo -f /etc/sudoers`).
 
-===== 5.3.1 Sudo Rights
-To be able to run sudo commands without the need to enter the password each time:
-----
-sudo visudo -f /etc/sudoers
-----
-----
-jenkins    ALL=(ALL) NOPASSWD: ALL
-----
+    jenkins    ALL=(ALL) NOPASSWD: ALL
 
-===== 5.3.2 SSH Access
-The slave has to be able the access the master via SSH without a password (and the otherway around). Enter the following command on each slave, login to the master and run the command again.
-----
-ssh-copy-id <master>    # _on slave_
-ssh <master>            # _on slave_
-ssh-copy-id <slave>     # _on master_
-----
+Afterwards reboot the Jenkins-Server
 
-===== 5.3.3 Pbuilder
+    sudo reboot now
 
-----
-sudo apt-get install pbuilder devscripts
-----
 
-*Performance Improvement*
+Enable password-less ssh login from master to slave and slave to master.
 
-For configurations a file called ^~/.pbuilderrc^ in the slaves +$HOME+ folder is needed (+/etc/pbuilder/pbuilderrc+ is an alternative).
+    ssh-copy-id <master>    # _on slave_
+    ssh <master>            # _on slave_
+    ssh-copy-id <slave>     # _on master_
 
-*Pbuilders aptcache*
 
-The aptcach of pbuilder is very useful but when the cache is getting bigger gradually it takes quite a while to open a chroot from the tarball. If you don't want to use it (for instance if you use an external apt-cacher), add the following to ^~/.pbuilderrc^:
+#### Performance improvements
+Using RAM for chroot environment and parallel compression.
 
-----
-# don't use aptcache
-APTCACHE=""
-----
+Add the following line to `/etc/fstab`
 
-*Use ccache for build*
+    # pbuilder
+    tmpfs   /var/cache/pbuilder/build   tmpfs   defaults,size=32000M    0   0
 
-To use ccache inside the pbuilder add the following to ^~/.pbuilderrc^:
+Mount *tmpfs* by entering
 
-----
-# ccache
-sudo mkdir -p /var/cache/pbuilder/ccache
-sudo chmod a+w /var/cache/pbuilder/ccache
-export CCACHE_DIR="/var/cache/pbuilder/ccache"
-export PATH="/usr/lib/ccache:${PATH}"
-EXTRAPACKAGES=ccache
-BINDMOUNTS="${CCACHE_DIR}"
-----
+    sudo mount -a
 
-*Use multi-core zipping*
+Create a file called `~/.pbuilderrc`
 
-To speedup the zipping and unzipping of the chroot tarballs, install *pigz*.
-----
-sudo apt-get install pigz
-----
+    touch ~/.pbuilderrc
 
-And add the following to ^~/.pbuilderrc^:
+Add the following content to `~/.pbuilderrc`
 
-----
-# pigz; multicore zipping
-COMPRESSPROG=pigz
-----
+    # don't use aptcache
+    APTCACHE=""
 
-*Mount memory to run the pbuilder chroots in it*
+    # ccache
+    sudo mkdir -p /var/cache/pbuilder/ccache
+    sudo chmod a+w /var/cache/pbuilder/ccache
+    export CCACHE_DIR="/var/cache/pbuilder/ccache"
+    export PATH="/usr/lib/ccache:${PATH}"
+    EXTRAPACKAGES=ccache
+    BINDMOUNTS="${CCACHE_DIR}"
 
-Installations and builds inside the chroot need quite a lot write accesses. If you don't have a SSD installed, you can use the memory for this. Therefore you have to create a filesystem in your RAM, using +tmpfs+ by adding the following to the slaves +/etc/fstab+:
+    # pigz; multicore zipping
+    COMPRESSPROG=pigz
+    
+    # tmpfs
+    APTCACHEHARDLINK=no
 
-----
-# pbuilder
-tmpfs   /var/cache/pbuilder/build   tmpfs   defaults,size=32000M    0   0
-----
-
-The size depends on the size of the chroot you will work with (at least 3G, more is better). It can be larger then the RAM size. If the chroot size exceeds the RAM size it will use the SWAP as well.
-
-Additionally you have to add the following to ^~/pbuilderrc^:
-
-----
-# tmpfs
-APTCACHEHARDLINK=no
-----
-
-Finally mount +tmpfs+ by entering (as root):
-
-----
-sudo mount -a
-----
 
 ===== 5.3.4 Slave setup on Master
 *TODO!!!*
