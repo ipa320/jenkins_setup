@@ -215,3 +215,6 @@ keep empty if you have no hardware slaves
 
 ### configure mailer
 *TODO!!!*
+
+### configure update\_chroot\_tarballs job
+*TODO!!!*

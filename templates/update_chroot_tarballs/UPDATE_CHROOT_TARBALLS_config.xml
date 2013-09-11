@@ -44,7 +44,7 @@ git clone git://github.com/(!!FORKOWNER!!)/jenkins_setup.git $WORKSPACE/jenkins_
 
 cd $WORKSPACE/jenkins_setup/scripts
 
-nice -n19 ionice -c2 -n7 ./update_chroot_tarballs.py (!!TARBALL_SSH_ADDRESS!!) (!!TARGET_URL!!) $ubuntu_distro $arch</command>
+nice -n19 ionice -c2 -n7 ./update_chroot_tarballs.py (!!TARBALL_SSH_ADDRESS!!) (!!TARGET_URL!!) $ubuntu_distro $arch (!!APT_CACHER_PROXY_ADDRESS!!)</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

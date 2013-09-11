@@ -23,7 +23,7 @@ def main():
     (options, args) = parser.parse_args()
 
     if len(args) < 4:
-        print "Usage: %s tarball_location_ssh_address target_yaml_url ubuntu_distro architecture" % (sys.argv[0])
+        print "Usage: %s tarball_location_ssh_address target_yaml_url ubuntu_distro architecture [apt_cacher_proxy_address]" % (sys.argv[0])
         sys.exit()
 
     print args
@@ -59,6 +59,10 @@ def main():
         print "Architecture %s not supported! Supported architectures: %s" % (arch, ', '.join(ARCH))
         sys.exit()
 
+    apt_cacher_proxy = ''
+    if len(args) == 5:
+        apt_cacher_proxy = args[4]
+
     # set up ssh object
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -86,7 +90,8 @@ def main():
     print "\nvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
     print "Set up basic chroot %s" % basic_tarball
     result = process_basic_tarball(ssh, basic_tarball, os.getenv("WORKSPACE"),
-                                   tarball_dir, extended_tarballs, existent_tarballs)
+                                   tarball_dir, extended_tarballs, existent_tarballs,
+                                   apt_cacher_proxy)
     if result != []:
         errors += result
 
@@ -103,7 +108,7 @@ def main():
     return errors
 
 
-def process_basic_tarball(ssh, basic, local_abs, remote_abs, extended_tarballs, existent_tarballs):
+def process_basic_tarball(ssh, basic, local_abs, remote_abs, extended_tarballs, existent_tarballs, apt_cacher_proxy):
     local_abs_basic = os.path.join(local_abs, basic)
     remote_abs_basic = os.path.join(remote_abs, basic)
 
@@ -161,7 +166,9 @@ def process_basic_tarball(ssh, basic, local_abs, remote_abs, extended_tarballs, 
         print "Extend basic chroot %s to %s" % (basic, extend)
         local_abs_extend = os.path.join(local_abs, extend)
         remote_abs_extend = os.path.join(remote_abs, extend)
-        result = process_extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend, remote_abs_extend, existent_tarballs)
+        result = process_extend_tarball(ssh, basic, local_abs_basic, extend,
+                                        local_abs_extend, remote_abs_extend,
+                                        existent_tarballs, apt_cacher_proxy)
         if result != []:
             errors += result
         call('sudo rm %s' % local_abs_extend)
@@ -172,7 +179,8 @@ def process_basic_tarball(ssh, basic, local_abs, remote_abs, extended_tarballs, 
     return errors
 
 
-def process_extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend, remote_abs_extend, existent_tarballs):
+def process_extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend,
+                           remote_abs_extend, existent_tarballs, apt_cacher_proxy):
     # get tarball parameter
     tarball_params = get_tarball_params(extend)
 
@@ -189,8 +197,9 @@ def process_extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend
             # update tarball
             #call("./pbuilder_calls.sh update %s" % local_abs_extend)
 
-            call("./pbuilder_calls.sh execute %s install_basics.sh %s %s"
-                 % (local_abs_extend, tarball_params['ubuntu_distro'], tarball_params['ros_distro']))
+            call("./pbuilder_calls.sh execute %s install_basics.sh %s %s %s"
+                 % (local_abs_extend, tarball_params['ubuntu_distro'],
+                    tarball_params['ros_distro'], apt_cacher_proxy))
 
         except Exception as ex:
             return ["%s: %s" % (extend, ex)]
@@ -200,8 +209,9 @@ def process_extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend
         try:
             call("cp %s %s" % (local_abs_basic, local_abs_extend))
 
-            call("./pbuilder_calls.sh execute %s install_basics.sh %s %s"
-                 % (local_abs_extend, tarball_params['ubuntu_distro'], tarball_params['ros_distro']))
+            call("./pbuilder_calls.sh execute %s install_basics.sh %s %s %s"
+                 % (local_abs_extend, tarball_params['ubuntu_distro'],
+                    tarball_params['ros_distro'], apt_cacher_proxy))
 
         except Exception as ex:
             return ["%s: %s" % (extend, ex)]
