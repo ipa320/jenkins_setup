@@ -24,31 +24,31 @@ assumptions:
 ## Jenkins installation
 
 ### Debian packages "Debian/Ubuntu"
+Add the jenkins debian repository and install jenkins
+
     wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
     sudo su -c 'echo "deb http://pkg.jenkins-ci.org/debian binary/" > /etc/apt/sources.list.d/jenkins.list'
     sudo apt-get update && sudo apt-get install jenkins
 
-==== Up or downgrade jenkins version
-We've tested the setup on Jenkins version v1.514. You can find the war file here: +http://mirrors.jenkins-ci.org/war/+
+### Up or downgrade jenkins to version v1.514
+We've tested the setup on Jenkins version v1.514. You can find the war file [here](http://mirrors.jenkins-ci.org/war).
 
-Switch to v1.514:
-----
-cd /usr/share/jenkins/
-sudo rm -rf jenkins.war
-sudo wget http://mirrors.jenkins-ci.org/war/1.514/jenkins.war
-----
+    cd /usr/share/jenkins/
+    sudo rm -rf jenkins.war
+    sudo wget http://mirrors.jenkins-ci.org/war/1.514/jenkins.war
 
-----
-sudo /etc/init.d/jenkins restart
-----
+restart jenkins
 
-After a successfull installation you can access the Jenkins-Server in your browser: +http://localhost:8080+
+    sudo /etc/init.d/jenkins restart
 
-''''
-=== Jenkins Configuration
 
-==== Global Security
-First off all go to +http://localhost:8080/configureSecurity/?+
+After a successfull installation you can access the jenkins server in your browser at [http://localhost:8080](http://localhost:8080).
+
+
+## Jenkins configuration
+
+### Global Security
+First off all go to [http://localhost:8080/configureSecurity](http://localhost:8080/configureSecurity)
 
 The *Access Control* section gives the opportunity to select the *Security Realm* which defines how the users can login.
 
