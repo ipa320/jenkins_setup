@@ -172,7 +172,7 @@ Afterwards reboot the Jenkins-Server
     sudo reboot now
 
 ### Configure the *cob-pipeline* plugin
-Go to the *cob pipeline configuration* section at [http://fmw-xps:8080/configure[(http://fmw-xps:8080/configure) and fill the following fields (As soon as you fill out the fields, the values will be validated in the background.):
+Go to the *cob pipeline configuration* section at [http://fmw-xps:8080/configure](http://fmw-xps:8080/configure) and fill the following fields (As soon as you fill out the fields, the values will be validated in the background.):
 
 - Jenkins Admin Login/Password (This is the user you configured before in the Configure Security part with all the permissions. Enter its login name and password.)
 - Configuration Folder (Enter the path of the cob-pipeline configuration folder.)
@@ -210,8 +210,24 @@ keep empty if you have no hardware slaves
     https://raw.github.com/ipa320/jenkins_setup/master/releases/targets.yaml
 ```
 
+### configure update\_chroot\_tarballs job
+To set up the necessary chroot tarballs and keep them up-to-date an
+additional job is needed. Copy the prepared job `config.xml` into the
+job folder.
+
+```
+    sudo mkdir /var/lib/jenkins/jobs/update_chroot_tarballs
+    sudo cp ~/jenkins-config/jenkins_setup/templates/update_chroot_tarballs/UPDATE_CHROOT_TARBALLS_config.xml /var/lib/jenkins/jobs/update_chroot_tarballs/config.xml
+```
+
+Open the `config.xml` and replace the placeholders with your parameters.
+Afterwards **Reload Configuration from Disk** under
+[http://localhost:8080/manage](http://localhost:8080/manage).
+
 ### configure default view
-*TODO!!!*
+Login as `admin` and create a new view by pressing the '+'. Name it 'current\_user' and select **List View**. In Section *Job Filters* press **Add Job Filter** and select **User Permissions for Jobs**. Configure as shown in the picture and press OK.
+
+![Job Filter configuration](job_filter.png "Configuration example for View Job Filter")
 
 ### configure mailer
 Copy the jelly template for the email generation:
@@ -219,19 +235,3 @@ Copy the jelly template for the email generation:
 ```
     sudo cp ~/jenkins-config/jenkins_setup/templates/email-templates/html-with-health-builds-tests.jelly /var/lib/jenkins/email-templates/
 ```
-
-
-
-### configure update\_chroot\_tarballs job
-To set up the necessary chroot tarballs and keep them up-to-date an
-additional job is needed. Copy the prepared job `config.xml` into the
-job folder.
-
-```
-    mkdir /var/lib/jenkins/jobs/update_chroot_tarballs
-    sudo cp ~/jenkins-config/jenkins_setup/templates/update_chroot_tarballs/UPDATE_CHROOT_TARBALLS_config.xml /var/lib/jenkins/jobs/update_chroot_tarballs/config.xml
-```
-
-Open the `config.xml` and replace the placeholders with your parameters.
-Afterwards *Reload Configuration from Disk* under
-[http://localhost:8080/manage](http://localhost:8080/manage).
