@@ -30,20 +30,24 @@ apt-get update
 echo "\n***INSTALL ROS***"
 apt-get install -y ros-$2-ros
 echo "\n***INSTALL ROSINSTALL***"
-apt-get install python-rosinstall -y
+apt-get install -y python-rosinstall
 
 echo "\n***INSTALL ROS VERSION SPECIFIC PACKAGES***"
-case $2 in
-    electric)
-        echo "ELECTRIC: catkin-pkg and rospkg"
-        pip install -U catkin-pkg rospkg
-        ;;
-    fuerte)
-        echo "FUERTE: rospkg and rosdep"
-        pip install -U rospkg rosdep
-        ;;
-    groovy)
-        echo "GROOVY: python-catkin-pkg and python-rosdistro"
-        apt-get install python-catkin-pkg python-rosdistro --yes
-        ;;
-esac
+if [$(lsb_release -sc) == "natty" || $(lsb_release -sc) == "maverick"]; then
+    case $2 in
+        electric)
+            echo "ELECTRIC: catkin-pkg and rospkg"
+            pip install -U catkin-pkg rospkg
+            ;;
+        fuerte)
+            echo "FUERTE: rospkg and rosdep"
+            pip install -U rospkg rosdep
+            ;;
+        groovy)
+            echo "GROOVY: python-rosdistro"
+            apt-get install python-rosdistro -y
+            ;;
+    esac
+else
+    apt-get install -y python-rosdistro python-rosdep python-rospkg python-catkin-pkg
+fi
