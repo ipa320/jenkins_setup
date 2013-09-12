@@ -214,7 +214,13 @@ keep empty if you have no hardware slaves
 *TODO!!!*
 
 ### configure mailer
-*TODO!!!*
+Copy the jelly template for the email generation:
+
+```
+    sudo cp ~/jenkins-config/jenkins_setup/templates/email-templates/html-with-health-builds-tests.jelly /var/lib/jenkins/email-templates/
+```
+
+
 
 ### configure update\_chroot\_tarballs job
 To set up the necessary chroot tarballs and keep them up-to-date an
