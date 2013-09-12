@@ -98,7 +98,7 @@ Setup ssh configuration (create ssh-key if it doesn't exist already and add gith
 
     ssh-keygen
     touch ~/.ssh/known_hosts
-    ssh-keyscan -H github.com > ~/.ssh/known_hosts
+    ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
 You have to add this key to your GitHub user http://github.com/settings/ssh. 
 
@@ -116,8 +116,8 @@ Clone the `jenkins_setup` and `jenkins_config` repositories
 
 Add the `jenkins_setup` module to the `$PYTHONPATH` (adapt the *ROS_RELEASE*).
 
-    echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh
-    echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh
+    sudo su -c 'echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh'
+    sudo su -c 'echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh'
 
 Enable passwordless sudo rights for the jenkins user by adding the following line at the end of `/etc/sudoers` (open with `sudo visudo -f /etc/sudoers`).
 
