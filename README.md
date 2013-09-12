@@ -18,8 +18,8 @@ assumptions:
 ### Debian packages for Ubuntu
 Install basic packages
 
-    sudo apt-get install git-core pbuilder devscripts pigz
-    
+    sudo apt-get install git-core pbuilder devscripts pigz python-jenkins
+
 Install basic ROS packages
 
     sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
@@ -180,47 +180,45 @@ Go to the *cob pipeline configuration* section at [http://localhost:8080/configu
 - Jenkins Admin Login/Password (This is the user you configured before in the Configure Security part with all the permissions. Enter its login name and password.)
 - Configuration Folder (Enter the path of the cob-pipeline configuration folder.)
 
-```
+    ```
     /home/jenkins/jenkins-config
-```
+    ```
 
 - Tarball Location (enter the location where the tarballs are stored.)
 
-```
+    ```
     jenkins@localhost:/home/jenkins/chroot_tarballs
-```
+    ```
 
-- GitHub User Login/Password (This is the github user that has read-permission to all the repositories you want to be tested. It has also write-permission to your jenkins_config repository.)
-- Pipeline Repositories Owner/Fork (GitHub user that ownes the *jenkins_setup* and the *jenkins_config* repository.)
+- GitHub User Login/Password (This is the github user that has read-permission to all the repositories you want to be tested. It has also write-permission to your jenkins\_config repository.)
+- Pipeline Repositories Owner/Fork (GitHub user that ownes the *jenkins\_setup* and the *jenkins\_config* repository.)
 
-```
+    ```
     ipa320
-```
+    ```
 
 - ROS releases (ROS distributions that should be supported by your build/test pipeline)
 
-```
+    ```
     groovy hydro
-```
+    ```
 
 - Robots (Nodes which can be chosen for Hardware Build/Test jobs.)
 
-keep empty if you have no hardware slaves
+    keep empty if you have no hardware slaves
 
 - Target Platform Url (URL where the ROS `targets.yaml` is stored, defining the Ubuntu target platforms for each ROS Version.)
 
-```
+    ```
     https://raw.github.com/ipa320/jenkins_setup/master/releases/targets.yaml
-```
+    ```
 
 ### configure update\_chroot\_tarballs job
 To set up the necessary chroot tarballs and keep them up-to-date an additional job is needed. Copy the prepared job `config.xml` into the job folder and make the jenkins user own it.
 
-```
     sudo mkdir /var/lib/jenkins/jobs/update_chroot_tarballs
     sudo cp ~/jenkins-config/jenkins_setup/templates/update_chroot_tarballs/UPDATE_CHROOT_TARBALLS_config.xml /var/lib/jenkins/jobs/update_chroot_tarballs/config.xml
     sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/update_chroot_tarballs
-```
 
 Afterwards **Reload Configuration from Disk** under
 [http://localhost:8080/manage](http://localhost:8080/manage).
@@ -239,8 +237,6 @@ Go to [http://localhost:8080/configure](http://localhost:8080/configure) and sel
 ### configure mailer
 Copy the jelly template for the email generation:
 
-```
     sudo mkdir /var/lib/jenkins/email-templates
     sudo cp ~/jenkins-config/jenkins_setup/templates/email-templates/html-with-health-builds-tests.jelly /var/lib/jenkins/email-templates/
     sudo chown -R jenkins:jenkins /var/lib/jenkins//email-templates
-```
