@@ -225,7 +225,11 @@ Afterwards **Reload Configuration from Disk** under
 [http://localhost:8080/manage](http://localhost:8080/manage).
 
 ### configure default view
-Login as `admin` and create a new view by pressing the '+'. Name it 'current\_user' and select **List View**. In Section *Job Filters* press **Add Job Filter** and select **User Permissions for Jobs**. Configure as shown in the picture and press OK.
+Login as `admin` and create a new view by pressing the '+'.
+
+![Create View](new_view.png "Create a new view in Jenkins")
+
+Name it 'current\_user' and select **List View**. In Section *Job Filters* press **Add Job Filter** and select **User Permissions for Jobs**. Configure as shown in the picture and press OK.
 
 ![Job Filter configuration](job_filter.png "Configuration example for View Job Filter")
 
