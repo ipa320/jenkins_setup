@@ -79,7 +79,7 @@ Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/plug
 - Mailer https://wiki.jenkins-ci.org/display/JENKINS/Mailer
 - View Job Filters https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters
 
-### Install `jenkins_setup`, `jeknins_config` and the *cob-pipeline* plugin
+### Install `jenkins_setup`, `jenkins_config` and the *cob-pipeline* plugin
 Download the *.hpi* file from https://github.com/fmw-jk/cob-pipeline-plugin/releases and place it in `/var/lib/jenkins/plugins`.
 
     cd /var/lib/jenkins/plugins
@@ -164,7 +164,7 @@ Add the following content to `~/.pbuilderrc`
 
     # pigz; multicore zipping
     COMPRESSPROG=pigz
-    
+
     # tmpfs
     APTCACHEHARDLINK=no
 
