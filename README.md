@@ -229,6 +229,8 @@ Login as `admin` and create a new view by pressing the '+'. Name it 'current\_us
 
 ![Job Filter configuration](job_filter.png "Configuration example for View Job Filter")
 
+Go to [http://localhost:8080/configure](http://localhost:8080/configure) and select 'current\_user' as **Default view**.
+
 ### configure mailer
 Copy the jelly template for the email generation:
 
