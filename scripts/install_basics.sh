@@ -33,7 +33,7 @@ echo "\n***INSTALL ROSINSTALL***"
 apt-get install -y python-rosinstall
 
 echo "\n***INSTALL ROS VERSION SPECIFIC PACKAGES***"
-if [ "$(lsb_release -sc)" == "natty" || "$(lsb_release -sc)" == "maverick" ]; then
+if [ "$(lsb_release -sc)" == "natty" ] || [ "$(lsb_release -sc)" == "maverick" ]; then
     case $2 in
         electric)
             echo "ELECTRIC: catkin-pkg and rospkg"
