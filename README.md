@@ -172,7 +172,7 @@ Afterwards reboot the Jenkins-Server
     sudo reboot now
 
 ### Configure the *cob-pipeline* plugin
-Go to the *cob pipeline configuration* section at [http://fmw-xps:8080/configure](http://fmw-xps:8080/configure) and fill the following fields (As soon as you fill out the fields, the values will be validated in the background.):
+Go to the *cob pipeline configuration* section at [http://localhost:8080/configure](http://localhost:8080/configure) and fill the following fields (As soon as you fill out the fields, the values will be validated in the background.):
 
 - Jenkins Admin Login/Password (This is the user you configured before in the Configure Security part with all the permissions. Enter its login name and password.)
 - Configuration Folder (Enter the path of the cob-pipeline configuration folder.)
@@ -184,7 +184,7 @@ Go to the *cob pipeline configuration* section at [http://fmw-xps:8080/configure
 - Tarball Location (enter the location where the tarballs are stored.)
 
 ```
-    jenkins@fmw-xps:/home/jenkins/chroot_tarballs
+    jenkins@localhost:/home/jenkins/chroot_tarballs
 ```
 
 - GitHub User Login/Password (This is the github user that has read-permission to all the repositories you want to be tested. It has also write-permission to your jenkins_config repository.)
@@ -220,7 +220,6 @@ job folder.
     sudo cp ~/jenkins-config/jenkins_setup/templates/update_chroot_tarballs/UPDATE_CHROOT_TARBALLS_config.xml /var/lib/jenkins/jobs/update_chroot_tarballs/config.xml
 ```
 
-Open the `config.xml` and replace the placeholders with your parameters.
 Afterwards **Reload Configuration from Disk** under
 [http://localhost:8080/manage](http://localhost:8080/manage).
 
