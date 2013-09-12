@@ -223,9 +223,7 @@ job folder.
 
 ```
     mkdir /var/lib/jenkins/jobs/update_chroot_tarballs
-    sudo cp
-~/jenkins-config/jenkins_setup/templates/update_chroot_tarballs/UPDATE_CHROOT_TARBALLS_config.xml
-/var/lib/jenkins/jobs/update_chroot_tarballs/config.xml
+    sudo cp ~/jenkins-config/jenkins_setup/templates/update_chroot_tarballs/UPDATE_CHROOT_TARBALLS_config.xml /var/lib/jenkins/jobs/update_chroot_tarballs/config.xml
 ```
 
 Open the `config.xml` and replace the placeholders with your parameters.
