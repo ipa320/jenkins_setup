@@ -70,6 +70,8 @@ Go to [http://localhost:8080/configure](http://localhost:8080/configure)
 
 You can keep the default values for all other entries.
 
+### Master node configuration
+Go to [http://localhost:8080/computer/(master)/configure](http://localhost:8080/computer/(master)/configure) and add `prio_build regular_build update_tarballs` to *Labels*
 
 ### Jenkins plugin installation
 Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/pluginManager/available) and install the following plugins:
