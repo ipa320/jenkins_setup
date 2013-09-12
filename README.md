@@ -212,13 +212,12 @@ keep empty if you have no hardware slaves
 ```
 
 ### configure update\_chroot\_tarballs job
-To set up the necessary chroot tarballs and keep them up-to-date an
-additional job is needed. Copy the prepared job `config.xml` into the
-job folder.
+To set up the necessary chroot tarballs and keep them up-to-date an additional job is needed. Copy the prepared job `config.xml` into the job folder and make the jenkins user own it.
 
 ```
     sudo mkdir /var/lib/jenkins/jobs/update_chroot_tarballs
     sudo cp ~/jenkins-config/jenkins_setup/templates/update_chroot_tarballs/UPDATE_CHROOT_TARBALLS_config.xml /var/lib/jenkins/jobs/update_chroot_tarballs/config.xml
+    sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/update_chroot_tarballs
 ```
 
 Afterwards **Reload Configuration from Disk** under
