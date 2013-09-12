@@ -1,7 +1,7 @@
 #!/bin/sh
 
-echo "\n***APT-PROXY***"
 if [ -n "$3" ];then
+    echo "\n***APT-PROXY***"
 	sh -c 'echo "Acquire::http { Proxy \"'$3'\"; };" > /etc/apt/apt.conf.d/01proxy'
 	cat /etc/apt/apt.conf.d/01proxy
 fi
@@ -30,7 +30,7 @@ apt-get update
 echo "\n***INSTALL ROS***"
 apt-get install -y ros-$2-ros
 echo "\n***INSTALL ROSINSTALL***"
-pip install -U rosinstall
+apt-get install python-rosinstall -y
 
 echo "\n***INSTALL ROS VERSION SPECIFIC PACKAGES***"
 case $2 in
