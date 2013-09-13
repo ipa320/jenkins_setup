@@ -15,21 +15,24 @@
     <hudson.matrix.TextAxis>
       <name>ubuntu_distro</name>
       <values>
-        <string>(!!UBUNTU!!)</string>
-        <string>(!!UBUNTU!!)</string>
+        <string>lucid</string>
+        <string>oneiric</string>
+        <string>precise</string>
+        <!--<string>UBUNTU</string>-->
       </values>
     </hudson.matrix.TextAxis>
     <hudson.matrix.TextAxis>
       <name>arch</name>
       <values>
-        <string>(!!ARCHITECTURE!!)</string>
-        <string>(!!ARCHITECTURE!!)</string>
+        <string>amd64</string>
+        <string>i386</string>
+        <!--<string>ARCHITECTURE</string>-->
       </values>
     </hudson.matrix.TextAxis>
     <hudson.matrix.LabelAxis>
       <name>label</name>
       <values>
-        <string>update</string>
+        <string>update_tarballs</string>
       </values>
     </hudson.matrix.LabelAxis>
   </axes>
@@ -40,11 +43,12 @@
 echo $WORKSPACE
 sudo rm -rf $WORKSPACE/*
 
-git clone git://github.com/(!!FORKOWNER!!)/jenkins_setup.git $WORKSPACE/jenkins_setup
+# ADAPT FORKOWNER
+git clone git://github.com/ipa320/jenkins_setup.git $WORKSPACE/jenkins_setup
 
 cd $WORKSPACE/jenkins_setup/scripts
 
-nice -n19 ionice -c2 -n7 ./update_chroot_tarballs.py (!!TARBALL_SSH_ADDRESS!!) (!!TARGET_URL!!) $ubuntu_distro $arch</command>
+nice -n19 ionice -c2 -n7 ./update_chroot_tarballs.py jenkins@localhost:chroot_tarballs https://raw.github.com/ipa320/jenkins_setup/master/releases/targets.yaml $ubuntu_distro $arch #APT_CACHER_PROXY_ADDRESS (optional)</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

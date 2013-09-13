@@ -5,6 +5,7 @@ import socket
 import pkg_resources
 import yaml
 import re
+from jenkins import JenkinsException
 
 
 class JenkinsJob(object):
@@ -29,6 +30,7 @@ class JenkinsJob(object):
         self.job_type = None
         self.poll = None
         self.repo_list = None
+        self.tarball_location = ""
 
     def schedule_job(self):
         """
@@ -40,14 +42,14 @@ class JenkinsJob(object):
             try:
                 self.jenkins_instance.reconfig_job(self.job_name, self.job_config)
                 return "Reconfigured job %s" % self.job_name
-            except Exception as ex:
+            except JenkinsException as ex:
                 print ex
                 return 'Reconfiguration of %s failed: %s' % (self.job_name, ex)
         else:
             try:
                 self.jenkins_instance.create_job(self.job_name, self.job_config)
                 return "Created job %s" % self.job_name
-            except Exception as ex:
+            except JenkinsException as ex:
                 print ex
                 return 'Creation of %s failed: %s' % (self.job_name, ex)
 
@@ -111,6 +113,7 @@ class JenkinsJob(object):
         self.params['MAILER'] = ''
         self.params['POSTBUILD_TASK'] = ''
         self._set_authorization_matrix_param(['read', 'workspace'])
+        self.params['CONCURRENT_BUILD'] = 'true'
 
     ###########################################################################
     # helper methods - parameter generation
@@ -124,7 +127,7 @@ class JenkinsJob(object):
             if "@(%s)" % key not in self.job_config:
                 raise KeyError("Parameter %s could not be replaced, because it is not existent" % key)
             self.job_config = self.job_config.replace("@(%s)" % key, value)
-        not_replaced_keys = re.findall('@\(([A-Z0-9_]+)\)', self.job_config)
+        not_replaced_keys = re.findall(r'@\(([A-Z0-9_]+)\)', self.job_config)
         if not_replaced_keys != []:
             raise KeyError("The keys %s were not replaced, because the parameters where missing" % (str(not_replaced_keys)))
 
@@ -166,13 +169,13 @@ class JenkinsJob(object):
         :returns: matrix config, ``str``
         """
 
-        filter = '%s' % ' || '.join(['(%s)' % ' &amp;&amp; '.join(['%s=="%s"' % (key, value)
+        filter_ = '%s' % ' || '.join(['(%s)' % ' &amp;&amp; '.join(['%s=="%s"' % (key, value)
                                                                    for key, value in i.iteritems()])
                                      for i in config])
         if negation:
-            filter = '!(%s)' % filter
+            filter_ = '!(%s)' % filter_
 
-        return filter
+        return filter_
 
     def _generate_matrix_axis(self, axis_name, value_list):
         """
@@ -193,7 +196,7 @@ class JenkinsJob(object):
 
         return axis
 
-    def _set_matrix_param(self, name_value_dict_list, labels=None, filter=None):
+    def _set_matrix_param(self, name_value_dict_list, labels=None, filter_=None):
         """
         Returns matrix config for given dictionary containing names and values
 
@@ -201,8 +204,8 @@ class JenkinsJob(object):
         @type  name_value_dict_list: list
         @param labels: node labels to run builds on
         @type  labels: list
-        @param filter: combination filter
-        @type  filter: str
+        @param filter_: combination filter
+        @type  filter_: str
         """
 
         axes = ''
@@ -223,7 +226,7 @@ class JenkinsJob(object):
         #same in short: matrix = matrix.replace('@(NODE)', '<string>%s</string>' % ('</string> <string>'.join(label for label in labels) if labels else self.job_type))
         if filter:
             matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', filter)
-        elif filter == '':
+        elif filter_ == '':
             matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', 'repository=="NO_ENTRY"')
 
         self.params['MATRIX'] = matrix
@@ -297,7 +300,7 @@ class JenkinsJob(object):
         else:
             jointrigger = jointrigger.replace('@(JOIN_UNSTABLE)', 'false')
 
-        if parameterized_trigger:
+        if parameterized_trigger is not None:
             if parameterized_trigger == '':
                 raise Exception("Parameterized trigger configuration string is empty")
             jointrigger = jointrigger.replace('@(PARAMETERIZED_TRIGGER)', parameterized_trigger)
@@ -318,7 +321,7 @@ class JenkinsJob(object):
             return ''
         elif threshold_name == '':
             raise Exception('No treshold for postbuildtrigger given')
-        elif threshold_name not in ['SUCCESS', 'UNSTABLE', 'FAILURE']:  # TODO check tresholds
+        elif threshold_name not in ['SUCCESS', 'UNSTABLE', 'FAILURE']:
             raise Exception("Threshold argument invalid")
 
         postbuildtrigger = self.job_config_params['postbuildtrigger'].replace('@(CHILD_PROJECTS)',
@@ -685,6 +688,9 @@ class PriorityBuildJob(BuildJob):
 
         super(PriorityBuildJob, self)._set_job_type_params()
 
+        # no concurrent build
+        #self.params['CONCURRENT_BUILD'] = 'false'
+
         # email
         self._set_mailer_param('Priority Build')
 
@@ -994,6 +1000,9 @@ class PriorityGraphicsTestJob(TestJob):
         shell_script = self._get_shell_script('graphics_test')
         self._set_shell_param(shell_script)
 
+        # set pipeline trigger
+        self.set_pipelinetrigger_param(['release'])
+
 
 class RegularGraphicsTestJob(TestJob):
     """
@@ -1178,6 +1187,7 @@ class HardwareBuildJob(JenkinsJob):
 
 class HardwareTestTrigger(JenkinsJob):
     """
+    Class for hardware test trigger jobs
     """
     def __init__(self, jenkins_instance, pipeline_config):
         super(HardwareTestTrigger, self).__init__(jenkins_instance, pipeline_config)

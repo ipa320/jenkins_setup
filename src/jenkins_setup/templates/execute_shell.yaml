@@ -1,5 +1,3 @@
-#######prio_build#######
-
 'prio_build': '#!/bin/bash -e
 
 date
@@ -22,8 +20,6 @@ mkdir $WORKSPACE/../aux
 echo "Copying "$new_basetgz" from @(STORAGE)"
 
 scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
-
-scp jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.gitconfig $WORKSPACE/.gitconfig
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
 
@@ -66,21 +62,24 @@ echo "***********ENTER CHROOT************"
 
 date
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+if [ $arch == "i386" ]; then
+
+    setarch i386 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+
+else
+
+    sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+
+fi
 
 echo "***********LEAVE CHROOT************"
-
-date
 
 echo "*******CLEANUP WORKSPACE*******"
 
 echo "STORING CHROOT TARBALL ON @(STORAGE)"
 
-scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use/
+scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use_on__@(SERVERNAME)/
 '
-
-
-#######regular_build#######
 
 'regular_build': '#!/bin/bash -e
 
@@ -105,8 +104,6 @@ echo "Copying "$new_basetgz" from @(STORAGE)"
 
 scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
-scp jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.gitconfig $WORKSPACE/.gitconfig
-
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
@@ -146,21 +143,24 @@ ls -lah $WORKSPACE
 
 echo "***********ENTER CHROOT************"
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+if [ $arch == "i386" ]; then
+
+    setarch i386 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+
+else
+
+    sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+
+fi
 
 echo "***********LEAVE CHROOT************"
-
-date
 
 echo "*******CLEANUP WORKSPACE*******"
 
 echo "STORING CHROOT TARBALL ON @(STORAGE)"
 
-scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use/
+scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use_on__@(SERVERNAME)/
 '
-
-
-#######nongraphics_test#######
 
 'nongraphics_test': '#!/bin/bash -e
 
@@ -180,11 +180,9 @@ fi
 mkdir $WORKSPACE/../aux
 
 
-echo "Copying "$basetgz" from @(STORAGE)/in_use"
+echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
-scp @(STORAGE)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
-
-scp jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.gitconfig $WORKSPACE/.gitconfig
+scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
 
@@ -252,9 +250,9 @@ fi
 mkdir $WORKSPACE/../aux
 
 
-echo "Copying "$basetgz" from @(STORAGE)/in_use"
+echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
-scp @(STORAGE)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
+scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 
 scp jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.gitconfig $WORKSPACE/.gitconfig
 
@@ -334,11 +332,9 @@ fi
 mkdir $WORKSPACE/../aux
 
 
-echo "Copying "$basetgz" from @(STORAGE)/in_use"
+echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
-scp @(STORAGE)/in_use/$basetgz $WORKSPACE/../aux/${basetgz}
-
-scp jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.gitconfig $WORKSPACE/.gitconfig
+scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
 
@@ -388,7 +384,7 @@ echo "*******CLEANUP WORKSPACE*******"
 
 echo "STORING CHROOT TARBALL ON @(STORAGE)"
 
-scp $WORKSPACE/../aux/${basetgz}_downstream @(STORAGE)/in_use/
+scp $WORKSPACE/../aux/${basetgz}_downstream @(STORAGE)/in_use_on__@(SERVERNAME)/
 
 '
 
@@ -413,9 +409,9 @@ fi
 mkdir $WORKSPACE/../aux
 
 
-echo "Copying "$basetgz" from @(STORAGE)/in_use"
+echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
-scp @(STORAGE)/in_use/${basetgz}_downstream $WORKSPACE/../aux/${basetgz}
+scp @(STORAGE)/in_use_on__@(SERVERNAME)/${basetgz}_downstream $WORKSPACE/../aux/${basetgz}
 
 scp jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.gitconfig $WORKSPACE/.gitconfig
 
