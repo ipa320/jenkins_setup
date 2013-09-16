@@ -185,17 +185,17 @@ def call_with_list(command, envir=None, verbose=True):
     helper = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True, env=envir)
     res = ""
     while helper.poll() is None:
-        output_ = helper.stdout.readline()
-        res += output
+        command_output = helper.stdout.readline()
+        res += command_output
         if verbose:
-            sys.stdout.write(output_)
+            sys.stdout.write(command_output)
         time.sleep(0.1)  # TODO What is a good value here? Without this delay it's busy looping
 
     #make sure to capture the last line(s)
-    output_ = helper.stdout.read()
-    res += output_
+    command_output = helper.stdout.read()
+    res += command_output
     if verbose:
-        print output_
+        print command_output
 
     if helper.returncode != 0:
         msg = "Failed to execute command '%s'" % command
