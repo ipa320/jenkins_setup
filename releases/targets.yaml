@@ -4,3 +4,4 @@
 - electric: ['lucid', 'natty', 'oneiric']
 - fuerte: ['lucid', 'oneiric', 'precise']
 - groovy: ['oneiric', 'precise', 'quantal']
+- hydro: ['precise', 'quantal', 'raring']
