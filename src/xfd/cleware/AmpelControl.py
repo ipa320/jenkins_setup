@@ -24,6 +24,8 @@ def get_state(url):
 	state = []
 	for color in xml_colors:
 		state.append(str(color.string))
+	if state == []:
+		raise Exception("Received empty state. There is no color tag, check URL manually: " + url)
 	return state
 
 # color: (0=red, 1=yellow, 2=blue)
@@ -49,7 +51,7 @@ def set_ampel(state):
 		message += "blue"
 		set_cleware(2, 1)
 	else:
-		message = "Error: invalid status."
+		message = "Error: invalid state. state = " + str(state)
 		set_cleware("all",2)
 	return message
 
