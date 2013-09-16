@@ -53,6 +53,7 @@ After a successfull installation you can access the jenkins server in your brows
 ### Global security
 Go to [http://localhost:8080/configureSecurity](http://localhost:8080/configureSecurity)
 
+- Check *enable security*
 - Check *Jenkins's own user database* under *Access Control*/*Security Realm*. And check **Allow users to sign up**.
 - Set *Authorization* to **Project-based Matrix Authorization Strategy**.
 - Add an `admin`-user and give him all rights.
@@ -71,7 +72,7 @@ Go to [http://localhost:8080/configure](http://localhost:8080/configure)
 You can keep the default values for all other entries.
 
 ### Master node configuration
-Go to [http://localhost:8080/computer/(master)/configure](http://localhost:8080/computer/(master)/configure) and add `prio_build regular_build update_tarballs` to *Labels*
+Go to [http://localhost:8080/computer/(master)/configure](http://localhost:8080/computer/%28master%29/configure) and add `prio_build regular_build update_tarballs` to *Labels*
 
 ### Jenkins plugin installation
 Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/pluginManager/available) and install the following plugins:

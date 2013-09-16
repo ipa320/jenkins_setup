@@ -18,6 +18,8 @@
         <string>lucid</string>
         <string>oneiric</string>
         <string>precise</string>
+        <string>quantal</string>
+        <string>raring</string>
         <!--<string>UBUNTU</string>-->
       </values>
     </hudson.matrix.TextAxis>
