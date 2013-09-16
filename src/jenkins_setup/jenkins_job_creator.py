@@ -224,8 +224,8 @@ class JenkinsJob(object):
         else:
             matrix = matrix.replace('@(NODE)', '<string>%s</string>' % self.job_type)
         #same in short: matrix = matrix.replace('@(NODE)', '<string>%s</string>' % ('</string> <string>'.join(label for label in labels) if labels else self.job_type))
-        if filter:
-            matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', filter)
+        if filter_:
+            matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', filter_)
         elif filter_ == '':
             matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', 'repository=="NO_ENTRY"')
 
@@ -657,7 +657,7 @@ class BuildJob(JenkinsJob):
         if not matrix_filter:
             matrix_filter = self._generate_matrix_filter(self._get_prio_subset_filter())
         matrix_entries_dict_list = self._get_matrix_entries(matrix_job_type)
-        self._set_matrix_param(matrix_entries_dict_list, filter=matrix_filter)
+        self._set_matrix_param(matrix_entries_dict_list, filter_=matrix_filter)
 
 
 class PriorityBuildJob(BuildJob):
@@ -855,7 +855,7 @@ class TestJob(JenkinsJob):
         if not matrix_filter:
             matrix_filter = self._generate_matrix_filter(self._get_test_subset_filter())
         matrix_entries_dict_list = self._get_matrix_entries(matrix_job_type)
-        self._set_matrix_param(matrix_entries_dict_list, filter=matrix_filter)
+        self._set_matrix_param(matrix_entries_dict_list, filter_=matrix_filter)
 
         # set pipeline trigger
         self._set_pipelinetrigger_param(['release'])
@@ -1133,7 +1133,7 @@ class HardwareBuildJob(JenkinsJob):
         # set matrix
         matrix_filter = self._generate_matrix_filter(self._get_hardware_subset_filter())
         (matrix_entries_dict_list, robots) = self._get_hardware_matrix_entries()
-        self._set_matrix_param(matrix_entries_dict_list, labels=robots, filter=matrix_filter)
+        self._set_matrix_param(matrix_entries_dict_list, labels=robots, filter_=matrix_filter)
 
         # email
         self._set_mailer_param('Hardware Build')
