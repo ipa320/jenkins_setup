@@ -6,8 +6,11 @@
 # -make the jenkins url an input parameter
 # -add clewarecontrol command to light up the ampel
 
+import os
+import sys
 import urllib2
 import time
+from optparse import OptionParser
 from bs4 import BeautifulSoup
 
 
@@ -59,12 +62,23 @@ def set_cleware(color,mode):
 
 
 if __name__ == "__main__":
+	
+	_usage = """%prog [options]
+	type %prog -h for more info."""
+	parser = OptionParser(usage=_usage, prog=os.path.basename(sys.argv[0]))
+	parser.add_option("-u", "--url",
+		dest="url", 
+		default="http://build.care-o-bot.org:8080/view/All", 
+		help="Jenkins server to monitor. Default: http://build.care-o-bot.org:8080")
+	(options, args) = parser.parse_args()
+	if len(args) != 0:
+		parser.error("no arguments supported.")
 
 	while True:
-		#url = 'http://localhost:8080/view/my_view/api/xml'
-		url = 'http://cob-jenkins-server:8080/view/u_320/api/xml'
-		state = get_state(url)
-	
-		print set_ampel(state)
+		try:
+			state = get_state(options.url + "/api/xml")
+			print options.url + ": " + set_ampel(state)
+		except Exception, e:
+			print e
+			pass
 		time.sleep(1)
-	
