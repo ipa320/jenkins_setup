@@ -15,8 +15,7 @@ export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
 
 
 
-echo "Set up git and ssh"
-cp $WORKSPACE/.gitconfig ~/.gitconfig &&
+echo "Set up ssh"
 cp -a $WORKSPACE/.ssh /root &&
 ls -la /root/ &&
 chown -R root.root /root/.ssh
