@@ -5,6 +5,7 @@ import socket
 import pkg_resources
 import yaml
 import re
+from jenkins import JenkinsException
 
 
 class JenkinsJob(object):
@@ -29,6 +30,7 @@ class JenkinsJob(object):
         self.job_type = None
         self.poll = None
         self.repo_list = None
+        self.tarball_location = ""
 
     def schedule_job(self):
         """
@@ -40,14 +42,14 @@ class JenkinsJob(object):
             try:
                 self.jenkins_instance.reconfig_job(self.job_name, self.job_config)
                 return "Reconfigured job %s" % self.job_name
-            except Exception as ex:
+            except JenkinsException as ex:
                 print ex
                 return 'Reconfiguration of %s failed: %s' % (self.job_name, ex)
         else:
             try:
                 self.jenkins_instance.create_job(self.job_name, self.job_config)
                 return "Created job %s" % self.job_name
-            except Exception as ex:
+            except JenkinsException as ex:
                 print ex
                 return 'Creation of %s failed: %s' % (self.job_name, ex)
 
@@ -125,7 +127,7 @@ class JenkinsJob(object):
             if "@(%s)" % key not in self.job_config:
                 raise KeyError("Parameter %s could not be replaced, because it is not existent" % key)
             self.job_config = self.job_config.replace("@(%s)" % key, value)
-        not_replaced_keys = re.findall('@\(([A-Z0-9_]+)\)', self.job_config)
+        not_replaced_keys = re.findall(r'@\(([A-Z0-9_]+)\)', self.job_config)
         if not_replaced_keys != []:
             raise KeyError("The keys %s were not replaced, because the parameters where missing" % (str(not_replaced_keys)))
 
@@ -167,13 +169,13 @@ class JenkinsJob(object):
         :returns: matrix config, ``str``
         """
 
-        filter = '%s' % ' || '.join(['(%s)' % ' &amp;&amp; '.join(['%s=="%s"' % (key, value)
+        filter_ = '%s' % ' || '.join(['(%s)' % ' &amp;&amp; '.join(['%s=="%s"' % (key, value)
                                                                    for key, value in i.iteritems()])
                                      for i in config])
         if negation:
-            filter = '!(%s)' % filter
+            filter_ = '!(%s)' % filter_
 
-        return filter
+        return filter_
 
     def generate_matrix_axis(self, axis_name, value_list):
         """
@@ -194,14 +196,14 @@ class JenkinsJob(object):
 
         return axis
 
-    def set_matrix_param(self, name_value_dict_list, filter=None):
+    def set_matrix_param(self, name_value_dict_list, filter_=None):
         """
         Returns matrix config for given dictionary containing names and values
 
         @param name_value_dict_list: matrix parameter config
         @type  name_value_dict_list: list
-        @param filter: combination filter
-        @type  filter: str
+        @param filter_: combination filter
+        @type  filter_: str
         """
 
         axes = ''
@@ -216,8 +218,8 @@ class JenkinsJob(object):
         matrix = self.job_config_params['matrix']['basic']
         matrix = matrix.replace('@(NODE)', self.job_type)
         matrix = matrix.replace('@(AXES)', axes)
-        if filter:
-            matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', filter)
+        if filter_:
+            matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', filter_)
 
         self.params['MATRIX'] = matrix
 
@@ -279,7 +281,7 @@ class JenkinsJob(object):
         else:
             jointrigger = jointrigger.replace('@(JOIN_UNSTABLE)', 'false')
 
-        if parameterized_trigger:
+        if parameterized_trigger is not None:
             if parameterized_trigger == '':
                 raise Exception("Parameterized trigger configuration string is empty")
             jointrigger = jointrigger.replace('@(PARAMETERIZED_TRIGGER)', parameterized_trigger)
@@ -300,7 +302,7 @@ class JenkinsJob(object):
             return ''
         elif threshold_name == '':
             raise Exception('No treshold for postbuildtrigger given')
-        elif threshold_name not in ['SUCCESS', 'UNSTABLE', 'FAILURE']:  # TODO check tresholds
+        elif threshold_name not in ['SUCCESS', 'UNSTABLE', 'FAILURE']:
             raise Exception("Threshold argument invalid")
 
         postbuildtrigger = self.job_config_params['postbuildtrigger'].replace('@(CHILD_PROJECTS)',
@@ -814,8 +816,6 @@ class TestJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
-        #self.set_junit_testresults_param()  TODO
-
         matrix_filter = self.generate_matrix_filter(self.get_prio_subset_filter())
 
         # set matrix
@@ -854,7 +854,7 @@ class NongraphicsTestJob(TestJob):
         # email
         self.set_mailer_param('Non-Graphics Test')
 
-        # set execute shell TODO
+        # set execute shell
         shell_script = self.get_shell_script('test')
         self.set_shell_param(shell_script)
 
@@ -893,7 +893,7 @@ class GraphicsTestJob(TestJob):
         # email
         self.set_mailer_param('Graphics Test')
 
-        # set execute shell TODO
+        # set execute shell
         shell_script = self.get_shell_script('test')
         self.set_shell_param(shell_script)
 
@@ -930,7 +930,7 @@ class HardwareBuildJob(JenkinsJob):
         # email
         self.set_mailer_param('Hardware Build')
 
-        # set execute shell TODO
+        # set execute shell
 
         # set pipeline trigger
         self.set_pipelinetrigger_param(['automatic_hw_test'])
@@ -959,8 +959,6 @@ class HardwareJob(JenkinsJob):
         """
 
         self.params['PROJECT'] = 'project'  # TODO 'matrix-project'
-
-        #self.set_junit_testresults_param()  # TODO
 
     def get_hardware_matrix_entries(self):
         """
@@ -1100,5 +1098,3 @@ class CleanUpJob(JenkinsJob):
         self.params['PROJECT'] = 'project'
 
         self.params['NODE_LABEL'] = 'clean_up'
-
-# TODO classes: test jobs, hardware jobs, release

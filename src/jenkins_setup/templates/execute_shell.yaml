@@ -21,9 +21,7 @@ echo "Copying "$new_basetgz" from @(STORAGE)"
 
 scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
-scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
-
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):~/.ssh $WORKSPACE/
 
 ls -lah $WORKSPACE
 
@@ -116,9 +114,7 @@ echo "Copying "$new_basetgz" from @(STORAGE)"
 
 scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
-scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
-
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):~/.ssh $WORKSPACE/
 
 ls -lah $WORKSPACE
 
@@ -198,9 +194,7 @@ echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
 scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 
-scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
-
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):~/.ssh $WORKSPACE/
 
 ls -lah $WORKSPACE
 
@@ -273,9 +267,7 @@ echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
 scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 
-scp jenkins@@(SERVERNAME):~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig
-
-scp -r jenkins@@(SERVERNAME):~/jenkins-config/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):~/.ssh $WORKSPACE/
 
 ls -lah $WORKSPACE
 

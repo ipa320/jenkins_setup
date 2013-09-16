@@ -49,35 +49,36 @@ class JenkinsJobTest(unittest.TestCase):
 
         self.jj = jenkins_job_creator.JenkinsJob(jenkins_instance, self.test_pipe_inst)
 
-    # Testing schedule_job
-    def test__schedule_job__job_name_string_and_job_config_string__return_action_string(self):
-        self.jj.job_name = 'test_job'
-        self.jj.job_config = EMPTY_CONFIG_XML
-        self.jj.delete_job()
-        result = self.jj.schedule_job()
-        self.assertEqual(result, 'created')
-        self.jj.delete_job()
+    #TODO find a better way to test this
+    ## Testing schedule_job
+    #def test__schedule_job__job_name_string_and_job_config_string__return_action_string(self):
+        #self.jj.job_name = 'test_job'
+        #self.jj.job_config = EMPTY_CONFIG_XML
+        #self.jj.delete_job()
+        #result = self.jj.schedule_job()
+        #self.assertEqual(result, 'created')
+        #self.jj.delete_job()
 
-    def test__schedule_job__job_name_string_and_job_config_string__return_action_string2(self):
-        self.jj.job_name = 'test_job'
-        self.jj.job_config = EMPTY_CONFIG_XML
-        self.jj.schedule_job()
-        result = self.jj.schedule_job()
-        self.assertEqual(result, 'reconfigured')
-        self.jj.delete_job()
+    #def test__schedule_job__job_name_string_and_job_config_string__return_action_string2(self):
+        #self.jj.job_name = 'test_job'
+        #self.jj.job_config = EMPTY_CONFIG_XML
+        #self.jj.schedule_job()
+        #result = self.jj.schedule_job()
+        #self.assertEqual(result, 'reconfigured')
+        #self.jj.delete_job()
 
-    # Testing delete_job
-    def test__delete_job__job_name_string__return_action_string(self):
-        self.jj.job_name = 'test_job'
-        self.jj.job_config = EMPTY_CONFIG_XML
-        self.jj.schedule_job()
-        result = self.jj.delete_job()
-        self.assertEqual(result, 'test_job')
+    ## Testing delete_job
+    #def test__delete_job__job_name_string__return_action_string(self):
+        #self.jj.job_name = 'test_job'
+        #self.jj.job_config = EMPTY_CONFIG_XML
+        #self.jj.schedule_job()
+        #result = self.jj.delete_job()
+        #self.assertEqual(result, 'test_job')
 
-    def test__delete_job__job_name_string__return_action_string2(self):
-        self.jj.job_name = 'test_job'
-        result = self.jj.delete_job()
-        self.assertEqual(result, '')
+    #def test__delete_job__job_name_string__return_action_string2(self):
+        #self.jj.job_name = 'test_job'
+        #result = self.jj.delete_job()
+        #self.assertEqual(result, '')
 
     # Testing common_params
     def test__set_common_params__return_common_job_config_dict(self):
@@ -97,11 +98,13 @@ class JenkinsJobTest(unittest.TestCase):
                                   'POSTBUILD_TRIGGER': '',
                                   'JOIN_TRIGGER': '',
                                   'PIPELINE_TRIGGER': '',
+                                  'AUTHORIZATIONMATRIX': '',
                                   'GROOVY_POSTBUILD': '',
                                   'PARAMETERIZED_TRIGGER': '',
                                   'JUNIT_TESTRESULTS': '',
                                   'MAILER': '',
-                                  'POSTBUILD_TASK': ''
+                                  'POSTBUILD_TASK': '',
+                                  'CONCURRENT_BUILD': 'true'
                                   }
         self.jj.set_common_params()
         self.assertEqual(self.jj.params, common_job_config_dict)
@@ -279,11 +282,14 @@ class JenkinsJobTest(unittest.TestCase):
     def test__set_jointrigger_param__input_no_job_type_list_and_empty_parameterized_trigger_str__raise_exception(self):
         self.assertRaises(Exception, self.jj.set_jointrigger_param, [], parameterized_trigger='')
 
+    def test__set_jointrigger_param__input_job_type_list_and_empty_parameterized_trigger_str__raise_exception(self):
+        self.assertRaises(Exception, self.jj.set_jointrigger_param, self.job_type_test_list, parameterized_trigger='')
+
     def test__set_jointrigger_param__input_no_job_type_list_and_no_parameterized_trigger_str__raise_exception(self):
         self.assertRaises(Exception, self.jj.set_jointrigger_param, [], parameterized_trigger=None)
 
     def test__set_jointrigger_param__input_unstable_behavior_not_bool__raise_exception(self):
-        self.assertRaises(Exception, self.jj.set_jointrigger_param, self.job_type_test_list, unstable_behavior_test='False', parameterized_trigger='TESTCONFIG')
+        self.assertRaises(Exception, self.jj.set_jointrigger_param, self.job_type_test_list, unstable_behavior='False', parameterized_trigger='TESTCONFIG')
 
     # Testing set_postbuildtrigger_param
     def test__set_postbuildtrigger_param__input_job_type_list_and_threshold_name_string__return_postbuildtrigger_config_string(self):
@@ -380,8 +386,121 @@ class JenkinsJobTest(unittest.TestCase):
 
     # Testing set_mailer_param
     def test__set_mailer_param__check_set_param(self):
-        self.jj.set_mailer_param()
-        self.assertEqual(self.jj.params['MAILER'], '<hudson.tasks.Mailer> <recipients>test@ipa.fhg.de</recipients> <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild> <sendToIndividuals>false</sendToIndividuals> </hudson.tasks.Mailer>')
+        self.jj.set_mailer_param('Priority Build')
+        self.assertEqual(self.jj.params['MAILER'], '<hudson.plugins.emailext.ExtendedEmailPublisher>\
+ <recipientList>test@ipa.fhg.de</recipientList>\
+ <configuredTriggers>\
+ <hudson.plugins.emailext.plugins.trigger.UnstableTrigger>\
+ <email>\
+ <recipientList></recipientList>\
+ <subject>$PROJECT_DEFAULT_SUBJECT</subject>\
+ <body>$PROJECT_DEFAULT_CONTENT</body>\
+ <sendToDevelopers>false</sendToDevelopers>\
+ <sendToRequester>false</sendToRequester>\
+ <includeCulprits>false</includeCulprits>\
+ <sendToRecipientList>true</sendToRecipientList>\
+ <attachmentsPattern></attachmentsPattern>\
+ <attachBuildLog>false</attachBuildLog>\
+ <replyTo></replyTo>\
+ </email>\
+ </hudson.plugins.emailext.plugins.trigger.UnstableTrigger>\
+ <hudson.plugins.emailext.plugins.trigger.FailureTrigger>\
+ <email>\
+ <recipientList></recipientList>\
+ <subject>$PROJECT_DEFAULT_SUBJECT</subject>\
+ <body>$PROJECT_DEFAULT_CONTENT</body>\
+ <sendToDevelopers>false</sendToDevelopers>\
+ <sendToRequester>false</sendToRequester>\
+ <includeCulprits>false</includeCulprits>\
+ <sendToRecipientList>true</sendToRecipientList>\
+ <attachmentsPattern></attachmentsPattern>\
+ <attachBuildLog>false</attachBuildLog>\
+ <replyTo></replyTo>\
+ </email>\
+ </hudson.plugins.emailext.plugins.trigger.FailureTrigger>\
+ <hudson.plugins.emailext.plugins.trigger.FixedTrigger>\
+ <email>\
+ <recipientList></recipientList>\
+ <subject>$PROJECT_DEFAULT_SUBJECT</subject>\
+ <body>$PROJECT_DEFAULT_CONTENT</body>\
+ <sendToDevelopers>false</sendToDevelopers>\
+ <sendToRequester>false</sendToRequester>\
+ <includeCulprits>false</includeCulprits>\
+ <sendToRecipientList>true</sendToRecipientList>\
+ <attachmentsPattern></attachmentsPattern>\
+ <attachBuildLog>false</attachBuildLog>\
+ <replyTo></replyTo>\
+ </email>\
+ </hudson.plugins.emailext.plugins.trigger.FixedTrigger>\
+ </configuredTriggers>\
+ <contentType>text/html</contentType>\
+ <defaultSubject>$BUILD_STATUS: Priority Build of ${ENV, var="repository"};  ${ENV, var="ros_distro"}, ${ENV, var="ubuntu_distro"}, ${ENV, var="arch"} - Build # $BUILD_NUMBER!</defaultSubject>\
+ <defaultContent>${JELLY_SCRIPT,template=&quot;html-with-health-builds-tests&quot;}</defaultContent>\
+ <attachmentsPattern></attachmentsPattern>\
+ <presendScript></presendScript>\
+ <attachBuildLog>true</attachBuildLog>\
+ <replyTo></replyTo>\
+ <matrixTriggerMode>ONLY_CONFIGURATIONS</matrixTriggerMode>\
+ </hudson.plugins.emailext.ExtendedEmailPublisher>')
+
+    def test__set_mailer_param__check_set_param2(self):
+        self.jj.pipe_inst.committer_email_enabled = True
+        self.jj.set_mailer_param('Priority Build')
+        self.assertEqual(self.jj.params['MAILER'], '<hudson.plugins.emailext.ExtendedEmailPublisher>\
+ <recipientList>test@ipa.fhg.de</recipientList>\
+ <configuredTriggers>\
+ <hudson.plugins.emailext.plugins.trigger.UnstableTrigger>\
+ <email>\
+ <recipientList></recipientList>\
+ <subject>$PROJECT_DEFAULT_SUBJECT</subject>\
+ <body>$PROJECT_DEFAULT_CONTENT</body>\
+ <sendToDevelopers>true</sendToDevelopers>\
+ <sendToRequester>false</sendToRequester>\
+ <includeCulprits>false</includeCulprits>\
+ <sendToRecipientList>true</sendToRecipientList>\
+ <attachmentsPattern></attachmentsPattern>\
+ <attachBuildLog>false</attachBuildLog>\
+ <replyTo></replyTo>\
+ </email>\
+ </hudson.plugins.emailext.plugins.trigger.UnstableTrigger>\
+ <hudson.plugins.emailext.plugins.trigger.FailureTrigger>\
+ <email>\
+ <recipientList></recipientList>\
+ <subject>$PROJECT_DEFAULT_SUBJECT</subject>\
+ <body>$PROJECT_DEFAULT_CONTENT</body>\
+ <sendToDevelopers>true</sendToDevelopers>\
+ <sendToRequester>false</sendToRequester>\
+ <includeCulprits>false</includeCulprits>\
+ <sendToRecipientList>true</sendToRecipientList>\
+ <attachmentsPattern></attachmentsPattern>\
+ <attachBuildLog>false</attachBuildLog>\
+ <replyTo></replyTo>\
+ </email>\
+ </hudson.plugins.emailext.plugins.trigger.FailureTrigger>\
+ <hudson.plugins.emailext.plugins.trigger.FixedTrigger>\
+ <email>\
+ <recipientList></recipientList>\
+ <subject>$PROJECT_DEFAULT_SUBJECT</subject>\
+ <body>$PROJECT_DEFAULT_CONTENT</body>\
+ <sendToDevelopers>true</sendToDevelopers>\
+ <sendToRequester>false</sendToRequester>\
+ <includeCulprits>false</includeCulprits>\
+ <sendToRecipientList>true</sendToRecipientList>\
+ <attachmentsPattern></attachmentsPattern>\
+ <attachBuildLog>false</attachBuildLog>\
+ <replyTo></replyTo>\
+ </email>\
+ </hudson.plugins.emailext.plugins.trigger.FixedTrigger>\
+ </configuredTriggers>\
+ <contentType>text/html</contentType>\
+ <defaultSubject>$BUILD_STATUS: Priority Build of ${ENV, var="repository"};  ${ENV, var="ros_distro"}, ${ENV, var="ubuntu_distro"}, ${ENV, var="arch"} - Build # $BUILD_NUMBER!</defaultSubject>\
+ <defaultContent>${JELLY_SCRIPT,template=&quot;html-with-health-builds-tests&quot;}</defaultContent>\
+ <attachmentsPattern></attachmentsPattern>\
+ <presendScript></presendScript>\
+ <attachBuildLog>true</attachBuildLog>\
+ <replyTo></replyTo>\
+ <matrixTriggerMode>ONLY_CONFIGURATIONS</matrixTriggerMode>\
+ </hudson.plugins.emailext.ExtendedEmailPublisher>')
 
     def test__set_junit_testresults__check_set_param(self):
         self.jj.set_junit_testresults_param()
@@ -393,7 +512,7 @@ class JenkinsJobTest(unittest.TestCase):
         self.jj.repo_list = ['test_repo_2']
         self.jj.poll = self.jj.repo_list[0]
         self.jj.set_trigger_param('vcs')
-        self.assertEqual(self.jj.params['TRIGGER'], '<triggers class="vector"> <hudson.triggers.SCMTrigger> <spec>*/10 * * * *</spec> </hudson.triggers.SCMTrigger> </triggers>')
+        self.assertEqual(self.jj.params['TRIGGER'], '<triggers class="vector"> <hudson.triggers.SCMTrigger> <spec>H/10 * * * *</spec> </hudson.triggers.SCMTrigger> </triggers>')
         self.assertTrue(self.jj.params['VCS'] != '')
 
     def test__set_trigger_param__input_resulttrigger__check_set_param(self):
@@ -449,17 +568,29 @@ class JenkinsJobTest(unittest.TestCase):
         self.assertRaises(Exception, self.jj.set_shell_param, 2)
 
     # Testing get_shell_script
-    def test__get_shell_script__result_shell_script_str(self):
+    def test__get_shell_script__check_result_shell_script_str(self):
         self.jj.job_type = 'prio_build'
         self.jj.tarball_location = 'jenkins@jenkins-test-server:~/chroot_tarballs'
         result = self.jj.get_shell_script()
-        self.assertEqual(result, '#!/bin/bash -e\nnew_basetgz=${ubuntu_distro}__${arch}__${ros_distro}\nbasetgz=test-user__${new_basetgz}__${REPOSITORY}\n\nsudo rm -rf $WORKSPACE/*\nif [ -d $WORKSPACE/../aux ]; then\nsudo rm -rf $WORKSPACE/../aux\nfi\nmkdir $WORKSPACE/../aux\necho "Copying "$new_basetgz" from jenkins@%(server_name)s:~/chroot_tarballs"\nscp jenkins@%(server_name)s:~/chroot_tarballs/$new_basetgz $WORKSPACE/../aux/${basetgz}\nscp jenkins@%(server_name)s:~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig\nscp -r jenkins@%(server_name)s:~/jenkins-config/.ssh $WORKSPACE/.ssh\nls -lah $WORKSPACE\n\necho "Cloning jenkins_setup repository"\ngit clone git@github.com:fmw-jk/jenkins_config.git $WORKSPACE/jenkins_setup\nls -lah $WORKSPACE\n\ncat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM\nJOBNAME=$JOB_NAME\nROSDISTRO=$ros_distro\nREPOSITORY=$REPOSITORY\nUBUNTUDISTRO=$ubuntu_distro\nARCH=$arch\n#TODO\nCONFIG_REPO=git@github.com:fmw-jk/jenkins_config.git\nJENKINS_MASTER=%(server_name)s\nJENKINS_USER=test-user\nJOBTYPE=prio_build\nexport ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO\nexport BUILD_ID=$BUILD_ID\nDELIM\n\nls -lah $WORKSPACE\n\necho "***********ENTER CHROOT************"\necho "*********please be patient*********"\n\nsudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\n\necho "*******CLEANUP WORKSPACE*******"\necho "STORING CHROOT TARBALL ON jenkins@%(server_name)s:~/chroot_tarballs"\nscp $WORKSPACE/../aux/${basetgz} jenkins@%(server_name)s:~/chroot_tarballs/in_use/\nsudo rm -rf $WORKSPACE/../aux' % {'server_name': self.test_pipe_inst.server_name})
+        self.assertTrue('jenkins@jenkins-test-server:~/chroot_tarballs' in result)
 
-    def test__get_shell_script__result_shell_script_str2(self):
+    def test__get_shell_script__check_result_shell_script_str2(self):
+        self.jj.job_type = 'prio_build'
+        self.jj.tarball_location = 'jenkins@jenkins-test-server:~/chroot_tarballs'
+        result = self.jj.get_shell_script()
+        self.assertTrue('JENKINS_MASTER=jenkins-test-server' in result)
+
+    def test__get_shell_script__check_result_shell_script_str3(self):
+        self.jj.job_type = 'prio_build'
+        self.jj.tarball_location = 'jenkins@jenkins-test-server:~/chroot_tarballs'
+        result = self.jj.get_shell_script()
+        self.assertTrue('JOBTYPE=prio_build' in result)
+
+    def test__get_shell_script__check_result_shell_script_str4(self):
         self.jj.job_type = 'regular_build'
         self.jj.tarball_location = 'jenkins@jenkins-test-server:~/chroot_tarballs'
         result = self.jj.get_shell_script()
-        self.assertEqual(result, '#!/bin/bash -e\n\nnew_basetgz=${ubuntu_distro}__${arch}__${ros_distro}\nbasetgz=test-user__${new_basetgz}__${repository}\n\nsudo rm -rf $WORKSPACE/*\nif [ -d $WORKSPACE/../aux ]; then\nsudo rm -rf $WORKSPACE/../aux\nfi\nmkdir $WORKSPACE/../aux\n\necho "Copying "$new_basetgz" from jenkins@%(server_name)s:~/chroot_tarballs"\nscp jenkins@%(server_name)s:~/chroot_tarballs/$new_basetgz $WORKSPACE/../aux/${basetgz}\nscp jenkins@%(server_name)s:~/jenkins-config/.gitconfig $WORKSPACE/.gitconfig\nscp -r jenkins@%(server_name)s:~/jenkins-config/.ssh $WORKSPACE/.ssh\nls -lah $WORKSPACE\n\necho "Cloning jenkins_setup repository"\ngit clone git@github.com:fmw-jk/jenkins_config.git $WORKSPACE/jenkins_setup\nls -lah $WORKSPACE\n\ncat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM\nJOBNAME=$JOB_NAME\nROSDISTRO=$ros_distro\nREPOSITORY=$REPOSITORY\nUBUNTUDISTRO=$ubuntu_distro\nARCH=$arch\n#TODO\nCONFIG_REPO=git@github.com:fmw-jk/jenkins_config.git\nJENKINS_MASTER=%(server_name)s\nJENKINS_USER=test-user\nJOBTYPE=regular_build\nexport ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results # TODO\nexport BUILD_ID=$BUILD_ID\nDELIM\n\nls -lah $WORKSPACE\n\necho "***********ENTER CHROOT************"\necho "*********please be patient*********"\nsudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE\n\necho "*******CLEANUP WORKSPACE*******"\nsudo rm -rf $WORKSPACE/../aux' % {"server_name": self.test_pipe_inst.server_name})
+        self.assertTrue('JOBTYPE=regular_build' in result)
 
 
 class PipeStarterJobTest(unittest.TestCase):
