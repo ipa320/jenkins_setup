@@ -1,13 +1,14 @@
-jenkins\_setup
-=============
+# Jenkins Guide (DETAILED)
 
-This repository contains the code (config, src and script files) to set up and run a Cob-[Jenkins CI server](http://jenkins-ci.org) using the Cob-Pipeline-Plugin. Below the purpose of this pipeline and its setup process is described in detail.
+This repository contains the code (config, src and script files) to set up and run a Cob-[Jenkins CI server](http://jenkins-ci.org) using the [Cob-Pipeline-Plugin](http://github.com/fmw-jk/cob-pipeline-plugin).
+
+This guide is designed for developers and those who want to know more about it. The purpose of this pipeline and its setup process is described in detail below. First you should look at the [minimal Jenkins Guide](README.md).
+And **if you want to set up Cob-Pipeline quickly and only use it, the [minimal Jenkins Guide](README.md) is what you are looking for.**
 
 ###Version
 The plugin and this manual are developed and tested for Jenkins CI v1.514.
 
 ###Table of Contents
-* [Quick Setup](#quick-setup)
 * [Software Structure](#software-structure)
 * [Pipeline Structure](#pipeline-structure)
 * [Installation and Setup](#installation-and-setup)
@@ -20,10 +21,6 @@ The plugin and this manual are developed and tested for Jenkins CI v1.514.
         * [Configure the node](#configure-the-node)
         * [Create a new slave node in Jenkins](#create-a-new-slave-node-in-jenkins-slave-setup-on-master)
     * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation-deprecated)
-
-Quick Setup
-===========
-**TODO**
 
 
 Software Structure
