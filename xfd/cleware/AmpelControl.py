@@ -43,28 +43,42 @@ def get_jenkins_state(url):
 # mode: (0=off, 1=on, 2=flash)
 def extract_ampel_state(state):
 	message = "Ampel is "
+	state_out = [0,0,0]
 	if "red_anime" in state:
-		message += "red and flashing"
-		state = [2,0,0]
+		message += "flashing red"
+		state_out[0] = 2
 	elif "red" in state:
 		message += "red"
-		state = [1,0,0]
-	elif "yellow_anime" in state:
-		message += "yellow and flashing"
-		state = [0,2,0]
+		state_out[0] = 1
+	else:
+		message += "no red"
+		state_out[0] = 0
+
+	message += ", " 
+	if "yellow_anime" in state:
+		message += "flashing yellow"
+		state_out[1] = 2
 	elif "yellow" in state:
 		message += "yellow"
-		state = [0,1,0]
-	elif "blue_anime" in state:
-		message += "green and flashing"
-		state = [0,0,2]
+		state_out[1] = 1
+	else:
+		message += "no yellow"
+		state_out[1] = 0
+
+	message += " and "
+	if "blue_anime" in state:
+		message += "flashing green"
+		state_out[2] = 2
 	elif "blue" in state:
 		message += "green"
-		state = [0,0,1]
+		state_out[2] = 1
 	else:
+		message += "no green"
+		state_out[2] = 0
+	if state_out == [0, 0, 0]:
 		message = "Error: invalid state. state = " + str(state)
-		state = [2,2,2]
-	return state, message
+		state_out = [2,2,2]
+	return state_out, message
 
 def run_ampel():
 	global ampel
@@ -90,7 +104,7 @@ def run_ampel():
 if __name__ == "__main__":
 	global ampel
 	ampel = ampel_state()
-		
+
 	_usage = """%prog [options]
 	type %prog -h for more info."""
 	parser = OptionParser(usage=_usage, prog=os.path.basename(sys.argv[0]))
