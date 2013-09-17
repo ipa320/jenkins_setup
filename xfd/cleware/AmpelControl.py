@@ -111,7 +111,7 @@ if __name__ == "__main__":
 		try:
 			jenkins_state = get_jenkins_state(options.url + "/api/xml")
 			ampel_state, message = extract_ampel_state(jenkins_state)
-			print message
+			print message + " for " + options.url
 			ampel.set_state(ampel_state)
 		except Exception, e:
 			print e
