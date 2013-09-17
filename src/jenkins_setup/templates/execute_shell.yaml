@@ -2,6 +2,22 @@
 
 date
 
+if [ -z "$ROS_DISTRO" ]; then
+
+echo "set ROS_DISTRO"
+
+ROS_DISTRO=$ros_distro
+
+fi
+
+if [ -z "$ros_distro" ]; then
+
+echo "set ros_distro"
+
+ros_distro=$ROS_DISTRO
+
+fi
+
 new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
