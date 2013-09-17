@@ -6,6 +6,8 @@
 	cd clewarecontrol-2.5
 	sudo make install
 
+	sudo apt-get install python-bs4
+
 ### Copy udev rule
 	sudo cp 99-hidraw-permissions.rules /etc/udev/rules.d
 	sudo /etc/init.d/udev restart
