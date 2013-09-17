@@ -1,2 +1,2 @@
 #Allow dialout to read hidraws from Cleware
-SUBSYSTEM=="usb", KERNEL=="hiddev*", GROUP="dialout", MODE="0660"
+SUBSYSTEM=="usb", KERNEL=="hiddev*", GROUP="plugdev", MODE="0660"
