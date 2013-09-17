@@ -16,6 +16,7 @@ export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
 
 
 echo "Set up ssh"
+export HOME="/root"
 cp -a $WORKSPACE/.ssh /root &&
 ls -la /root/ &&
 chown -R root.root /root/.ssh

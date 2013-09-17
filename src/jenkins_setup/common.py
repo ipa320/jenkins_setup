@@ -456,7 +456,7 @@ def get_buildpipeline_configs(server_name, user_name):
         client = paramiko.SSHClient()
         client.load_system_host_keys()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(hostname = server_name, username = "jenkins", key_filename="/root/.ssh/id_rsa")
+        client.connect(hostname = server_name, username = "jenkins", key_filename=os.path.expanduser("~/.ssh/id_rsa"))
         sftp = client.open_sftp()
         fileObject = sftp.file("jenkins-config/jenkins_config/" + server_name + "/" + user_name + "/pipeline_config.yaml",'rb')
         bpl_configs = yaml.load(fileObject.read())
