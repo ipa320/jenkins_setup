@@ -24,10 +24,10 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
+export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 case $JOBTYPE in
     graphic_test|prio_graphics_test)
         echo "Set up graphic"
-        export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 
         $DIR/checkDisplayNull.bash &&
         $DIR/setupSources.bash &&
