@@ -128,6 +128,10 @@ class CobPipeDependencyRepo(object):
         if 'poll' in data:
             self.poll = data['poll']
 
+        self.test = None
+        if 'test' in data:
+            self.poll = data['test']
+
     def get_rosinstall(self):
         """
         Gets the rosinstall file entry for the repository object
@@ -166,9 +170,9 @@ class CobPipeRepo(CobPipeDependencyRepo):
         self.prio_ubuntu_distro = data['prio_ubuntu_distro']
         self.prio_arch = data['prio_arch']
 
-        self.matrix_distro_arch = {}
-        if data['matrix_distro_arch']:
-            self.matrix_distro_arch = data['matrix_distro_arch']
+        self.regular_matrix = {}
+        if data['regular_matrix']:
+            self.regular_matrix = data['regular_matrix']
 
         self.dependencies = {}
         if data['dependencies']:
@@ -189,7 +193,7 @@ class CobPipeRepo(CobPipeDependencyRepo):
             raise CobPipeException("Found robot to build on, but job is missing")
         if ('automatic_hw_test' in self.jobs or 'interactive_hw_test' in self.jobs) and self.robots == []:
             raise CobPipeException("Hardware tests defined but no robot to run them on")
-        if self.matrix_distro_arch != {} and 'regular_build' not in self.jobs:
+        if self.regular_matrix != {} and 'regular_build' not in self.jobs:
             raise CobPipeException("Configuration for regular build found, but no regular build job")
 
 

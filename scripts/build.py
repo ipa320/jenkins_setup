@@ -30,35 +30,6 @@ def main():
     workspace = os.environ['WORKSPACE']
     ros_package_path = os.environ['ROS_PACKAGE_PATH']
 
-    # (debug) output
-    print "\n", 50 * 'X'
-    print datetime.datetime.now()
-    print "\nTesting on ros distro:  %s" % ros_distro
-    print "Testing repository: %s" % build_repo
-    if build_repo != build_identifier:
-        print "       with suffix: %s" % build_identifier.split('__')[1]
-    print "\n", 50 * 'X'
-
-    # update sourcelist and upgrade installed basic packages
-    #common.output("Updating chroot enviroment")
-    #common.call("apt-get update")
-    #common.call("apt-get dist-upgrade -y")
-
-    #common.output("Updating rosinstall")  # TODO run install frequently in chroot_tarball_updater an remove here
-    #common.call("pip install -U rosinstall")
-
-    # install packages needed for execution (depending on ros_distro)
-    #common.output("Installing necessary packages:", decoration='')
-    #if ros_distro == 'electric':
-        #print "  catkin-pkg and rospkg"
-        #common.call("pip install -U catkin-pkg rospkg")
-    #elif ros_distro == 'fuerte':
-        #print "  rospkg and rosdep"
-        #common.call("pip install -U rospkg rosdep")
-    #elif ros_distro == 'groovy':
-        #print "  python-catkin-pkg and python-rosdistro"
-        #common.call("apt-get install python-catkin-pkg python-rosdistro --yes")
-
     # cob_pipe object
     cp_instance = cob_pipe.CobPipe()
     cp_instance.load_config_from_url(pipeline_repos_owner, server_name, user_name)
@@ -251,7 +222,7 @@ def main():
             raise common.BuildException("Failed to cmake wet repositories")
         #ros_env_repo = common.get_ros_env(os.path.join(repo_buildspace, 'devel/setup.bash'))
 
-        # build repositories and tests
+        # build repositories
         print "Build wet repository list"
         try:
             common.call("make", ros_env)
@@ -259,45 +230,9 @@ def main():
             print ex.msg
             raise common.BuildException("Failed to make wet packages")
 
-        test_error_msg = None
-        try:
-            common.call("make tests", ros_env)
-        except common.BuildException as ex:
-            print ex.msg
-            test_error_msg = ex.msg
-
-        # get wet repositories test and run dependencies
-        print "Get test and run dependencies of repo list"
-        (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_wet)
-        if stacks != {}:
-            raise common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
-                                        % (build_repo, '- ' + '\n- '.join(stacks)))
-        # take only wet packages
-        repo_test_dependencies = common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=False, test_depends=True)
-        if repo_test_dependencies != [] and test_error_msg is None:
-            print "Install test and run dependencies of repository list: %s" % (', '.join(repo_test_dependencies))
-            common.apt_get_install_also_nonrosdep(repo_test_dependencies, ros_distro, rosdep_resolver)
-
-            # run tests
-            print "Test repository list"
-            try:
-                common.call("make run_tests", ros_env)
-            except common.BuildException as ex:
-                print ex.msg
-                test_error_msg = ex.msg
-
-        # copy test results
-        common.copy_test_results(workspace, repo_buildspace, test_error_msg)
-
     ### rosbuild repositories
     print datetime.datetime.now()
     if build_repo_type == 'dry':
-        # get list of dependencies to test
-        test_repos_list = []
-        for dep in pipe_repos[build_identifier].dependencies:
-            if dep in stacks:
-                test_repos_list.append(dep)
-
         ros_env_repo = common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
         ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_sourcespace, ros_package_path])
         if options.verbose:
@@ -306,10 +241,10 @@ def main():
         if ros_distro == 'electric':
             print "Rosdep"
             common.call("rosmake rosdep", ros_env)
-        for stack in stacks.keys():
-            common.call("rosdep install -y %s" % stack, ros_env_repo)
+            for stack in stacks.keys():
+                common.call("rosdep install -y %s" % stack, ros_env_repo)
 
-        # build dry repositories and tests
+        # build dry repositories
         print "Build repository %s" % build_repo
         try:
             common.call("rosmake -rV --profile --pjobs=8 --output=%s %s" %
@@ -320,29 +255,8 @@ def main():
             finally:
                 print ex.msg
                 raise common.BuildException("Failed to rosmake %s" % build_repo)
-        try:
-            common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" %
-                        (dry_build_logs, " ".join(test_repos_list + [build_repo])), ros_env_repo)
-        except common.BuildException as ex:
-            print ex.msg
 
-        # copy test results
-        common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
-        for file in os.listdir(os.path.join(repo_sourcespace, "test_results")):
-            file_path = os.path.join(repo_sourcespace, "test_results", file)
-            print file_path
-            try:
-                if not file.startswith("_hudson"):
-                    shutil.rmtree(file_path)
-            except Exception as e:
-                print e
-
-        common.copy_test_results(workspace, repo_sourcespace)
         print datetime.datetime.now()
-        try:
-            shutil.move(dry_build_logs, os.path.join(workspace, "build_logs"))
-        except IOError as ex:
-            print "No build logs found: %s" % ex
 
 
 if __name__ == "__main__":
