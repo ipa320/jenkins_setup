@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.7
 
-import urllib2
+import paramiko
 import contextlib
 import os
 import subprocess
@@ -441,30 +441,28 @@ def get_dependencies(source_folder, build_depends=True, test_depends=True):
     return depends
 
 
-def get_buildpipeline_configs(config_repo, server_name, user_name):
+def get_buildpipeline_configs(server_name, user_name):
     """
     Get buildpipeline configuration
 
-    :param config_repo: address of repository where configs are stored, ``str``
     :param server_name: name of Jenkins master, ``str``
     :param user_name: name of user, ``str``
 
     :returns: return :dict: with configurations
     :raises: :exec:`Exception`
     """
-    pipeconfig_url = config_repo.replace(".git", "")
-    pipeconfig_url = pipeconfig_url.replace("https://github.com/", "https://raw.github.com/")
-    pipeconfig_url = pipeconfig_url.replace("git://github.com/", "https://raw.github.com/")
-    pipeconfig_url = pipeconfig_url.replace("git@github.com:", "https://raw.github.com/")
-    pipeconfig_url = pipeconfig_url + "/master/%s/%s/pipeline_config.yaml" % (server_name, user_name)
-    print "Parsing buildpipeline configuration file for %s stored at:\n%s" % (user_name, pipeconfig_url)
+    print "Parsing buildpipeline configuration file for %s stored at:\n%s" % (user_name, server_name)
     try:
-        #f = urllib2.urlopen(pipeconfig_url)
-        with contextlib.closing(urllib2.urlopen(pipeconfig_url)) as file:
-            bpl_configs = yaml.load(file.read())
+	client = paramiko.SSHClient()
+	client.load_system_host_keys()
+	client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+	client.connect(hostname = server_name)
+	sftp = client.open_sftp()
+	fileObject = sftp.file("jenkins-config/jenkins_config/" + server_name + "/" + user_name + "/pipeline_config.yaml",'rb')
+	bpl_configs = yaml.load(fileObject.read())
     except Exception as ex:
         print "While downloading and parsing the buildpipeline configuration \
-               file from\n%s\nthe following error occured:\n%s" % (pipeconfig_url, ex)
+               file from\n%s\nthe following error occured:\n%s" % (server_name, ex)
         raise ex
 
     return bpl_configs
