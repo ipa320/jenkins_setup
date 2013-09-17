@@ -1,11 +1,5 @@
 #!/usr/bin/python
 
-
-
-### TODO ###
-# -make the jenkins url an input parameter
-# -add clewarecontrol command to light up the ampel
-
 import os
 import sys
 import urllib2
@@ -74,16 +68,16 @@ def extract_ampel_state(state):
 
 def run_ampel():
 	global ampel
-	on = False
+	on = [False, False, False]
 	while True:
 		state = ampel.get_state()
 		for color in [0,1,2]:
-			if state[color] == 2 and not on:
+			if state[color] == 2 and not on[color]:
 				subprocess.Popen(["clewarecontrol", "-c", "1", "-as", str(color), "1"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-				on = True
-			elif state[color] == 2 and on:
+				on[color] = True
+			elif state[color] == 2 and on[color]:
 				subprocess.call(["clewarecontrol", "-c", "1", "-as", str(color), "0"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-				on = False
+				on[color] = False
 			else:
 				subprocess.call(["clewarecontrol", "-c", "1", "-as", str(color), str(state[color])], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 				pass
@@ -115,5 +109,6 @@ if __name__ == "__main__":
 			ampel.set_state(ampel_state)
 		except Exception, e:
 			print e
+			ampel.set_state([2, 2, 2])
 			pass
 		time.sleep(3)
