@@ -69,17 +69,20 @@ def extract_ampel_state(state):
 def run_ampel():
 	global ampel
 	on = [False, False, False]
+	default_options = ["-c", "1"]
+	if options.device != None:
+		default_options += ["-d", str(options.device)]
 	while True:
 		state = ampel.get_state()
 		for color in [0,1,2]:
 			if state[color] == 2 and not on[color]:
-				subprocess.Popen(["clewarecontrol", "-c", "1", "-as", str(color), "1"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+				subprocess.Popen(["clewarecontrol"] + default_options + ["-as", str(color), "1"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 				on[color] = True
 			elif state[color] == 2 and on[color]:
-				subprocess.call(["clewarecontrol", "-c", "1", "-as", str(color), "0"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+				subprocess.Popen(["clewarecontrol"] + default_options + [ "-as", str(color), "0"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 				on[color] = False
 			else:
-				subprocess.call(["clewarecontrol", "-c", "1", "-as", str(color), str(state[color])], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+				subprocess.Popen(["clewarecontrol"] + default_options + [ "-as", str(color), str(state[color])], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 				pass
 		time.sleep(1)
 
@@ -87,7 +90,7 @@ def run_ampel():
 if __name__ == "__main__":
 	global ampel
 	ampel = ampel_state()
-	
+		
 	_usage = """%prog [options]
 	type %prog -h for more info."""
 	parser = OptionParser(usage=_usage, prog=os.path.basename(sys.argv[0]))
@@ -95,6 +98,10 @@ if __name__ == "__main__":
 		dest="url", 
 		default="http://build.care-o-bot.org:8080/view/All", 
 		help="Jenkins server to monitor. Default: http://build.care-o-bot.org:8080")
+	parser.add_option("-d", "--device",
+		dest="device", 
+		default=None,
+		help="use device with serial number 'x' for the next operations")
 	(options, args) = parser.parse_args()
 	if len(args) != 0:
 		parser.error("no arguments supported.")
