@@ -11,9 +11,11 @@ $DIR/setupSSHKeys.bash &&
 $DIR/setupSources.bash &&
 $DIR/../tvnc/installTurboVNC.bash &&
 $DIR/../vgl/installVirtualGL.bash &&
+$DIR/distUpgrade.bash &&
 $DIR/installNvidia.bash &&
 $DIR/installLatestRosRepos.bash &&
 $DIR/installSimulator.bash &&
+$DIR/setupOGRE.bash &&
 $DIR/installTest.bash &&
 startX &&
 $DIR/startTest.bash;
