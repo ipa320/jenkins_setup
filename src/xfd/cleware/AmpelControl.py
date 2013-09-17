@@ -10,9 +10,9 @@ import os
 import sys
 import urllib2
 import time
+import subprocess
 from optparse import OptionParser
 from bs4 import BeautifulSoup
-from subprocess import call
 from thread import start_new_thread
 
 class ampel_state:
@@ -62,10 +62,10 @@ def extract_ampel_state(state):
 		message += "yellow"
 		state = [0,1,0]
 	elif "blue_anime" in state:
-		message += "blue and flashing"
+		message += "green and flashing"
 		state = [0,0,2]
 	elif "blue" in state:
-		message += "blue"
+		message += "green"
 		state = [0,0,1]
 	else:
 		message = "Error: invalid state. state = " + str(state)
@@ -79,19 +79,15 @@ def run_ampel():
 		state = ampel.get_state()
 		for color in [0,1,2]:
 			if state[color] == 2 and not on:
-				print "set on"
-				#call(["clewarecontrol -as " + str(color) + " " + str(1)])
+				subprocess.Popen(["clewarecontrol", "-c", "1", "-as", str(color), "1"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 				on = True
 			elif state[color] == 2 and on:
-				print "set off"
-				#call(["clewarecontrol -as " + str(0) + " " + str(0)])
+				subprocess.call(["clewarecontrol", "-c", "1", "-as", str(color), "0"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 				on = False
 			else:
-				print "set to state"
-				#call(["clewarecontrol -as " + str(0) + " " + str(state[color])])
+				subprocess.call(["clewarecontrol", "-c", "1", "-as", str(color), str(state[color])], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 				pass
 		time.sleep(1)
-		print ""
 
 
 if __name__ == "__main__":
