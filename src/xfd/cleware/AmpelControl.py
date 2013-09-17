@@ -12,9 +12,26 @@ import urllib2
 import time
 from optparse import OptionParser
 from bs4 import BeautifulSoup
+from subprocess import call
+from thread import start_new_thread
 
+class ampel_state:
+	def __init__(self):
+		# modes
+		self.off = 0
+		self.on = 1
+		self.flash = 2
+		# state
+		self.state = [self.off,self.off,self.off]
+	
+	def set_state(self, state):
+		self.state = state
 
-def get_state(url):
+	def get_state(self):
+		return self.state
+	
+
+def get_jenkins_state(url):
 	req = urllib2.urlopen(url)
 	res = req.read()
 
@@ -28,42 +45,58 @@ def get_state(url):
 		raise Exception("Received empty state. There is no color tag, check URL manually: " + url)
 	return state
 
-# color: (0=red, 1=yellow, 2=blue)
+# color: (0=red, 1=yellow, 2=blue/green)
 # mode: (0=off, 1=on, 2=flash)
-def set_ampel(state):
+def extract_ampel_state(state):
 	message = "Ampel is "
 	if "red_anime" in state:
 		message += "red and flashing"
-		set_cleware(0, 2)
+		state = [2,0,0]
 	elif "red" in state:
 		message += "red"
-		set_cleware(0, 1)
+		state = [1,0,0]
 	elif "yellow_anime" in state:
 		message += "yellow and flashing"
-		set_cleware(1, 2)
+		state = [0,2,0]
 	elif "yellow" in state:
 		message += "yellow"
-		set_cleware(1, 1)
+		state = [0,1,0]
 	elif "blue_anime" in state:
 		message += "blue and flashing"
-		set_cleware(2, 2)
+		state = [0,0,2]
 	elif "blue" in state:
 		message += "blue"
-		set_cleware(2, 1)
+		state = [0,0,1]
 	else:
 		message = "Error: invalid state. state = " + str(state)
-		set_cleware("all",2)
-	return message
+		state = [2,2,2]
+	return state, message
 
-
-def set_cleware(color,mode):
-	print "setting ampel to color: " + str(color) + " in mode: " + str(mode) # TODO: remove
-	#TODO: add clewarecontrol commands here
-	#clewarecontrol -as color, mode
-	
+def run_ampel():
+	global ampel
+	on = False
+	while True:
+		state = ampel.get_state()
+		for color in [0,1,2]:
+			if state[color] == 2 and not on:
+				print "set on"
+				#call(["clewarecontrol -as " + str(color) + " " + str(1)])
+				on = True
+			elif state[color] == 2 and on:
+				print "set off"
+				#call(["clewarecontrol -as " + str(0) + " " + str(0)])
+				on = False
+			else:
+				print "set to state"
+				#call(["clewarecontrol -as " + str(0) + " " + str(state[color])])
+				pass
+		time.sleep(1)
+		print ""
 
 
 if __name__ == "__main__":
+	global ampel
+	ampel = ampel_state()
 	
 	_usage = """%prog [options]
 	type %prog -h for more info."""
@@ -76,11 +109,15 @@ if __name__ == "__main__":
 	if len(args) != 0:
 		parser.error("no arguments supported.")
 
+	start_new_thread(run_ampel,())
+
 	while True:
 		try:
-			state = get_state(options.url + "/api/xml")
-			print options.url + ": " + set_ampel(state)
+			jenkins_state = get_jenkins_state(options.url + "/api/xml")
+			ampel_state, message = extract_ampel_state(jenkins_state)
+			print message
+			ampel.set_state(ampel_state)
 		except Exception, e:
 			print e
 			pass
-		time.sleep(1)
+		time.sleep(3)
