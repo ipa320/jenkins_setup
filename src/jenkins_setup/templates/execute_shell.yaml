@@ -21,7 +21,7 @@ echo "Copying "$new_basetgz" from @(STORAGE)"
 
 scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
-scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
@@ -104,7 +104,7 @@ echo "Copying "$new_basetgz" from @(STORAGE)"
 
 scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
-scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
@@ -184,7 +184,7 @@ echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
 scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 
-scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
@@ -254,9 +254,7 @@ echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
 scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 
-scp jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.gitconfig $WORKSPACE/.gitconfig
-
-scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
@@ -336,7 +334,7 @@ echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
 scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 
-scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
@@ -413,9 +411,7 @@ echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
 scp @(STORAGE)/in_use_on__@(SERVERNAME)/${basetgz}_downstream $WORKSPACE/../aux/${basetgz}
 
-scp jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.gitconfig $WORKSPACE/.gitconfig
-
-scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
