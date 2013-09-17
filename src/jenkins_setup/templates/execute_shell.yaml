@@ -2,7 +2,7 @@
 
 date
 
-new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
@@ -32,7 +32,7 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-ROSDISTRO=$ros_distro
+ROSDISTRO=$ROS_DISTRO
 
 REPOSITORY=$repository
 
@@ -84,7 +84,7 @@ scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use_on__@(SERVERNAME)/
 'regular_build': '#!/bin/bash -e
 
 
-new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
@@ -115,7 +115,7 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-ROSDISTRO=$ros_distro
+ROSDISTRO=$ROS_DISTRO
 
 REPOSITORY=$repository
 
@@ -164,7 +164,7 @@ scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use_on__@(SERVERNAME)/
 
 'nongraphics_test': '#!/bin/bash -e
 
-new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
@@ -195,7 +195,7 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-ROSDISTRO=$ros_distro
+ROSDISTRO=$ROS_DISTRO
 
 REPOSITORY=$repository
 
@@ -234,7 +234,7 @@ echo "***********LEAVE CHROOT************"
 
 'graphics_test': '#!/bin/bash -e
 
-new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
@@ -265,7 +265,7 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-ROSDISTRO=$ros_distro
+ROSDISTRO=$ROS_DISTRO
 
 REPOSITORY=$repository
 
@@ -314,7 +314,7 @@ echo "***********LEAVE CHROOT************"
 
 'downstream_build': '#!/bin/bash -e
 
-new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
@@ -345,7 +345,7 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-ROSDISTRO=$ros_distro
+ROSDISTRO=$ROS_DISTRO
 
 REPOSITORY=$repository
 
@@ -391,7 +391,7 @@ scp $WORKSPACE/../aux/${basetgz}_downstream @(STORAGE)/in_use_on__@(SERVERNAME)/
 
 'downstream_test': '#!/bin/bash -e
 
-new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
@@ -422,7 +422,7 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-ROSDISTRO=$ros_distro
+ROSDISTRO=$ROS_DISTRO
 
 REPOSITORY=$repository
 
