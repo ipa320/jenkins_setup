@@ -2,7 +2,23 @@
 
 date
 
-new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+if [ -z "$ROS_DISTRO" ]; then
+
+echo "set ROS_DISTRO"
+
+ROS_DISTRO=$ros_distro
+
+fi
+
+if [ -z "$ros_distro" ]; then
+
+echo "set ros_distro"
+
+ros_distro=$ROS_DISTRO
+
+fi
+
+new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
@@ -21,7 +37,7 @@ echo "Copying "$new_basetgz" from @(STORAGE)"
 
 scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
-scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
@@ -32,7 +48,7 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-ROSDISTRO=$ros_distro
+ROSDISTRO=$ROS_DISTRO
 
 REPOSITORY=$repository
 
@@ -83,8 +99,23 @@ scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use_on__@(SERVERNAME)/
 
 'regular_build': '#!/bin/bash -e
 
+if [ -z "$ROS_DISTRO" ]; then
 
-new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+echo "set ROS_DISTRO"
+
+ROS_DISTRO=$ros_distro
+
+fi
+
+if [ -z "$ros_distro" ]; then
+
+echo "set ros_distro"
+
+ros_distro=$ROS_DISTRO
+
+fi
+
+new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
@@ -104,7 +135,7 @@ echo "Copying "$new_basetgz" from @(STORAGE)"
 
 scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 
-scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
@@ -115,7 +146,7 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-ROSDISTRO=$ros_distro
+ROSDISTRO=$ROS_DISTRO
 
 REPOSITORY=$repository
 
@@ -164,7 +195,23 @@ scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use_on__@(SERVERNAME)/
 
 'nongraphics_test': '#!/bin/bash -e
 
-new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+if [ -z "$ROS_DISTRO" ]; then
+
+echo "set ROS_DISTRO"
+
+ROS_DISTRO=$ros_distro
+
+fi
+
+if [ -z "$ros_distro" ]; then
+
+echo "set ros_distro"
+
+ros_distro=$ROS_DISTRO
+
+fi
+
+new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
@@ -184,7 +231,7 @@ echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
 scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 
-scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
@@ -195,7 +242,7 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-ROSDISTRO=$ros_distro
+ROSDISTRO=$ROS_DISTRO
 
 REPOSITORY=$repository
 
@@ -234,7 +281,23 @@ echo "***********LEAVE CHROOT************"
 
 'graphics_test': '#!/bin/bash -e
 
-new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+if [ -z "$ROS_DISTRO" ]; then
+
+echo "set ROS_DISTRO"
+
+ROS_DISTRO=$ros_distro
+
+fi
+
+if [ -z "$ros_distro" ]; then
+
+echo "set ros_distro"
+
+ros_distro=$ROS_DISTRO
+
+fi
+
+new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
@@ -254,9 +317,7 @@ echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
 scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 
-scp jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.gitconfig $WORKSPACE/.gitconfig
-
-scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
@@ -267,7 +328,7 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-ROSDISTRO=$ros_distro
+ROSDISTRO=$ROS_DISTRO
 
 REPOSITORY=$repository
 
@@ -316,7 +377,23 @@ echo "***********LEAVE CHROOT************"
 
 'downstream_build': '#!/bin/bash -e
 
-new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+if [ -z "$ROS_DISTRO" ]; then
+
+echo "set ROS_DISTRO"
+
+ROS_DISTRO=$ros_distro
+
+fi
+
+if [ -z "$ros_distro" ]; then
+
+echo "set ros_distro"
+
+ros_distro=$ROS_DISTRO
+
+fi
+
+new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
@@ -336,7 +413,7 @@ echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
 scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 
-scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
@@ -347,7 +424,7 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-ROSDISTRO=$ros_distro
+ROSDISTRO=$ROS_DISTRO
 
 REPOSITORY=$repository
 
@@ -393,7 +470,23 @@ scp $WORKSPACE/../aux/${basetgz}_downstream @(STORAGE)/in_use_on__@(SERVERNAME)/
 
 'downstream_test': '#!/bin/bash -e
 
-new_basetgz=${ubuntu_distro}__${arch}__${ros_distro}
+if [ -z "$ROS_DISTRO" ]; then
+
+echo "set ROS_DISTRO"
+
+ROS_DISTRO=$ros_distro
+
+fi
+
+if [ -z "$ros_distro" ]; then
+
+echo "set ros_distro"
+
+ros_distro=$ROS_DISTRO
+
+fi
+
+new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
@@ -413,9 +506,7 @@ echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
 scp @(STORAGE)/in_use_on__@(SERVERNAME)/${basetgz}_downstream $WORKSPACE/../aux/${basetgz}
 
-scp jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.gitconfig $WORKSPACE/.gitconfig
-
-scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
@@ -426,7 +517,7 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-ROSDISTRO=$ros_distro
+ROSDISTRO=$ROS_DISTRO
 
 REPOSITORY=$repository
 
