@@ -241,4 +241,4 @@ Copy the jelly template for the email generation:
 
     sudo mkdir /var/lib/jenkins/email-templates
     sudo cp ~/jenkins-config/jenkins_setup/templates/email-templates/html-with-health-builds-tests.jelly /var/lib/jenkins/email-templates/
-    sudo chown -R jenkins:jenkins /var/lib/jenkins//email-templates
+    sudo chown -R jenkins:jenkins /var/lib/jenkins/email-templates
