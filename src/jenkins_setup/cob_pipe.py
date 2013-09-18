@@ -55,7 +55,7 @@ class CobPipe(object):
         @type  user_name: str
         """
 
-        pipeline_config = common.get_buildpipeline_configs("git@github.com:%s/jenkins_config.git" % pipeline_repos_owner, server_name, user_name)
+        pipeline_config = common.get_buildpipeline_configs(server_name, user_name)
         self.load_config_from_dict(pipeline_config)
         self.pipeline_repos_owner = pipeline_repos_owner
 
