@@ -75,6 +75,7 @@ def extract_ampel_state(state):
 	else:
 		message += "no green"
 		state_out[2] = 0
+
 	if state_out == [0, 0, 0]:
 		message = "Error: invalid state. state = " + str(state)
 		state_out = [2,2,2]
@@ -90,14 +91,16 @@ def run_ampel():
 		state = ampel.get_state()
 		for color in [0,1,2]:
 			if state[color] == 2 and not on[color]:
-				subprocess.Popen(["clewarecontrol"] + default_options + ["-as", str(color), "1"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+				p = subprocess.Popen(["clewarecontrol"] + default_options + ["-as", str(color), "1"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+				p.wait()
 				on[color] = True
 			elif state[color] == 2 and on[color]:
-				subprocess.Popen(["clewarecontrol"] + default_options + [ "-as", str(color), "0"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+				p = subprocess.Popen(["clewarecontrol"] + default_options + [ "-as", str(color), "0"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+				p.wait()
 				on[color] = False
 			else:
-				subprocess.Popen(["clewarecontrol"] + default_options + [ "-as", str(color), str(state[color])], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-				pass
+				p = subprocess.Popen(["clewarecontrol"] + default_options + [ "-as", str(color), str(state[color])], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+				p.wait()
 		time.sleep(1)
 
 
