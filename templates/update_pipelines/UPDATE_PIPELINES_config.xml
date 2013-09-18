@@ -31,7 +31,7 @@
     <hudson.tasks.Shell>
       <command>#!/bin/bash
 # ADAPT FOLDER
-JENKINS_CONFIG="/home/jenkins/jenkins-config"
+JENKINS_CONFIG="${HOME}/jenkins-config"
 cd $JENKINS_CONFIG/jenkins_setup/scripts
 
 for user in /var/lib/jenkins/users/*; do

@@ -241,8 +241,8 @@ def main():
         if ros_distro == 'electric':
             print "Rosdep"
             common.call("rosmake rosdep", ros_env)
-            for stack in stacks.keys():
-                common.call("rosdep install -y %s" % stack, ros_env_repo)
+        for stack in stacks.keys():
+            common.call("rosdep install -y %s" % stack, ros_env_repo)
 
         # build dry repositories
         print "Build repository %s" % build_repo
