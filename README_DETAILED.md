@@ -2,8 +2,8 @@
 
 This repository contains the code (config, src and script files) to set up and run a Cob-[Jenkins CI server](http://jenkins-ci.org) using the [Cob-Pipeline-Plugin](http://github.com/fmw-jk/cob-pipeline-plugin).
 
-This guide is designed for developers and those who want to know more about it. The purpose of this pipeline and its setup process is described in detail below. First you should look at the [minimal Jenkins Guide](README.md).
-And **if you want to set up Cob-Pipeline quickly and only use it, the [minimal Jenkins Guide](README.md) is what you are looking for.**
+This guide is designed for Cob-Pipeline developers and those who want to know more about it. **If you want to set up Cob-Pipeline quickly and only use it, the [minimal Jenkins Guide](README.md) is what you are looking for.**
+Below you will find a detailed description of the purposes of the Cob-Pipeline. A short description of the setup process can be found in the [minimal Jenkins Guide](README.md). Read this first. Further information are given below.
 
 ###Version
 The plugin and this manual are developed and tested for Jenkins CI v1.514.
