@@ -45,7 +45,7 @@ restart jenkins
     sudo /etc/init.d/jenkins restart
 
 
-After a successfull installation you can access the jenkins server in your browser at [http://localhost:8080](http://localhost:8080).
+After a successful installation you can access the jenkins server in your browser at [http://localhost:8080](http://localhost:8080).
 
 
 ## Jenkins configuration
@@ -61,7 +61,7 @@ Go to [http://localhost:8080/configureSecurity](http://localhost:8080/configureS
 
 After click save the Server will throw you to a Login screen. Just register with the username `admin`.
 
-![Project-based Matrix Authorization Strategy](./authentication.png "Example for Project-based Matrix Authorization Strategy")
+![Project-based Matrix Authorization Strategy](pictures/authentication.png "Example for Project-based Matrix Authorization Strategy")
 
 ### Basic configuration
 Go to [http://localhost:8080/configure](http://localhost:8080/configure)
@@ -228,11 +228,11 @@ Afterwards **Reload Configuration from Disk** under
 ### configure default view
 Login as `admin` and create a new view by pressing the '+'.
 
-![Create View](new_view.png "Create a new view in Jenkins")
+![Create View](pictures/new_view.png "Create a new view in Jenkins")
 
 Name it 'current\_user' and select **List View**. **Add Job Filter** in the *Job Filter* section and select **User Permissions for Jobs**. Configure as shown in the picture and press OK.
 
-![Job Filter configuration](job_filter.png "Configuration example for View Job Filter")
+![Job Filter configuration](pictures/job_filter.png "Configuration example for View Job Filter")
 
 Go to [http://localhost:8080/configure](http://localhost:8080/configure) and select 'current\_user' as **Default view**.
 
