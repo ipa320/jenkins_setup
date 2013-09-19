@@ -46,7 +46,7 @@ The made configurations have to pass a validation and afterwards the automatic g
 A fully configured pipeline has always the structure shown in the picture below.
 ![Build-Pipeline structure](pictures/build_pipeline_structure.png "Structure of a Cob Build-Pipeline")
 
-All build and test processes take place in ['chroot's](help.ubuntu.com/community/BasicChroot) to garanty a clean and controlled environment.
+All build and test processes take place in [`chroot`s](help.ubuntu.com/community/BasicChroot) to garanty a clean and controlled environment.
 
 ###Job Types
 ####Starter Jobs
@@ -57,12 +57,12 @@ All build and test processes take place in ['chroot's](help.ubuntu.com/community
 ####Build Jobs
 * **Priority-Build Job**<br/>
     The *Priority-Build Job* is the first real job in every pipeline.
-    First of all it gets the corresponding 'chroot' tarball for the environment to test the repository for from the tarball server.
-    After entering the 'chroot' the actual build process starts.
+    First of all it gets the corresponding `chroot` tarball for the environment to test the repository for from the tarball server.
+    After entering the `chroot` the actual build process starts.
     * Clone the lastest version of the repository
     * Calculate its dependencies and install them
-    * 'make' the  repository and its dependencies
-    At the end the 'chroot' gets closed, archived in the tarball and uploaded to the tarball server.
+    * `make` the  repository and its dependencies
+    At the end the `chroot` gets closed, archived in the tarball and uploaded to the tarball server.
 
 * **Regular-Build Job**<br/>
     This job does the same as the *Priority-Build Job* but for more environments.
@@ -72,7 +72,7 @@ All build and test processes take place in ['chroot's](help.ubuntu.com/community
 
 ####Test Jobs
 The following jobs run the tests given in the repository.
-First of all the 'chroot' tarball created by the before executed *Build Job* is downloaded.
+First of all the `chroot` tarball created by the before executed *Build Job* is downloaded.
 The tests are executed inside this chroot.
 * **Non-Graphics-Test Job**<br/>
     This job does only support tests which require no graphics support.
