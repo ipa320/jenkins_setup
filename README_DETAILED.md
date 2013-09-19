@@ -50,12 +50,12 @@ All build and test processes take place in ['chroot's](help.ubuntu.com/community
 
 ###Job Types
 ####Starter Jobs
-* **Pipestarter Job**
+* **Pipestarter Job**<br/>
     Every *Pipestarter Job* polls one GitHub repository for source code changes.
     When a change is detected the *Priority-Build Job* gets triggered for the corresponding repository.
 
 ####Build Jobs
-* **Priority-Build Job**
+* **Priority-Build Job**<br/>
     The *Priority-Build Job* is the first real job in every pipeline.
     First of all it gets the corresponding 'chroot' tarball for the environment to test the repository for from the tarball server.
     After entering the 'chroot' the actual build process starts.
@@ -64,35 +64,32 @@ All build and test processes take place in ['chroot's](help.ubuntu.com/community
     * 'make' the  repository and its dependencies
     At the end the 'chroot' gets closed, archived in the tarball and uploaded to the tarball server.
 
-* **Regular-Build Job**
+* **Regular-Build Job**<br/>
     This job does the same as the *Priority-Build Job* but for more environments.
 
-* **Downstream-Build Job**
+* **Downstream-Build Job**<br/>
     In contrast to the two previous build jobs the *Downstream-Build Job* builds the all ROS-packages that depend directly on the configured repository.
 
 ####Test Jobs
 The following jobs run the tests given in the repository.
 First of all the 'chroot' tarball created by the before executed *Build Job* is downloaded.
 The tests are executed inside this chroot.
-* **Non-Graphics-Test Job**
+* **Non-Graphics-Test Job**<br/>
     This job does only support tests which require no graphics support.
-* **Graphics-Test Job**
+* **Graphics-Test Job**<br/>
     If graphics are required for the tests this job is the right one.
 
 ####Hardware Jobs
-* **Hardware-Build Job**
+* **Hardware-Build Job**<br/>
     This job builds the code again on the selected hardware/robot.
     The environment (Ubuntu version, system architecture) is given by the hardware.
 
-* **Hardware-Test Job**
+* **Hardware-Test Job**<br/>
     After a successful build the repository will closingly be tested on the hardware.
 
 
-**TODO**
+##Installation and Setup
 
-
-Installation and Setup
-======================
 Description how to set up the Jenkins master and its slaves. This manual is made and tested for Ubuntu 12.04 Precise. Especially for older versions there might occur some problems.
 
 Master:
