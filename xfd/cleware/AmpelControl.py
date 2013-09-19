@@ -92,17 +92,14 @@ def run_ampel():
 		for color in [0,1,2]:
 			if state[color] == 2 and not on[color]:
 				p = subprocess.Popen(["clewarecontrol"] + default_options + ["-as", str(color), "1"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-				p.wait()
 				on[color] = True
 			elif state[color] == 2 and on[color]:
 				p = subprocess.Popen(["clewarecontrol"] + default_options + [ "-as", str(color), "0"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-				p.wait()
 				on[color] = False
 			else:
 				p = subprocess.Popen(["clewarecontrol"] + default_options + [ "-as", str(color), str(state[color])], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-				p.wait()
+			p.wait()
 		time.sleep(1)
-
 
 if __name__ == "__main__":
 	global ampel
