@@ -193,7 +193,7 @@ echo "STORING CHROOT TARBALL ON @(STORAGE)"
 scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use_on__@(SERVERNAME)/
 '
 
-'nongraphics_test': '#!/bin/bash -e
+'nongraphics_test': '#!/bin/bash
 
 if [ -z "$ROS_DISTRO" ]; then
 
@@ -279,7 +279,7 @@ echo "***********LEAVE CHROOT************"
 
 #######graphics_test#######
 
-'graphics_test': '#!/bin/bash -e
+'graphics_test': '#!/bin/bash
 
 if [ -z "$ROS_DISTRO" ]; then
 
