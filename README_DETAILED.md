@@ -6,7 +6,7 @@ This guide is designed for Cob-Pipeline developers and those who want to know mo
 Below you will find a detailed description of the purposes of the Cob-Pipeline. A short description of the setup process can be found in the [minimal Jenkins Guide](README.md). Read this first. Further information are given below.
 
 ###Version
-The plugin and this manual are developed and tested for Jenkins CI v1.514.
+The plugin and this manual are designed and tested for Jenkins CI v1.514.
 
 ###Table of Contents
 * [Software Structure](#software-structure)
@@ -33,40 +33,59 @@ For the usage of the Cob-Pipeline three parts are necessary:
 * [jenkins\_setup repository](https://github.com/ipa320/jenkins_setup)<br/>
     This repository has to be available on the Jenkins server. It
     includes the code for the pipeline generation.
-* [jenkins\_config
-  repository](https://github.com/ipa320/jenkins_config)<br>
+* [jenkins\_config repository](https://github.com/ipa320/jenkins_config)<br>
     In this repository all the pipeline configurations are stored.
 
 
-Pipeline Structure
-==================
-The pipeline is made of multiple, differing Jenkins jobs which monitor
-the source code or build and test it in various envirements.
-An authorized Jenkins user can configure its individual pipeline in its
-Jenkins user configurations. The made configurations have to pass a
-validation and afterwards the automatic generation of the pipeline can
-be started.
+##Pipeline Structure
 
-A fully configured pipeline has always the structure shown in the
-picture below.
-![Build-Pipeline structure](./build_pipeline_structure.png "Structure of a Cob Build-Pipeline")
+The pipeline is made of multiple, differing Jenkins jobs which monitor the source code, build and test it in various envirements.
+An authorized Jenkins user can configure its individual pipeline in its Jenkins user configurations.
+The made configurations have to pass a validation and afterwards the automatic generation of the pipeline can be started.
+
+A fully configured pipeline has always the structure shown in the picture below.
+![Build-Pipeline structure](pictures/build_pipeline_structure.png "Structure of a Cob Build-Pipeline")
+
+All build and test processes take place in ['chroot's](help.ubuntu.com/community/BasicChroot) to garanty a clean and controlled environment.
 
 ###Job Types
 ####Starter Jobs
 * **Pipestarter Job**
+    Every *Pipestarter Job* polls one GitHub repository for source code changes.
+    When a change is detected the *Priority-Build Job* gets triggered for the corresponding repository.
 
 ####Build Jobs
 * **Priority-Build Job**
+    The *Priority-Build Job* is the first real job in every pipeline.
+    First of all it gets the corresponding 'chroot' tarball for the environment to test the repository for from the tarball server.
+    After entering the 'chroot' the actual build process starts.
+    * Clone the lastest version of the repository
+    * Calculate its dependencies and install them
+    * 'make' the  repository and its dependencies
+    At the end the 'chroot' gets closed, archived in the tarball and uploaded to the tarball server.
+
 * **Regular-Build Job**
+    This job does the same as the *Priority-Build Job* but for more environments.
+
 * **Downstream-Build Job**
+    In contrast to the two previous build jobs the *Downstream-Build Job* builds the all ROS-packages that depend directly on the configured repository.
 
 ####Test Jobs
+The following jobs run the tests given in the repository.
+First of all the 'chroot' tarball created by the before executed *Build Job* is downloaded.
+The tests are executed inside this chroot.
 * **Non-Graphics-Test Job**
+    This job does only support tests which require no graphics support.
 * **Graphics-Test Job**
+    If graphics are required for the tests this job is the right one.
 
 ####Hardware Jobs
 * **Hardware-Build Job**
+    This job builds the code again on the selected hardware/robot.
+    The environment (Ubuntu version, system architecture) is given by the hardware.
+
 * **Hardware-Test Job**
+    After a successful build the repository will closingly be tested on the hardware.
 
 
 **TODO**
@@ -166,7 +185,7 @@ in ```<JENKINS_HOME>/plugins/```. After you restarted Jenkins
 the plugin should be available and the **Pipeline Configuration** link
 should be present in the sidebar (see picture).
 
-![sidebar](./sidebar.png "sidebar with cob-pipeline-plugin")
+![sidebar](pictures/sidebar.png "sidebar with cob-pipeline-plugin")
 
 Configure Jenkins as described below before you use the plugin.
 
@@ -225,7 +244,7 @@ added to the matrix.
 This account will also be used to create the pipeline jobs
 automatically.
 The users and groups could get the permissions as shown below.
-![Project-based Matrix Authorization Strategy](./authentication.png "Example for Project-based Matrix Authorization Strategy")
+![Project-based Matrix Authorization Strategy](pictures/authentication.png "Example for Project-based Matrix Authorization Strategy")
 
 Every user will automatically get the permission to see the workspace of
 all its own jobs. For the 'Pipestarter' and 'Trigger' job it will also has
