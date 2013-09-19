@@ -1,0 +1,55 @@
+%Define block style
+\tikzstyle{block} = [draw, rectangle, rounded corners, text centered, text width=5em, node distance=2cm, drop shadow, top color=blue!10, bottom color=blue!40!gray]
+\tikzstyle{ma} = [draw, rectangle, rounded corners, text centered, text width=5em, node distance=2cm, drop shadow, top color=orange!10, bottom color=orange]
+\tikzstyle{scm} = [draw=black, top color=green!10, bottom color=green!70!gray, rectangle, rounded corners, text centered, text width=6em, node distance=2cm, drop shadow]
+
+\tikzstyle{line} = [draw, ->, >=stealth', rounded corners]
+\tikzstyle{blueline} = [draw, blue!60!black, ->, >=stealth', rounded corners]
+\tikzstyle{orangline} = [draw, orange!60!purple, ->, >=stealth', rounded corners, dotted]
+
+\begin{tikzpicture}[scale=2, transform shape]
+
+    \node at (4, 2) [ma, black!50, bottom color=orange!50] (gen_pipe) {General Pipestarter};
+    \node at (-.25, -.5) [scm] (pipex) {Pipestarter cob\_common};
+    \node at (2.25, .5) [scm] (pipey) {Pipestarter cob\_extern};
+    \node at (5.75, .5) [scm] (pipez) {Pipestarter cob\_robots};
+    \node at (8.5, -.5) [scm, text width=7em] (pipez2) {Pipestarter cob\_robots\_\_2};
+    \node at (4, -2) [block] (build_prio) {Priority Build};
+    \node at (-2, -2) [block] (build) {Regular Build};
+
+    \node at (-.5, -5.5) [block, text width=6.5em] (test_nongraph) {Non-Graphics Test};
+    \node at (3, -5.5) [block] (test_graph) {Graphics Test};
+
+    \node at (7, -4) [block, text width=5.5em] (build_down) {Downstream Build};
+    \node at (7, -7) [block, text width=5.5em] (test_down) {Downstream Test};
+
+    \node at (10.5, -4.9) [block, black!50, bottom color=blue!30] (build_hw3) {Hardware Build desire};
+    \node at (10.25, -4.45) [block, black!75, bottom color=blue!40!gray!75] () {Hardware Built raw3-X};
+    \node at (10, -4) [block] (build_hw) {Hardware Build cob3-X};
+
+    \node at (10.5, -7.9) [block, black!50, bottom color=blue!30] (test_hw3) {Hardware Test desire};
+    \node at (10.25, -7.45) [block, black!75, bottom color=blue!40!gray!75] () {Hardware Test raw3-X};
+    \node at (10, -7) [block] (test_hw) {Hardware Test cob3-X};
+
+
+    \path[blueline, blue!50, ultra thick] (gen_pipe) -- (build_prio);
+
+    \path[blueline, ultra thick] (pipex) -- (build_prio);
+    \path[blueline, ultra thick] (pipey) -- (build_prio);
+    \path[blueline, ultra thick] (pipez) -- (build_prio);
+    \path[blueline, ultra thick] (pipez2) -- (build_prio);
+
+    \path[blueline, ultra thick, rounded corners] (build_prio) -- (build);
+
+    \path[blueline, ultra thick] (build_prio) -- (build_down.north);
+    \path[blueline, ultra thick] (build_down) -- (test_down);
+
+    \path[blueline, ultra thick, rounded corners] (build_prio) -| (build_hw);
+    \path[blueline, ultra thick, rounded corners] (build_hw) -- (test_hw);
+
+    \path[blueline, ultra thick] (build_prio) -- (test_nongraph.north);
+    \path[blueline, ultra thick] (build_prio) -- (test_graph.north);
+    \path[blueline, ultra thick] (build) -- (test_nongraph.north);
+    \path[blueline, ultra thick] (build) -- (test_graph.north);
+
+\end{tikzpicture}

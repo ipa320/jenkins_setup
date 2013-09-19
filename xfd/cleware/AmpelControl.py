@@ -17,13 +17,13 @@ class ampel_state:
 		self.flash = 2
 		# state
 		self.state = [self.off,self.off,self.off]
-	
+
 	def set_state(self, state):
 		self.state = state
 
 	def get_state(self):
 		return self.state
-	
+
 
 def get_jenkins_state(url):
 	req = urllib2.urlopen(url)
@@ -54,7 +54,7 @@ def extract_ampel_state(state):
 		message += "no red"
 		state_out[0] = 0
 
-	message += ", " 
+	message += ", "
 	if "yellow_anime" in state:
 		message += "flashing yellow"
 		state_out[1] = 2
@@ -66,7 +66,7 @@ def extract_ampel_state(state):
 		state_out[1] = 0
 
 	message += " and "
-	if "blue_anime" in state:
+	if "blue_anime" in state or "grey_anime" in state:
 		message += "flashing green"
 		state_out[2] = 2
 	elif "blue" in state:
@@ -112,11 +112,11 @@ if __name__ == "__main__":
 	type %prog -h for more info."""
 	parser = OptionParser(usage=_usage, prog=os.path.basename(sys.argv[0]))
 	parser.add_option("-u", "--url",
-		dest="url", 
-		default="http://build.care-o-bot.org:8080/view/All", 
+		dest="url",
+		default="http://build.care-o-bot.org:8080/view/All",
 		help="Jenkins server to monitor. Default: http://build.care-o-bot.org:8080")
 	parser.add_option("-d", "--device",
-		dest="device", 
+		dest="device",
 		default=None,
 		help="use device with serial number 'x' for the next operations")
 	(options, args) = parser.parse_args()

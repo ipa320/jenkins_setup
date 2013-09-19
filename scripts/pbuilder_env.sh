@@ -27,7 +27,7 @@ fi
 
 export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 case $JOBTYPE in
-    graphic_test|prio_graphics_test)
+    regular_graphics_test|prio_graphics_test)
         echo "Set up graphic"
 
         $DIR/checkDisplayNull.bash &&
