@@ -2,8 +2,6 @@
 
 This repository contains the code (config, src and script files) to set up and run a Cob-Jenkins CI Server using the Cob-Pipeline-PlugIn.
 
-> For further informations read the [detailed Jenkins Guide](README_DETAILED.md).
-
 ## Prerequisites and assumptions
 Before starting with this guide, please setup one machine with the following properties:
 - Operation system: Ubuntu 12.04
@@ -13,6 +11,8 @@ assumptions:
 - we're only using one machine which is master and slave at the same time
 - apt-cacher is running on master
 - there's a github user that has read access to all repositories which should be build and write access to a jenkins_config repository (e.g. http://github.com/ipa320/jenkins_config)
+
+> For further informations read the [detailed Jenkins Guide](README_DETAILED.md).
 
 
 ## Jenkins installation
@@ -64,6 +64,8 @@ Go to [http://localhost:8080/configureSecurity](http://localhost:8080/configureS
 After click save the Server will throw you to a Login screen. Just register with the username `admin`.
 
 ![Project-based Matrix Authorization Strategy](pictures/authentication.png "Example for Project-based Matrix Authorization Strategy")
+
+> There are two [more *Security Realm* setups](README_DETAILED.md#security-realm) descriped in the [detailed Jenkins Guide](README_DETAILED.md).
 
 ### Basic configuration
 Go to [http://localhost:8080/configure](http://localhost:8080/configure)
