@@ -408,8 +408,12 @@ Name it and select *Dumb Slave*. OK.
 
 - Set *# of executors* to `1`
 - Set *Remote FS root* to the `$HOME`-Folder of the slave, e.g. `/home/jenkins`
-- Set *Labels* to `prio_build regular_build update_tarballs
-  prio_nongraphics_test regular_nongraphics_test prio_graphics_test regular_graphics_test` or a subset of those.
+- Set *Labels* to a combination of the following job names:
+
+```
+prio_build regular_build update_tarballs prio_nongraphics_test regular_nongraphics_test prio_graphics_test regular_graphics_test
+```
+
 - Set *Host* to the slaves name.
 
 *Save* and *Launch slave agent*.
