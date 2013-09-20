@@ -9,7 +9,7 @@ Before starting with this guide, please setup one machine with the following pro
 
 assumptions:
 - we're only using one machine which is master and slave at the same time
-- 'apt-cacher' is running on master
+- `apt-cacher` is running on master
 - there's a github user that has read access to all repositories which should be build and write access to a jenkins_config repository (e.g. http://github.com/ipa320/jenkins_config)
 
 > For further informations read the [detailed Jenkins Guide](README_DETAILED.md).
@@ -35,7 +35,7 @@ Add the jenkins debian repository and install jenkins
     sudo su -c 'echo "deb http://pkg.jenkins-ci.org/debian binary/" > /etc/apt/sources.list.d/jenkins.list'
     sudo apt-get update && sudo apt-get install jenkins
 
-Install 'apt-cacher'
+Install `apt-cacher`
 
     sudo apt-get install apt-cacher-ng
 
@@ -75,7 +75,13 @@ After click save the Server will throw you to a Login screen. Just register with
 Go to [http://localhost:8080/configure](http://localhost:8080/configure)
 
 - Set *# of executors* to `1`.
+
+##### Jenkins Location
 - Set *Jenkins URL* to your servers name.
+- Set your *System Admin e-mail address*.
+
+##### E-mail Notification
+- Set *SMTP server*
 
 You can keep the default values for all other entries.
 
@@ -230,7 +236,7 @@ To set up the necessary chroot tarballs and keep them up-to-date an additional j
     sudo cp ~/jenkins-config/jenkins_setup/templates/update_chroot_tarballs/UPDATE_CHROOT_TARBALLS_config.xml /var/lib/jenkins/jobs/update_chroot_tarballs/config.xml
     sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/update_chroot_tarballs
 
-Open '/var/lib/jenkins/jobs/update_chroot_tarballs/config.xml' and adjust it to your demands. Especially the 'apt-cacher' address.
+Open `/var/lib/jenkins/jobs/update_chroot_tarballs/config.xml` and adjust it to your demands. Especially the `apt-cacher` address.
 
 Afterwards **Reload Configuration from Disk** under [http://localhost:8080/manage](http://localhost:8080/manage) and run the job to create the tarballs.
 
