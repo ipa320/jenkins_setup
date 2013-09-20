@@ -97,7 +97,7 @@ A description what to install is given in the short [Jenkins Guide](README.md)
 
 ### Jenkins CI
 This guide and the Jenkins plugin are designed for Jenkins v1.514.
-[Here](README.md#up-or-downgrade-jenkins-to-version-v1.514) is explained how to up- or downgrade.
+[Here](README.md#up-or-downgrade-jenkins-to-version-v1514) is explained how to up- or downgrade.
 > *!!!In general: Be careful with updating your Jenkins server. If you do, check if everything works still properly, especially the plugins!!!*
 
 ###Install an **apt-cacher** (optional):
@@ -110,7 +110,7 @@ To use the apt-cacher during the build process set up an apt-cacher and edit the
 You can also use the apt-cacher of pbuilder. Then you should **NOT** do
 [this](https://github.com/ipa320/jenkins_setup/blob/master/README.md#dont-use-pbuilders-aptcache).
 
-### Jenkins plugin installation 
+### Jenkins plugin installation
 ####Install required Jenkins plugins
 Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/available) and install the following plugins:
 * **Parameterized Trigger Plugin** ([website](http://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin))<br/>
@@ -185,23 +185,19 @@ The **Access Control** section gives the opportunity to select the
 
 > * **Github Authentication Plugin**<br/>
 >   Another way is to use the GitHub user database for user identification.
->   The [Github OAuth Plugin](#install-required-jenkins-plugins) has to be
->   installed. Configure the plugin as described
->   [here](https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin).
+>   The [Github OAuth Plugin](#install-required-jenkins-plugins) has to be installed.
+>   Configure the plugin as described [here](https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin) for your 'omnipotent' GitHub user.
+
 
 #####Authorization
-In the **Authorization** subsection you can define the permission a specific
-user or a user group gets granted. Therefore choose the
-'Project-based Matrix Authorization Strategy'.
+In the **Authorization** subsection you can define the permission a specific user or a user group gets granted.
+Therefore choose the 'Project-based Matrix Authorization Strategy'.
 
-You have to give permissions to at least the *Anonymous* and the
-*authenticated* user group and an *admin* user. The latter two have to be
-added to the matrix.
+You have to give permissions to at least the *Anonymous* and the *authenticated* user group and an *admin* user.
+The latter two have to be added to the matrix.
 
-> If you use [Jenkins's own user database](#jenkin's-own-user-database)
-> the admin user you just created can be used. If one of the other
-> [Security Realms](#security-realm) is used, take an existing user as
-> admin.
+> **If you use [Jenkins's own user database](#jenkin's-own-user-database) the admin user you just created can be used.
+> If one of the other [Security Realms](#security-realm) is used, take an existing user as admin.**
 
 **The *admin* should have all rights.** Otherwise you will
 [lock out yourself](https://wiki.jenkins-ci.org/display/JENKINS/Disable+security).
@@ -217,45 +213,15 @@ all its own jobs. For the 'Pipestarter' and 'Trigger' job it will also has
 > individual users or user groups you can do it here.
 
 
-####Set up view
-Create new view. **TODO**
+####[Configure the default view](README.md#configure-default-view)
 
-####Configure Plugins
-#####Basic configurations
-######Jenkins Location
-Enter here the URL of your Jenkins server and the admins email address.
+####[Configure the cob-pipeline plugin](README.md#configure-the-cob-pipeline-plugin)
+How to configure the cob-pipeline plugin is described [here](README.md#configure-the-cob-pipeline-plugin).
+You can follow this example.
+Only **if you use the [Github Authentication Plugin](#security-realm) for authentication, enter the Jenkins Admin API token instead of its password.**
+To get the API token go to the [admins user configuration](http://localhost:8080/me/configure).
+It can be found in the section **API Token**. Press *Show API Token...*.
 
-#####Cob-Pipeline Plugin
-Go to the ***Cob Pipeline Configuration*** section.
-The following fields are all required for the use.
-* **Jenkins Admin Login/Password**:<br/>
-    This is the user you configured before in the [Configure Security
-    part](https://github.com/ipa320/jenkins_setup/blob/master/README.md#configure-security)
-    with all the permissions. Enter its login name and password.
-* **Configuration Folder**:<br/>
-    Enter the path of the [Cob-Pipeline configuration
-    folder](https://github.com/ipa320/jenkins_setup/blob/master/README.md#cob-pipeline-configuration-folder).
-* **Tarball Location**:<br/>
-    Enter the [location where the tarballs are
-    stored](https://github.com/ipa320/jenkins_setup/blob/master/README.md#tarball-server).
-* **GitHub User Login/Password**:<br/>
-    This is the user that has read-permission to all the repositories
-    you want to be tested. It has also write-permission to your
-    jenkins-config repository.
-* **Pipeline Repositories Owner/Fork**:<br/>
-    GitHub user that ownes the jenkins\_setup and the jenkins\_config
-    repository.
-* **ROS Releases**:<br/>
-    ROS versions that should be supported by your build/test pipeline.
-* **Robots**:<br/>
-    Nodes which can be chosen for Hardware Build/Test jobs.
-* **Target Platform Url**:<br/>
-    URL where the ROS ```targets.yaml``` is stored, defining the Ubuntu
-    target platforms for each ROS Version, [e.g.]
-    (https://raw.github.com/ros/rosdistro/master/releases/targets.yaml).
-
-When you fill out the fields, the values will be validated in the
-background.
 
 #####Mailer
 ######Default Subject
