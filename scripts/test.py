@@ -123,7 +123,7 @@ def main():
             # run tests
             print "Test repository list"
             try:
-                common.call("%s make run_tests" % ("/opt/VirtualGL/bin/vglrun" if graphic_test else ""), ros_env)  # TODO check how to test a list of repos
+                common.call("%smake run_tests" % ("/opt/VirtualGL/bin/vglrun " if graphic_test else ""), ros_env)  # TODO check how to test a list of repos
             except common.BuildException as ex:
                 print ex.msg
                 test_error_msg = ex.msg
