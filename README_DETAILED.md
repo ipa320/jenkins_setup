@@ -279,15 +279,6 @@ git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup
 ```
 *!!!Adapt the GitHub user if you forked the repository!!!*
 
-#####Adapt apt-cacher address
-*If you use an apt-cacher* you have to enter its address in the
-[install_basics.sh script](./scripts/install_basics.sh). Adapt the
-APT_PROXY_ADDRESS variable to your requirements.
-```bash
-echo "\n***APT-PROXY***"
-APT_PROXY_ADDRESS="http://cob-jenkins-server:3142"
-sh -c 'echo "Acquire::http { Proxy \"'$APT_PROXY_ADDRESS'\"; };" > /etc/apt/apt.conf.d/01proxy'
-```
 
 #####PYTHONPATH
 Add the ```jenkins_setup``` module to the `$PYTHONPATH` (*adapt the
@@ -308,21 +299,23 @@ You can adapt the template to your requirements.
 
 ___
 
-Tarball Server:
----------------
-The tarball server stores all the chroot tarball which will be used during the build
-process. It can be the Jenkins master or another server. In both cases you have to
-create a ```chroot_tarballs```-folder in `$HOME` which contains another folder where
-the used chroot tarballs will be stored:
+## Tarball Server:
+
+The tarball server stores all the chroot tarball which will be used during the build process.
+It can be the Jenkins master or another server.
+In both cases you have to create a ```chroot_tarballs```-folder in `$HOME` which contains another folder where the used chroot tarballs will be stored:
 ```bash
 mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>
 ```
 
 ___
 
-Slaves:
--------
+## Slaves:
+
+Slaves are useful to distribute the load if many jobs get triggered and the run specific jobs on exclusive computers.
+
 ###Configure the node
+The use a computer as Jenkins slave-node it has to be prepared.
 
 ####Sudo commands without password on slave
 To be able to run sudo commands without the need to enter the password each time, enter
@@ -376,7 +369,6 @@ EXTRAPACKAGES=ccache
 BINDMOUNTS="${CCACHE_DIR}"
 ```
 
-
 ######Use multi-core zipping
 To speedup the zipping and unzipping of the chroot tarballs, install `pigz`:
 ```bash
@@ -409,20 +401,19 @@ Finally mount `tmpfs` by entering **(as root)**:
 mount -a
 ```
 
-###Create a new slave node in Jenkins (Slave setup on master)
-**TODO**
-* Labels
-* Configurations
-* Connect slave
-* Troubleshooting
+### Create a new slave node in Jenkins (Slave setup on master)
 
-**TODO**
-* github.com to known_hosts<br/>
-    If a git repository is cloned during the job build, github.com has
-    to be a known\_host on each slave the job runs.
-* upload ssh key<br/>
-    Furthermore has the public SSH-key of every slave to be uploaded to
-    the authorized GitHub-account.
+Go to http://localhost:8080/computer and add a *New Node*.
+Name it and select *Dumb Slave*. OK.
+
+- Set *# of executors* to `1`
+- Set *Remote FS root* to the `$HOME`-Folder of the slave, e.g. `/home/jenkins`
+- Set *Labels* to `prio_build regular_build update_tarballs
+  prio_nongraphics_test regular_nongraphics_test prio_graphics_test regular_graphics_test` or a subset of those.
+- Set *Host* to the slaves name.
+
+*Save* and *Launch slave agent*.
+
 ___
 
 
