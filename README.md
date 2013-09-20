@@ -2,6 +2,8 @@
 
 This repository contains the code (config, src and script files) to set up and run a Cob-Jenkins CI Server using the Cob-Pipeline-PlugIn.
 
+> For further informations read the [detailed Jenkins Guide](README_DETAILED.md).
+
 ## Prerequisites and assumptions
 Before starting with this guide, please setup one machine with the following properties:
 - Operation system: Ubuntu 12.04

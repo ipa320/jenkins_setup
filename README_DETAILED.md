@@ -2,8 +2,11 @@
 
 This repository contains the code (config, src and script files) to set up and run a Cob-[Jenkins CI server](http://jenkins-ci.org) using the [Cob-Pipeline-Plugin](http://github.com/fmw-jk/cob-pipeline-plugin).
 
-This guide is designed for Cob-Pipeline developers and those who want to know more about it. **If you want to set up Cob-Pipeline quickly and only use it, the [minimal Jenkins Guide](README.md) is what you are looking for.**
-Below you will find a detailed description of the purposes of the Cob-Pipeline. A short description of the setup process can be found in the [minimal Jenkins Guide](README.md). Read this first. Further information are given below.
+This guide is designed for Cob-Pipeline developers and those who want to know more about it.
+**If you want to set up the Cob-Pipeline quickly and only use it, the [minimal Jenkins Guide](README.md) is what you are looking for.**
+Below you will find a detailed description of the purposes of the Cob-Pipeline.
+Nevertheless read first the short description of the setup process in the [minimal Jenkins Guide](README.md).
+Further information are given below.
 
 ###Version
 The plugin and this manual are designed and tested for Jenkins CI v1.514.
@@ -23,8 +26,8 @@ The plugin and this manual are designed and tested for Jenkins CI v1.514.
     * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation-deprecated)
 
 
-Software Structure
-==================
+##Software Structure
+
 For the usage of the Cob-Pipeline three parts are necessary:
 * [Cob-Pipeline-Plugin](https://github.com/fmw-jk/cob-pipeline-plugin) for Jenkins<br/>
     This plugin allows the user to configure its individual build/test
@@ -88,62 +91,26 @@ The tests are executed inside this chroot.
     After a successful build the repository will closingly be tested on the hardware.
 
 
-##Installation and Setup
+## [Jenkins Installation](README.md#jenkins-installation)
 
-Description how to set up the Jenkins master and its slaves. This manual is made and tested for Ubuntu 12.04 Precise. Especially for older versions there might occur some problems.
+A description what to install is given in the short [Jenkins Guide](README.md)
 
-Master:
--------
+### Jenkins CI
+This guide and the Jenkins plugin are designed for Jenkins v1.514.
+[Here](README.md#up-or-downgrade-jenkins-to-version-v1.514) is explained how to up- or downgrade.
+> *!!!In general: Be careful with updating your Jenkins server. If you do, check if everything works still properly, especially the plugins!!!*
 
-###Installation of software on Master node
-####Install Jenkins CI
-To install Jenkins follow the [official website](http://jenkins-ci.org/).
-To add the official package source on Debian/Ubuntu follow
-[this description](http://pkg.jenkins-ci.org/debian/).
-After a successful installation you can access the Jenkins server in
-your browser on \<YOUR_JENKINS_SERVER_IP\>:8080.
-
-> #####Up-/Downgrade
-> The Cob-Pipeline-Plugin is developed for Jenkins v1.514. If your version
-> is older or newer, you can up-/downgrade to another
-> one by [downloading the version](http://mirrors.jenkins-ci.org/war)
-> you need into ```/user/share/jenkins/```. If you stored it with another
-> name than jenkins.war, adapt the ```JENKINS_WAR``` environment variable
-> in ```/etc/default/jenkins```. After a change, the automatic update is
-> not possible anymore. ```JENKINS_WAR``` has to be set back to the default
-> ```/user/share/jenkins/jenkins.war``` first.
-> **After all restart the Jenkins server**.
-```bash
-/etc/init.d/jenkins restart
-```
-
-> *!!!In general: Be careful with updating your Jenkins server. If you do, check if
-everything works still properly, especially the plugins!!!*
-
-####Install Git:
-```bash
-apt-get install git
-```
-
-####Install ROS:
-Install [groovy](http://www.ros.org/wiki/groovy/Installation/Ubuntu) or
-[fuerte](http://www.ros.org/wiki/fuerte/Installation/Ubuntu) as described.
-
-####Install and Setup an **apt-cacher** (optional):
-During the later build process a lot packages will be installed. If
-the build jobs run frequently, the network traffic increases quite
-much. To limit the amount of packages to be downloaded from the
-internet and speed up the installation process a apt-cacher is
-pretty useful. You can for example use the
-[apt-cacher-ng](http://www.unix-ag.uni-kl.de/~bloch/acng/).
-To use the apt-cacher during the build process set up an apt-cacher and
-edit the [install_basics.sh script](./scripts/install_basics.sh) as descripted
-[here](./README.md#adapt-apt-cacher-address).
+###Install an **apt-cacher** (optional):
+During the later build process a lot packages will be installed.
+If the build jobs run frequently, the network traffic increases quite much.
+To limit the amount of packages to be downloaded from the internet and speed up the installation process a apt-cacher is pretty useful.
+You can for example use the [apt-cacher-ng](http://www.unix-ag.uni-kl.de/~bloch/acng/).
+To use the apt-cacher during the build process set up an apt-cacher and edit the [install_basics.sh script](./scripts/install_basics.sh) as descripted [here](./README.md#adapt-apt-cacher-address).
 
 You can also use the apt-cacher of pbuilder. Then you should **NOT** do
 [this](https://github.com/ipa320/jenkins_setup/blob/master/README.md#dont-use-pbuilders-aptcache).
 
-###Installation of plugins in Jenkins
+### Jenkins plugin installation 
 ####Install required Jenkins plugins
 Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/available) and install the following plugins:
 * **Parameterized Trigger Plugin** ([website](http://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin))<br/>
@@ -493,79 +460,73 @@ mount -a
 ___
 
 
-Manual Pipeline Generation (deprecated):
-===========================
-
-1. Checkout this repository:
-----------------------------
-
-Clone this repository to your desired location
-```bash
-git clone git://github.com/ipa320/jenkins_setup.git <path to clone in>
-```
-
-
-2. Set up slave config file:
-----------------------------
-
-Create a folder in your HOME-folder called: jenkins-config
-```bash
-mkdir ~/jenkins-config
-```
-
-Create a so called slave_config.yaml file with the following entries:
-```yaml
-master: name_of_jenkins_master
-master_uri: "http://url_of_jenkins_master:8080"
-tarball_host: name_of_server_storing_the_chroot_tarballs
-tarball_folderpath: folder_the_tarballs_are_stored
-jenkins_login: user_name_with_right_to_create_jobs
-jenkins_pw: user_password
-```
-
-3. Add repository to PYTHONPATH:
---------------------------------
-
-```bash
-export PYTHONPATH=$PYTHONPATH:<repository_path>/src
-```
-
-4. Set up pipeline configuration:
----------------------------------
-
-Checkout the repository [jenkins_config](https://github.com/ipa320/jenkins_config "ipa320/jenkins_config")
-```bash
-git clone git@github.com:config/jenkins_config.git
-```
-
-Repository structure:
-```bash
-jenkins_config
-|-jenkins_master_name1
-| |- user_name1
-| |  |-pipeline_config.yaml
-| |- user_name2
-| |  |-pipeline_config.yaml
-|-jenkins_master_name2
-| |- user_name3
-| |  |-pipeline_config.yaml
-```
-
-You have to create a folder according to your Jenkins masters name (if
-not existent yet). Inside create a folder with your user name. Within this
-folder set up a pipeline_config.yaml file with your configurations. You
-can use the \<jenkins_config_repository_location\>/jenkins-test-server/test-user
-as an example.
-
-When your done push it to GitHub.
-
-5. Create pipeline:
--------------------
-
-Execute the
-\<jenkins_setup_repository_location\>/scripts/generate_buildpipeline.py
-script to create all your pipeline jobs on the Jenkins CI Server.
-
-```bash
-./generate_buildpipeline.py <user_name>
-```
+> # Manual Pipeline Generation (deprecated):
+>
+> ## 1. Checkout this repository:
+>
+> Clone this repository to your desired location
+> ```bash
+> git clone git://github.com/ipa320/jenkins_setup.git <path to clone in>
+> ```
+>
+>
+> ## 2. Set up slave config file:
+>
+> Create a folder in your HOME-folder called: jenkins-config
+> ```bash
+> mkdir ~/jenkins-config
+> ```
+>
+> Create a so called slave_config.yaml file with the following entries:
+> ```yaml
+> master: name_of_jenkins_master
+> master_uri: "http://url_of_jenkins_master:8080"
+> tarball_host: name_of_server_storing_the_chroot_tarballs
+> tarball_folderpath: folder_the_tarballs_are_stored
+> jenkins_login: user_name_with_right_to_create_jobs
+> jenkins_pw: user_password
+> ```
+>
+> ## 3. Add repository to PYTHONPATH:
+>
+> ```bash
+> export PYTHONPATH=$PYTHONPATH:<repository_path>/src
+> ```
+>
+> ## 4. Set up pipeline configuration:
+>
+> Checkout the repository [jenkins_config](https://github.com/ipa320/jenkins_config "ipa320/jenkins_config")
+> ```bash
+> git clone git@github.com:config/jenkins_config.git
+> ```
+>
+> Repository structure:
+> ```bash
+> jenkins_config
+> |-jenkins_master_name1
+> | |- user_name1
+> | |  |-pipeline_config.yaml
+> | |- user_name2
+> | |  |-pipeline_config.yaml
+> |-jenkins_master_name2
+> | |- user_name3
+> | |  |-pipeline_config.yaml
+> ```
+>
+> You have to create a folder according to your Jenkins masters name (if
+> not existent yet). Inside create a folder with your user name. Within this
+> folder set up a pipeline_config.yaml file with your configurations. You
+> can use the \<jenkins_config_repository_location\>/jenkins-test-server/test-user
+> as an example.
+>
+> When your done push it to GitHub.
+>
+> ## 5. Create pipeline:
+>
+> Execute the
+> \<jenkins_setup_repository_location\>/scripts/generate_buildpipeline.py
+> script to create all your pipeline jobs on the Jenkins CI Server.
+>
+> ```bash
+> ./generate_buildpipeline.py <user_name>
+> ```
