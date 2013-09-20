@@ -95,7 +95,7 @@ def main():
         #else:
             #common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env)
 
-        if os.path.isdir(repo_buildspace):
+        if not os.path.isdir(repo_buildspace):
             os.mkdir(repo_buildspace)
         os.chdir(repo_buildspace)
 
