@@ -75,9 +75,11 @@ After click save the Server will throw you to a Login screen. Just register with
 Go to [http://localhost:8080/configure](http://localhost:8080/configure)
 
 - Set *# of executors* to `1`.
+
 ##### Jenkins Location
 - Set *Jenkins URL* to your servers name.
 - Set your *System Admin e-mail address*.
+
 ##### E-mail Notification
 - Set *SMTP server*
 
