@@ -14,16 +14,22 @@ The plugin and this manual are designed and tested for Jenkins CI v1.514.
 ###Table of Contents
 * [Software Structure](#software-structure)
 * [Pipeline Structure](#pipeline-structure)
-* [Installation and Setup](#installation-and-setup)
-    * [Master](#master)
-        * [Installation of software on Master node](#installation-of-software-on-master-node)
-        * [Configure Jenkins](#configure-jenkins)
-        * [Set up Cob-Pipeline specific configurations](#set-up-cob-pipeline-specific-configurations)
-    * [Tarball Server](#tarball-server)
-    * [Slaves](#slaves)
-        * [Configure the node](#configure-the-node)
-        * [Create a new slave node in Jenkins](#create-a-new-slave-node-in-jenkins-slave-setup-on-master)
-    * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation-deprecated)
+    * [Job Types](#job-types)
+* [Jenkins Installation](#jenkins-installation)
+    * [Debian Packages](#debian-packages-for-ubuntu)
+    * [Up-/Downgrade to v1.514](#up-or-downgrade-jenkins-to-version-v1514)
+* [Jenkins Configuration](#jenkins-configuration)
+    * [Configure Security](#configure-security)
+    * [Basic Configuration](#basic-configuration)
+    * [Install the cob-pipeline plugin](#install-the-cob-pipeline-plugin)
+    * [Install `jenkins_setup` & `jenkins_config`](#install-jenkins_setup--jenkins_config)
+    * [Jenkins Plugin Installation](#jenkins-plugin-installation)
+* [Tarball Server](#tarball-server)
+* [Slaves](#slaves)
+    * [Configure the build slave/node](#configure-a-build-slavenode)
+    * [Configure the hardware slave/node](#configure-a-hardware-slavenode)
+    * [Create a new slave node in Jenkins](#create-a-new-slave-node-in-jenkins-slave-setup-on-master)
+* [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation-deprecated)
 
 
 ##Software Structure
@@ -91,25 +97,67 @@ The tests are executed inside this chroot.
     After a successful build the repository will closingly be tested on the hardware.
 
 
-## [Jenkins Installation](README.md#jenkins-installation)
+## Jenkins Installation
 
-A description what has to be installed is given in the [short Jenkins Guide](README.md#jenkins-installation).
+### Debian packages for Ubuntu
+Install basic packages
 
-### Jenkins CI
-This guide and the Jenkins plugin are designed for Jenkins v1.514.
-[Here](README.md#up-or-downgrade-jenkins-to-version-v1514) is explained how to up- or downgrade.
-> *!!! In general: Be careful with updating your Jenkins server. If you
-> do, check if everything still works properly, especially the plugins!!!*
+```bash
+sudo apt-get install git-core pbuilder devscripts pigz python-jenkins
+```
 
-###Install an **apt-cacher** (optional):
+Install basic ROS packages
+
+```bash
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
+wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+sudo apt-get update && sudo apt-get install ros-groovy-ros
+```
+
+Add the jenkins debian repository and install jenkins
+
+```bash
+wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
+sudo su -c 'echo "deb http://pkg.jenkins-ci.org/debian binary/" > /etc/apt/sources.list.d/jenkins.list'
+sudo apt-get update && sudo apt-get install jenkins
+```
+
+Install `apt-cacher`
+
 During the later build process a lot packages will be installed.
 If the build jobs run frequently, the network traffic increases quite much.
 To limit the amount of packages to be downloaded from the internet and speed up the installation process a apt-cacher is pretty useful.
 You can for example use the [apt-cacher-ng](http://www.unix-ag.uni-kl.de/~bloch/acng/).
+
+```bash
+sudo apt-get install apt-cacher-ng
+```
+
 To use the apt-cacher during the build process set up an apt-cacher and edit the [install_basics.sh script](./scripts/install_basics.sh) as descripted [here](./README.md#adapt-apt-cacher-address).
 
-You can also use the apt-cacher of pbuilder. Then you should **NOT** do
-[this](README.md#dont-use-pbuilders-aptcache).
+> You can also use the apt-cacher of pbuilder. Then you should **NOT** do [this](README.md#dont-use-pbuilders-aptcache).
+
+
+### Up or downgrade jenkins to version v1.514
+This guide and the Jenkins plugin are designed for Jenkins v1.514.
+You can find the war file [here](http://mirrors.jenkins-ci.org/war).
+
+```bash
+cd /usr/share/jenkins/
+sudo rm -rf jenkins.war
+sudo wget http://mirrors.jenkins-ci.org/war/1.514/jenkins.war
+```
+
+restart jenkins
+
+```bash
+sudo /etc/init.d/jenkins restart
+```
+
+> *!!! In general: Be careful with updating your Jenkins server. If you
+> do, check if everything still works properly, especially the plugins!!!*
+
+After a successful installation you can access the jenkins server in your browser at [http://localhost:8080](http://localhost:8080).
 
 
 ## Jenkins configuration
@@ -331,7 +379,7 @@ Slaves are useful to distribute the load if many jobs get triggered and the run 
 To use a computer as Jenkins slave-node same preparations have to be done.
 All configurations will be made for an admin user called 'jenkins'.
 
-####Sudo commands without password on slave
+####Enable password-less sudo commands
 To be able to run sudo commands without the need to enter the password each time, enter ```sudo visudo -f /etc/sudoers``` and add the following at the end of the `/etc/sudoers`-file:
 
     jenkins    ALL=(ALL) NOPASSWD: ALL
