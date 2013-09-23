@@ -91,16 +91,17 @@ Go to [http://localhost:8080/computer/(master)/configure](http://localhost:8080/
 ### Jenkins plugin installation
 Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/pluginManager/available) and install the following plugins:
 
-- Parameterized Trigger Plugin https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin
-- Build Pipeline Plugin http://code.google.com/p/build-pipeline-plugin/
-- Mailer https://wiki.jenkins-ci.org/display/JENKINS/Mailer
-- View Job Filters https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters
+- [Git Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin)
+- [Parameterized Trigger Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin)
+- [Build Pipeline Plugin](http://code.google.com/p/build-pipeline-plugin/)
+- [Mailer](https://wiki.jenkins-ci.org/display/JENKINS/Mailer)
+- [View Job Filters](https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters)
 
 ### Install `jenkins_setup`, `jenkins_config` and the *cob-pipeline* plugin
 Download the *.hpi* file from https://github.com/fmw-jk/cob-pipeline-plugin/releases and place it in `/var/lib/jenkins/plugins`.
 
     cd /var/lib/jenkins/plugins
-    sudo wget https://github.com/fmw-jk/cob-pipeline-plugin/releases/download/v0.9.5-alpha/cob-pipeline.hpi
+    sudo wget https://github.com/fmw-jk/cob-pipeline-plugin/releases/download/v0.9.6/cob-pipeline.hpi
 
 All scripts and configurations will be stored in `/home/jenkins/jenkins-config`.
 

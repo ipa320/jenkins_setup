@@ -2,9 +2,9 @@
 
 This repository contains the code (config, src and script files) to set up and run a Cob-[Jenkins CI server](http://jenkins-ci.org) using the [Cob-Pipeline-Plugin](http://github.com/fmw-jk/cob-pipeline-plugin).
 
-This guide is designed for Cob-Pipeline developers and those who want to know more about it.
-**If you want to set up the Cob-Pipeline quickly and only use it, the [minimal Jenkins Guide](README.md) is what you are looking for.**
-Below you will find a detailed description of the purposes of the Cob-Pipeline.
+This guide is designed for Cob-Pipeline developers, those who want to setup a efficient test framework and those who just want to know more about it.
+**If you want to set up the Cob-Pipeline quickly on one computer and only use it, the [minimal Jenkins Guide](README.md) is what you are looking for.**
+Below you will find a detailed description of the purposes of the Cob-Pipeline and the setup for **one master** and **multiple slave** nodes.
 Nevertheless read first the short description of the setup process in the [minimal Jenkins Guide](README.md).
 Further information are given below.
 
@@ -14,16 +14,22 @@ The plugin and this manual are designed and tested for Jenkins CI v1.514.
 ###Table of Contents
 * [Software Structure](#software-structure)
 * [Pipeline Structure](#pipeline-structure)
-* [Installation and Setup](#installation-and-setup)
-    * [Master](#master)
-        * [Installation of software on Master node](#installation-of-software-on-master-node)
-        * [Configure Jenkins](#configure-jenkins)
-        * [Set up Cob-Pipeline specific configurations](#set-up-cob-pipeline-specific-configurations)
-    * [Tarball Server](#tarball-server)
-    * [Slaves](#slaves)
-        * [Configure the node](#configure-the-node)
-        * [Create a new slave node in Jenkins](#create-a-new-slave-node-in-jenkins-slave-setup-on-master)
-    * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation-deprecated)
+    * [Job Types](#job-types)
+* [Jenkins Installation](#jenkins-installation)
+    * [Debian Packages](#debian-packages-for-ubuntu)
+    * [Up-/Downgrade to v1.514](#up-or-downgrade-jenkins-to-version-v1514)
+* [Jenkins Configuration](#jenkins-configuration)
+    * [Configure Security](#configure-security)
+    * [Basic Configuration](#basic-configuration)
+    * [Install the cob-pipeline plugin](#install-the-cob-pipeline-plugin)
+    * [Install `jenkins_setup` & `jenkins_config`](#install-jenkins_setup--jenkins_config)
+    * [Jenkins Plugin Installation](#jenkins-plugin-installation)
+* [Tarball Server](#tarball-server)
+* [Slaves](#slaves)
+    * [Configure the build slave/node](#configure-a-build-slavenode)
+    * [Configure the hardware slave/node](#configure-a-hardware-slavenode)
+    * [Create a new slave node in Jenkins](#create-a-new-slave-node-in-jenkins-slave-setup-on-master)
+* [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation-deprecated)
 
 
 ##Software Structure
@@ -75,7 +81,7 @@ All build and test processes take place in [`chroot`s](help.ubuntu.com/community
 
 ####Test Jobs
 The following jobs run the tests given in the repository.
-First of all the `chroot` tarball created by the before executed *Build Job* is downloaded.
+First of all the `chroot` tarball, created by the before executed *Build Job*, is downloaded.
 The tests are executed inside this chroot.
 * **Non-Graphics-Test Job**<br/>
     This job does only support tests which require no graphics support.
@@ -91,25 +97,67 @@ The tests are executed inside this chroot.
     After a successful build the repository will closingly be tested on the hardware.
 
 
-## [Jenkins Installation](README.md#jenkins-installation)
+## Jenkins Installation
 
-A description what has to be installed is given in the short [Jenkins Guide](README.md#jenkins-installation).
+### Debian packages for Ubuntu
+Install basic packages
 
-### Jenkins CI
-This guide and the Jenkins plugin are designed for Jenkins v1.514.
-[Here](README.md#up-or-downgrade-jenkins-to-version-v1514) is explained how to up- or downgrade.
-> *!!! In general: Be careful with updating your Jenkins server. If you
-> do, check if everything still works properly, especially the plugins!!!*
+```bash
+sudo apt-get install git-core pbuilder devscripts pigz python-jenkins
+```
 
-###Install an **apt-cacher** (optional):
+Install basic ROS packages
+
+```bash
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu precise main" > /etc/apt/sources.list.d/ros-latest.list'
+wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+sudo apt-get update && sudo apt-get install ros-groovy-ros
+```
+
+Add the jenkins debian repository and install jenkins
+
+```bash
+wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
+sudo su -c 'echo "deb http://pkg.jenkins-ci.org/debian binary/" > /etc/apt/sources.list.d/jenkins.list'
+sudo apt-get update && sudo apt-get install jenkins
+```
+
+Install `apt-cacher`
+
 During the later build process a lot packages will be installed.
 If the build jobs run frequently, the network traffic increases quite much.
 To limit the amount of packages to be downloaded from the internet and speed up the installation process a apt-cacher is pretty useful.
 You can for example use the [apt-cacher-ng](http://www.unix-ag.uni-kl.de/~bloch/acng/).
+
+```bash
+sudo apt-get install apt-cacher-ng
+```
+
 To use the apt-cacher during the build process set up an apt-cacher and edit the [install_basics.sh script](./scripts/install_basics.sh) as descripted [here](./README.md#adapt-apt-cacher-address).
 
-You can also use the apt-cacher of pbuilder. Then you should **NOT** do
-[this](https://github.com/ipa320/jenkins_setup/blob/master/README.md#dont-use-pbuilders-aptcache).
+> You can also use the apt-cacher of pbuilder. Then you should **NOT** do [this](README.md#dont-use-pbuilders-aptcache).
+
+
+### Up or downgrade jenkins to version v1.514
+This guide and the Jenkins plugin are designed for Jenkins v1.514.
+You can find the war file [here](http://mirrors.jenkins-ci.org/war).
+
+```bash
+cd /usr/share/jenkins/
+sudo rm -rf jenkins.war
+sudo wget http://mirrors.jenkins-ci.org/war/1.514/jenkins.war
+```
+
+restart jenkins
+
+```bash
+sudo /etc/init.d/jenkins restart
+```
+
+> *!!! In general: Be careful with updating your Jenkins server. If you
+> do, check if everything still works properly, especially the plugins!!!*
+
+After a successful installation you can access the jenkins server in your browser at [http://localhost:8080](http://localhost:8080).
 
 
 ## Jenkins configuration
@@ -175,26 +223,103 @@ The basic configurations of your Jenkins server are described in the [short Jenk
 TODO
 
 
+### Install the *cob-pipeline* plugin
+Download the plugin (\*.hpi file) from [https://github.com/fmw-jk/cob-pipeline-plugin/releases](https://github.com/fmw-jk/cob-pipeline-plugin/releases), place it in `/var/lib/jenkins/plugins` and restart Jenkins.
+
+    cd /var/lib/jenkins/plugins
+    sudo wget https://github.com/fmw-jk/cob-pipeline-plugin/releases/download/v0.9.6/cob-pipeline.hpi
+    sudo /etc/init.d/jenkins restart
+
+Afterwards the plugin should be available and the **Pipeline Configuration** link should be present in the sidebar (see picture).
+
+![sidebar](pictures/sidebar.png "sidebar with cob-pipeline-plugin")
+
+Configure Jenkins as described below before you use the plugin.
+
+### Install `jenkins_setup` & `jenkins_config`
+
+> We assume that you work with an admin user account named 'jenkins'
+
+All scripts and configurations will be stored in `/home/jenkins/jenkins-config`.
+
+```bash
+mkdir ~/jenkins-config
+```
+
+Setup ssh configuration (create ssh-key if it doesn't exist already and add github.com and localhost to known hosts).
+
+```bash
+ssh-keygen
+touch ~/.ssh/known_hosts
+ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+ssh-keyscan -H localhost >> ~/.ssh/known_hosts
+```
+
+You have to add this key to your GitHub 'omnipotent' user [http://github.com/settings/ssh](http://github.com/settings/ssh).
+
+```bash
+cat ~/.ssh/id_rsa.pub
+```
+
+Setup git configuration on master.
+
+```bash
+git config --global user.name "<USER_NAME>"
+git config --global user.email "<EMAIL>"
+```
+
+Clone the `jenkins_setup` and `jenkins_config` repositories.
+*You have to create a repository named 'jenkins_config'.*
+> It is recommended to clone the
+> [jenkins_setup](https://github.com/ipa320/jenkins_setup) repository to
+> keep track of changes and updates.
+
+```bash
+git clone git@github.com:<GITHUB_USER>/jenkins_config.git ~/jenkins-config/jenkins_config
+git clone git@github.com:<GITHUB_USER>/jenkins_setup.git ~/jenkins-config/jenkins_setup
+```
+
+Add the `jenkins_setup` module to the `$PYTHONPATH` (adapt the *ROS_RELEASE*).
+
+```bash
+sudo su -c 'echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh'
+sudo su -c 'echo "source /opt/ros/groovy/setup.sh" >> /etc/profile.d/python_path.sh'
+```
+
+Enable passwordless sudo rights for the jenkins user by adding the following line at the end of `/etc/sudoers` (open with `sudo visudo -f /etc/sudoers`).
+
+```bash
+jenkins    ALL=(ALL) NOPASSWD: ALL
+```
+
+Afterwards reboot the Jenkins-Server
+
+```bash
+sudo reboot now
+```
+
+
+
 ### Jenkins plugin installation
 ####Install required Jenkins plugins
-Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/available) and install the following plugins:
+Go to [Jenkins plugin manager](http://localhost:8080/pluginManager/available) and install the following plugins:
+* **Git Plugin** ([website](https://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin))<br/>
+    Monitors the repositories to build and triggers pipeline when a change is detected.
 * **Parameterized Trigger Plugin** ([website](http://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin))<br/>
     Is used to transfer build parameters from one job to the next.
     Here it is used to commit the repository to build or test.
-* **Build Pipeline Plugin**
-  ([website](http://code.google.com/p/build-pipeline-plugin))<br/>
-    Provides a view where all pipeline jobs and their dependencies are
-    shown. It also gives the opportunity to trigger the hardware test
-    jobs manually.
+* **Build Pipeline Plugin** ([website](http://code.google.com/p/build-pipeline-plugin))<br/>
+    Provides a view where all pipeline jobs and their dependencies are shown.
+    It also gives the opportunity to trigger the hardware test jobs manually.
 * **Mailer** ([website](http://wiki.jenkins-ci.org/display/JENKINS/Mailer))<br/>
-    Generates the email content depending on the build/test results
-    and sends the emails.
+    Generates the email content depending on the build/test results and sends the emails.
 * **View Job Filters**
   ([website](http://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters))<br/>
     Provides comprehensive possibilities to filter the jobs that can
     be seen by the specific user.
 
-* **Matrix Reloaded Plugin**
+####Install supplementary Jenkins plugins
+* *Matrix Reloaded Plugin*
   ([website](http://wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin))<br/>
     To start one or more entries of a matrix job.
 * *LDAP Plugin* (not required but maybe useful)
@@ -204,19 +329,6 @@ Go to Jenkins plugin manager (\<YOUR_JENKINS_SERVER_IP\>:8080/pluginManager/avai
   ([website](http://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin))<br/>
     Authentication of users is delegated to Github using the OAuth
     protocol.
-* **TODO**
-
-####Install the Cob-Pipeline Plugin
-Download the plugin (\*.hpi file) from
-[here](https://github.com/fmw-jk/cob-pipeline-plugin/releases) and place it
-in ```<JENKINS_HOME>/plugins/```. After you restarted Jenkins
-```/etc/init.d/jenkins restart```
-the plugin should be available and the **Pipeline Configuration** link
-should be present in the sidebar (see picture).
-
-![sidebar](pictures/sidebar.png "sidebar with cob-pipeline-plugin")
-
-Configure Jenkins as described below before you use the plugin.
 
 ___
 
@@ -240,72 +352,6 @@ Do also [move the mailer template](#mailer-template) as described.
 
 ___
 
-###Set up Cob-Pipeline specific configurations
-####Cob-Pipeline configuration folder
-All configurations should be stored in a common folder in the
-`$HOME`-folder called `jenkins-config`:
-```bash
-mkdir ~/jenkins-config
-```
-
-####Git configurations
-Set up the GitHub user. This user has to have read-access to all
-repositories to build and write-access to your ```jenkins_config```
-repository.
-```bash
-git config --global user.name "<USER_NAME>"
-git config --global user.email "<EMAIL>"
-```
-**TODO** what is necessary?
-
-####SSH configurations
-A `.ssh`-folder is needed inside the ```~/jenkins-config/```-folder which contains a ssh-key to access the GitHub-repositories. Either you generate a new key with `ssh-keygen` or you just copy the `~/.ssh` of the master. You have to add this key to your GitHub user (http://github.com/settings/ssh). This user should have read-access to all repositories you want to build.
-It is very important that 'github.com' belongs to the *known hosts*. Therefore the `.ssh`-folder should contain a ```known_hosts``` file. Whether 'github.com' is already known can be checked by entering:
-```bash
-ssh-keygen -H -f <known_hosts_PATH> -F github.com
-```
-If it is not known, you can add 'github.com' to the ```known_hosts``` by entering:
-```bash
-ssh-keyscan -H github.com > <known_hosts_PATH>
-```
-
-Furthermore the Jenkins masters SSH key itself has to be an authorized
-one.
-
-####jenkins\_config repository
-Clone the ```jenkins_config``` repository into the `jenkins-config` folder:
-```bash
-git clone git@github.com:ipa320/jenkins_config.git ~/jenkins-config/jenkins_config
-```
-*!!!Adapt the GitHub user if you forked the repository!!!*
-**TODO**
-
-####jenkins\_setup repository
-Clone the ```jenkins_setup``` repository into the `jenkins-config` folder:
-```bash
-git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup
-```
-*!!!Adapt the GitHub user if you forked the repository!!!*
-
-
-#####PYTHONPATH
-Add the ```jenkins_setup``` module to the `$PYTHONPATH` (*adapt the
-ROS\_RELEASE*):
-```bash
-sudo su -c 'echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh'
-sudo su -c 'echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh'
-```
-Afterwards reboot the server.
-
-####Mailer template
-A
-[template](templates/email-templates/html-with-health-builds-tests.jelly) for the
-Mailer plugin is provided in this repository. Copy it into
-```$JENKINS_HOME/email-templates/``` (```$JENKINS_HOME``` is usually `/var/lib/jenkins`).
-You can adapt the template to your requirements.
-**TODO** jenkins config
-
-___
 
 ## Tarball Server:
 
@@ -316,33 +362,43 @@ In both cases you have to create a ```chroot_tarballs```-folder in `$HOME` which
 mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>
 ```
 
+If you store the tarball on another server than your Jenkins master you have to enable a passwordless SSH connection between them both:
+```bash
+ssh-copy-id <master>            # _on tarball server_
+ssh <master>                    # _on tarball server_
+ssh-copy-id <tarball_server>    # _on master_
+```
+
 ___
 
 ## Slaves:
 
 Slaves are useful to distribute the load if many jobs get triggered and the run specific jobs on exclusive computers.
 
-###Configure the node
-The use a computer as Jenkins slave-node it has to be prepared.
+###Configure a build slave/node
+To use a computer as Jenkins slave-node same preparations have to be done.
+All configurations will be made for an admin user called 'jenkins'.
 
-####Sudo commands without password on slave
-To be able to run sudo commands without the need to enter the password each time, enter
-```sudo visudo``` and add
-```conf
-<JENKINS-USER>    ALL=(ALL) NOPASSWD: ALL
-```
-at the end. Exit with `CTRL-X`. After re-login you won't need a password anymore.
+####Enable password-less sudo commands
+To be able to run sudo commands without the need to enter the password each time, enter ```sudo visudo -f /etc/sudoers``` and add the following at the end of the `/etc/sudoers`-file:
 
-####SSH access without password to master (and the otherway around)
-The slave has to be able the access the master via SSH without a password (and the
-otherway around). Enter the following command on each slave, login to the master and
-run the command again.
+    jenkins    ALL=(ALL) NOPASSWD: ALL
+
+Exit with `CTRL-X`. After re-login you won't need a password anymore.
+
+####Enable password-less ssh login from master to slave and slave to master.
+The slave has to be able the access the master via SSH without a password (and the otherway around).
+Enter the following command on each slave, login to the master and run the command again.
+
 ```bash
-ssh-copy-id <master>    # on slave
-ssh <master>            # on slave
-ssh-copy-id <slave>     # on master
+ssh-copy-id <master>    # _on slave_
+ssh <master>            # _on slave_
+ssh-copy-id <slave>     # _on master_
 ```
+
 Go back with twice `CTRL-D`.
+
+> If your tarball server differs from your Jenkins master, do the same for the tarball server.
 
 ####Pbuilder
 Pbuilder is required! If not present, install it:
@@ -409,18 +465,33 @@ Finally mount `tmpfs` by entering **(as root)**:
 mount -a
 ```
 
+### Configure a hardware slave/node
+A hardware slave is a computer where the hardware configuration/environment plays an important role, like a robot.
+On such nodes run only [Hardware builds and test](#hardware-jobs) which use no `chroot` environment.
+To configure such a node you have only to enable password-less [sudo commands](#enable-password-less-sudo-commands) and [SSH login](#enable-password-less-ssh-login-from-master-to-slave-and-slave-to-master) to the master (not the tarball server).
+
+
 ### Create a new slave node in Jenkins (Slave setup on master)
 
-Go to http://localhost:8080/computer and add a *New Node*.
-Name it and select *Dumb Slave*. OK.
+Go to [http://localhost:8080/computer](http://localhost:8080/computer) and add a *New Node*.
+Name it and select *Dumb Slave*. *OK*.
 
 - Set *# of executors* to `1`
 - Set *Remote FS root* to the `$HOME`-Folder of the slave, e.g. `/home/jenkins`
 - Set *Labels* to a combination of the following job names:
 
-```
-prio_build regular_build update_tarballs prio_nongraphics_test regular_nongraphics_test prio_graphics_test regular_graphics_test
-```
+    ```
+    prio_build regular_build update_tarballs
+    prio_nongraphics_test regular_nongraphics_test
+    prio_graphics_test regular_graphics_test
+    downstream_build downstream_test
+    ```
+
+    Or if it's a hardware slave:
+
+    ```
+    hardware_build hardware_test
+    ```
 
 - Set *Host* to the slaves name.
 
