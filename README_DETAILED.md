@@ -2,9 +2,9 @@
 
 This repository contains the code (config, src and script files) to set up and run a Cob-[Jenkins CI server](http://jenkins-ci.org) using the [Cob-Pipeline-Plugin](http://github.com/fmw-jk/cob-pipeline-plugin).
 
-This guide is designed for Cob-Pipeline developers and those who want to know more about it.
-**If you want to set up the Cob-Pipeline quickly and only use it, the [minimal Jenkins Guide](README.md) is what you are looking for.**
-Below you will find a detailed description of the purposes of the Cob-Pipeline.
+This guide is designed for Cob-Pipeline developers, those who want to setup a efficient test framework and those who just want to know more about it.
+**If you want to set up the Cob-Pipeline quickly on one computer and only use it, the [minimal Jenkins Guide](README.md) is what you are looking for.**
+Below you will find a detailed description of the purposes of the Cob-Pipeline and the setup for **one master** and **multiple slave** nodes.
 Nevertheless read first the short description of the setup process in the [minimal Jenkins Guide](README.md).
 Further information are given below.
 
@@ -75,7 +75,7 @@ All build and test processes take place in [`chroot`s](help.ubuntu.com/community
 
 ####Test Jobs
 The following jobs run the tests given in the repository.
-First of all the `chroot` tarball created by the before executed *Build Job* is downloaded.
+First of all the `chroot` tarball, created by the before executed *Build Job*, is downloaded.
 The tests are executed inside this chroot.
 * **Non-Graphics-Test Job**<br/>
     This job does only support tests which require no graphics support.
@@ -327,7 +327,7 @@ ___
 
 Slaves are useful to distribute the load if many jobs get triggered and the run specific jobs on exclusive computers.
 
-###Configure the node
+###Configure a build slave/node
 To use a computer as Jenkins slave-node same preparations have to be done.
 All configurations will be made for an admin user called 'jenkins'.
 
@@ -417,18 +417,33 @@ Finally mount `tmpfs` by entering **(as root)**:
 mount -a
 ```
 
+### Configure a hardware slave/node
+A hardware slave is a computer where the hardware configuration/environment plays an important role, like a robot.
+On such nodes run only [Hardware builds and test](#hardware-jobs) which use no `chroot` environment.
+To configure such a node you have only to enable password-less [sudo commands](#enable-password-less-sudo-commands) and [SSH login](#enable-password-less-ssh-login-from-master-to-slave-and-slave-to-master) to the master (not the tarball server).
+
+
 ### Create a new slave node in Jenkins (Slave setup on master)
 
-Go to http://localhost:8080/computer and add a *New Node*.
-Name it and select *Dumb Slave*. OK.
+Go to [http://localhost:8080/computer](http://localhost:8080/computer) and add a *New Node*.
+Name it and select *Dumb Slave*. *OK*.
 
 - Set *# of executors* to `1`
 - Set *Remote FS root* to the `$HOME`-Folder of the slave, e.g. `/home/jenkins`
 - Set *Labels* to a combination of the following job names:
 
-```
-prio_build regular_build update_tarballs prio_nongraphics_test regular_nongraphics_test prio_graphics_test regular_graphics_test
-```
+    ```
+    prio_build regular_build update_tarballs
+    prio_nongraphics_test regular_nongraphics_test
+    prio_graphics_test regular_graphics_test
+    downstream_build downstream_test
+    ```
+
+    Or if it's a hardware slave:
+
+    ```
+    hardware_build hardware_test
+    ```
 
 - Set *Host* to the slaves name.
 
