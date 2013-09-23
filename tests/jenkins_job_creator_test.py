@@ -134,38 +134,38 @@ class JenkinsJobTest(unittest.TestCase):
 
     # Testing generate_job_name
     def test__generate_job_name__input_job_string__return_job_name_string(self):
-        result = self.jj.generate_job_name('pipe_starter')
+        result = self.jj._generate_job_name('pipe_starter')
         self.assertEqual(result, 'test-user__pipe_starter')
 
     def test__generate_job_name__input_job_string__return_job_name_string2(self):
-        result = self.jj.generate_job_name('interactive_hw_test')
+        result = self.jj._generate_job_name('interactive_hw_test')
         self.assertEqual(result, 'test-user__interactive_hw_test')
 
     def test__generate_job_name__input_job_and_suffix_string__return_job_name_string(self):
-        result = self.jj.generate_job_name('pipe_starter', 'suffix')
+        result = self.jj._generate_job_name('pipe_starter', 'suffix')
         self.assertEqual(result, 'test-user__pipe_starter__suffix')
 
     # Testing generate_job_list
     def test__generate_job_list__input_job_list__return_job_name_list(self):
-        result = self.jj.generate_job_list(self.job_type_test_list)
+        result = self.jj._generate_job_list(self.job_type_test_list)
         self.assertEqual(result, ['test-user__pipe_starter',
                                   'test-user__prio_build',
                                   'test-user__regular_build'])
 
     def test__generate_job_list__input_empty_list__return_empty_string(self):
-        result = self.jj.generate_job_list([])
+        result = self.jj._generate_job_list([])
         self.assertEqual(result, [])
 
     def test__generate_job_list__input_dict__raise_exception(self):
-        self.assertRaises(TypeError, self.jj.generate_job_list, ('pipe_starter', 'prio_build', 'regular_build'))
+        self.assertRaises(TypeError, self.jj._generate_job_list, ('pipe_starter', 'prio_build', 'regular_build'))
 
     # Testing generate_job_list_string
     def test__generate_job_list_string__input_job_list__return_job_names_as_comma_separatet_string(self):
-        result = self.jj.generate_job_list_string(self.job_type_test_list)
+        result = self.jj._generate_job_list_string(self.job_type_test_list)
         self.assertEqual(result, 'test-user__pipe_starter, test-user__prio_build, test-user__regular_build')
 
     def test__generate_job_list_string__input_empty_list__return_empty_string(self):
-        result = self.jj.generate_job_list_string([])
+        result = self.jj._generate_job_list_string([])
         self.assertEqual(result, '')
 
     # Testing generate_matrix_filter
@@ -173,44 +173,44 @@ class JenkinsJobTest(unittest.TestCase):
         test_dict = [{'ros_distro': 'test_rosdistro',
                       'ubuntu_distro': 'natty',
                       'arch': 'amd64'}]
-        result = self.jj.generate_matrix_filter(test_dict, False)
+        result = self.jj._generate_matrix_filter(test_dict, False)
         self.assertEqual(result, '(ubuntu_distro=="natty" &amp;&amp; arch=="amd64" &amp;&amp; ros_distro=="test_rosdistro")')
 
     def test__generate_matrix_filter__input_dict_list_and_negation_boolean_return_filter_string2(self):
         test_dict = [{'ros_distro': 'test_rosdistro',
                       'ubuntu_distro': 'natty',
                       'arch': 'amd64'}]
-        result = self.jj.generate_matrix_filter(test_dict, True)
+        result = self.jj._generate_matrix_filter(test_dict, True)
         self.assertEqual(result, '!((ubuntu_distro=="natty" &amp;&amp; arch=="amd64" &amp;&amp; ros_distro=="test_rosdistro"))')
 
     def test__generate_matrix_filter__input_dict_list_and_negation_boolean_return_filter_string3(self):
         test_dict = [{'ros_distro': 'test_rosdistro'},
                      {'ubuntu_distro': 'natty',
                       'arch': 'amd64'}]
-        result = self.jj.generate_matrix_filter(test_dict, False)
+        result = self.jj._generate_matrix_filter(test_dict, False)
         self.assertEqual(result, '(ros_distro=="test_rosdistro") || (ubuntu_distro=="natty" &amp;&amp; arch=="amd64")')
 
     def test__generate_matrix_filter__input_dict_list_and_negation_boolean_return_filter_string4(self):
         test_dict = [{'ros_distro': 'test_rosdistro'},
                      {'ubuntu_distro': 'natty',
                       'arch': 'amd64'}]
-        result = self.jj.generate_matrix_filter(test_dict, True)
+        result = self.jj._generate_matrix_filter(test_dict, True)
         self.assertEqual(result, '!((ros_distro=="test_rosdistro") || (ubuntu_distro=="natty" &amp;&amp; arch=="amd64"))')
 
     # Testing generate_matrix_axis
     def test__generate_matrix_axis__input_name_string_and_value_list__return_axis_config_string(self):
         axis_name = 'test_axis'
         value_list = ['test_value_1', 'test_value_2', 'test_value_3']
-        result = self.jj.generate_matrix_axis(axis_name, value_list)
+        result = self.jj._generate_matrix_axis(axis_name, value_list)
         self.assertEqual(result, '<hudson.matrix.TextAxis> <name>test_axis</name> <values> <string>test_value_1</string> <string>test_value_2</string> <string>test_value_3</string> </values> </hudson.matrix.TextAxis>')
 
     def test__generate_matrix_axis__input_empty_list__raise_exception(self):
         axis_name = 'test_axis'
-        self.assertRaises(Exception, self.jj.generate_matrix_axis, axis_name, [])
+        self.assertRaises(Exception, self.jj._generate_matrix_axis, axis_name, [])
 
     def test__generate_matrix_axis__input_empty_name__raise_exception(self):
         value_list = ['test_value_1', 'test_value_2', 'test_value_3']
-        self.assertRaises(Exception, self.jj.generate_matrix_axis, '', value_list)
+        self.assertRaises(Exception, self.jj._generate_matrix_axis, '', value_list)
 
     # Testing set_matrix_param
     def test__set_matrix_param__input_name_value_dict_list_and_filter_string__return_matrix_config_string(self):
@@ -252,7 +252,7 @@ class JenkinsJobTest(unittest.TestCase):
 
     # Testing get_matrix_entries
     def test__get_matrix_entries__result_dict_list(self):
-        result = self.jj.get_matrix_entries()
+        result = self.jj._get_matrix_entries()
         self.assertEqual(result, [{'repository': ['test_repo_1', 'test_repo_3', 'test_repo_2', 'test_repo_4']},
                                   {'ros_distro': ['test_rosdistro', 'test_rosdistro_2']},
                                   {'ubuntu_distro': ['oneiric', 'lucid', 'natty']},
@@ -350,23 +350,23 @@ class JenkinsJobTest(unittest.TestCase):
 
     # Testing get_single_parameterizedtrigger
     def test__get_single_parameterizedtrigger__input_job_type_list__check_set_param(self):
-        result = self.jj.get_single_parameterizedtrigger(self.job_type_test_list)
+        result = self.jj._get_single_parameterizedtrigger(self.job_type_test_list)
         self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__regular_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>')
 
     def test__get_single_parameterizedtrigger__input_job_type_list_and_subset_filter_str__check_set_param(self):
-        result = self.jj.get_single_parameterizedtrigger(self.job_type_test_list, subset_filter='test==filter')
+        result = self.jj._get_single_parameterizedtrigger(self.job_type_test_list, subset_filter='test==filter')
         self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs> <hudson.plugins.parameterizedtrigger.matrix.MatrixSubsetBuildParameters> <filter>test==filter</filter> </hudson.plugins.parameterizedtrigger.matrix.MatrixSubsetBuildParameters> </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__regular_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>')
 
     def test__get_single_parameterizedtrigger__input_job_type_list_and_subset_filter_str__check_set_param2(self):
-        result = self.jj.get_single_parameterizedtrigger(self.job_type_test_list, predefined_param='PARAM=value')
+        result = self.jj._get_single_parameterizedtrigger(self.job_type_test_list, predefined_param='PARAM=value')
         self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs> <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters> <properties>PARAM=value</properties> </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters> </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__regular_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>')
 
     def test__get_single_parameterizedtrigger__input_job_type_list_and_condition_str__check_set_param(self):
-        result = self.jj.get_single_parameterizedtrigger(self.job_type_test_list, condition='FAILURE')
+        result = self.jj._get_single_parameterizedtrigger(self.job_type_test_list, condition='FAILURE')
         self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__regular_build </projects> <condition>FAILURE</condition> <triggerWithNoParameters>false</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>')
 
     def test__get_single_parameterizedtrigger__input_job_type_list_and_no_param_bool__check_set_param(self):
-        result = self.jj.get_single_parameterizedtrigger(self.job_type_test_list, no_param=True)
+        result = self.jj._get_single_parameterizedtrigger(self.job_type_test_list, no_param=True)
         self.assertEqual(result, '<hudson.plugins.parameterizedtrigger.BuildTriggerConfig> <configs>  </configs> <projects> test-user__pipe_starter, test-user__prio_build, test-user__regular_build </projects> <condition>SUCCESS</condition> <triggerWithNoParameters>true</triggerWithNoParameters> </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>')
 
     # Testing set_parameterizedtrigger_param
@@ -571,25 +571,25 @@ class JenkinsJobTest(unittest.TestCase):
     def test__get_shell_script__check_result_shell_script_str(self):
         self.jj.job_type = 'prio_build'
         self.jj.tarball_location = 'jenkins@jenkins-test-server:~/chroot_tarballs'
-        result = self.jj.get_shell_script()
+        result = self.jj._get_shell_script()
         self.assertTrue('jenkins@jenkins-test-server:~/chroot_tarballs' in result)
 
     def test__get_shell_script__check_result_shell_script_str2(self):
         self.jj.job_type = 'prio_build'
         self.jj.tarball_location = 'jenkins@jenkins-test-server:~/chroot_tarballs'
-        result = self.jj.get_shell_script()
+        result = self.jj._get_shell_script()
         self.assertTrue('JENKINS_MASTER=jenkins-test-server' in result)
 
     def test__get_shell_script__check_result_shell_script_str3(self):
         self.jj.job_type = 'prio_build'
         self.jj.tarball_location = 'jenkins@jenkins-test-server:~/chroot_tarballs'
-        result = self.jj.get_shell_script()
+        result = self.jj._get_shell_script()
         self.assertTrue('JOBTYPE=prio_build' in result)
 
     def test__get_shell_script__check_result_shell_script_str4(self):
         self.jj.job_type = 'regular_build'
         self.jj.tarball_location = 'jenkins@jenkins-test-server:~/chroot_tarballs'
-        result = self.jj.get_shell_script()
+        result = self.jj._get_shell_script()
         self.assertTrue('JOBTYPE=regular_build' in result)
 
 
@@ -613,13 +613,13 @@ class PipeStarterJobTest(unittest.TestCase):
 
     def test__get_prio_subset_filter__result_filter_input_dict(self):
         self.jj = jenkins_job_creator.PipeStarterJob(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1'], 'dep_repo_1')
-        result = self.jj.get_prio_subset_filter()
+        result = self.jj._get_prio_subset_filter()
         self.assertEqual(result, [{'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
                                   {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro_2', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'}])
 
     def test__get_prio_subset_filter__result_filter_input_dict2(self):
         self.jj = jenkins_job_creator.PipeStarterJob(self.jenkins_instance, self.test_pipe_inst, ['test_repo_1', 'test_repo_2'], 'dep_repo_1')
-        result = self.jj.get_prio_subset_filter()
+        result = self.jj._get_prio_subset_filter()
         self.assertEqual(result, [{'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
                                   {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro_2', 'ubuntu_distro': 'oneiric', 'arch': 'amd64'},
                                   {'repository': 'test_repo_2', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'natty', 'arch': 'amd64'}])
@@ -646,7 +646,7 @@ class RegularBuildJobTest(unittest.TestCase):
         self.jj = jenkins_job_creator.RegularBuildJob(self.jenkins_instance, self.test_pipe_inst, 'jenkins@jenkins-test-server:~/chroot_tarballs')
 
     def test__get_regular_subset_filter__result_filter_input_dict(self):
-        result = self.jj.get_regular_subset_filter()
+        result = self.jj._get_regular_subset_filter()
         self.assertEqual(result, [{'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'lucid', 'arch': 'amd64'},
                                   {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'lucid', 'arch': 'i386'},
                                   {'repository': 'test_repo_1', 'ros_distro': 'test_rosdistro', 'ubuntu_distro': 'oneiric', 'arch': 'i386'},
