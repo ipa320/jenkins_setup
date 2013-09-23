@@ -98,7 +98,7 @@ class JenkinsJobTest(unittest.TestCase):
                                   'POSTBUILD_TRIGGER': '',
                                   'JOIN_TRIGGER': '',
                                   'PIPELINE_TRIGGER': '',
-                                  'AUTHORIZATIONMATRIX': '',
+                                  'AUTHORIZATIONMATRIX': '<hudson.security.AuthorizationMatrixProperty> <permission>hudson.model.Item.Read:test-user</permission><permission>hudson.model.Item.Workspace:test-user</permission> </hudson.security.AuthorizationMatrixProperty>',
                                   'GROOVY_POSTBUILD': '',
                                   'PARAMETERIZED_TRIGGER': '',
                                   'JUNIT_TESTRESULTS': '',
@@ -234,7 +234,7 @@ class JenkinsJobTest(unittest.TestCase):
     def test__set_matrix_param__input_empty_name_value_dict__raise_exception2(self):
         self.jj.job_type = 'prio_build'
         name_value_test_dict = [{}, {'test_axis': ['test_value_1', 'test_value_2', 'test_value_3']}]
-        self.jj._set_matrix_param(name_value_test_dict, 'filter')
+        self.jj._set_matrix_param(name_value_test_dict, filter_='filter')
         self.assertEqual(self.jj.params['MATRIX'], '<axes> <hudson.matrix.TextAxis> <name>test_axis</name> <values> <string>test_value_1</string> <string>test_value_2</string> <string>test_value_3</string> </values> </hudson.matrix.TextAxis> <hudson.matrix.LabelAxis> <name>label</name> <values> <string>prio_build</string> </values> </hudson.matrix.LabelAxis> </axes> <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl"> <runSequentially>false</runSequentially> </executionStrategy> <combinationFilter>filter</combinationFilter>')
 
     def test__set_matrix_param__input_empty_value_list__raise_exception(self):
