@@ -113,23 +113,23 @@ class JenkinsJobTest(unittest.TestCase):
     def test__replace_placeholder__set_config_string_and_params_dict__check_config_string(self):
         self.jj.job_config = '@(TEST_1) and @(TEST_2) should be replaced'
         self.jj.params = {'TEST_1': 'THIS', 'TEST_2': 'THAT'}
-        self.jj.replace_placeholder()
+        self.jj._replace_placeholder()
         self.assertEqual(self.jj.job_config, 'THIS and THAT should be replaced')
 
     def test__replace_placeholder__set_not_existent_key__raise_exception(self):
         self.jj.job_config = '@(TEST_1) and @(TEST_2) should be replaced'
         self.jj.params = {'WRONG': 'THIS', 'TEST_2': 'THAT'}
-        self.assertRaises(KeyError, self.jj.replace_placeholder)
+        self.assertRaises(KeyError, self.jj._replace_placeholder)
 
     def test__replace_placeholder__missing_parameter__raise_exception(self):
         self.jj.job_config = '@(TEST_1) and @(TEST_2) should be replaced'
         self.jj.params = {'TEST_1': 'THIS'}
-        self.assertRaises(KeyError, self.jj.replace_placeholder)
+        self.assertRaises(KeyError, self.jj._replace_placeholder)
 
     def test__replace_placeholder__missing_parameter__raise_exception2(self):
         self.jj.job_config = '@(TEST_1) and @(TEST_2) should be @( replaced'
         self.jj.params = {'TEST_1': 'THIS', 'TEST_2': 'THAT'}
-        self.jj.replace_placeholder()
+        self.jj._replace_placeholder()
         self.assertEqual(self.jj.job_config, 'THIS and THAT should be @( replaced')
 
     # Testing generate_job_name
@@ -216,13 +216,13 @@ class JenkinsJobTest(unittest.TestCase):
     def test__set_matrix_param__input_name_value_dict_list_and_filter_string__return_matrix_config_string(self):
         self.jj.job_type = 'prio_build'
         name_value_test_dict = [{'test_axis': ['test_value_1', 'test_value_2', 'test_value_3']}]
-        self.jj._set_matrix_param(name_value_test_dict, 'filter')
+        self.jj._set_matrix_param(name_value_test_dict, filter_='filter')
         self.assertEqual(self.jj.params['MATRIX'], '<axes> <hudson.matrix.TextAxis> <name>test_axis</name> <values> <string>test_value_1</string> <string>test_value_2</string> <string>test_value_3</string> </values> </hudson.matrix.TextAxis> <hudson.matrix.LabelAxis> <name>label</name> <values> <string>prio_build</string> </values> </hudson.matrix.LabelAxis> </axes> <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl"> <runSequentially>false</runSequentially> </executionStrategy> <combinationFilter>filter</combinationFilter>')
 
     def test__set_matrix_param__input_name_value_dict_list_and_filter_string__return_matrix_config_string2(self):
         self.jj.job_type = 'prio_build'
         name_value_test_dict = [{'test_axis': ['test_value_1', 'test_value_2', 'test_value_3']}]
-        self.jj._set_matrix_param(name_value_test_dict, 'filter')
+        self.jj._set_matrix_param(name_value_test_dict, filter_='filter')
         self.assertEqual(self.jj.params['MATRIX'], '<axes> <hudson.matrix.TextAxis> <name>test_axis</name> <values> <string>test_value_1</string> <string>test_value_2</string> <string>test_value_3</string> </values> </hudson.matrix.TextAxis> <hudson.matrix.LabelAxis> <name>label</name> <values> <string>prio_build</string> </values> </hudson.matrix.LabelAxis> </axes> <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl"> <runSequentially>false</runSequentially> </executionStrategy> <combinationFilter>filter</combinationFilter>')
 
     def test__set_matrix_param__input_empty_list_raise_exception(self):
