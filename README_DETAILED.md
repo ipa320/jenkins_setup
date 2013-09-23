@@ -93,12 +93,13 @@ The tests are executed inside this chroot.
 
 ## [Jenkins Installation](README.md#jenkins-installation)
 
-A description what to install is given in the short [Jenkins Guide](README.md)
+A description what has to be installed is given in the short [Jenkins Guide](README.md#jenkins-installation).
 
 ### Jenkins CI
 This guide and the Jenkins plugin are designed for Jenkins v1.514.
 [Here](README.md#up-or-downgrade-jenkins-to-version-v1514) is explained how to up- or downgrade.
-> *!!!In general: Be careful with updating your Jenkins server. If you do, check if everything works still properly, especially the plugins!!!*
+> *!!! In general: Be careful with updating your Jenkins server. If you
+> do, check if everything still works properly, especially the plugins!!!*
 
 ###Install an **apt-cacher** (optional):
 During the later build process a lot packages will be installed.
@@ -109,6 +110,70 @@ To use the apt-cacher during the build process set up an apt-cacher and edit the
 
 You can also use the apt-cacher of pbuilder. Then you should **NOT** do
 [this](https://github.com/ipa320/jenkins_setup/blob/master/README.md#dont-use-pbuilders-aptcache).
+
+
+## Jenkins configuration
+To manage your Jenkins server, go to [http://localhost:8080/manage](http://localhost:8080/manage) or follow "Manage Jenkins" in the sidebar.
+There you can configure everything.
+
+###Configure Security
+There are multiple ways to configure the global security of your Jenkins server.
+First of all go to [**Configure Global Security**](http://localhost:8080/configureSecurity) and check *Enable Security*.
+
+####Security Realm
+The **Access Control** section gives the opportunity to select the **Security Realm** which defines how the users can login.
+
+* **Jenkins's own user database**<br/>
+    The easiest way is to use *Jenkins's own user database*.
+    This option should always be available and possible.
+    Now you can decide if every user can sign up (*Allow users to sign up*) or if the admin has to do this.
+
+    If you use this, you have to create an user before you go on.
+    This user will later on act as the admin user.
+    Therefore save the configurations and **sign up** (upper right corner).
+    Came back afterwards.
+
+> * **Github Authentication Plugin**<br/>
+>   Another way is to use the GitHub user database for user identification.
+>   The [Github OAuth Plugin](#install-required-jenkins-plugins) has to be installed.
+>   Configure the plugin as described
+>   [here](https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin) for an 'omnipotent' GitHub user.
+
+> * **LDAP**<br/>
+>   If a LDAP server is available, you can use it as the user database.
+>   Therefore the [LDAP Plugin](#install-required-jenkins-plugins) is required.
+>   How to configure the LDAP access can be found on the [plugin's website](https://wiki.jenkins-ci.org/display/JENKINS/LDAP+Plugin).
+>   An example is given [here](pictures/LDAP_config.png).
+
+
+####Authorization
+In the **Authorization** subsection you can define the permission a specific user or a user group gets granted.
+Therefore choose the 'Project-based Matrix Authorization Strategy'.
+
+You have to give permissions to at least the *Anonymous* and the *authenticated* user group and an *admin* user.
+The latter two have to be added to the matrix.
+
+> **If you use [Jenkins's own user database](#jenkin's-own-user-database) the admin user you just created can be used.
+> If one of the other [Security Realms](#security-realm) is used, take an existing user as admin.**
+
+**The *admin* should have all rights.**
+Otherwise you will [lock out yourself](https://wiki.jenkins-ci.org/display/JENKINS/Disable+security).
+This account will also be used to create the pipeline jobs automatically.
+The users and groups could get the permissions as shown below.
+![Project-based Matrix Authorization Strategy](pictures/authentication.png "Example for Project-based Matrix Authorization Strategy")
+
+Every user will automatically get the permission to see the workspace of all its own jobs.
+For the 'Pipestarter' and 'Trigger' job it will also has 'Build'-permission.
+> If you want to grant further permissions or give special permissions to individual users or user groups you can do it here.
+
+
+### Basic configuration
+The basic configurations of your Jenkins server are described in the [short Jenkins Guide](README.md#basic-configuration)
+
+
+### Master node configuration
+TODO
+
 
 ### Jenkins plugin installation
 ####Install required Jenkins plugins
@@ -154,63 +219,6 @@ should be present in the sidebar (see picture).
 Configure Jenkins as described below before you use the plugin.
 
 ___
-
-###Configure Jenkins
-To manage your Jenkins server, go to
-\<YOUR_JENKINS_SERVER_IP\>:8080/manage or follow "Manage Jenkins" in the sidebar.
-From here you can configure everything.
-
-####Configure Security
-There are multiple ways to configure the global security of your Jenkins
-server. First of all follow **Configure Global Security** and check **Enable Security**.
-
-#####Security Realm
-The **Access Control** section gives the opportunity to select the
-**Security Realm** which defines how the users can login.
-
-* **Jenkins's own user database**<br/>
-    The easiest way is to use **Jenkins's own user database**. This option
-    should always be available and possible. Now you can decide if every
-    user can sign up or if the admin has to do this.
-
-    If you use this, you have to create an user before you go on. This user will
-    later on act as the admin user. Therefore save the configurations and
-    **sign up** (upper right corner). Came back afterwards.
-
-> * **LDAP**<br/>
->   If a LDAP server is available, you can use it as the user database.
->   Therefore the [LDAP Plugin](#install-required-jenkins-plugins) is required.
->   How to configure the LDAP access can be found on the [plugin's website]
->   (https://wiki.jenkins-ci.org/display/JENKINS/LDAP+Plugin).
-
-> * **Github Authentication Plugin**<br/>
->   Another way is to use the GitHub user database for user identification.
->   The [Github OAuth Plugin](#install-required-jenkins-plugins) has to be installed.
->   Configure the plugin as described [here](https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin) for your 'omnipotent' GitHub user.
-
-
-#####Authorization
-In the **Authorization** subsection you can define the permission a specific user or a user group gets granted.
-Therefore choose the 'Project-based Matrix Authorization Strategy'.
-
-You have to give permissions to at least the *Anonymous* and the *authenticated* user group and an *admin* user.
-The latter two have to be added to the matrix.
-
-> **If you use [Jenkins's own user database](#jenkin's-own-user-database) the admin user you just created can be used.
-> If one of the other [Security Realms](#security-realm) is used, take an existing user as admin.**
-
-**The *admin* should have all rights.** Otherwise you will
-[lock out yourself](https://wiki.jenkins-ci.org/display/JENKINS/Disable+security).
-This account will also be used to create the pipeline jobs
-automatically.
-The users and groups could get the permissions as shown below.
-![Project-based Matrix Authorization Strategy](pictures/authentication.png "Example for Project-based Matrix Authorization Strategy")
-
-Every user will automatically get the permission to see the workspace of
-all its own jobs. For the 'Pipestarter' and 'Trigger' job it will also has
-'Build'-permission.
-> If you want to grant further permissions or give special permissions to
-> individual users or user groups you can do it here.
 
 
 ####[Configure the default view](README.md#configure-default-view)
