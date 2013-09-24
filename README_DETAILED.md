@@ -29,6 +29,7 @@ The plugin and this manual are designed and tested for Jenkins CI v1.514.
     * [Configure the build slave/node](#configure-a-build-slavenode)
     * [Configure the hardware slave/node](#configure-a-hardware-slavenode)
     * [Create a new slave node in Jenkins](#create-a-new-slave-node-in-jenkins-slave-setup-on-master)
+* [DEVELOPERS GUIDE](#developers-guide)
 * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation-deprecated)
 
 
@@ -42,7 +43,7 @@ For the usage of the Cob-Pipeline three parts are necessary:
 * [jenkins\_setup repository](https://github.com/ipa320/jenkins_setup)<br/>
     This repository has to be available on the Jenkins server. It
     includes the code for the pipeline generation.
-* [jenkins\_config repository](https://github.com/ipa320/jenkins_config)<br>
+* [jenkins\_config repository](https://github.com/ipa320/jenkins_config_example)<br>
     In this repository all the pipeline configurations are stored.
 
 
@@ -269,8 +270,11 @@ git config --global user.email "<EMAIL>"
 ```
 
 Clone the `jenkins_setup` and `jenkins_config` repositories.
+
 *You have to create a repository named 'jenkins_config'.*
-> It is recommended to clone the
+The easiest way is to fork [https://github.com/ipa320/jenkins_config_example](https://github.com/ipa320/jenkins_config_example) and rename it to `jenkins_config`.
+
+> It is also recommended to clone the
 > [jenkins_setup](https://github.com/ipa320/jenkins_setup) repository to
 > keep track of changes and updates.
 
@@ -499,6 +503,12 @@ Name it and select *Dumb Slave*. *OK*.
 
 ___
 
+# DEVELOPERS GUIDE
+
+## TODO
+
+
+___
 
 > # Manual Pipeline Generation (deprecated):
 >
