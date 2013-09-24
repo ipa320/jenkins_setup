@@ -1,6 +1,6 @@
 # Jenkins Guide (DETAILED)
 
-This repository contains the code (config, src and script files) to set up and run a Cob-[Jenkins CI server](http://jenkins-ci.org) using the [Cob-Pipeline-Plugin](http://github.com/fmw-jk/cob-pipeline-plugin).
+This repository contains the code (config, src and script files) to set up and run a Cob-[Jenkins CI server](http://jenkins-ci.org) using the [Cob-Pipeline-Plugin](http://github.com/ipa320/cob-pipeline-plugin).
 
 This guide is designed for Cob-Pipeline developers, those who want to setup a efficient test framework and those who just want to know more about it.
 **If you want to set up the Cob-Pipeline quickly on one computer and only use it, the [minimal Jenkins Guide](README.md) is what you are looking for.**
@@ -29,20 +29,21 @@ The plugin and this manual are designed and tested for Jenkins CI v1.514.
     * [Configure the build slave/node](#configure-a-build-slavenode)
     * [Configure the hardware slave/node](#configure-a-hardware-slavenode)
     * [Create a new slave node in Jenkins](#create-a-new-slave-node-in-jenkins-slave-setup-on-master)
+* [DEVELOPERS GUIDE](#developers-guide)
 * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation-deprecated)
 
 
 ##Software Structure
 
 For the usage of the Cob-Pipeline three parts are necessary:
-* [Cob-Pipeline-Plugin](https://github.com/fmw-jk/cob-pipeline-plugin) for Jenkins<br/>
+* [Cob-Pipeline-Plugin](https://github.com/ipa320/cob-pipeline-plugin) for Jenkins<br/>
     This plugin allows the user to configure its individual build/test
     pipeline via the Jenkins web interface. Afterwards the automatic generation
     of the pipeline can be triggered.
 * [jenkins\_setup repository](https://github.com/ipa320/jenkins_setup)<br/>
     This repository has to be available on the Jenkins server. It
     includes the code for the pipeline generation.
-* [jenkins\_config repository](https://github.com/ipa320/jenkins_config)<br>
+* [jenkins\_config repository](https://github.com/ipa320/jenkins_config_example)<br>
     In this repository all the pipeline configurations are stored.
 
 
@@ -224,10 +225,10 @@ TODO
 
 
 ### Install the *cob-pipeline* plugin
-Download the plugin (\*.hpi file) from [https://github.com/fmw-jk/cob-pipeline-plugin/releases](https://github.com/fmw-jk/cob-pipeline-plugin/releases), place it in `/var/lib/jenkins/plugins` and restart Jenkins.
+Download the plugin (\*.hpi file) from [https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases](https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases) ([latest](https://github.com/ipa320/cob-pipeline-plugin/raw/master/releases/v0.9.6/cob-pipeline.hpi)), place it in `/var/lib/jenkins/plugins` and restart Jenkins.
 
     cd /var/lib/jenkins/plugins
-    sudo wget https://github.com/fmw-jk/cob-pipeline-plugin/releases/download/v0.9.6/cob-pipeline.hpi
+    sudo wget https://github.com/ipa320/cob-pipeline-plugin/raw/master/releases/v0.9.6/cob-pipeline.hpi
     sudo /etc/init.d/jenkins restart
 
 Afterwards the plugin should be available and the **Pipeline Configuration** link should be present in the sidebar (see picture).
@@ -269,8 +270,11 @@ git config --global user.email "<EMAIL>"
 ```
 
 Clone the `jenkins_setup` and `jenkins_config` repositories.
+
 *You have to create a repository named 'jenkins_config'.*
-> It is recommended to clone the
+The easiest way is to fork [https://github.com/ipa320/jenkins_config_example](https://github.com/ipa320/jenkins_config_example) and rename it to `jenkins_config`.
+
+> It is also recommended to clone the
 > [jenkins_setup](https://github.com/ipa320/jenkins_setup) repository to
 > keep track of changes and updates.
 
@@ -317,6 +321,8 @@ Go to [Jenkins plugin manager](http://localhost:8080/pluginManager/available) an
   ([website](http://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters))<br/>
     Provides comprehensive possibilities to filter the jobs that can
     be seen by the specific user.
+* **Build-timeout Plugin** ([website](https://wiki.jenkins-ci.org/display/JENKINS/Build-timeout+Plugin))<br/>
+    Aborts a job if it takes too long.
 
 ####Install supplementary Jenkins plugins
 * *Matrix Reloaded Plugin*
@@ -499,6 +505,12 @@ Name it and select *Dumb Slave*. *OK*.
 
 ___
 
+# DEVELOPERS GUIDE
+
+## TODO
+
+
+___
 
 > # Manual Pipeline Generation (deprecated):
 >

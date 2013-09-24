@@ -105,7 +105,8 @@ class JenkinsJobTest(unittest.TestCase):
                                   'JUNIT_TESTRESULTS': '',
                                   'MAILER': '',
                                   'POSTBUILD_TASK': '',
-                                  'CONCURRENT_BUILD': 'true'
+                                  'CONCURRENT_BUILD': 'true',
+                                  'BUILD_TIMEOUT': '<hudson.plugins.build__timeout.BuildTimeoutWrapper plugin="build-timeout@1.11"> <timeoutMinutes>360</timeoutMinutes> <failBuild>true</failBuild> <writingDescription>false</writingDescription> <timeoutPercentage>0</timeoutPercentage> <timeoutType>absolute</timeoutType> <timeoutMinutesElasticDefault>3</timeoutMinutesElasticDefault> </hudson.plugins.build__timeout.BuildTimeoutWrapper>'
                                   }
         self.jj._set_common_params()
         self.assertEqual(self.jj.params, common_job_config_dict)
@@ -592,6 +593,17 @@ class JenkinsJobTest(unittest.TestCase):
         self.jj.tarball_location = 'jenkins@jenkins-test-server:~/chroot_tarballs'
         result = self.jj._get_shell_script()
         self.assertTrue('JOBTYPE=regular_build' in result)
+
+    def test__set_build_timeout__check_result(self):
+        self.jj._set_build_timeout()
+        self.assertEqual(self.jj.params['BUILD_TIMEOUT'], '<hudson.plugins.build__timeout.BuildTimeoutWrapper plugin="build-timeout@1.11">\
+ <timeoutMinutes>360</timeoutMinutes>\
+ <failBuild>true</failBuild>\
+ <writingDescription>false</writingDescription>\
+ <timeoutPercentage>0</timeoutPercentage>\
+ <timeoutType>absolute</timeoutType>\
+ <timeoutMinutesElasticDefault>3</timeoutMinutesElasticDefault>\
+ </hudson.plugins.build__timeout.BuildTimeoutWrapper>')
 
 
 class PipeStarterJobTest(unittest.TestCase):
