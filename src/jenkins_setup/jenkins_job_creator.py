@@ -114,6 +114,7 @@ class JenkinsJob(object):
         self.params['POSTBUILD_TASK'] = ''
         self._set_authorization_matrix_param(['read', 'workspace'])
         self.params['CONCURRENT_BUILD'] = 'true'
+        self._set_build_timeout()
 
     ###########################################################################
     # helper methods - parameter generation
@@ -546,6 +547,12 @@ class JenkinsJob(object):
                 subset_filter_input.append(subset_filter_input_entry)
 
         return subset_filter_input
+
+    def _set_build_timeout(self):
+        """
+        Set the configuration for the build timeout plugin
+        """
+        self.params['BUILD_TIMEOUT'] = self.job_config_params['build_timeout']
 
 
 class PipeStarterGeneralJob(JenkinsJob):

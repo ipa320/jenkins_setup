@@ -321,6 +321,8 @@ Go to [Jenkins plugin manager](http://localhost:8080/pluginManager/available) an
   ([website](http://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters))<br/>
     Provides comprehensive possibilities to filter the jobs that can
     be seen by the specific user.
+* **Build-timeout Plugin** ([website](https://wiki.jenkins-ci.org/display/JENKINS/Build-timeout+Plugin))<br/>
+    Aborts a job if it takes too long.
 
 ####Install supplementary Jenkins plugins
 * *Matrix Reloaded Plugin*
