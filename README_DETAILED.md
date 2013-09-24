@@ -507,7 +507,27 @@ ___
 
 # DEVELOPERS GUIDE
 
-## TODO
+## Workflow
+*What happens during the configuration, generation and build process?*
+
+* cob-pipeline-plugin<br/>
+    The pipeline configuration affects first of all only the [cob-pipeline-plugin](https://github.com/ipa320/cob-pipeline-plugin).
+    When the *Generate pipeline* gets pressed, the configurations will be stored in the user's `config.xml` file.
+    Additionally the `pipeline_config.yaml` will be created/updated with all the pipeline specific configuration.
+    Furthermore its changes will be commited in the `jenkins_config` repository and pushed.
+    Finally the plugin calls the [`generate_buildpipeline.py`](scripts/generate_buildpipeline.py) in the `jenkins_setup` repository with the necessary parameters.
+
+* `jenkins_setup`<br/>
+    * [`generate_buildpipeline.py`](scripts/generate_buildpipeline.py)<br/>
+        The generation script creates a connection to your Jenkins master and parses the `pipeline_config.yaml`.
+        Then it checks which job types are configured for this pipeline and creates each necessary job via the [`jenkins_job_creator.py`](src/jenkins_setup/jenkins_job_creator.py) module.
+    * [`jenkins_job_creator.py`](src/jenkins_setup/jenkins_job_creator.py)<br/>
+        The module includes the *JenkinsJob* base class and a child class for each job type.
+        During the creation process the job specific class attributes are set.
+        They all are strings with xml syntax which will replace the placeholders in the [`job_config.xml` template](src/jenkins_setup/templates/job_config.xml) the define the jobs behaviour.
+        Finally the generated `config.xml` will be sent to your Jenkins master and create the corresponding job.
+
+## Development Use-Cases
 
 
 ___
