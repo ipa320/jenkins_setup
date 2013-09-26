@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>login</name>
+          <description>Jenkins Admin Login</description>
+          <defaultValue>admin</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.PasswordParameterDefinition>
+          <name>password</name>
+          <description>Jenkins Admin Password</description>
+          <defaultValue></defaultValue>
+        </hudson.model.PasswordParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <assignedNode>master</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+# ADAPT FOLDER
+JENKINS_CONFIG="${HOME}/jenkins-config"
+cd $JENKINS_CONFIG/jenkins_setup/scripts
+
+for user in /var/lib/jenkins/users/*; do
+  if [ -f ${user}/pipeline_config.yaml ]; then
+    echo
+    echo &quot;Re-generate pipeline for ${user##*/}&quot;
+    # ADAPT ARGUMENTS IF NECESSARY
+    ./generate_buildpipeline.py -m $JENKINS_URL -l $login -p $password -c $JENKINS_CONFIG -t jenkins@localhost:chroot_tarballs -o ipa320 -u ${user##*/}
+    if [ $? != 0 ]; then
+      failed=&quot;${failed} ${user##*/}&quot;
+    fi
+  fi
+done
+
+if [ -n &quot;$failed&quot; ]; then
+  echo
+  echo &quot;The re-generation process of the following pipelines failed:&quot;
+  for user in $failed; do
+    echo &quot; $user&quot;
+  done
+  echo &quot;Please check output above for more details&quot;
+  echo
+  exit 1
+fi</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

@@ -16,6 +16,7 @@ export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
 
 
 echo "Set up ssh"
+export HOME="/root"
 cp -a $WORKSPACE/.ssh /root &&
 ls -la /root/ &&
 chown -R root.root /root/.ssh
@@ -24,10 +25,10 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
+export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 case $JOBTYPE in
     graphic_test|prio_graphics_test)
         echo "Set up graphic"
-        export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 
         $DIR/checkDisplayNull.bash &&
         $DIR/setupSources.bash &&

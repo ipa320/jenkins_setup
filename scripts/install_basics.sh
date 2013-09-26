@@ -17,7 +17,7 @@ apt-get install -y \
     python-yaml python-pip python-support python-apt git-core mercurial subversion \
     python-all gccxml python-empy python-nose python-mock python-minimock \
     lsb-release python-numpy python-wxgtk2.8 python-argparse python-networkx \
-    graphviz python-sphinx doxygen python-epydoc cmake pkg-config openssh-client
+    graphviz python-sphinx doxygen python-epydoc cmake pkg-config openssh-client python-paramiko
 
 echo -e "\n***GET KEY***"
 wget http://packages.ros.org/ros.key -O - | apt-key add -
