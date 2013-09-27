@@ -89,7 +89,7 @@ def build_downstream_post_fuerte(ros_distro, build_repo, workspace, server):
     # install all repository and system dependencies of the depends_on list
     print "Install all depends_on from source: %s" % (', '.join(ros_depends_on))
     os.makedirs(dependson_sourcespace)
-    common.call("rosinstall %s %s/depends_on.rosinstall /opt/ros/%s" % (dependson_sourcespace, workspace, ros_distro))
+    common.call("rosinstall -j 8 %s %s/depends_on.rosinstall /opt/ros/%s" % (dependson_sourcespace, workspace, ros_distro))
 
     # all packages in dependson_sourcespace
     (catkin_packages, stacks, manifest_packages) = common.get_all_packages(dependson_sourcespace)
