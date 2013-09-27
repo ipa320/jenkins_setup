@@ -242,6 +242,15 @@ Open `/var/lib/jenkins/jobs/update_chroot_tarballs/config.xml` and adjust it to 
 
 Afterwards **Reload Configuration from Disk** under [http://localhost:8080/manage](http://localhost:8080/manage) and run the job to create the tarballs.
 
+### configure update\_pipelines job
+To update all pipelines (e.g. after a general configuration change) an additional job is needed. Copy the prepared job `config.xml` into the job folder and make the jenkins user own it.
+
+    sudo mkdir /var/lib/jenkins/jobs/update_pipelines
+    sudo cp ~/jenkins-config/jenkins_setup/templates/update_pipelines/UPDATE_PIPELINES_config.xml /var/lib/jenkins/jobs/update_pipelines/config.xml
+    sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/update_pipelines
+
+Afterwards **Reload Configuration from Disk** under [http://localhost:8080/manage](http://localhost:8080/manage) and run the job to create the tarballs. you will have to start this job manually and give it the admin user and password (if using github OAuth, the use the token from [http://localhost:8080/me/configure](http://localhost:8080/me/configure) when logged in as the admin user.
+
 ### configure default view
 Login as `admin` and create a new view by pressing the '+'.
 
