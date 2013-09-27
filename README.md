@@ -9,8 +9,10 @@ Before starting with this guide, please setup one machine with the following pro
 
 assumptions:
 - we're only using one machine which is master and slave at the same time
-- apt-cacher is running on master
+- `apt-cacher` is running on master
 - there's a github user that has read access to all repositories which should be build and write access to a jenkins_config repository (e.g. http://github.com/ipa320/jenkins_config)
+
+> For further informations read the [detailed Jenkins Guide](README_DETAILED.md).
 
 
 ## Jenkins installation
@@ -33,6 +35,10 @@ Add the jenkins debian repository and install jenkins
     sudo su -c 'echo "deb http://pkg.jenkins-ci.org/debian binary/" > /etc/apt/sources.list.d/jenkins.list'
     sudo apt-get update && sudo apt-get install jenkins
 
+Install `apt-cacher`
+
+    sudo apt-get install apt-cacher-ng
+
 ### Up or downgrade jenkins to version v1.514
 We've tested the setup on Jenkins version v1.514. You can find the war file [here](http://mirrors.jenkins-ci.org/war).
 
@@ -45,7 +51,7 @@ restart jenkins
     sudo /etc/init.d/jenkins restart
 
 
-After a successfull installation you can access the jenkins server in your browser at [http://localhost:8080](http://localhost:8080).
+After a successful installation you can access the jenkins server in your browser at [http://localhost:8080](http://localhost:8080).
 
 
 ## Jenkins configuration
@@ -61,32 +67,42 @@ Go to [http://localhost:8080/configureSecurity](http://localhost:8080/configureS
 
 After click save the Server will throw you to a Login screen. Just register with the username `admin`.
 
-![Project-based Matrix Authorization Strategy](./authentication.png "Example for Project-based Matrix Authorization Strategy")
+![Project-based Matrix Authorization Strategy](pictures/authentication.png "Example for Project-based Matrix Authorization Strategy")
+
+> There are two [more *Security Realm* setups](README_DETAILED.md#security-realm) descriped in the [detailed Jenkins Guide](README_DETAILED.md).
 
 ### Basic configuration
 Go to [http://localhost:8080/configure](http://localhost:8080/configure)
 
 - Set *# of executors* to `1`.
+
+##### Jenkins Location
 - Set *Jenkins URL* to your servers name.
+- Set your *System Admin e-mail address*.
+
+##### E-mail Notification
+- Set *SMTP server*
 
 You can keep the default values for all other entries.
 
 ### Master node configuration
-Go to [http://localhost:8080/computer/(master)/configure](http://localhost:8080/computer/%28master%29/configure) and add `prio_build regular_build update_tarballs` to *Labels*
+Go to [http://localhost:8080/computer/(master)/configure](http://localhost:8080/computer/%28master%29/configure) and add `prio_build regular_build update_tarballs prio_nongraphics_test regular_nongraphics_test` to *Labels*
 
 ### Jenkins plugin installation
 Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/pluginManager/available) and install the following plugins:
 
-- Parameterized Trigger Plugin https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin
-- Build Pipeline Plugin http://code.google.com/p/build-pipeline-plugin/
-- Mailer https://wiki.jenkins-ci.org/display/JENKINS/Mailer
-- View Job Filters https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters
+- [Git Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin)
+- [Parameterized Trigger Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin)
+- [Build Pipeline Plugin](http://code.google.com/p/build-pipeline-plugin/)
+- [Mailer](https://wiki.jenkins-ci.org/display/JENKINS/Mailer)
+- [View Job Filters](https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters)
+- [Build-timeout Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Build-timeout+Plugin)
 
 ### Install `jenkins_setup`, `jenkins_config` and the *cob-pipeline* plugin
-Download the *.hpi* file from https://github.com/fmw-jk/cob-pipeline-plugin/releases and place it in `/var/lib/jenkins/plugins`.
+Download the *.hpi* file from [https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases](https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases) ([latest](https://github.com/ipa320/cob-pipeline-plugin/raw/master/releases/v0.9.6/cob-pipeline.hpi)) and place it in `/var/lib/jenkins/plugins`.
 
     cd /var/lib/jenkins/plugins
-    sudo wget https://github.com/fmw-jk/cob-pipeline-plugin/releases/download/v0.9.5-alpha/cob-pipeline.hpi
+    sudo wget https://github.com/ipa320/cob-pipeline-plugin/raw/master/releases/v0.9.6/cob-pipeline.hpi
 
 All scripts and configurations will be stored in `/home/jenkins/jenkins-config`.
 
@@ -121,7 +137,7 @@ Clone the `jenkins_setup` and `jenkins_config` repositories
 Add the `jenkins_setup` module to the `$PYTHONPATH` (adapt the *ROS_RELEASE*).
 
     sudo su -c 'echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh'
-    sudo su -c 'echo "source /opt/ros/<ROS_RELEASE>/setup.sh" >> /etc/profile.d/python_path.sh'
+    sudo su -c 'echo "source /opt/ros/groovy/setup.sh" >> /etc/profile.d/python_path.sh'
 
 Enable passwordless sudo rights for the jenkins user by adding the following line at the end of `/etc/sudoers` (open with `sudo visudo -f /etc/sudoers`).
 
@@ -222,17 +238,27 @@ To set up the necessary chroot tarballs and keep them up-to-date an additional j
     sudo cp ~/jenkins-config/jenkins_setup/templates/update_chroot_tarballs/UPDATE_CHROOT_TARBALLS_config.xml /var/lib/jenkins/jobs/update_chroot_tarballs/config.xml
     sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/update_chroot_tarballs
 
-Afterwards **Reload Configuration from Disk** under
-[http://localhost:8080/manage](http://localhost:8080/manage).
+Open `/var/lib/jenkins/jobs/update_chroot_tarballs/config.xml` and adjust it to your demands. Especially the `apt-cacher` address.
+
+Afterwards **Reload Configuration from Disk** under [http://localhost:8080/manage](http://localhost:8080/manage) and run the job to create the tarballs.
+
+### configure update\_pipelines job
+To update all pipelines (e.g. after a general configuration change) an additional job is needed. Copy the prepared job `config.xml` into the job folder and make the jenkins user own it.
+
+    sudo mkdir /var/lib/jenkins/jobs/update_pipelines
+    sudo cp ~/jenkins-config/jenkins_setup/templates/update_pipelines/UPDATE_PIPELINES_config.xml /var/lib/jenkins/jobs/update_pipelines/config.xml
+    sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/update_pipelines
+
+Afterwards **Reload Configuration from Disk** under [http://localhost:8080/manage](http://localhost:8080/manage) and run the job to create the tarballs. you will have to start this job manually and give it the admin user and password (if using github OAuth, the use the token from [http://localhost:8080/me/configure](http://localhost:8080/me/configure) when logged in as the admin user.
 
 ### configure default view
 Login as `admin` and create a new view by pressing the '+'.
 
-![Create View](new_view.png "Create a new view in Jenkins")
+![Create View](pictures/new_view.png "Create a new view in Jenkins")
 
 Name it 'current\_user' and select **List View**. **Add Job Filter** in the *Job Filter* section and select **User Permissions for Jobs**. Configure as shown in the picture and press OK.
 
-![Job Filter configuration](job_filter.png "Configuration example for View Job Filter")
+![Job Filter configuration](pictures/job_filter.png "Configuration example for View Job Filter")
 
 Go to [http://localhost:8080/configure](http://localhost:8080/configure) and select 'current\_user' as **Default view**.
 
@@ -241,4 +267,4 @@ Copy the jelly template for the email generation:
 
     sudo mkdir /var/lib/jenkins/email-templates
     sudo cp ~/jenkins-config/jenkins_setup/templates/email-templates/html-with-health-builds-tests.jelly /var/lib/jenkins/email-templates/
-    sudo chown -R jenkins:jenkins /var/lib/jenkins//email-templates
+    sudo chown -R jenkins:jenkins /var/lib/jenkins/email-templates

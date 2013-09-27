@@ -59,11 +59,11 @@ class Common_Test(unittest.TestCase):
         pass
 
     def test__get_buildpipeline_configs__input_server_and_user_name_string__return_configs_dict(self):
-        result = common.get_buildpipeline_configs('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
+        result = common.get_buildpipeline_configs('jenkins-test-server', 'test-user', 'git@github.com:fmw-jk/jenkins_config.git')
         self.assertEqual(type(result), dict)
 
     def test__get_buildpipeline_configs__input_server_and_user_name_string__check_entries(self):
-        result = common.get_buildpipeline_configs('git@github.com:fmw-jk/jenkins_config.git', 'jenkins-test-server', 'test-user')
+        result = common.get_buildpipeline_configs('jenkins-test-server', 'test-user', 'git@github.com:fmw-jk/jenkins_config.git')
         self.assertEqual(result['user_name'], 'test-user')
 
     def test__get_buildpipeline_configs__input_wrong_name__raise_exception(self):

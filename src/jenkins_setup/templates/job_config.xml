@@ -35,5 +35,7 @@
     @(JUNIT_TESTRESULTS)
     @(MAILER)
   </publishers>
-  <buildWrappers/>
+  <buildWrappers>
+    @(BUILD_TIMEOUT)
+  </buildWrappers>
 </@(PROJECT)>
