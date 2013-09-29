@@ -122,7 +122,7 @@ Setup ssh configuration (create ssh-key if it doesn't exist already and add gith
 
 You have to add this key to your GitHub user http://github.com/settings/ssh. 
 
-     cat ~/.ssh/id_rsa.pub
+    cat ~/.ssh/id_rsa.pub
 
 Setup git configuration on master
 
