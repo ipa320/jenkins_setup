@@ -34,6 +34,7 @@
     @(PARAMETERIZED_TRIGGER)
     @(JUNIT_TESTRESULTS)
     @(MAILER)
+    @(WARNINGS_PUBLISHER)
   </publishers>
   <buildWrappers>
     @(BUILD_TIMEOUT)

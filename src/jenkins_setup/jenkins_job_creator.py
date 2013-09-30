@@ -112,6 +112,7 @@ class JenkinsJob(object):
         self.params['JUNIT_TESTRESULTS'] = ''
         self.params['MAILER'] = ''
         self.params['POSTBUILD_TASK'] = ''
+        self.params['WARNINGS_PUBLISHER'] = self.job_config_params['warningspublisher']
         self._set_authorization_matrix_param(['read', 'workspace'])
         self.params['CONCURRENT_BUILD'] = 'true'
         self._set_build_timeout()
