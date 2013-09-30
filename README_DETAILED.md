@@ -557,11 +557,25 @@ ___
     To implement your changes, add the functionality to the right class and add the checkbox, textfield or whatever to the corresponding `config.jelly`.
 
 * *..change a jobs behaviour (change the generation process)*<br/>
-    
+    If you for example want to support an additional plugin you have to do multiple changes:
+    * First of all set up a job manually and configure it as wanted.
+    Then check its `config.xml` file.
+    You can do this by adding config.xml to the end of the jobs URL.
+    Search the part where the plugin is configured and copy it into the [`job_config_params.yaml`](src/jenkins_setup/templates/job_config_params.yaml).
+    Follow the given syntax.
+    Replace all parts which should be set during the generation process with an unambiguous placeholder.
+    The placeholder has to start with a '@'-sign and surrounded by brackets like @(PLACEHOLDER).
+    * Then add a placeholder for the whole configuration to the right place of the [`job_config.xml`](src/jenkins_setup/templates/job_config.xml).
+    * Finally you have to make sure that the plugins configuration will be correctly generated and written to the jobs `config.xml`.
+    Therefore implement a method in the *JenkinsJob* class in the [`jenkins_job_creator.py`](src/jenkins_setup/jenkins_job_creator.py) which loads the configuration template from the [`job_config_params.yaml`](src/jenkins_setup/templates/job_config_params.yaml) and sets the necessary parameters by replacing the placeholder(s).
+    To get the template you can use the `self.job_config_params` attribute.<br/>
+    Finally you have to add a new parameter in the `_set_common_params()` method which has the same name as the placeholder in the [`job_config.xml`](src/jenkins_setup/templates/job_config.xml).
+    If you want to make the configuration job type dependent, assign only an empty string or the common configuration here and change the parameter from the specific job class.
 
 * *..change the job behaviour during the build?*<br/>
     There are different ways to change the execution process depending when in the process you want to change something.
-    * If you want to change the behaviour before the `chroot` is entered or after it is left, you have to implement it in [execute_shell.yaml](src/jenkins_setup.execute_shell.yaml) which includes for each job the *Execute shell* code.
+    * If you want to change the behaviour before the `chroot` is entered
+    * or after it is left, you have to implement it in [execute_shell.yaml](src/jenkins_setup/templates/execute_shell.yaml) which includes for each job the *Execute shell* code.
     * If you want to change the behaviour right after the `chroot` is entered, you can do this [here](scripts/pbuilder_env.sh).
     * If you want to change actual build or test process, change the right script in the [script folder](scripts/).
 
