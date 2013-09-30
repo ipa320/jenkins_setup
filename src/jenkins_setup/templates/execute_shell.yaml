@@ -1,3 +1,6 @@
+##################
+### prio_build ###
+##################
 'prio_build': '#!/bin/bash -e
 
 date
@@ -97,6 +100,9 @@ echo "STORING CHROOT TARBALL ON @(STORAGE)"
 scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use_on__@(SERVERNAME)/
 '
 
+#####################
+### regular_build ###
+#####################
 'regular_build': '#!/bin/bash -e
 
 if [ -z "$ROS_DISTRO" ]; then
@@ -193,6 +199,9 @@ echo "STORING CHROOT TARBALL ON @(STORAGE)"
 scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use_on__@(SERVERNAME)/
 '
 
+########################
+### nongraphics_test ###
+########################
 'nongraphics_test': '#!/bin/bash
 
 if [ -z "$ROS_DISTRO" ]; then
@@ -276,9 +285,9 @@ sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKS
 echo "***********LEAVE CHROOT************"
 '
 
-
-#######graphics_test#######
-
+#####################
+### graphics_test ###
+#####################
 'graphics_test': '#!/bin/bash
 
 if [ -z "$ROS_DISTRO" ]; then
@@ -372,9 +381,9 @@ sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts "$WORK
 echo "***********LEAVE CHROOT************"
 '
 
-
-#######downstream_build#######
-
+########################
+### downstream_build ###
+########################
 'downstream_build': '#!/bin/bash -e
 
 if [ -z "$ROS_DISTRO" ]; then
@@ -465,9 +474,9 @@ scp $WORKSPACE/../aux/${basetgz}_downstream @(STORAGE)/in_use_on__@(SERVERNAME)/
 
 '
 
-
-#######downstream_test#######
-
+#######################
+### downstream_test ###
+#######################
 'downstream_test': '#!/bin/bash -e
 
 if [ -z "$ROS_DISTRO" ]; then
@@ -551,18 +560,18 @@ sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKS
 echo "***********LEAVE CHROOT************"
 '
 
-
-#######hardware_build#######
-
+########################
+### hardware_build #####
+########################
 'hardware_build': '#!/bin/bash -e
 
     #TODO
 
 '
 
-
-#######hardware_test#######
-
+#####################
+### hardware_test ###
+#####################
 'hardware_test': '#!/bin/bash -e
 
     #TODO
