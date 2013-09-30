@@ -30,6 +30,8 @@ The plugin and this manual are designed and tested for Jenkins CI v1.514.
     * [Configure the hardware slave/node](#configure-a-hardware-slavenode)
     * [Create a new slave node in Jenkins](#create-a-new-slave-node-in-jenkins-slave-setup-on-master)
 * [DEVELOPERS GUIDE](#developers-guide)
+    * [Workflow](#workflow)
+    * [Development Use-Cases](#development-use-cases)
 * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation-deprecated)
 
 
