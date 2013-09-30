@@ -141,9 +141,6 @@
           <parserName>GNU Compiler 4 (gcc)</parserName>
         </hudson.plugins.warnings.ConsoleParser>
         <hudson.plugins.warnings.ConsoleParser>
-          <parserName>GNU Compiler 3 (gcc)</parserName>
-        </hudson.plugins.warnings.ConsoleParser>
-        <hudson.plugins.warnings.ConsoleParser>
           <parserName>GNU Make + GNU Compiler (gcc)</parserName>
         </hudson.plugins.warnings.ConsoleParser>
       </consoleParsers>
