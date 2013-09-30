@@ -20,7 +20,7 @@ assumptions:
 ### Debian packages for Ubuntu
 Install basic packages
 
-    sudo apt-get install git-core pbuilder devscripts pigz python-jenkins
+    sudo apt-get install git-core pbuilder devscripts pigz python-jenkins python-mock python-nose
 
 Install basic ROS packages
 
@@ -97,6 +97,7 @@ Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/plug
 - [Mailer](https://wiki.jenkins-ci.org/display/JENKINS/Mailer)
 - [View Job Filters](https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters)
 - [Build-timeout Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Build-timeout+Plugin)
+- [Warnings Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Warnings+Plugin)
 
 ### Install `jenkins_setup`, `jenkins_config` and the *cob-pipeline* plugin
 Download the *.hpi* file from [https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases](https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases) ([latest](https://github.com/ipa320/cob-pipeline-plugin/raw/master/releases/v0.9.6/cob-pipeline.hpi)) and place it in `/var/lib/jenkins/plugins`.
