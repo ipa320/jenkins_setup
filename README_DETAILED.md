@@ -528,7 +528,29 @@ ___
         Finally the generated `config.xml` will be sent to your Jenkins master and create the corresponding job.
 
 ## Development Use-Cases
+*What is to do/Where do I have to change if I want to..*
 
+* *..add a configuration option to the plugin?*<br/>
+    Everything related to the plugin has to be done in the [cob-pipeline-plugin](https://github.com/ipa320/cob-pipeline-plugin).
+    [Here](https://github.com/ipa320/cob-pipeline-plugin#enhance-this-plugin) you find a short description how to set up a development environment.<br/>
+    Below the repository folder `cob-pipeline-plugin/src/main` you find two folders:
+    * [`java/de/fraunhofer/ipa/`](https://github.com/ipa320/cob-pipeline-plugin/tree/master/src/main/java/de/fraunhofer/ipa)
+        Here you find all the Java classes of the plugin.
+        *[`CobPipelineProperty.java`](https://github.com/ipa320/cob-pipeline-plugin/blob/master/src/main/java/de/fraunhofer/ipa/CobPipelineProperty.java)<br/>
+            This class extends Jenkins `UserProperty` class.
+        *[`Repository.java`](https://github.com/ipa320/cob-pipeline-plugin/blob/master/src/main/java/de/fraunhofer/ipa/Repository.java)<br/>
+            This class represents a repository with attributes like `url`, `version`, etc.
+            Its instances are used for the dependencies.
+        *[`RootRepository.java`](https://github.com/ipa320/cob-pipeline-plugin/blob/master/src/main/java/de/fraunhofer/ipa/RootRepository.java)<br/>
+            This class enherites from the `Repository.java` class and extends it to hold the information of a repository to be built and tested by the pipeline like build environment etc.
+    * [`resources/de/fraunhofer/ipa/`](https://github.com/ipa320/cob-pipeline-plugin/tree/master/src/main/resources/de/fraunhofer/ipa)
+        Includes for each class the corresponding `config.jelly` file which defines the appearence of the class in your browser.
+
+    To implement your changes, add the functionality to the right class and add the checkbox, textfield or whatever to the corresponding `config.jelly`.
+
+* *..change a jobs behaviour (change the generation process)*<br/>
+
+* *..change the job behaviour during the build?*<br/>
 
 ___
 
