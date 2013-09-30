@@ -574,8 +574,7 @@ ___
 
 * *..change the job behaviour during the build?*<br/>
     There are different ways to change the execution process depending when in the process you want to change something.
-    * If you want to change the behaviour before the `chroot` is entered
-    * or after it is left, you have to implement it in [execute_shell.yaml](src/jenkins_setup/templates/execute_shell.yaml) which includes for each job the *Execute shell* code.
+    * If you want to change the behaviour before the `chroot` is entered or after it is left, you have to implement it in [execute_shell.yaml](src/jenkins_setup/templates/execute_shell.yaml) which includes for each job the *Execute shell* code.
     * If you want to change the behaviour right after the `chroot` is entered, you can do this [here](scripts/pbuilder_env.sh).
     * If you want to change actual build or test process, change the right script in the [script folder](scripts/).
 
