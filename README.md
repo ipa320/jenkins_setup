@@ -20,7 +20,7 @@ assumptions:
 ### Debian packages for Ubuntu
 Install basic packages
 
-    sudo apt-get install git-core pbuilder devscripts pigz python-jenkins
+    sudo apt-get install git-core pbuilder devscripts pigz python-jenkins python-mock python-nose
 
 Install basic ROS packages
 
@@ -96,6 +96,8 @@ Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/plug
 - [Build Pipeline Plugin](http://code.google.com/p/build-pipeline-plugin/)
 - [Mailer](https://wiki.jenkins-ci.org/display/JENKINS/Mailer)
 - [View Job Filters](https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters)
+- [Build-timeout Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Build-timeout+Plugin)
+- [Warnings Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Warnings+Plugin)
 
 ### Install `jenkins_setup`, `jenkins_config` and the *cob-pipeline* plugin
 Download the *.hpi* file from [https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases](https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases) ([latest](https://github.com/ipa320/cob-pipeline-plugin/raw/master/releases/v0.9.6/cob-pipeline.hpi)) and place it in `/var/lib/jenkins/plugins`.
@@ -121,7 +123,7 @@ Setup ssh configuration (create ssh-key if it doesn't exist already and add gith
 
 You have to add this key to your GitHub user http://github.com/settings/ssh. 
 
-     cat ~/.ssh/id_rsa.pub
+    cat ~/.ssh/id_rsa.pub
 
 Setup git configuration on master
 
@@ -240,6 +242,15 @@ To set up the necessary chroot tarballs and keep them up-to-date an additional j
 Open `/var/lib/jenkins/jobs/update_chroot_tarballs/config.xml` and adjust it to your demands. Especially the `apt-cacher` address.
 
 Afterwards **Reload Configuration from Disk** under [http://localhost:8080/manage](http://localhost:8080/manage) and run the job to create the tarballs.
+
+### configure update\_pipelines job
+To update all pipelines (e.g. after a general configuration change) an additional job is needed. Copy the prepared job `config.xml` into the job folder and make the jenkins user own it.
+
+    sudo mkdir /var/lib/jenkins/jobs/update_pipelines
+    sudo cp ~/jenkins-config/jenkins_setup/templates/update_pipelines/UPDATE_PIPELINES_config.xml /var/lib/jenkins/jobs/update_pipelines/config.xml
+    sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/update_pipelines
+
+Afterwards **Reload Configuration from Disk** under [http://localhost:8080/manage](http://localhost:8080/manage) and run the job to create the tarballs. you will have to start this job manually and give it the admin user and password (if using github OAuth, the use the token from [http://localhost:8080/me/configure](http://localhost:8080/me/configure) when logged in as the admin user.
 
 ### configure default view
 Login as `admin` and create a new view by pressing the '+'.
