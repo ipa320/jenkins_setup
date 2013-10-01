@@ -5,8 +5,7 @@ This repository contains the code (config, src and script files) to set up and r
 This guide is designed for Cob-Pipeline developers, those who want to setup a efficient test framework and those who just want to know more about it.
 **If you want to set up the Cob-Pipeline quickly on one computer and only use it, the [minimal Jenkins Guide](README.md) is what you are looking for.**
 Below you will find a detailed description of the purposes of the Cob-Pipeline and the setup for **one master** and **multiple slave** nodes.
-Nevertheless read first the short description of the setup process in the [minimal Jenkins Guide](README.md).
-Further information are given below.
+Nevertheless, reading the short description of the setup process in the [minimal Jenkins Guide](README.md) first may help to understand the whole system better.
 
 ###Version
 The plugin and this manual are designed and tested for Jenkins CI v1.514.
@@ -23,13 +22,17 @@ The plugin and this manual are designed and tested for Jenkins CI v1.514.
     * [Basic Configuration](#basic-configuration)
     * [Install the cob-pipeline plugin](#install-the-cob-pipeline-plugin)
     * [Install `jenkins_setup` & `jenkins_config`](#install-jenkins_setup--jenkins_config)
+    * [Configure the cob-pipeline plugin](#configure-the-cob-pipeline-plugin)
     * [Jenkins Plugin Installation](#jenkins-plugin-installation)
+    * [Setup maintenance jobs and default view](#setup-maintenance-jobs-and-default-view)
 * [Tarball Server](#tarball-server)
 * [Slaves](#slaves)
     * [Configure the build slave/node](#configure-a-build-slavenode)
     * [Configure the hardware slave/node](#configure-a-hardware-slavenode)
     * [Create a new slave node in Jenkins](#create-a-new-slave-node-in-jenkins-slave-setup-on-master)
 * [DEVELOPERS GUIDE](#developers-guide)
+    * [Workflow](#workflow)
+    * [Development Use-Cases](#development-use-cases)
 * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation-deprecated)
 
 
@@ -49,14 +52,14 @@ For the usage of the Cob-Pipeline three parts are necessary:
 
 ##Pipeline Structure
 
-The pipeline is made of multiple, differing Jenkins jobs which monitor the source code, build and test it in various envirements.
+The pipeline is made of multiple, differing Jenkins jobs which monitor the source code and build or test it in various envirements.
 An authorized Jenkins user can configure its individual pipeline in its Jenkins user configurations.
 The made configurations have to pass a validation and afterwards the automatic generation of the pipeline can be started.
 
 A fully configured pipeline has always the structure shown in the picture below.
 ![Build-Pipeline structure](pictures/build_pipeline_structure.png "Structure of a Cob Build-Pipeline")
 
-All build and test processes take place in [`chroot`s](help.ubuntu.com/community/BasicChroot) to garanty a clean and controlled environment.
+All build and test processes take place in [`chroot`s](http://help.ubuntu.com/community/BasicChroot) to garanty a clean and controlled environment.
 
 ###Job Types
 ####Starter Jobs
@@ -67,18 +70,18 @@ All build and test processes take place in [`chroot`s](help.ubuntu.com/community
 ####Build Jobs
 * **Priority-Build Job**<br/>
     The *Priority-Build Job* is the first real job in every pipeline.
-    First of all it gets the corresponding `chroot` tarball for the environment to test the repository for from the tarball server.
+    First of all it gets the corresponding `chroot` tarball depending on the environment to build the repository for.
     After entering the `chroot` the actual build process starts.
     * Clone the lastest version of the repository
     * Calculate its dependencies and install them
-    * `make` the  repository and its dependencies
+    * `make` the  repository and its dependencies.<br/>
     At the end the `chroot` gets closed, archived in the tarball and uploaded to the tarball server.
 
 * **Regular-Build Job**<br/>
-    This job does the same as the *Priority-Build Job* but for more environments.
+    This job does the same as the *Priority-Build Job* but for further environments.
 
 * **Downstream-Build Job**<br/>
-    In contrast to the two previous build jobs the *Downstream-Build Job* builds the all ROS-packages that depend directly on the configured repository.
+    In contrast to the two previous build jobs the *Downstream-Build Job* builds all the ROS-packages that depend directly on the configured repository.
 
 ####Test Jobs
 The following jobs run the tests given in the repository.
@@ -134,9 +137,12 @@ You can for example use the [apt-cacher-ng](http://www.unix-ag.uni-kl.de/~bloch/
 sudo apt-get install apt-cacher-ng
 ```
 
-To use the apt-cacher during the build process set up an apt-cacher and edit the [install_basics.sh script](./scripts/install_basics.sh) as descripted [here](./README.md#adapt-apt-cacher-address).
+To use the apt-cacher during the build process it has to be set as proxy in the `chroot`.
+Therefore you have to add the address as parameter in the update\_chroot\_tarballs job.
+See how you can do this [here](#configure-update_chroot_tarballs-job).
 
-> You can also use the apt-cacher of pbuilder. Then you should **NOT** do [this](README.md#dont-use-pbuilders-aptcache).
+> You can also use the apt-cacher of pbuilder.
+> Then you should **NOT** do [this](#dont-use-pbuilders-aptcache).
 
 
 ### Up or downgrade jenkins to version v1.514
@@ -220,10 +226,6 @@ For the 'Pipestarter' and 'Trigger' job it will also has 'Build'-permission.
 The basic configurations of your Jenkins server are described in the [short Jenkins Guide](README.md#basic-configuration)
 
 
-### Master node configuration
-TODO
-
-
 ### Install the *cob-pipeline* plugin
 Download the plugin (\*.hpi file) from [https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases](https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases) ([latest](https://github.com/ipa320/cob-pipeline-plugin/raw/master/releases/v0.9.6/cob-pipeline.hpi)), place it in `/var/lib/jenkins/plugins` and restart Jenkins.
 
@@ -303,6 +305,13 @@ sudo reboot now
 ```
 
 
+### [Configure the cob-pipeline plugin](README.md#configure-the-cob-pipeline-plugin)
+How to configure the cob-pipeline plugin is described [here](README.md#configure-the-cob-pipeline-plugin).
+You can follow this example.
+Only **if you use the [Github Authentication Plugin](#security-realm) for authentication, enter the Jenkins Admin API token instead of its password.**
+To get the API token go to the [admins user configuration](http://localhost:8080/me/configure).
+It can be found in the section **API Token**. Press *Show API Token...*.
+
 
 ### Jenkins plugin installation
 ####Install required Jenkins plugins
@@ -336,25 +345,47 @@ Go to [Jenkins plugin manager](http://localhost:8080/pluginManager/available) an
     Authentication of users is delegated to Github using the OAuth
     protocol.
 
-___
+
+### Setup maintenance jobs and default view
+#### Configure update\_chroot\_tarballs job
+To set up the necessary chroot tarballs and keep them up-to-date an additional job is needed. Copy the prepared job `config.xml` into the job folder and make the jenkins user own it.
+
+    sudo mkdir /var/lib/jenkins/jobs/update_chroot_tarballs
+    sudo cp ~/jenkins-config/jenkins_setup/templates/update_chroot_tarballs/UPDATE_CHROOT_TARBALLS_config.xml /var/lib/jenkins/jobs/update_chroot_tarballs/config.xml
+    sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/update_chroot_tarballs
+
+Open `/var/lib/jenkins/jobs/update_chroot_tarballs/config.xml` and adjust it to your demands. Especially the `apt-cacher` address.
+
+Afterwards **Reload Configuration from Disk** under [http://localhost:8080/manage](http://localhost:8080/manage) and run the job to create the tarballs.
+
+#### Configure update\_pipelines job
+To update all pipelines (e.g. after a general configuration change) an additional job is needed. Copy the prepared job `config.xml` into the job folder and make the jenkins user own it.
+
+    sudo mkdir /var/lib/jenkins/jobs/update_pipelines
+    sudo cp ~/jenkins-config/jenkins_setup/templates/update_pipelines/UPDATE_PIPELINES_config.xml /var/lib/jenkins/jobs/update_pipelines/config.xml
+    sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/update_pipelines
+
+Afterwards **Reload Configuration from Disk** under [http://localhost:8080/manage](http://localhost:8080/manage) and run the job to create the tarballs. you will have to start this job manually and give it the admin user and password (if using github OAuth, the use the token from [http://localhost:8080/me/configure](http://localhost:8080/me/configure) when logged in as the admin user.
+
+#### Configure default view
+Login as `admin` and create a new view by pressing the '+'.
+
+![Create View](pictures/new_view.png "Create a new view in Jenkins")
+
+Name it 'current\_user' and select **List View**. **Add Job Filter** in the *Job Filter* section and select **User Permissions for Jobs**. Configure as shown in the picture and press OK.
+
+![Job Filter configuration](pictures/job_filter.png "Configuration example for View Job Filter")
+
+Go to [http://localhost:8080/configure](http://localhost:8080/configure) and select 'current\_user' as **Default view**.
 
 
-####[Configure the default view](README.md#configure-default-view)
+#### Configure mailer
+Copy the jelly template for the email generation:
 
-####[Configure the cob-pipeline plugin](README.md#configure-the-cob-pipeline-plugin)
-How to configure the cob-pipeline plugin is described [here](README.md#configure-the-cob-pipeline-plugin).
-You can follow this example.
-Only **if you use the [Github Authentication Plugin](#security-realm) for authentication, enter the Jenkins Admin API token instead of its password.**
-To get the API token go to the [admins user configuration](http://localhost:8080/me/configure).
-It can be found in the section **API Token**. Press *Show API Token...*.
+    sudo mkdir /var/lib/jenkins/email-templates
+    sudo cp ~/jenkins-config/jenkins_setup/templates/email-templates/html-with-health-builds-tests.jelly /var/lib/jenkins/email-templates/
+    sudo chown -R jenkins:jenkins /var/lib/jenkins/email-templates
 
-
-#####Mailer
-######Default Subject
-For example: ```$BUILD_STATUS: $PROJECT_NAME - Build # $BUILD_NUMBER!```
-A complete list of tokens can be found at the help of the last entry
-(Content Token Reference).
-Do also [move the mailer template](#mailer-template) as described.
 
 ___
 
@@ -507,8 +538,75 @@ ___
 
 # DEVELOPERS GUIDE
 
-## TODO
+## Workflow
+*What happens during the configuration, generation and build process?*
 
+* configuration: cob-pipeline-plugin<br/>
+    The pipeline configuration affects first of all only the [cob-pipeline-plugin](https://github.com/ipa320/cob-pipeline-plugin).
+    When the *Generate pipeline* gets pressed, the configurations will be stored in the user's `config.xml` file.
+    Additionally the `pipeline_config.yaml` will be created/updated with all the pipeline specific configuration.
+    Furthermore its changes will be commited in the `jenkins_config` repository and pushed.
+    Finally the plugin calls the [`generate_buildpipeline.py`](scripts/generate_buildpipeline.py) in the `jenkins_setup` repository with the necessary parameters.
+
+* generation: `jenkins_setup`<br/>
+    * [`generate_buildpipeline.py`](scripts/generate_buildpipeline.py)<br/>
+        The generation script creates a connection to your Jenkins master and parses the `pipeline_config.yaml`.
+        Then it checks which job types are configured for this pipeline and creates each necessary job via the [`jenkins_job_creator.py`](src/jenkins_setup/jenkins_job_creator.py) module.
+    * [`jenkins_job_creator.py`](src/jenkins_setup/jenkins_job_creator.py)<br/>
+        The module includes the *JenkinsJob* base class and a child class for each job type.
+        During the creation process the job specific class attributes are set.
+        They all are strings with xml syntax which will replace the placeholders in the [`job_config.xml` template](src/jenkins_setup/templates/job_config.xml) the define the jobs behaviour.
+        Finally the generated `config.xml` will be sent to your Jenkins master and create the corresponding job.
+
+* build:<br/>
+    After a build or test job was triggered, the *Execute shell* of this job sets up the build environment.
+    Therefore the configured chroot tarball will be downloaded and opened.
+    After setting up some environment variables and preparing the environment, the [build/test scripts](scripts) is started.
+    Depending on the accomplishment of the script, the status of the build is set and in the case of an unstable or failed execution a email will be triggered.
+
+## Development Use-Cases
+*What is to do / Where do I have to change something if I want to...*
+
+* *...add a configuration option to the plugin?*<br/>
+    Everything related to the plugin has to be done in the [cob-pipeline-plugin](https://github.com/ipa320/cob-pipeline-plugin).
+    [Here](https://github.com/ipa320/cob-pipeline-plugin#enhance-this-plugin) you find a short description how to set up a development environment.<br/>
+    Below the repository folder `cob-pipeline-plugin/src/main` you find two folders:
+    * [`java/de/fraunhofer/ipa/`](https://github.com/ipa320/cob-pipeline-plugin/tree/master/src/main/java/de/fraunhofer/ipa)
+        Here you find all the Java classes of the plugin.
+        * [`CobPipelineProperty.java`](https://github.com/ipa320/cob-pipeline-plugin/blob/master/src/main/java/de/fraunhofer/ipa/CobPipelineProperty.java)<br/>
+            This class extends Jenkins `UserProperty` class.
+        * [`Repository.java`](https://github.com/ipa320/cob-pipeline-plugin/blob/master/src/main/java/de/fraunhofer/ipa/Repository.java)<br/>
+            This class represents a repository with attributes like `url`, `version`, etc.
+            Its instances are used for the dependencies.
+        * [`RootRepository.java`](https://github.com/ipa320/cob-pipeline-plugin/blob/master/src/main/java/de/fraunhofer/ipa/RootRepository.java)<br/>
+            This class inherits from the `Repository.java` class and extends it to hold the information of a repository to be built and tested by the pipeline.
+            Those are attributes like the build environment, dependencies etc.
+    * [`resources/de/fraunhofer/ipa/`](https://github.com/ipa320/cob-pipeline-plugin/tree/master/src/main/resources/de/fraunhofer/ipa)
+        Includes for each class the corresponding `config.jelly` file which defines the appearence of the class in the web interface.
+
+    To implement your changes, add the functionality to the right class and add the *checkbox*, *textfield* or another [tag](https://jenkins-ci.org/maven-site/jenkins-core/jelly-taglib-ref.html) to the corresponding `config.jelly`.
+
+* *...change a jobs behaviour (change the generation process)?*<br/>
+    If you for example want to support an additional plugin you have to do multiple changes:
+    * First of all set up a job manually and configure it as wanted.
+    Then check its `config.xml` file.
+    You can do this by adding config.xml to the end of the jobs URL.
+    Search the part where the plugin is configured and copy it into the [`job_config_params.yaml`](src/jenkins_setup/templates/job_config_params.yaml).
+    Follow the given syntax.
+    Replace all parts which should be set during the generation process with an unambiguous placeholder.
+    The placeholder has to start with a '@'-sign and surrounded by brackets like @(PLACEHOLDER).
+    * Then add a placeholder for the whole configuration to the right place of the [`job_config.xml`](src/jenkins_setup/templates/job_config.xml).
+    * Finally you have to make sure that the plugins configuration will be correctly generated and written to the jobs `config.xml`.
+    Therefore implement a method in the *JenkinsJob* class in the [`jenkins_job_creator.py`](src/jenkins_setup/jenkins_job_creator.py) which loads the configuration template from the [`job_config_params.yaml`](src/jenkins_setup/templates/job_config_params.yaml) and sets the necessary parameters by replacing the placeholder(s).
+    To get the template you can use the `self.job_config_params` attribute.<br/>
+    Finally you have to add a new parameter in the `_set_common_params()` method which has the same name as the placeholder in the [`job_config.xml`](src/jenkins_setup/templates/job_config.xml).
+    If you want to make the configuration job type dependent, assign only an empty string or the common configuration here and change the parameter from the specific job class.
+
+* *...change the build/test process?*<br/>
+    There are different ways to change the execution process depending when in the process you want to change something.
+    * If you want to change the behaviour before the `chroot` is entered or after it is left, you have to implement it in [execute_shell.yaml](src/jenkins_setup/templates/execute_shell.yaml) which includes for each job the *Execute shell* code.
+    * If you want to change the behaviour right after the `chroot` is entered, you can do this in the [pbuilder_env.sh script](scripts/pbuilder_env.sh).
+    * If you want to change the actual build or test process, change the right script of the [script folder](scripts/).
 
 ___
 
