@@ -304,6 +304,13 @@ sudo reboot now
 ```
 
 
+### [Configure the cob-pipeline plugin](README.md#configure-the-cob-pipeline-plugin)
+How to configure the cob-pipeline plugin is described [here](README.md#configure-the-cob-pipeline-plugin).
+You can follow this example.
+Only **if you use the [Github Authentication Plugin](#security-realm) for authentication, enter the Jenkins Admin API token instead of its password.**
+To get the API token go to the [admins user configuration](http://localhost:8080/me/configure).
+It can be found in the section **API Token**. Press *Show API Token...*.
+
 
 ### Jenkins plugin installation
 ####Install required Jenkins plugins
@@ -370,31 +377,14 @@ Name it 'current\_user' and select **List View**. **Add Job Filter** in the *Job
 
 Go to [http://localhost:8080/configure](http://localhost:8080/configure) and select 'current\_user' as **Default view**.
 
+
 #### Configure mailer
 Copy the jelly template for the email generation:
 
     sudo mkdir /var/lib/jenkins/email-templates
     sudo cp ~/jenkins-config/jenkins_setup/templates/email-templates/html-with-health-builds-tests.jelly /var/lib/jenkins/email-templates/
     sudo chown -R jenkins:jenkins /var/lib/jenkins/email-templates
-___
 
-
-####[Configure the default view](README.md#configure-default-view)
-
-####[Configure the cob-pipeline plugin](README.md#configure-the-cob-pipeline-plugin)
-How to configure the cob-pipeline plugin is described [here](README.md#configure-the-cob-pipeline-plugin).
-You can follow this example.
-Only **if you use the [Github Authentication Plugin](#security-realm) for authentication, enter the Jenkins Admin API token instead of its password.**
-To get the API token go to the [admins user configuration](http://localhost:8080/me/configure).
-It can be found in the section **API Token**. Press *Show API Token...*.
-
-
-#####Mailer
-######Default Subject
-For example: ```$BUILD_STATUS: $PROJECT_NAME - Build # $BUILD_NUMBER!```
-A complete list of tokens can be found at the help of the last entry
-(Content Token Reference).
-Do also [move the mailer template](#mailer-template) as described.
 
 ___
 
