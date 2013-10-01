@@ -5,8 +5,7 @@ This repository contains the code (config, src and script files) to set up and r
 This guide is designed for Cob-Pipeline developers, those who want to setup a efficient test framework and those who just want to know more about it.
 **If you want to set up the Cob-Pipeline quickly on one computer and only use it, the [minimal Jenkins Guide](README.md) is what you are looking for.**
 Below you will find a detailed description of the purposes of the Cob-Pipeline and the setup for **one master** and **multiple slave** nodes.
-Nevertheless read first the short description of the setup process in the [minimal Jenkins Guide](README.md).
-Further information are given below.
+Nevertheless, reading the short description of the setup process in the [minimal Jenkins Guide](README.md) first may help to understand the whole system better.
 
 ###Version
 The plugin and this manual are designed and tested for Jenkins CI v1.514.
@@ -24,6 +23,7 @@ The plugin and this manual are designed and tested for Jenkins CI v1.514.
     * [Install the cob-pipeline plugin](#install-the-cob-pipeline-plugin)
     * [Install `jenkins_setup` & `jenkins_config`](#install-jenkins_setup--jenkins_config)
     * [Jenkins Plugin Installation](#jenkins-plugin-installation)
+    * [Setup maintenance jobs and default view](#setup-maintenance-jobs-and-default-view)
 * [Tarball Server](#tarball-server)
 * [Slaves](#slaves)
     * [Configure the build slave/node](#configure-a-build-slavenode)
@@ -51,14 +51,14 @@ For the usage of the Cob-Pipeline three parts are necessary:
 
 ##Pipeline Structure
 
-The pipeline is made of multiple, differing Jenkins jobs which monitor the source code, build and test it in various envirements.
+The pipeline is made of multiple, differing Jenkins jobs which monitor the source code and build or test it in various envirements.
 An authorized Jenkins user can configure its individual pipeline in its Jenkins user configurations.
 The made configurations have to pass a validation and afterwards the automatic generation of the pipeline can be started.
 
 A fully configured pipeline has always the structure shown in the picture below.
 ![Build-Pipeline structure](pictures/build_pipeline_structure.png "Structure of a Cob Build-Pipeline")
 
-All build and test processes take place in [`chroot`s](help.ubuntu.com/community/BasicChroot) to garanty a clean and controlled environment.
+All build and test processes take place in [`chroot`s](http://help.ubuntu.com/community/BasicChroot) to garanty a clean and controlled environment.
 
 ###Job Types
 ####Starter Jobs
@@ -69,18 +69,18 @@ All build and test processes take place in [`chroot`s](help.ubuntu.com/community
 ####Build Jobs
 * **Priority-Build Job**<br/>
     The *Priority-Build Job* is the first real job in every pipeline.
-    First of all it gets the corresponding `chroot` tarball for the environment to test the repository for from the tarball server.
+    First of all it gets the corresponding `chroot` tarball depending on the environment to build the repository for.
     After entering the `chroot` the actual build process starts.
     * Clone the lastest version of the repository
     * Calculate its dependencies and install them
-    * `make` the  repository and its dependencies
+    * `make` the  repository and its dependencies.<br/>
     At the end the `chroot` gets closed, archived in the tarball and uploaded to the tarball server.
 
 * **Regular-Build Job**<br/>
-    This job does the same as the *Priority-Build Job* but for more environments.
+    This job does the same as the *Priority-Build Job* but for further environments.
 
 * **Downstream-Build Job**<br/>
-    In contrast to the two previous build jobs the *Downstream-Build Job* builds the all ROS-packages that depend directly on the configured repository.
+    In contrast to the two previous build jobs the *Downstream-Build Job* builds all the ROS-packages that depend directly on the configured repository.
 
 ####Test Jobs
 The following jobs run the tests given in the repository.
@@ -136,9 +136,12 @@ You can for example use the [apt-cacher-ng](http://www.unix-ag.uni-kl.de/~bloch/
 sudo apt-get install apt-cacher-ng
 ```
 
-To use the apt-cacher during the build process set up an apt-cacher and edit the [install_basics.sh script](./scripts/install_basics.sh) as descripted [here](./README.md#adapt-apt-cacher-address).
+To use the apt-cacher during the build process it has to be set as proxy in the `chroot`.
+Therefore you have to add the address as parameter in the update\_chroot\_tarballs job.
+See how you can do this [here](#configure-update_chroot_tarballs-job).
 
-> You can also use the apt-cacher of pbuilder. Then you should **NOT** do [this](README.md#dont-use-pbuilders-aptcache).
+> You can also use the apt-cacher of pbuilder.
+> Then you should **NOT** do [this](#dont-use-pbuilders-aptcache).
 
 
 ### Up or downgrade jenkins to version v1.514
@@ -220,10 +223,6 @@ For the 'Pipestarter' and 'Trigger' job it will also has 'Build'-permission.
 
 ### Basic configuration
 The basic configurations of your Jenkins server are described in the [short Jenkins Guide](README.md#basic-configuration)
-
-
-### Master node configuration
-TODO
 
 
 ### Install the *cob-pipeline* plugin
@@ -338,6 +337,45 @@ Go to [Jenkins plugin manager](http://localhost:8080/pluginManager/available) an
     Authentication of users is delegated to Github using the OAuth
     protocol.
 
+
+### Setup maintenance jobs and default view
+#### Configure update\_chroot\_tarballs job
+To set up the necessary chroot tarballs and keep them up-to-date an additional job is needed. Copy the prepared job `config.xml` into the job folder and make the jenkins user own it.
+
+    sudo mkdir /var/lib/jenkins/jobs/update_chroot_tarballs
+    sudo cp ~/jenkins-config/jenkins_setup/templates/update_chroot_tarballs/UPDATE_CHROOT_TARBALLS_config.xml /var/lib/jenkins/jobs/update_chroot_tarballs/config.xml
+    sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/update_chroot_tarballs
+
+Open `/var/lib/jenkins/jobs/update_chroot_tarballs/config.xml` and adjust it to your demands. Especially the `apt-cacher` address.
+
+Afterwards **Reload Configuration from Disk** under [http://localhost:8080/manage](http://localhost:8080/manage) and run the job to create the tarballs.
+
+#### Configure update\_pipelines job
+To update all pipelines (e.g. after a general configuration change) an additional job is needed. Copy the prepared job `config.xml` into the job folder and make the jenkins user own it.
+
+    sudo mkdir /var/lib/jenkins/jobs/update_pipelines
+    sudo cp ~/jenkins-config/jenkins_setup/templates/update_pipelines/UPDATE_PIPELINES_config.xml /var/lib/jenkins/jobs/update_pipelines/config.xml
+    sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/update_pipelines
+
+Afterwards **Reload Configuration from Disk** under [http://localhost:8080/manage](http://localhost:8080/manage) and run the job to create the tarballs. you will have to start this job manually and give it the admin user and password (if using github OAuth, the use the token from [http://localhost:8080/me/configure](http://localhost:8080/me/configure) when logged in as the admin user.
+
+#### Configure default view
+Login as `admin` and create a new view by pressing the '+'.
+
+![Create View](pictures/new_view.png "Create a new view in Jenkins")
+
+Name it 'current\_user' and select **List View**. **Add Job Filter** in the *Job Filter* section and select **User Permissions for Jobs**. Configure as shown in the picture and press OK.
+
+![Job Filter configuration](pictures/job_filter.png "Configuration example for View Job Filter")
+
+Go to [http://localhost:8080/configure](http://localhost:8080/configure) and select 'current\_user' as **Default view**.
+
+#### Configure mailer
+Copy the jelly template for the email generation:
+
+    sudo mkdir /var/lib/jenkins/email-templates
+    sudo cp ~/jenkins-config/jenkins_setup/templates/email-templates/html-with-health-builds-tests.jelly /var/lib/jenkins/email-templates/
+    sudo chown -R jenkins:jenkins /var/lib/jenkins/email-templates
 ___
 
 
