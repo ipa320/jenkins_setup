@@ -22,6 +22,7 @@ The plugin and this manual are designed and tested for Jenkins CI v1.514.
     * [Basic Configuration](#basic-configuration)
     * [Install the cob-pipeline plugin](#install-the-cob-pipeline-plugin)
     * [Install `jenkins_setup` & `jenkins_config`](#install-jenkins_setup--jenkins_config)
+    * [Configure the cob-pipeline plugin](#configure-the-cob-pipeline-plugin)
     * [Jenkins Plugin Installation](#jenkins-plugin-installation)
     * [Setup maintenance jobs and default view](#setup-maintenance-jobs-and-default-view)
 * [Tarball Server](#tarball-server)
@@ -564,9 +565,9 @@ ___
     Depending on the accomplishment of the script, the status of the build is set and in the case of an unstable or failed execution a email will be triggered.
 
 ## Development Use-Cases
-*What is to do/Where do I have to change if I want to..*
+*What is to do / Where do I have to change something if I want to...*
 
-* *..add a configuration option to the plugin?*<br/>
+* *...add a configuration option to the plugin?*<br/>
     Everything related to the plugin has to be done in the [cob-pipeline-plugin](https://github.com/ipa320/cob-pipeline-plugin).
     [Here](https://github.com/ipa320/cob-pipeline-plugin#enhance-this-plugin) you find a short description how to set up a development environment.<br/>
     Below the repository folder `cob-pipeline-plugin/src/main` you find two folders:
@@ -578,13 +579,14 @@ ___
             This class represents a repository with attributes like `url`, `version`, etc.
             Its instances are used for the dependencies.
         * [`RootRepository.java`](https://github.com/ipa320/cob-pipeline-plugin/blob/master/src/main/java/de/fraunhofer/ipa/RootRepository.java)<br/>
-            This class enherites from the `Repository.java` class and extends it to hold the information of a repository to be built and tested by the pipeline like build environment etc.
+            This class inherits from the `Repository.java` class and extends it to hold the information of a repository to be built and tested by the pipeline.
+            Those are attributes like the build environment, dependencies etc.
     * [`resources/de/fraunhofer/ipa/`](https://github.com/ipa320/cob-pipeline-plugin/tree/master/src/main/resources/de/fraunhofer/ipa)
-        Includes for each class the corresponding `config.jelly` file which defines the appearence of the class in your browser.
+        Includes for each class the corresponding `config.jelly` file which defines the appearence of the class in the web interface.
 
-    To implement your changes, add the functionality to the right class and add the checkbox, textfield or whatever to the corresponding `config.jelly`.
+    To implement your changes, add the functionality to the right class and add the *checkbox*, *textfield* or another [tag](https://jenkins-ci.org/maven-site/jenkins-core/jelly-taglib-ref.html) to the corresponding `config.jelly`.
 
-* *..change a jobs behaviour (change the generation process)*<br/>
+* *...change a jobs behaviour (change the generation process)?*<br/>
     If you for example want to support an additional plugin you have to do multiple changes:
     * First of all set up a job manually and configure it as wanted.
     Then check its `config.xml` file.
@@ -600,11 +602,11 @@ ___
     Finally you have to add a new parameter in the `_set_common_params()` method which has the same name as the placeholder in the [`job_config.xml`](src/jenkins_setup/templates/job_config.xml).
     If you want to make the configuration job type dependent, assign only an empty string or the common configuration here and change the parameter from the specific job class.
 
-* *..change the job behaviour during the build?*<br/>
+* *...change the build/test process?*<br/>
     There are different ways to change the execution process depending when in the process you want to change something.
     * If you want to change the behaviour before the `chroot` is entered or after it is left, you have to implement it in [execute_shell.yaml](src/jenkins_setup/templates/execute_shell.yaml) which includes for each job the *Execute shell* code.
-    * If you want to change the behaviour right after the `chroot` is entered, you can do this [here](scripts/pbuilder_env.sh).
-    * If you want to change actual build or test process, change the right script in the [script folder](scripts/).
+    * If you want to change the behaviour right after the `chroot` is entered, you can do this in the [pbuilder_env.sh script](scripts/pbuilder_env.sh).
+    * If you want to change the actual build or test process, change the right script of the [script folder](scripts/).
 
 ___
 
