@@ -15,15 +15,20 @@ export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
 
 
 
-echo "Set up git and ssh"
-cp $WORKSPACE/.gitconfig ~/.gitconfig
-cp -a $WORKSPACE/.ssh /root
-ls -la /root/
+echo "Set up ssh"
+export HOME="/root"
+cp -a $WORKSPACE/.ssh /root &&
+ls -la /root/ &&
 chown -R root.root /root/.ssh
+if [ $? != 0 ]; then
+    echo "Could not successfully set up ssh"
+    exit 1
+fi
+
+export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 case $JOBTYPE in
-    graphic_test|prio_graphics_test)
+    regular_graphics_test|prio_graphics_test)
         echo "Set up graphic"
-        export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 
         $DIR/checkDisplayNull.bash &&
         $DIR/setupSources.bash &&
@@ -49,7 +54,7 @@ echo " Listing environment variables for debugging purposes "
 echo "======================================================"
 env
 
-echo 
+echo
 echo
 echo "============================================================"
 echo "==== Begin" $SCRIPT "script.    Ignore the output above ===="

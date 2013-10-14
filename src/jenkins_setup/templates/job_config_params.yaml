@@ -81,8 +81,10 @@
   'param': '<hudson.model.StringParameterDefinition> <name>@(PARAM)</name> <description> </description> <defaultValue> </defaultValue>  </hudson.model.StringParameterDefinition>'
 
 'authorizationmatrix':
-    'read': '<hudson.security.AuthorizationMatrixProperty> <permission>hudson.model.Item.Read:@(USERNAME)</permission> </hudson.security.AuthorizationMatrixProperty>'
-    'build': '<hudson.security.AuthorizationMatrixProperty> <permission>hudson.model.Item.Build:@(USERNAME)</permission> </hudson.security.AuthorizationMatrixProperty>'
+    'basic': '<hudson.security.AuthorizationMatrixProperty> @(PERMISSION) </hudson.security.AuthorizationMatrixProperty>'
+    'read': '<permission>hudson.model.Item.Read:@(USERNAME)</permission>'
+    'build': '<permission>hudson.model.Item.Build:@(USERNAME)</permission>'
+    'workspace': '<permission>hudson.model.Item.Workspace:@(USERNAME)</permission>'
 
 'parameterizedtrigger':
   'basic':
@@ -111,8 +113,50 @@
 
 'postbuildtrigger': '<hudson.tasks.BuildTrigger> <childProjects>@(CHILD_PROJECTS)</childProjects> <threshold> <name>@(THRESHOLD)</name> </threshold> </hudson.tasks.BuildTrigger>'
 
+'warningspublisher': '<hudson.plugins.warnings.WarningsPublisher plugin="warnings@4.35">
+      <healthy></healthy>
+      <unHealthy></unHealthy>
+      <thresholdLimit>low</thresholdLimit>
+      <pluginName>[WARNINGS] </pluginName>
+      <defaultEncoding></defaultEncoding>
+      <canRunOnFailed>false</canRunOnFailed>
+      <useStableBuildAsReference>false</useStableBuildAsReference>
+      <useDeltaValues>false</useDeltaValues>
+      <thresholds plugin="analysis-core@1.54">
+        <unstableTotalAll></unstableTotalAll>
+        <unstableTotalHigh></unstableTotalHigh>
+        <unstableTotalNormal></unstableTotalNormal>
+        <unstableTotalLow></unstableTotalLow>
+        <failedTotalAll></failedTotalAll>
+        <failedTotalHigh></failedTotalHigh>
+        <failedTotalNormal></failedTotalNormal>
+        <failedTotalLow></failedTotalLow>
+      </thresholds>
+      <shouldDetectModules>false</shouldDetectModules>
+      <dontComputeNew>true</dontComputeNew>
+      <doNotResolveRelativePaths>true</doNotResolveRelativePaths>
+      <parserConfigurations/>
+      <consoleParsers>
+        <hudson.plugins.warnings.ConsoleParser>
+          <parserName>GNU Compiler 4 (gcc)</parserName>
+        </hudson.plugins.warnings.ConsoleParser>
+        <hudson.plugins.warnings.ConsoleParser>
+          <parserName>GNU Make + GNU Compiler (gcc)</parserName>
+        </hudson.plugins.warnings.ConsoleParser>
+      </consoleParsers>
+    </hudson.plugins.warnings.WarningsPublisher>'
+
 'postbuildtask': "<hudson.plugins.postbuildtask.PostbuildTask> <tasks> <hudson.plugins.postbuildtask.TaskProperties> <logTexts> <hudson.plugins.postbuildtask.LogProperties> <logText>Building remotely on</logText> <operator>AND</operator> </hudson.plugins.postbuildtask.LogProperties> </logTexts> <EscalateStatus>false</EscalateStatus> <RunIfJobSuccessful>false</RunIfJobSuccessful> <script>#!/bin/bash\nif [ -d $WORKSPACE/../aux ]; then\nsudo rm -rf $WORKSPACE/../aux\nfi</script> </hudson.plugins.postbuildtask.TaskProperties> </tasks> </hudson.plugins.postbuildtask.PostbuildTask>"
 
 'pipelinetrigger': '<au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger> <downstreamProjectNames>@(PIPELINETRIGGER_PROJECT)</downstreamProjectNames> </au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger>'
 
 'execute_shell': '<builders> <hudson.tasks.Shell> <command>@(COMMAND)</command> </hudson.tasks.Shell> </builders>'
+
+'build_timeout': '<hudson.plugins.build__timeout.BuildTimeoutWrapper plugin="build-timeout@1.11">
+      <timeoutMinutes>360</timeoutMinutes>
+      <failBuild>true</failBuild>
+      <writingDescription>false</writingDescription>
+      <timeoutPercentage>0</timeoutPercentage>
+      <timeoutType>absolute</timeoutType>
+      <timeoutMinutesElasticDefault>3</timeoutMinutesElasticDefault>
+    </hudson.plugins.build__timeout.BuildTimeoutWrapper>'

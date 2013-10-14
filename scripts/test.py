@@ -95,7 +95,8 @@ def main():
         #else:
             #common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env)
 
-        os.mkdir(repo_buildspace)
+        if not os.path.isdir(repo_buildspace):
+            os.mkdir(repo_buildspace)
         os.chdir(repo_buildspace)
 
         # test repositories
@@ -122,7 +123,7 @@ def main():
             # run tests
             print "Test repository list"
             try:
-                common.call("%s make run_tests" % "/opt/VirtualGL/bin/vglrun" if graphic_test else "", ros_env)  # TODO check how to test a list of repos
+                common.call("%smake run_tests" % ("/opt/VirtualGL/bin/vglrun " if graphic_test else ""), ros_env)  # TODO check how to test a list of repos
             except common.BuildException as ex:
                 print ex.msg
                 test_error_msg = ex.msg
@@ -152,9 +153,9 @@ def main():
             if build_repo_only:
                 build_list = build_repo
             common.call("%srosmake -rV --profile %s--test-only --output=%s %s" %
-                        ("/opt/VirtualGL/bin/vglrun " if graphic_test else "", 
+                        ("/opt/VirtualGL/bin/vglrun " if graphic_test else "",
                          "--pjobs=8 " if not graphic_test else "",
-                         dry_build_logs, build_list ), ros_env_repo)
+                         dry_build_logs, build_list), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
 

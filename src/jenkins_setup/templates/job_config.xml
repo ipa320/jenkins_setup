@@ -23,7 +23,7 @@
   <disabled>false</disabled>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   @(TRIGGER)
-  <concurrentBuild>true</concurrentBuild>
+  <concurrentBuild>@(CONCURRENT_BUILD)</concurrentBuild>
   @(SHELL)
   <publishers>
     @(POSTBUILD_TASK)
@@ -34,6 +34,9 @@
     @(PARAMETERIZED_TRIGGER)
     @(JUNIT_TESTRESULTS)
     @(MAILER)
+    @(WARNINGS_PUBLISHER)
   </publishers>
-  <buildWrappers/>
+  <buildWrappers>
+    @(BUILD_TIMEOUT)
+  </buildWrappers>
 </@(PROJECT)>

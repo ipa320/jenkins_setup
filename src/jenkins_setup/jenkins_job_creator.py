@@ -5,6 +5,7 @@ import socket
 import pkg_resources
 import yaml
 import re
+from jenkins import JenkinsException
 
 
 class JenkinsJob(object):
@@ -29,6 +30,7 @@ class JenkinsJob(object):
         self.job_type = None
         self.poll = None
         self.repo_list = None
+        self.tarball_location = ""
 
     def schedule_job(self):
         """
@@ -40,14 +42,14 @@ class JenkinsJob(object):
             try:
                 self.jenkins_instance.reconfig_job(self.job_name, self.job_config)
                 return "Reconfigured job %s" % self.job_name
-            except Exception as ex:
+            except JenkinsException as ex:
                 print ex
                 return 'Reconfiguration of %s failed: %s' % (self.job_name, ex)
         else:
             try:
                 self.jenkins_instance.create_job(self.job_name, self.job_config)
                 return "Created job %s" % self.job_name
-            except Exception as ex:
+            except JenkinsException as ex:
                 print ex
                 return 'Creation of %s failed: %s' % (self.job_name, ex)
 
@@ -110,7 +112,10 @@ class JenkinsJob(object):
         self.params['JUNIT_TESTRESULTS'] = ''
         self.params['MAILER'] = ''
         self.params['POSTBUILD_TASK'] = ''
-        self._set_authorization_matrix_param('build')
+        self.params['WARNINGS_PUBLISHER'] = ''
+        self._set_authorization_matrix_param(['read', 'workspace'])
+        self.params['CONCURRENT_BUILD'] = 'true'
+        self._set_build_timeout()
 
     ###########################################################################
     # helper methods - parameter generation
@@ -124,7 +129,7 @@ class JenkinsJob(object):
             if "@(%s)" % key not in self.job_config:
                 raise KeyError("Parameter %s could not be replaced, because it is not existent" % key)
             self.job_config = self.job_config.replace("@(%s)" % key, value)
-        not_replaced_keys = re.findall('@\(([A-Z0-9_]+)\)', self.job_config)
+        not_replaced_keys = re.findall(r'@\(([A-Z0-9_]+)\)', self.job_config)
         if not_replaced_keys != []:
             raise KeyError("The keys %s were not replaced, because the parameters where missing" % (str(not_replaced_keys)))
 
@@ -166,13 +171,13 @@ class JenkinsJob(object):
         :returns: matrix config, ``str``
         """
 
-        filter = '%s' % ' || '.join(['(%s)' % ' &amp;&amp; '.join(['%s=="%s"' % (key, value)
+        filter_ = '%s' % ' || '.join(['(%s)' % ' &amp;&amp; '.join(['%s=="%s"' % (key, value)
                                                                    for key, value in i.iteritems()])
                                      for i in config])
         if negation:
-            filter = '!(%s)' % filter
+            filter_ = '!(%s)' % filter_
 
-        return filter
+        return filter_
 
     def _generate_matrix_axis(self, axis_name, value_list):
         """
@@ -193,7 +198,7 @@ class JenkinsJob(object):
 
         return axis
 
-    def _set_matrix_param(self, name_value_dict_list, labels=None, filter=None):
+    def _set_matrix_param(self, name_value_dict_list, labels=None, filter_=None):
         """
         Returns matrix config for given dictionary containing names and values
 
@@ -201,8 +206,8 @@ class JenkinsJob(object):
         @type  name_value_dict_list: list
         @param labels: node labels to run builds on
         @type  labels: list
-        @param filter: combination filter
-        @type  filter: str
+        @param filter_: combination filter
+        @type  filter_: str
         """
 
         axes = ''
@@ -221,9 +226,9 @@ class JenkinsJob(object):
         else:
             matrix = matrix.replace('@(NODE)', '<string>%s</string>' % self.job_type)
         #same in short: matrix = matrix.replace('@(NODE)', '<string>%s</string>' % ('</string> <string>'.join(label for label in labels) if labels else self.job_type))
-        if filter:
-            matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', filter)
-        elif filter == '':
+        if filter_:
+            matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', filter_)
+        elif filter_ == '':
             matrix += ' ' + self.job_config_params['matrix']['filter'].replace('@(FILTER)', 'repository=="NO_ENTRY"')
 
         self.params['MATRIX'] = matrix
@@ -297,7 +302,7 @@ class JenkinsJob(object):
         else:
             jointrigger = jointrigger.replace('@(JOIN_UNSTABLE)', 'false')
 
-        if parameterized_trigger:
+        if parameterized_trigger is not None:
             if parameterized_trigger == '':
                 raise Exception("Parameterized trigger configuration string is empty")
             jointrigger = jointrigger.replace('@(PARAMETERIZED_TRIGGER)', parameterized_trigger)
@@ -318,7 +323,7 @@ class JenkinsJob(object):
             return ''
         elif threshold_name == '':
             raise Exception('No treshold for postbuildtrigger given')
-        elif threshold_name not in ['SUCCESS', 'UNSTABLE', 'FAILURE']:  # TODO check tresholds
+        elif threshold_name not in ['SUCCESS', 'UNSTABLE', 'FAILURE']:
             raise Exception("Threshold argument invalid")
 
         postbuildtrigger = self.job_config_params['postbuildtrigger'].replace('@(CHILD_PROJECTS)',
@@ -430,18 +435,22 @@ class JenkinsJob(object):
 
         self.params['MAILER'] = mailer
 
-    def _set_authorization_matrix_param(self, permission):
+    def _set_authorization_matrix_param(self, permission_list):
         """
         Sets config for authorization matrix plugin
 
-        @param permission: [read|build]
-        @type  permission: string
+        @param permission_list: [read|build|workspace]
+        @type  permission_list: list
         """
 
-        authorization = self.job_config_params['authorizationmatrix'][permission]
-        authorization = authorization.replace('@(USERNAME)', self.pipe_inst.user_name)
+        authorizations = self.job_config_params['authorizationmatrix']['basic']
 
-        self.params['AUTHORIZATIONMATRIX'] = authorization
+        authorization = ''
+        for permission in permission_list:
+            authorization += self.job_config_params['authorizationmatrix'][permission]
+            authorization = authorization.replace('@(USERNAME)', self.pipe_inst.user_name)
+
+        self.params['AUTHORIZATIONMATRIX'] = authorizations.replace('@(PERMISSION)', authorization)
 
     def _set_junit_testresults_param(self):
         """
@@ -540,6 +549,12 @@ class JenkinsJob(object):
 
         return subset_filter_input
 
+    def _set_build_timeout(self):
+        """
+        Set the configuration for the build timeout plugin
+        """
+        self.params['BUILD_TIMEOUT'] = self.job_config_params['build_timeout']
+
 
 class PipeStarterGeneralJob(JenkinsJob):
     """
@@ -574,6 +589,9 @@ class PipeStarterGeneralJob(JenkinsJob):
                                                                        subset_filter=self._generate_matrix_filter(self._get_prio_subset_filter()),
                                                                        predefined_param='POLL=manually triggered' + '\nREPOSITORY=%s' % repo + '\nREPOSITORY_FILTER=repository=="%s"' % repo))
         self._set_parameterizedtrigger_param(prio_triggers)
+
+        # authorization matrix
+        self._set_authorization_matrix_param(['read', 'build', 'workspace'])
 
 
 class PipeStarterJob(PipeStarterGeneralJob):
@@ -642,12 +660,13 @@ class BuildJob(JenkinsJob):
 
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
+        self.params['WARNINGS_PUBLISHER'] = self.job_config_params['warningspublisher']
 
         # set matrix
         if not matrix_filter:
             matrix_filter = self._generate_matrix_filter(self._get_prio_subset_filter())
         matrix_entries_dict_list = self._get_matrix_entries(matrix_job_type)
-        self._set_matrix_param(matrix_entries_dict_list, filter=matrix_filter)
+        self._set_matrix_param(matrix_entries_dict_list, filter_=matrix_filter)
 
 
 class PriorityBuildJob(BuildJob):
@@ -677,6 +696,9 @@ class PriorityBuildJob(BuildJob):
         """
 
         super(PriorityBuildJob, self)._set_job_type_params()
+
+        # no concurrent build
+        #self.params['CONCURRENT_BUILD'] = 'false'
 
         # email
         self._set_mailer_param('Priority Build')
@@ -842,7 +864,7 @@ class TestJob(JenkinsJob):
         if not matrix_filter:
             matrix_filter = self._generate_matrix_filter(self._get_test_subset_filter())
         matrix_entries_dict_list = self._get_matrix_entries(matrix_job_type)
-        self._set_matrix_param(matrix_entries_dict_list, filter=matrix_filter)
+        self._set_matrix_param(matrix_entries_dict_list, filter_=matrix_filter)
 
         # set pipeline trigger
         self._set_pipelinetrigger_param(['release'])
@@ -987,6 +1009,9 @@ class PriorityGraphicsTestJob(TestJob):
         shell_script = self._get_shell_script('graphics_test')
         self._set_shell_param(shell_script)
 
+        # set pipeline trigger
+        self._set_pipelinetrigger_param(['release'])
+
 
 class RegularGraphicsTestJob(TestJob):
     """
@@ -1084,6 +1109,9 @@ class HardwareBuildTrigger(JenkinsJob):
         parameterized_triggers.append(self._get_single_parameterizedtrigger(['hardware_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
         self._set_parameterizedtrigger_param(parameterized_triggers)
 
+        # authorization matrix
+        self._set_authorization_matrix_param(['read', 'build', 'workspace'])
+
 
 class HardwareBuildJob(JenkinsJob):
     """
@@ -1114,7 +1142,7 @@ class HardwareBuildJob(JenkinsJob):
         # set matrix
         matrix_filter = self._generate_matrix_filter(self._get_hardware_subset_filter())
         (matrix_entries_dict_list, robots) = self._get_hardware_matrix_entries()
-        self._set_matrix_param(matrix_entries_dict_list, labels=robots, filter=matrix_filter)
+        self._set_matrix_param(matrix_entries_dict_list, labels=robots, filter_=matrix_filter)
 
         # email
         self._set_mailer_param('Hardware Build')
@@ -1127,7 +1155,7 @@ class HardwareBuildJob(JenkinsJob):
         self._set_pipelinetrigger_param(['hardware_test_trigger'])
 
         # authorization matrix
-        self._set_authorization_matrix_param('read')
+        self._set_authorization_matrix_param(['read', 'workspace'])
 
     def _get_hardware_matrix_entries(self):
         """
@@ -1168,6 +1196,7 @@ class HardwareBuildJob(JenkinsJob):
 
 class HardwareTestTrigger(JenkinsJob):
     """
+    Class for hardware test trigger jobs
     """
     def __init__(self, jenkins_instance, pipeline_config):
         super(HardwareTestTrigger, self).__init__(jenkins_instance, pipeline_config)
@@ -1187,6 +1216,9 @@ class HardwareTestTrigger(JenkinsJob):
         parameterized_triggers = []
         parameterized_triggers.append(self._get_single_parameterizedtrigger(['hardware_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
         self._set_parameterizedtrigger_param(parameterized_triggers)
+
+        # authorization matrix
+        self._set_authorization_matrix_param(['read', 'build', 'workspace'])
 
 
 class HardwareTestJob(HardwareBuildJob):
@@ -1229,7 +1261,7 @@ class HardwareTestJob(HardwareBuildJob):
         self._set_pipelinetrigger_param(['release'])
 
         # authorization matrix
-        self._set_authorization_matrix_param('read')
+        self._set_authorization_matrix_param(['read', 'workspace'])
 
 
 class ReleaseJob(JenkinsJob):

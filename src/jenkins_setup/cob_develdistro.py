@@ -19,6 +19,8 @@ class CobDevelDistro(develdistro.DevelDistro):
         :param url: optional url where to get the distro file from, ``str``
         """
 
+        # TODO call super ???
+
         self.repositories = {}
 
         if url:
@@ -26,7 +28,7 @@ class CobDevelDistro(develdistro.DevelDistro):
             self.release_file = urllib2.urlopen(self.url)
             self.repos_dict = yaml.load(self.release_file.read())['repositories']
         else:
-            self.url = 'https://raw.github.com/fmw-jk/jenkins_setup/master/releases/cob_%s-devel.yaml' % name  # TODO change to ipa320
+            self.url = 'https://raw.github.com/ipa320/jenkins_setup/master/releases/cob_%s-devel.yaml' % name
             self.release_file = urllib2.urlopen(self.url)
             self.repos_dict = yaml.load(self.release_file.read())['repositories']
 
