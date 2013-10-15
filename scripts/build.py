@@ -49,11 +49,11 @@ def main():
 
     # set up directories variables
     tmpdir = os.path.join('/tmp', 'test_repositories')
-    repo_sourcespace = os.path.join(tmpdir, 'src_repository')               # location to store repositories in
-    repo_sourcespace_wet = os.path.join(tmpdir, 'src_repository', 'wet')    # wet (catkin) repositories
-    repo_sourcespace_dry = os.path.join(tmpdir, 'src_repository', 'dry')    # dry (rosbuild) repositories
-    repo_buildspace = os.path.join(tmpdir, 'build_repository')              # location for build output
-    dry_build_logs = os.path.join(repo_sourcespace_dry, 'build_logs')       # location for build logs
+    repo_sourcespace = os.path.join(tmpdir, 'src_repository')                      # location to store repositories in
+    repo_sourcespace_wet = os.path.join(tmpdir, 'src_repository', 'wet', 'src')    # wet (catkin) repositories
+    repo_sourcespace_dry = os.path.join(tmpdir, 'src_repository', 'dry')           # dry (rosbuild) repositories
+    #repo_buildspace = os.path.join(tmpdir, 'build_repository')                     # location for build output
+    dry_build_logs = os.path.join(repo_sourcespace_dry, 'build_logs')              # location for build logs
 
     # download build_repo from source
     print "Creating rosinstall file for repository %s" % build_repo
@@ -105,9 +105,11 @@ def main():
     # check if build_repo is wet or dry and get all corresponding deps
     build_repo_type = ''
     if build_repo in catkin_packages:
+        print "repo %s is wet" % build_repo
         build_repo_type = 'wet'
         repo_build_dependencies = common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
     elif build_repo in stacks:
+        print "repo %s is dry" % build_repo
         build_repo_type = 'dry'
         repo_build_dependencies = common.get_nonlocal_dependencies({}, stacks, {})
     else:
@@ -213,22 +215,14 @@ def main():
         else:
             common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env)
 
-        os.mkdir(repo_buildspace)
-        os.chdir(repo_buildspace)
+        #os.mkdir(repo_buildspace)
+        os.chdir(repo_sourcespace_wet + "/..")
         try:
-            common.call("cmake %s" % repo_sourcespace_wet + '/', ros_env)
+            common.call("catkin_make", ros_env)
         except common.BuildException as ex:
             print ex.msg
-            raise common.BuildException("Failed to cmake wet repositories")
+            raise common.BuildException("Failed to catkin_make wet repositories")
         #ros_env_repo = common.get_ros_env(os.path.join(repo_buildspace, 'devel/setup.bash'))
-
-        # build repositories
-        print "Build wet repository list"
-        try:
-            common.call("make", ros_env)
-        except common.BuildException as ex:
-            print ex.msg
-            raise common.BuildException("Failed to make wet packages")
 
     ### rosbuild repositories
     print datetime.datetime.now()
