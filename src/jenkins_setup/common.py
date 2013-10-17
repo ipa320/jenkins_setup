@@ -131,9 +131,8 @@ def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):
 
     # copy cppcheck results
     cppcheck = buildspace + "/cppcheck.xml"
-    if os.path.isfile(cppckeck):
+    if os.path.isfile(cppcheck):
         call("cp " + cppcheck +  " " + workspace + "/test_results/")
-        count += 1
 
     # copy all rostest test reports nested in their packagename's directory    
     count = 0
