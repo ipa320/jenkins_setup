@@ -128,11 +128,20 @@ def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):
         pass
     os.chdir(os.path.join(workspace, 'test_results'))
     print "Copy all test results"
+
+    # copy cppcheck results
+    cppcheck = buildspace + "/cppcheck.xml"
+    if os.path.isfile(cppckeck)
+        call("cp " + cppcheck +  " " + workspace + "/test_results/")
+        count += 1
+
+    # copy all rostest test reports nested in their packagename's directory    
     count = 0
     for root, dirnames, filenames in os.walk(os.path.join(buildspace, 'test_results')):
         for filename in fnmatch.filter(filenames, '*.xml'):
             call("cp %s %s/test_results/" % (os.path.join(root, filename), workspace))
-            count += 1
+
+	# create dummy test if no rostest result exists
     if count == 0:
         print "No test results, so I'll create a dummy test result xml file, with errors %s" % errors
         with open(os.path.join(workspace, 'test_results/dummy.xml'), 'w') as f:

@@ -220,6 +220,9 @@ def main():
     # cppcheck
     cppcheck.run(repo_sourcespace, os.environ['ROS_TEST_RESULTS_DIR'])
     # Coverage
+    
+    # copy test results
+    common.copy_test_results(workspace, os.environ['ROS_TEST_RESULTS_DIR'])
 
     #############
     ### build ###
