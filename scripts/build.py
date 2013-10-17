@@ -10,6 +10,12 @@ from jenkins_setup import common, rosdep, cob_pipe
 
 
 def main():
+    #########################
+    ### parsing arguments ###
+    #########################
+    time_parsing = datetime.datetime.now()
+    print "=====> entering argument parsing step at", time_parsing
+
     # parse parameter values
     parser = optparse.OptionParser()
     parser.add_option('-v', '--verbose', action='store_true', default=False)
@@ -38,7 +44,6 @@ def main():
 
     # (debug) output
     print "\n", 50 * 'X'
-    print datetime.datetime.now()
     print "\nTesting on ros distro:  %s" % ros_distro
     print "Testing repository: %s" % build_repo
     if build_repo != build_identifier:
@@ -55,7 +60,13 @@ def main():
     #repo_buildspace = os.path.join(tmpdir, 'build_repository')                     # location for build output
     dry_build_logs = os.path.join(repo_sourcespace_dry, 'build_logs')              # location for build logs
 
-    # download build_repo from source
+    ################
+    ### checkout ###
+    ################
+    time_checkout = datetime.datetime.now()
+    print "=====> entering checkout step at", time_checkout
+
+    # download build_repo from source #
     print "Creating rosinstall file for repository %s" % build_repo
     rosinstall = ""
     if build_identifier in pipe_repos:  # check if triggering identifier is really present in pipeline config
@@ -162,22 +173,6 @@ def main():
             repo_build_dependencies = common.get_nonlocal_dependencies(catkin_packages, stacks, {}, build_depends=True, test_depends=False)
         repo_build_dependencies = [dep for dep in repo_build_dependencies if dep not in fulfilled_deps]
 
-    rosdep_resolver = None
-    if ros_distro != 'electric':
-        # Create rosdep object
-        print "Create rosdep object"
-        try:
-            rosdep_resolver = rosdep.RosDepResolver(ros_distro)
-        except:  # when init fails the first time
-            from time import sleep
-            sleep(10)
-            rosdep_resolver = rosdep.RosDepResolver(ros_distro)
-
-    print datetime.datetime.now()
-    print "Install build dependencies: %s" % (', '.join(repo_build_dependencies))
-    common.apt_get_install_also_nonrosdep(repo_build_dependencies, ros_distro, rosdep_resolver)
-    print datetime.datetime.now()
-
     # separate installed repos in wet and dry
     print "Separate installed repositories in wet and dry"
     os.makedirs(repo_sourcespace_wet)
@@ -190,6 +185,44 @@ def main():
         if dir in stacks.keys():
             shutil.move(os.path.join(repo_sourcespace, dir), os.path.join(repo_sourcespace_dry, dir))
 
+    ############################
+    ### install dependencies ###
+    ############################
+    time_install = datetime.datetime.now()
+    print "=====> entering dependency installation step at", time_install
+
+    # Create rosdep object
+    rosdep_resolver = None
+    if ros_distro != 'electric':
+        print "Create rosdep object"
+        try:
+            rosdep_resolver = rosdep.RosDepResolver(ros_distro)
+        except:  # when init fails the first time
+            from time import sleep
+            sleep(10)
+            rosdep_resolver = rosdep.RosDepResolver(ros_distro)
+
+    print "Install build dependencies: %s" % (', '.join(repo_build_dependencies))
+    common.apt_get_install_also_nonrosdep(repo_build_dependencies, ros_distro, rosdep_resolver)
+
+    #######################
+    ### static analysis ###
+    #######################
+    time_analysis = datetime.datetime.now()
+    print "=====> entering static analysis step at", time_analysis
+
+    #TODO
+    # Cpplint
+    # Counting lines of code/comments
+    # CPP check
+    # Coverage
+
+    #############
+    ### build ###
+    #############
+    time_build = datetime.datetime.now()
+    print "=====> entering build step at", time_build
+
     # env
     print "Set up ros environment variables"
     ros_env = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
@@ -197,7 +230,6 @@ def main():
         common.call("env", ros_env)
 
     ### catkin repositories
-    print datetime.datetime.now()
     if catkin_packages != {}:
         # set up catkin workspace
         if ros_distro == 'fuerte':
@@ -225,7 +257,6 @@ def main():
         #ros_env_repo = common.get_ros_env(os.path.join(repo_buildspace, 'devel/setup.bash'))
 
     ### rosbuild repositories
-    print datetime.datetime.now()
     if build_repo_type == 'dry':
         ros_env_repo = common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
         ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_sourcespace, ros_package_path])
@@ -250,8 +281,15 @@ def main():
                 print ex.msg
                 raise common.BuildException("Failed to rosmake %s" % build_repo)
 
-        print datetime.datetime.now()
-
+    # the end (steps: parsing, checkout, install, analysis, build, finish)
+    time_finish = datetime.datetime.now()
+    print "=====> finished script at", time_finish
+    print "durations:"
+    print "parsing arguments in       ", (time_checkout - time_parsing)
+    print "checkout in                ", (time_install - time_checkout)
+    print "install dependencies in    ", (time_analysis - time_install)
+    print "static code analysis in    ", (time_build - time_analysis)
+    print "build in                   ", (time_finish - time_finish)
 
 if __name__ == "__main__":
     # global try
