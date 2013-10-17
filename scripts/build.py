@@ -5,9 +5,9 @@ import sys
 import os
 import shutil
 import datetime
+import traceback
 
-from jenkins_setup import common, rosdep, cob_pipe
-
+from jenkins_setup import common, rosdep, cob_pipe, cppcheck
 
 def main():
     #########################
@@ -211,10 +211,14 @@ def main():
     time_analysis = datetime.datetime.now()
     print "=====> entering static analysis step at", time_analysis
 
+    # create tests results directory
+    os.mkdir(os.environ['ROS_TEST_RESULTS_DIR'])
+
     #TODO
     # Cpplint
     # Counting lines of code/comments
-    # CPP check
+    # cppcheck
+    cppcheck.run(repo_sourcespace, os.environ['ROS_TEST_RESULTS_DIR'])
     # Coverage
 
     #############
@@ -290,6 +294,7 @@ def main():
     print "install dependencies in    ", (time_analysis - time_install)
     print "static code analysis in    ", (time_build - time_analysis)
     print "build in                   ", (time_finish - time_finish)
+    print ""
 
 if __name__ == "__main__":
     # global try
@@ -301,8 +306,10 @@ if __name__ == "__main__":
     except (common.BuildException, cob_pipe.CobPipeException) as ex:
         print "Build script failed!"
         print ex.msg
+        print traceback.format_exc()
         raise ex
 
     except Exception as ex:
+        print traceback.format_exc()
         print "Build script failed! Check out the console output above for details."
         raise ex
