@@ -115,7 +115,7 @@ def main():
         print "Test wet repository list"
         test_error_msg = None
         try:
-            common.call("make tests", ros_env)
+            common.call("catkin_make test", ros_env)
         except common.BuildException as ex:
             print ex.msg
             test_error_msg = ex.msg
@@ -164,7 +164,7 @@ def main():
             build_list = " ".join(test_repos_list + [build_repo])
             if build_repo_only:
                 build_list = build_repo
-            common.call("%srosmake -rV --profile %s--test-only --output=%s %s" %
+            common.call("%srosmake -rV --profile %s --test-only --output=%s %s" %
                         ("/opt/VirtualGL/bin/vglrun " if graphic_test else "",
                          "--pjobs=8 " if not graphic_test else "",
                          dry_build_logs, build_list), ros_env_repo)
