@@ -146,6 +146,37 @@
       </consoleParsers>
     </hudson.plugins.warnings.WarningsPublisher>'
 
+'cppcheckpublisher': '<org.jenkinsci.plugins.cppcheck.CppcheckPublisher plugin="cppcheck@1.14">
+      <cppcheckConfig>
+        <pattern>static_analysis_results/cppcheck.xml</pattern>
+        <ignoreBlankFiles>true</ignoreBlankFiles>
+        <allowNoReport>true</allowNoReport>
+        <configSeverityEvaluation>
+          <threshold></threshold>
+          <newThreshold></newThreshold>
+          <failureThreshold></failureThreshold>
+          <newFailureThreshold></newFailureThreshold>
+          <healthy></healthy>
+          <unHealthy></unHealthy>
+          <severityError>true</severityError>
+          <severityWarning>true</severityWarning>
+          <severityStyle>true</severityStyle>
+          <severityPerformance>true</severityPerformance>
+          <severityInformation>true</severityInformation>
+        </configSeverityEvaluation>
+        <configGraph>
+          <xSize>500</xSize>
+          <ySize>200</ySize>
+          <displayAllErrors>true</displayAllErrors>
+          <displayErrorSeverity>false</displayErrorSeverity>
+          <displayWarningSeverity>false</displayWarningSeverity>
+          <displayStyleSeverity>false</displayStyleSeverity>
+          <displayPerformanceSeverity>false</displayPerformanceSeverity>
+          <displayInformationSeverity>false</displayInformationSeverity>
+        </configGraph>
+      </cppcheckConfig>
+    </org.jenkinsci.plugins.cppcheck.CppcheckPublisher>'
+
 'postbuildtask': "<hudson.plugins.postbuildtask.PostbuildTask> <tasks> <hudson.plugins.postbuildtask.TaskProperties> <logTexts> <hudson.plugins.postbuildtask.LogProperties> <logText>Building remotely on</logText> <operator>AND</operator> </hudson.plugins.postbuildtask.LogProperties> </logTexts> <EscalateStatus>false</EscalateStatus> <RunIfJobSuccessful>false</RunIfJobSuccessful> <script>#!/bin/bash\nif [ -d $WORKSPACE/../aux ]; then\nsudo rm -rf $WORKSPACE/../aux\nfi</script> </hudson.plugins.postbuildtask.TaskProperties> </tasks> </hudson.plugins.postbuildtask.PostbuildTask>"
 
 'pipelinetrigger': '<au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger> <downstreamProjectNames>@(PIPELINETRIGGER_PROJECT)</downstreamProjectNames> </au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger>'

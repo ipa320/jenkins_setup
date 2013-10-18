@@ -35,6 +35,7 @@
     @(JUNIT_TESTRESULTS)
     @(MAILER)
     @(WARNINGS_PUBLISHER)
+    @(CPPCHECK_PUBLISHER)
   </publishers>
   <buildWrappers>
     @(BUILD_TIMEOUT)
