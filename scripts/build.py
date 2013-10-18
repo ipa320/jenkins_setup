@@ -296,7 +296,7 @@ def main():
     print "checkout in                ", (time_install - time_checkout)
     print "install dependencies in    ", (time_analysis - time_install)
     print "static code analysis in    ", (time_build - time_analysis)
-    print "build in                   ", (time_finish - time_finish)
+    print "build in                   ", (time_finish - time_build)
     print ""
 
 if __name__ == "__main__":
