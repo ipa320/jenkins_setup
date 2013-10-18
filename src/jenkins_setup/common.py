@@ -158,7 +158,7 @@ def copy_static_analysis_results(buildspace, workspace):
     # Copy all static analysis results (all xml files)
     for root, dirnames, filenames in os.walk(os.path.join(buildspace)):
         for filename in fnmatch.filter(filenames, '*.xml'):
-            call("cp %s %s" % (os.path.join(root, filename), workspace))
+            call("cp %s %s/" % (os.path.join(root, filename), workspace))
 
 
 def get_ros_env(setup_file):

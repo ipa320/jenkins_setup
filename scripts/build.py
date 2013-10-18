@@ -212,7 +212,7 @@ def main():
     time_analysis = datetime.datetime.now()
     print "=====> entering static analysis step at", time_analysis
 
-    # create tests results directory
+    # create tests results directory in chroot
     os.mkdir(repo_static_analysis_results)
 
     #TODO
@@ -221,6 +221,9 @@ def main():
     # cppcheck
     cppcheck.run(repo_sourcespace, repo_static_analysis_results)
     # Coverage
+
+    # create tests results directory in workspace
+    os.mkdir(workspace + "/static_analysis_results")
     
     # copy test results
     common.copy_static_analysis_results(repo_static_analysis_results, workspace + "/static_analysis_results")
