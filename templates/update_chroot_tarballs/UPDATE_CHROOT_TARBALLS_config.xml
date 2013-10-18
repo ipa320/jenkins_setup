@@ -49,8 +49,8 @@
 echo $WORKSPACE
 sudo rm -rf $WORKSPACE/*
 
-# ADAPT FORKOWNER
-git clone git://github.com/ipa320/jenkins_setup.git $WORKSPACE/jenkins_setup
+SERVERNAME=localhost # TODO: Adapt to the name of your Jenkins server
+scp -r jenkins@$SERVERNAME:jenkins-config/jenkins_setup $WORKSPACE/jenkins_setup
 
 cd $WORKSPACE/jenkins_setup/scripts
 

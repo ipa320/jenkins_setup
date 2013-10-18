@@ -10,6 +10,12 @@ from jenkins_setup import common, rosdep, cob_pipe
 
 
 def main():
+    #########################
+    ### parsing arguments ###
+    #########################
+    time_parsing = datetime.datetime.now()
+    print "=====> entering argument parsing step at", time_parsing
+
     # parse parameter values
     parser = optparse.OptionParser()
     parser.add_option('-v', '--verbose', action='store_true', default=False)
@@ -75,6 +81,12 @@ def main():
     if options.verbose:
         common.call("env", ros_env)
 
+    ############
+    ### test ###
+    ############
+    time_test = datetime.datetime.now()
+    print "=====> entering testing step at", time_test
+
     ### catkin repositories
     print datetime.datetime.now()
 
@@ -129,7 +141,7 @@ def main():
                 test_error_msg = ex.msg
 
         # copy test results
-        common.copy_test_results(workspace, repo_buildspace, test_error_msg)
+        common.copy_test_results(repo_buildspace, workspace, test_error_msg)
 
     ### rosbuild repositories
     print datetime.datetime.now()
@@ -170,12 +182,20 @@ def main():
             except Exception as e:
                 print e
 
-        common.copy_test_results(workspace, repo_sourcespace)
+        common.copy_test_results(repo_sourcespace, workspace)
         print datetime.datetime.now()
         try:
             shutil.move(dry_build_logs, os.path.join(workspace, "build_logs"))
         except IOError as ex:
             print "No build logs found: %s" % ex
+
+    # the end (steps: parsing, test)
+    time_finish = datetime.datetime.now()
+    print "=====> finished script at", time_finish
+    print "durations:"
+    print "parsing arguments in       ", (time_test - time_parsing)
+    print "test in                    ", (time_finish - time_test)
+    print ""
 
 
 if __name__ == "__main__":
