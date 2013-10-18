@@ -10,6 +10,12 @@ from jenkins_setup import common, rosdep, cob_pipe
 
 
 def main():
+    #########################
+    ### parsing arguments ###
+    #########################
+    time_parsing = datetime.datetime.now()
+    print "=====> entering argument parsing step at", time_parsing
+
     # parse parameter values
     parser = optparse.OptionParser()
     parser.add_option('-v', '--verbose', action='store_true', default=False)
@@ -74,6 +80,12 @@ def main():
     ros_env = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
     if options.verbose:
         common.call("env", ros_env)
+
+    ############
+    ### test ###
+    ############
+    time_test = datetime.datetime.now()
+    print "=====> entering testing step at", time_test
 
     ### catkin repositories
     print datetime.datetime.now()
@@ -176,6 +188,14 @@ def main():
             shutil.move(dry_build_logs, os.path.join(workspace, "build_logs"))
         except IOError as ex:
             print "No build logs found: %s" % ex
+
+    # the end (steps: parsing, test)
+    time_finish = datetime.datetime.now()
+    print "=====> finished script at", time_finish
+    print "durations:"
+    print "parsing arguments in       ", (time_test - time_parsing)
+    print "test in                    ", (time_finish - time_test)
+    print ""
 
 
 if __name__ == "__main__":
