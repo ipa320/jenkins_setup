@@ -5,9 +5,9 @@ import sys
 import os
 import shutil
 import datetime
+import traceback
 
-from jenkins_setup import common, rosdep, cob_pipe
-
+from jenkins_setup import common, rosdep, cob_pipe, cppcheck
 
 def main():
     #########################
@@ -57,6 +57,7 @@ def main():
     repo_sourcespace = os.path.join(tmpdir, 'src_repository')                      # location to store repositories in
     repo_sourcespace_wet = os.path.join(tmpdir, 'src_repository', 'wet', 'src')    # wet (catkin) repositories
     repo_sourcespace_dry = os.path.join(tmpdir, 'src_repository', 'dry')           # dry (rosbuild) repositories
+    repo_static_analysis_results = os.path.join(tmpdir, 'src_repository', 'static_analysis_results') # location for static code test results
     #repo_buildspace = os.path.join(tmpdir, 'build_repository')                     # location for build output
     dry_build_logs = os.path.join(repo_sourcespace_dry, 'build_logs')              # location for build logs
 
@@ -211,11 +212,21 @@ def main():
     time_analysis = datetime.datetime.now()
     print "=====> entering static analysis step at", time_analysis
 
+    # create tests results directory in chroot
+    os.mkdir(repo_static_analysis_results)
+
     #TODO
     # Cpplint
     # Counting lines of code/comments
-    # CPP check
+    # cppcheck
+    cppcheck.run(repo_sourcespace, repo_static_analysis_results)
     # Coverage
+
+    # create tests results directory in workspace
+    os.mkdir(workspace + "/static_analysis_results")
+    
+    # copy test results
+    common.copy_static_analysis_results(repo_static_analysis_results, workspace + "/static_analysis_results")
 
     #############
     ### build ###
@@ -289,7 +300,8 @@ def main():
     print "checkout in                ", (time_install - time_checkout)
     print "install dependencies in    ", (time_analysis - time_install)
     print "static code analysis in    ", (time_build - time_analysis)
-    print "build in                   ", (time_finish - time_finish)
+    print "build in                   ", (time_finish - time_build)
+    print ""
 
 if __name__ == "__main__":
     # global try
@@ -301,8 +313,10 @@ if __name__ == "__main__":
     except (common.BuildException, cob_pipe.CobPipeException) as ex:
         print "Build script failed!"
         print ex.msg
+        print traceback.format_exc()
         raise ex
 
     except Exception as ex:
+        print traceback.format_exc()
         print "Build script failed! Check out the console output above for details."
         raise ex

@@ -36,7 +36,8 @@ class RosDepResolver(object):
         call("rosdep update", self.env)
 
         print "Building dictionaries from a rosdep's db"
-        raw_db = call("rosdep db", self.env, verbose=False).split('\n')
+        out, err = call("rosdep db", self.env, verbose=False)
+        raw_db = out.split('\n')
 
         for entry in raw_db:
             split_entry = entry.split(' -> ')
@@ -137,10 +138,12 @@ class RosDep(object):
         if ros in self.r2a:
             return self.r2a[ros]
         else:
-            res = call("rosdep resolve %s" % ros, self.env).split('\n')
+            out, err = call("rosdep resolve %s" % ros, self.env)
+            res = out.split('\n')
             if len(res) == 1:
                 raise Exception("Could not resolve rosdep")
-            apt = call("rosdep resolve %s" % ros, self.env).split('\n')[1]
+            out, err = call("rosdep resolve %s" % ros, self.env)
+            apt = out.split('\n')[1]
             print "Rosdep %s resolved into %s" % (ros, apt)
             self.r2a[ros] = apt
             self.a2r[apt] = ros
