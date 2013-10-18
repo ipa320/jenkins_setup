@@ -107,7 +107,7 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
             raise BuildException("Failed to apt-get install ros repositories")
 
 
-def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):
+def copy_test_results(buildspace, workspace, errors=None, prefix='dummy'):
     """
     Copy test results from buildspace into workspace or create dummy.xml.
 
@@ -129,16 +129,12 @@ def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):
     os.chdir(os.path.join(workspace, 'test_results'))
     print "Copy all test results"
 
-    # copy cppcheck results
-    cppcheck = buildspace + "/cppcheck.xml"
-    if os.path.isfile(cppcheck):
-        call("cp " + cppcheck +  " " + workspace + "/test_results/")
-
     # copy all rostest test reports nested in their packagename's directory    
     count = 0
     for root, dirnames, filenames in os.walk(os.path.join(buildspace, 'test_results')):
         for filename in fnmatch.filter(filenames, '*.xml'):
             call("cp %s %s/test_results/" % (os.path.join(root, filename), workspace))
+            count += 1
 
 	# create dummy test if no rostest result exists
     if count == 0:
@@ -148,6 +144,21 @@ def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):
                 f.write('<?xml version="1.0" encoding="UTF-8"?><testsuite tests="1" failures="0" time="1" errors="1" name="%s test"> <testcase name="%s rapport" classname="Results" /><testcase classname="%s_class" name="%sFailure"><error type="%sException">%s</error></testcase></testsuite>' % (prefix, prefix, prefix, prefix, prefix, errors))
             else:
                 f.write('<?xml version="1.0" encoding="UTF-8"?><testsuite tests="1" failures="0" time="1" errors="0" name="dummy test"> <testcase name="dummy rapport" classname="Results" /></testsuite>')
+
+
+def copy_static_analysis_results(buildspace, workspace):
+    """
+    Copy static analysis results from buildspace into workspace.
+
+    @param buildspace: path where the test results are stored
+    @type  buildspace: str
+    @param workspace: path the test results will copied into
+    @type  workspace: str
+    """
+    # Copy all static analysis results (all xml files)
+    for root, dirnames, filenames in os.walk(os.path.join(buildspace)):
+        for filename in fnmatch.filter(filenames, '*.xml'):
+            call("cp %s %s" % (os.path.join(root, filename), workspace))
 
 
 def get_ros_env(setup_file):

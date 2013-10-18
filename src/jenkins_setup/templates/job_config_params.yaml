@@ -148,7 +148,7 @@
 
 'cppcheckpublisher': '<org.jenkinsci.plugins.cppcheck.CppcheckPublisher plugin="cppcheck@1.14">
       <cppcheckConfig>
-        <pattern>test_results/cppcheck.xml</pattern>
+        <pattern>static_analysis_results/cppcheck.xml</pattern>
         <ignoreBlankFiles>true</ignoreBlankFiles>
         <allowNoReport>true</allowNoReport>
         <configSeverityEvaluation>

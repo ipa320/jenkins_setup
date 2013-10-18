@@ -57,6 +57,7 @@ def main():
     repo_sourcespace = os.path.join(tmpdir, 'src_repository')                      # location to store repositories in
     repo_sourcespace_wet = os.path.join(tmpdir, 'src_repository', 'wet', 'src')    # wet (catkin) repositories
     repo_sourcespace_dry = os.path.join(tmpdir, 'src_repository', 'dry')           # dry (rosbuild) repositories
+    repo_static_analysis_results = os.path.join(tmpdir, 'src_repository', 'static_analysis_results') # location for static code test results
     #repo_buildspace = os.path.join(tmpdir, 'build_repository')                     # location for build output
     dry_build_logs = os.path.join(repo_sourcespace_dry, 'build_logs')              # location for build logs
 
@@ -212,17 +213,17 @@ def main():
     print "=====> entering static analysis step at", time_analysis
 
     # create tests results directory
-    os.mkdir(os.environ['ROS_TEST_RESULTS_DIR'])
+    os.mkdir(repo_static_analysis_results)
 
     #TODO
     # Cpplint
     # Counting lines of code/comments
     # cppcheck
-    cppcheck.run(repo_sourcespace, os.environ['ROS_TEST_RESULTS_DIR'])
+    cppcheck.run(repo_sourcespace, repo_static_analysis_results)
     # Coverage
     
     # copy test results
-    common.copy_test_results(workspace, os.environ['ROS_TEST_RESULTS_DIR'])
+    common.copy_static_analysis_results(repo_static_analysis_results, workspace + "/static_analysis_results")
 
     #############
     ### build ###

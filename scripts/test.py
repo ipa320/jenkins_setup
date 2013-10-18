@@ -129,7 +129,7 @@ def main():
                 test_error_msg = ex.msg
 
         # copy test results
-        common.copy_test_results(workspace, repo_buildspace, test_error_msg)
+        common.copy_test_results(repo_buildspace, workspace, test_error_msg)
 
     ### rosbuild repositories
     print datetime.datetime.now()
@@ -170,7 +170,7 @@ def main():
             except Exception as e:
                 print e
 
-        common.copy_test_results(workspace, repo_sourcespace)
+        common.copy_test_results(repo_sourcespace, workspace)
         print datetime.datetime.now()
         try:
             shutil.move(dry_build_logs, os.path.join(workspace, "build_logs"))
