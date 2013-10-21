@@ -311,9 +311,9 @@ if __name__ == "__main__":
 
     # global catch
     except (common.BuildException, cob_pipe.CobPipeException) as ex:
+        print traceback.format_exc()
         print "Build script failed!"
         print ex.msg
-        print traceback.format_exc()
         raise ex
 
     except Exception as ex:
