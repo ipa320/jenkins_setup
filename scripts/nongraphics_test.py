@@ -60,12 +60,13 @@ def main():
 
     # set up directories variables
     tmpdir = os.path.join('/tmp', 'test_repositories')
-    repo_sourcespace = os.path.join(tmpdir, 'src_repository')                      # location to store repositories in
-    repo_sourcespace_wet = os.path.join(tmpdir, 'src_repository', 'wet', 'src')    # wet (catkin) repositories
-    repo_sourcespace_dry = os.path.join(tmpdir, 'src_repository', 'dry')           # dry (rosbuild) repositories
-    repo_test_results = os.path.join(tmpdir, 'src_repository', 'test_results') # location for test results
-    #repo_buildspace = os.path.join(tmpdir, 'build_repository')                     # location for build output
-    dry_build_logs = os.path.join(repo_sourcespace_dry, 'build_logs')              # location for build logs
+    repo_sourcespace = os.path.join(tmpdir, 'src_repository')                                         # location to store repositories in
+    repo_sourcespace_wet = os.path.join(tmpdir, 'src_repository', 'wet', 'src')                       # wet (catkin) repositories
+    repo_sourcespace_dry = os.path.join(tmpdir, 'src_repository', 'dry')                              # dry (rosbuild) repositories
+    repo_test_results_dry = os.path.join(tmpdir, 'src_repository', 'test_results')                    # location for dry test results
+    repo_test_results_wet = os.path.join(tmpdir, 'src_repository', 'wet', 'build', 'test_results')    # location for wet test results
+    #repo_buildspace = os.path.join(tmpdir, 'build_repository')                                        # location for build output
+    dry_build_logs = os.path.join(repo_sourcespace_dry, 'build_logs')                                 # location for build logs
 
     if ros_distro != 'electric':
         # Create rosdep object
@@ -96,6 +97,7 @@ def main():
 
     ### catkin repositories
     print "test catkin repositories"
+    ros_env_repo['ROS_TEST_RESULTS_DIR'] = repo_test_results_wet
     if os.listdir(repo_sourcespace_wet):
         # set up catkin workspace
         #if ros_distro == 'fuerte':
@@ -114,7 +116,7 @@ def main():
             #common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env_repo)
 
         # test repositories
-        print "Test wet repository list"
+        #print "Test wet repository list"
 
         #if not os.path.isdir(repo_buildspace):
         #    os.mkdir(repo_buildspace)
@@ -148,11 +150,22 @@ def main():
         #        print ex.msg
         #        test_error_msg = ex.msg
 
-        # copy test results
-        #common.copy_test_results(repo_sourcespace, workspace, test_error_msg)
+        # clean test xml files
+        common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
+        for file in os.listdir(os.path.join(repo_test_results_wet)):
+            file_path = os.path.join(repo_test_results_wet, file)
+            try:
+                if not file.startswith("_hudson"):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print e
+
+        # copy wet test results
+        common.copy_test_results(repo_test_results_wet, workspace + "/test_results")
 
     ### rosbuild repositories
     print "test rosbuild repositories"
+    ros_env_repo['ROS_TEST_RESULTS_DIR'] = repo_test_results_dry
     (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_dry)
     if build_repo in stacks:
         # get list of dependencies to test
@@ -162,7 +175,7 @@ def main():
                 test_repos_list.append(dep)
 
         # test dry repositories
-        print "Test repository %s" % build_repo
+        #print "Test repository %s" % build_repo
         try:
             build_list = " ".join(test_repos_list + [build_repo])
             if build_repo_only:
@@ -174,31 +187,18 @@ def main():
         except common.BuildException as ex:
             print ex.msg
 
-        # copy test results
-        #common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
-        #for file in os.listdir(os.path.join(repo_sourcespace, "test_results")):
-        #    file_path = os.path.join(repo_sourcespace, "test_results", file)
-        #    print file_path
-        #    try:
-        #        if not file.startswith("_hudson"):
-        #            shutil.rmtree(file_path)
-        #    except Exception as e:
-        #        print e
+        # clean test xml files
+        common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
+        for file in os.listdir(os.path.join(repo_test_results_dry)):
+            file_path = os.path.join(repo_test_results_dry, file)
+            try:
+                if not file.startswith("_hudson"):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print e
 
-    # clean test xml files
-    common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
-    for file in os.listdir(os.path.join(repo_sourcespace, "test_results")):
-        file_path = os.path.join(repo_sourcespace, "test_results", file)
-        print file_path
-        try:
-            if not file.startswith("_hudson"):
-                shutil.rmtree(file_path)
-        except Exception as e:
-            print e
-
-
-    # copy test results of all tests (wet and dry)
-    common.copy_test_results(repo_sourcespace, workspace)
+        # copy dry test results
+        common.copy_test_results(repo_test_results_dry, workspace + "/test_results")
     
     #print datetime.datetime.now()
     #try:
