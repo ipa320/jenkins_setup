@@ -5,6 +5,7 @@ import sys
 import os
 import shutil
 import datetime
+import traceback
 
 from jenkins_setup import common, rosdep, cob_pipe
 
@@ -59,11 +60,12 @@ def main():
 
     # set up directories variables
     tmpdir = os.path.join('/tmp', 'test_repositories')
-    repo_sourcespace = os.path.join(tmpdir, 'src_repository')               # location to store repositories in
-    repo_sourcespace_wet = os.path.join(tmpdir, 'src_repository', 'wet')    # wet (catkin) repositories
-    repo_sourcespace_dry = os.path.join(tmpdir, 'src_repository', 'dry')    # dry (rosbuild) repositories
-    repo_buildspace = os.path.join(tmpdir, 'build_repository')              # location for build output
-    dry_build_logs = os.path.join(repo_sourcespace_dry, 'build_logs')       # location for build logs
+    repo_sourcespace = os.path.join(tmpdir, 'src_repository')                      # location to store repositories in
+    repo_sourcespace_wet = os.path.join(tmpdir, 'src_repository', 'wet', 'src')    # wet (catkin) repositories
+    repo_sourcespace_dry = os.path.join(tmpdir, 'src_repository', 'dry')           # dry (rosbuild) repositories
+    repo_test_results = os.path.join(tmpdir, 'src_repository', 'test_results') # location for test results
+    #repo_buildspace = os.path.join(tmpdir, 'build_repository')                     # location for build output
+    dry_build_logs = os.path.join(repo_sourcespace_dry, 'build_logs')              # location for build logs
 
     if ros_distro != 'electric':
         # Create rosdep object
@@ -75,11 +77,16 @@ def main():
             sleep(10)
             rosdep_resolver = rosdep.RosDepResolver(ros_distro)
 
-    # env
-    print "Set up ros environment variables"
-    ros_env = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
+    ## env
+    #print "Set up ros environment variables"
+    #ros_env = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
+    #if options.verbose:
+    #    common.call("env", ros_env)
+    
+    ros_env_repo = common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
+    ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_sourcespace, ros_package_path])
     if options.verbose:
-        common.call("env", ros_env)
+        common.call("env", ros_env_repo)
 
     ############
     ### test ###
@@ -104,43 +111,45 @@ def main():
             #common.call("ln -s %s %s" % (os.path.join(repo_sourcespace_wet, 'catkin', 'cmake', 'toplevel.cmake'),
                                          #os.path.join(repo_sourcespace_wet, 'CMakeLists.txt')))
         #else:
-            #common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env)
-
-        if not os.path.isdir(repo_buildspace):
-            os.mkdir(repo_buildspace)
-        os.chdir(repo_buildspace)
+            #common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env_repo)
 
         # test repositories
         print "Test wet repository list"
-        test_error_msg = None
+
+        #if not os.path.isdir(repo_buildspace):
+        #    os.mkdir(repo_buildspace)
+        os.chdir(repo_sourcespace_wet + "/..")
+
+        #test_error_msg = None
         try:
-            common.call("catkin_make test", ros_env)
+            common.call("catkin_make test", ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
-            test_error_msg = ex.msg
+            #print traceback.format_exc()
+        #    test_error_msg = ex.msg
 
         # get wet repositories test and run dependencies
-        print "Get test and run dependencies of repo list"
-        (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_wet)
-        if stacks != {}:
-            raise common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
-                                        % (build_repo, '- ' + '\n- '.join(stacks)))
+        #print "Get test and run dependencies of repo list"
+        #(catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_wet)
+        #if stacks != {}:
+        #    raise common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
+        #                                % (build_repo, '- ' + '\n- '.join(stacks)))
         # take only wet packages
-        repo_test_dependencies = common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=False, test_depends=True)
-        if repo_test_dependencies != [] and test_error_msg is None:
-            print "Install test and run dependencies of repository list: %s" % (', '.join(repo_test_dependencies))
-            common.apt_get_install_also_nonrosdep(repo_test_dependencies, ros_distro, rosdep_resolver)
+        #repo_test_dependencies = common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=False, test_depends=True)
+        #if repo_test_dependencies != [] and test_error_msg is None:
+        #    print "Install test and run dependencies of repository list: %s" % (', '.join(repo_test_dependencies))
+        #    common.apt_get_install_also_nonrosdep(repo_test_dependencies, ros_distro, rosdep_resolver)
 
-            # run tests
-            print "Test repository list"
-            try:
-                common.call("%smake run_tests" % ("/opt/VirtualGL/bin/vglrun " if graphic_test else ""), ros_env)  # TODO check how to test a list of repos
-            except common.BuildException as ex:
-                print ex.msg
-                test_error_msg = ex.msg
+        #    # run tests
+        #    print "Test repository list"
+        #    try:
+        #        common.call("%smake run_tests" % ("/opt/VirtualGL/bin/vglrun " if graphic_test else ""), ros_env_repo)  # TODO check how to test a list of repos
+        #    except common.BuildException as ex:
+        #        print ex.msg
+        #        test_error_msg = ex.msg
 
         # copy test results
-        common.copy_test_results(repo_buildspace, workspace, test_error_msg)
+        #common.copy_test_results(repo_sourcespace, workspace, test_error_msg)
 
     ### rosbuild repositories
     print "test rosbuild repositories"
@@ -151,11 +160,6 @@ def main():
         for dep in pipe_repos[build_identifier].dependencies:
             if dep in stacks:  # TODO option to select deps to build
                 test_repos_list.append(dep)
-
-        ros_env_repo = common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
-        ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_sourcespace, ros_package_path])
-        if options.verbose:
-            common.call("env", ros_env_repo)
 
         # test dry repositories
         print "Test repository %s" % build_repo
@@ -171,22 +175,36 @@ def main():
             print ex.msg
 
         # copy test results
-        common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
-        for file in os.listdir(os.path.join(repo_sourcespace, "test_results")):
-            file_path = os.path.join(repo_sourcespace, "test_results", file)
-            print file_path
-            try:
-                if not file.startswith("_hudson"):
-                    shutil.rmtree(file_path)
-            except Exception as e:
-                print e
+        #common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
+        #for file in os.listdir(os.path.join(repo_sourcespace, "test_results")):
+        #    file_path = os.path.join(repo_sourcespace, "test_results", file)
+        #    print file_path
+        #    try:
+        #        if not file.startswith("_hudson"):
+        #            shutil.rmtree(file_path)
+        #    except Exception as e:
+        #        print e
 
-        common.copy_test_results(repo_sourcespace, workspace)
-        print datetime.datetime.now()
+    # clean test xml files
+    common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
+    for file in os.listdir(os.path.join(repo_sourcespace, "test_results")):
+        file_path = os.path.join(repo_sourcespace, "test_results", file)
+        print file_path
         try:
-            shutil.move(dry_build_logs, os.path.join(workspace, "build_logs"))
-        except IOError as ex:
-            print "No build logs found: %s" % ex
+            if not file.startswith("_hudson"):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print e
+
+
+    # copy test results of all tests (wet and dry)
+    common.copy_test_results(repo_sourcespace, workspace)
+    
+    #print datetime.datetime.now()
+    #try:
+    #    shutil.move(dry_build_logs, os.path.join(workspace, "build_logs"))
+    #except IOError as ex:
+    #    print "No build logs found: %s" % ex
 
     # the end (steps: parsing, test)
     time_finish = datetime.datetime.now()
@@ -205,10 +223,12 @@ if __name__ == "__main__":
 
     # global catch
     except (common.BuildException, cob_pipe.CobPipeException) as ex:
+        traceback.format_exc()
         print "Test script failed!"
         print ex.msg
         raise ex
 
     except Exception as ex:
+        traceback.format_exc()
         print "Test script failed! Check out the console output above for details."
         raise ex
