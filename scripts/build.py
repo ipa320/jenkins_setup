@@ -265,11 +265,13 @@ def main():
         except common.BuildException as ex:
             print ex.msg
             raise common.BuildException("Failed to catkin_make wet repositories")
-        #ros_env_repo = common.get_ros_env(os.path.join(repo_buildspace, 'devel/setup.bash'))
+        
+        # setup ros environment to source wet packages before building dry ones
+        ros_env_repo = common.get_ros_env(os.path.join(repo_sourcespace_wet, '../devel/setup.bash'))
 
     ### rosbuild repositories
     if build_repo_type == 'dry':
-        ros_env_repo = common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
+        #ros_env_repo = common.get_ros_env(os.path.join(repo_sourcespace_, 'setup.bash'))
         ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_sourcespace, ros_package_path])
         if options.verbose:
             common.call("env", ros_env_repo)
