@@ -205,14 +205,16 @@ def call_with_list(command, envir=None, verbose=True):
     helper = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True, env=envir)
 
     out, err = helper.communicate()
+    if helper.returncode != 0:
+        msg = "Failed to execute command '%s'" % command
+        print r"/!\  %s" % msg
+        print out, err
+        raise BuildException(msg)
+
     if verbose:
         print out
     	print err
     
-    if helper.returncode != 0:
-        msg = "Failed to execute command '%s'" % command
-        print r"/!\  %s" % msg
-        raise BuildException(msg)
     return out, err
 
 
