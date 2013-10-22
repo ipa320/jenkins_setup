@@ -236,9 +236,9 @@ def main():
 
     # env
     print "Set up ros environment variables"
-    ros_env = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
+    ros_env_repo = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
     if options.verbose:
-        common.call("env", ros_env)
+        common.call("env", ros_env_repo)
 
     ### catkin repositories
     if catkin_packages != {}:
@@ -256,12 +256,12 @@ def main():
             common.call("ln -s %s %s" % (os.path.join(repo_sourcespace_wet, 'catkin', 'cmake', 'toplevel.cmake'),
                                          os.path.join(repo_sourcespace_wet, 'CMakeLists.txt')))
         else:
-            common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env)
+            common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env_repo)
 
         #os.mkdir(repo_buildspace)
         os.chdir(repo_sourcespace_wet + "/..")
         try:
-            common.call("catkin_make", ros_env)
+            common.call("catkin_make", ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
             raise common.BuildException("Failed to catkin_make wet repositories")
@@ -271,14 +271,13 @@ def main():
 
     ### rosbuild repositories
     if build_repo_type == 'dry':
-        #ros_env_repo = common.get_ros_env(os.path.join(repo_sourcespace_, 'setup.bash'))
         ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_sourcespace, ros_package_path])
         if options.verbose:
             common.call("env", ros_env_repo)
 
         if ros_distro == 'electric':
             print "Rosdep"
-            common.call("rosmake rosdep", ros_env)
+            common.call("rosmake rosdep", ros_env_repo)
         for stack in stacks.keys():
             common.call("rosdep install -y %s" % stack, ros_env_repo)
 
