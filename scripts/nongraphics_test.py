@@ -165,6 +165,8 @@ def main():
 
     ### rosbuild repositories
     print "test rosbuild repositories"
+    if not os.path.isdir(repo_test_results_dry):
+        os.mkdir(repo_test_results_dry)
     ros_env_repo['ROS_TEST_RESULTS_DIR'] = repo_test_results_dry
     (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_dry)
     if build_repo in stacks:
