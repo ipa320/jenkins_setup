@@ -113,8 +113,9 @@ class JenkinsJob(object):
         self.params['MAILER'] = ''
         self.params['POSTBUILD_TASK'] = ''
         self.params['WARNINGS_PUBLISHER'] = ''
+        self.params['CPPCHECK_PUBLISHER'] = ''
         self._set_authorization_matrix_param(['read', 'workspace'])
-        self.params['CONCURRENT_BUILD'] = 'true'
+        self.params['CONCURRENT_BUILD'] = 'false'
         self._set_build_timeout()
 
     ###########################################################################
@@ -661,6 +662,7 @@ class BuildJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
         self.params['WARNINGS_PUBLISHER'] = self.job_config_params['warningspublisher']
+        self.params['CPPCHECK_PUBLISHER'] = self.job_config_params['cppcheckpublisher']
 
         # set matrix
         if not matrix_filter:
