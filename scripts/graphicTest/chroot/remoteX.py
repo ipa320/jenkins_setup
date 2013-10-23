@@ -15,13 +15,26 @@ def startVNConDisplay( i ):
     args = ':%s -noauth' % i
     return runVNCCmdWithArgs( args )
 
+def fileExists( filepath ):
+    try:
+        os.stat( filepath )
+        return True
+    except OSError,e:
+        return False
+
+def xNotLocked( disp ):
+    locked1 = fileExists( '/tmp/.X11-unix/X%s' % disp )
+    locked2 = fileExists( '/tmp/.X%s-lock' % disp )
+    locked  = locked1 or locked2
+    return not locked
+
 def getFreeDisplay():
     args = [ 'ps', 'ax' ]
     p    = subprocess.Popen( args, stdout=subprocess.PIPE )
     disp = 1
     stdout, stderr = p.communicate()
     while True:
-        if stdout.find( 'Xvnc :%s' % disp ) == -1:
+        if stdout.find( 'Xvnc :%s' % disp ) == -1 and xNotLocked( disp ):
             return disp
         disp += 1
 
