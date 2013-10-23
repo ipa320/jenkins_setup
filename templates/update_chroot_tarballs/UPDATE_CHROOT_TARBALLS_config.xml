@@ -5,7 +5,8 @@
   <keepDependencies>false</keepDependencies>
   <properties/>
   <scm class="hudson.scm.NullSCM"/>
-  <canRoam>true</canRoam>
+  <assignedNode>master</assignedNode>
+  <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
@@ -49,13 +50,16 @@
 echo $WORKSPACE
 sudo rm -rf $WORKSPACE/*
 
-# ADAPT FORKOWNER
-git clone git://github.com/ipa320/jenkins_setup.git $WORKSPACE/jenkins_setup
+# TODO: Adapt to the name of your Jenkins server if you are using slaves that are not localhost
+SERVERNAME=localhost
+# TODO: Adapt to the name of your apt cacher (e.g. http://localhost:3142)
+APT_CACHER_ADDRESS=
+
+scp -r jenkins@$SERVERNAME:jenkins-config/jenkins_setup $WORKSPACE/jenkins_setup
 
 cd $WORKSPACE/jenkins_setup/scripts
 
-# IF THIS JOB RUNS ON A SLAVE REPLACE 'localhost' WITH THE REAL SERVERNAME
-nice -n19 ionice -c2 -n7 ./update_chroot_tarballs.py jenkins@localhost:chroot_tarballs https://raw.github.com/ipa320/jenkins_setup/master/releases/targets.yaml $ubuntu_distro $arch #APT_CACHER_PROXY_ADDRESS (optional) e.g. http://my-apt-cacher:3142</command>
+nice -n19 ionice -c2 -n7 ./update_chroot_tarballs.py jenkins@$SERVERNAME:chroot_tarballs https://raw.github.com/ipa320/jenkins_setup/master/releases/targets.yaml $ubuntu_distro $arch $APT_CACHER_ADDRESS</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

@@ -107,39 +107,58 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
             raise BuildException("Failed to apt-get install ros repositories")
 
 
-def copy_test_results(workspace, buildspace, errors=None, prefix='dummy'):
+def copy_test_results(buildspace_test_results_dir, workspace_test_results_dir, errors=None, prefix='dummy'):
     """
     Copy test results from buildspace into workspace or create dummy.xml.
 
-    @param workspace: path the test results will copied into
-    @type  workspace: str
-    @param buildspace: path where the test results are stored
-    @type  buildspace: str
+    @param workspace_test_results_dir: path the test results will copied into
+    @type  workspace_test_results_dir: str
+    @param buildspace_test_results_dir: path where the test results are stored
+    @type  buildspace_test_results_dir: str
     @param errors: error name in the dummy file (default None)
     @type  errors: str
     @param prefix: prefix in the dummy file (default dummy)
     @type  prefix: str
     """
-    print "Preparing xml test results"
+    #print "Preparing xml test results"
     try:
-        os.makedirs(os.path.join(workspace, 'test_results'))
+        os.makedirs(os.path.join(workspace_test_results_dir))
         print "Created test results directory"
     except:
         pass
-    os.chdir(os.path.join(workspace, 'test_results'))
-    print "Copy all test results"
+    os.chdir(workspace_test_results_dir)
+    print "Copy all test results to " + workspace_test_results_dir
+
+    # copy all rostest test reports nested in their packagename's directory    
     count = 0
-    for root, dirnames, filenames in os.walk(os.path.join(buildspace, 'test_results')):
+    for root, dirnames, filenames in os.walk(buildspace_test_results_dir):
         for filename in fnmatch.filter(filenames, '*.xml'):
-            call("cp %s %s/test_results/" % (os.path.join(root, filename), workspace))
+            call("cp %s %s" % (os.path.join(root, filename), workspace_test_results_dir))
             count += 1
+
+	# create dummy test if no rostest result exists
     if count == 0:
         print "No test results, so I'll create a dummy test result xml file, with errors %s" % errors
-        with open(os.path.join(workspace, 'test_results/dummy.xml'), 'w') as f:
+        with open(os.path.join(workspace_test_results_dir, 'dummy.xml'), 'w') as f:
             if errors:
                 f.write('<?xml version="1.0" encoding="UTF-8"?><testsuite tests="1" failures="0" time="1" errors="1" name="%s test"> <testcase name="%s rapport" classname="Results" /><testcase classname="%s_class" name="%sFailure"><error type="%sException">%s</error></testcase></testsuite>' % (prefix, prefix, prefix, prefix, prefix, errors))
             else:
                 f.write('<?xml version="1.0" encoding="UTF-8"?><testsuite tests="1" failures="0" time="1" errors="0" name="dummy test"> <testcase name="dummy rapport" classname="Results" /></testsuite>')
+
+
+def copy_static_analysis_results(buildspace_test_results_dir, workspace_test_results_dir):
+    """
+    Copy static analysis results from buildspace into workspace.
+
+    @param buildspace_test_results_dir: path where the test results are stored
+    @type  buildspace_test_results_dir: str
+    @param workspace_test_results_dir: path the test results will copied into
+    @type  workspace_test_results_dir: str
+    """
+    # Copy all static analysis results (all xml files)
+    for root, dirnames, filenames in os.walk(os.path.join(buildspace_test_results_dir)):
+        for filename in fnmatch.filter(filenames, '*.xml'):
+            call("cp %s %s/" % (os.path.join(root, filename), workspace_test_results_dir))
 
 
 def get_ros_env(setup_file):
@@ -184,25 +203,19 @@ def call_with_list(command, envir=None, verbose=True):
     """
     print "Executing command '%s'" % ' '.join(command)
     helper = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True, env=envir)
-    res = ""
-    while helper.poll() is None:
-        command_output = helper.stdout.readline()
-        res += command_output
-        if verbose:
-            sys.stdout.write(command_output)
-        time.sleep(0.1)  # TODO What is a good value here? Without this delay it's busy looping
 
-    #make sure to capture the last line(s)
-    command_output = helper.stdout.read()
-    res += command_output
-    if verbose:
-        print command_output
-
+    out, err = helper.communicate()
     if helper.returncode != 0:
         msg = "Failed to execute command '%s'" % command
         print r"/!\  %s" % msg
+        print out, err
         raise BuildException(msg)
-    return res
+
+    if verbose:
+        print out
+    	print err
+    
+    return out, err
 
 
 def call(command, envir=None, verbose=True):
