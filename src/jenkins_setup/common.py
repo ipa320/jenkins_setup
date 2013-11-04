@@ -91,6 +91,12 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
             if debian_pkg not in apt.Cache():
                 unavailable_pkgs.append(debian_pkg)
 
+    print ""
+    print "apt dependencies: ", aptget_pkgs
+    print "ros dependencies: ", rosdep_pkgs
+    print "unavailable dependencies: ", unavailable_pkgs
+    print ""
+
     if unavailable_pkgs != []:
         raise BuildException("Some dependencies are not available: %s" % (', '.join(unavailable_pkgs)))
 
