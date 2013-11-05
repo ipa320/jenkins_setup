@@ -284,7 +284,7 @@ def main():
         # build dry repositories
         print "Build repository %s" % build_repo
         try:
-            common.call("rosmake -rV --skip-blackist --profile --pjobs=8 --output=%s %s" %
+            common.call("rosmake -rV --skip-blacklist --profile --pjobs=8 --output=%s %s" %
                         (dry_build_logs, build_repo), ros_env_repo)
         except common.BuildException as ex:
             try:
