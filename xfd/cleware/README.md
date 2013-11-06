@@ -15,3 +15,7 @@ Plug the ampel out an in again.
 
 ### Start ample script
 	./AmpelControl.py -u http://build.care-o-bot.org:8080/view/All
+
+### Launch script on boot
+copy ```python /home/fmw/git/jenkins/jenkins_setup/xfd/cleware/AmpelControl.py -u http://cob-jenkins-server:8080/view/u_320/&``` to
+```/etc/rc.local```
