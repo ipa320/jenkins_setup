@@ -20,7 +20,7 @@ assumptions:
 ### Debian packages for Ubuntu
 Install basic packages
 
-    sudo apt-get install git-core pbuilder devscripts pigz python-jenkins python-mock python-nose
+    sudo apt-get install git-core pbuilder devscripts pigz python-jenkins python-mock python-nose openssh-server
 
 Install basic ROS packages
 
