@@ -22,8 +22,8 @@ def main():
     parser.add_option('-v', '--verbose', action='store_true', default=False)
     (options, args) = parser.parse_args()
 
-    if len(args) < 6:
-        print "Usage: %s pipeline_repos_owner server_name user_name ros_distro build_repo graphic_test" % sys.argv[0]
+    if len(args) < 5:
+        print "Usage: %s pipeline_repos_owner server_name user_name ros_distro build_repo" % sys.argv[0]
         raise common.BuildException("Wrong arguments for build script")
 
     # get arguments
@@ -33,8 +33,6 @@ def main():
     ros_distro = args[3]
     build_identifier = args[4]                      # repository + suffix
     build_repo = build_identifier.split('__')[0]    # only repository to build
-    graphic_test = True if args[5] == "true" else False  # TODO optional
-    build_repo_only = True if args[6] == "true" else False
     # environment variables
     workspace = os.environ['WORKSPACE']
     ros_package_path = os.environ['ROS_PACKAGE_PATH']
@@ -50,7 +48,7 @@ def main():
     print datetime.datetime.now()
     print "\nTesting on ros distro:  %s" % ros_distro
     print "Testing repository: %s" % build_repo
-    print "Graphic Test: %s" % graphic_test
+    print "Graphic Test: False"
     print "Build Repo Only: %s" % build_repo_only
     if build_repo != build_identifier:
         print "       with suffix: %s" % build_identifier.split('__')[1]
@@ -182,10 +180,8 @@ def main():
             build_list = " ".join(test_repos_list + [build_repo])
             if build_repo_only:
                 build_list = build_repo
-            common.call("%srosmake -rV --profile %s --test-only --output=%s %s" %
-                        ("/opt/VirtualGL/bin/vglrun " if graphic_test else "",
-                         "--pjobs=8 " if not graphic_test else "",
-                         dry_build_logs, build_list), ros_env_repo)
+            common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" %
+                        ( dry_build_logs, build_list ), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
 
