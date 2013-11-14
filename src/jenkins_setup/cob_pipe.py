@@ -131,6 +131,7 @@ class CobPipeDependencyRepo(object):
         self.test = None
         if 'test' in data:
             self.poll = data['test']
+            self.test = data['test']
 
     def get_rosinstall(self):
         """

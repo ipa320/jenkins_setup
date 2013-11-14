@@ -4,7 +4,7 @@ if [ -d /tmp/nvidia ]; then
     exit 0
 fi
 
-for driver in "nvidia-current" "nvidia-experimental-304"; do
+for driver in "nvidia-304" "nvidia-experimental-304" "nvidia-current"; do
     echo ""
     echo "Searching for '$driver'"
     echo ""
