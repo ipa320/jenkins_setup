@@ -276,7 +276,7 @@ Copy the jelly template for the email generation:
 Prepare the jenkins node for graphical tests by installing VirtualGL and TurboVNC.
 You can run the following script to prepare the node 
 
-    sudo cp ~/jenkins-config/jenkins_setup/scripts/graphicTest/prepareNode.bash
+    sudo ~/jenkins-config/jenkins_setup/scripts/graphicTest/prepareNode.bash
 
 After running the above script, the computer must be restarted.
 
