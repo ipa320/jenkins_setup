@@ -274,5 +274,8 @@ Copy the jelly template for the email generation:
 
 ## For graphics tests
 Prepare the jenkins node for graphical tests by installing VirtualGL and running
+
+    
     vglserver_config -config +s +f -t
+
 The vglserver_config script can be found in /opt/VirtualGL/bin. The graphics driver must be an version of the official nvidia driver. Successfully tested were the versions nvidia-current, nvidia-304 and nvidia-304-experimental. Other nvidia drivers are likely to work as well but are not tested yet.
