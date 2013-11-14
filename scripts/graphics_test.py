@@ -146,8 +146,8 @@ def main():
     if build_repo in stacks:
         # get list of dependencies to test
         test_repos_list = []
-        for dep in pipe_repos[build_identifier].dependencies:
-            if dep in stacks:  # TODO option to select deps to build
+        for dep, depObj in pipe_repos[build_identifier].dependencies.items():
+            if depObj.test and dep in stacks:  # TODO option to select deps to build
                 test_repos_list.append(dep)
 
         ros_env_repo = common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
@@ -159,8 +159,6 @@ def main():
         print "Test repository %s" % build_repo
         try:
             build_list = " ".join(test_repos_list + [build_repo])
-            if build_repo_only:
-                build_list = build_repo
             common.call("/opt/VirtualGL/bin/vglrun rosmake -rV --profile --test-only --output=%s %s" %
                         ( dry_build_logs, build_list), ros_env_repo )
         except common.BuildException as ex:
