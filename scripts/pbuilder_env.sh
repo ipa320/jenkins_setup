@@ -25,11 +25,11 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
-export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
 case $JOBTYPE in
     regular_graphics_test|prio_graphics_test)
         echo "Set up graphic"
 
+        export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
         $DIR/checkDisplayNull.bash &&
         $DIR/setupSources.bash &&
         $DIR/../tvnc/installTurboVNC.bash &&
@@ -61,25 +61,17 @@ echo "==== Begin" $SCRIPT "script.    Ignore the output above ===="
 echo "============================================================"
 
 date
-if [ $JOBTYPE == "graphic_test" ] || [ $JOBTYPE == "prio_graphics_test" ]; then
-    graphic_test="true"
-else
-    graphic_test="false"
-fi
-if [ "$BUILD_REPO_ONLY" == true ]; then
-    build_repo_only="true";
-else
-    build_repo_only="false";
-fi
 
-$WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY $graphic_test $build_repo_only
+$WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
 result=$?
 
-if [ ! -z "$DISPLAY" ] && [ "$DISPLAY" != ":0" ]; then
-    $DIR/remoteX.py stop
-fi
-
-
+case $JOBTYPE in
+    regular_graphics_test|prio_graphics_test)
+        if [ ! -z "$DISPLAY" ] && [ "$DISPLAY" != ":0" ]; then
+            $DIR/remoteX.py stop
+        fi
+        ;;
+esac
 
 date
 echo "============================================================"

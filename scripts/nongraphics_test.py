@@ -49,7 +49,6 @@ def main():
     print "\nTesting on ros distro:  %s" % ros_distro
     print "Testing repository: %s" % build_repo
     print "Graphic Test: False"
-    print "Build Repo Only: %s" % build_repo_only
     if build_repo != build_identifier:
         print "       with suffix: %s" % build_identifier.split('__')[1]
     print "Using source: %s" % pipe_repos[build_identifier].url
@@ -170,17 +169,15 @@ def main():
     if build_repo in stacks:
         # get list of dependencies to test
         test_repos_list = []
-        for dep in pipe_repos[build_identifier].dependencies:
-            if dep in stacks:  # TODO option to select deps to build
+        for dep, depObj in pipe_repos[build_identifier].dependencies.items():
+            if depObj.test and dep in stacks:  # TODO option to select deps to build
                 test_repos_list.append(dep)
 
         # test dry repositories
         #print "Test repository %s" % build_repo
         try:
             build_list = " ".join(test_repos_list + [build_repo])
-            if build_repo_only:
-                build_list = build_repo
-            common.call("rosmake -rV --profile --pjobs=8 --test-only --output=%s %s" %
+            common.call("rosmake -rV --profile --test-only --output=%s %s" %
                         ( dry_build_logs, build_list ), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
