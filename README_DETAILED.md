@@ -622,7 +622,19 @@ run the chroot environment for 64bit
 sudo pbuilder login --basetgz /tmp/basetgz -- /home/jenkins/jenkins_setup/scripts/pbuilder_env.sh
 ```
 
+
+## For graphics tests
+Prepare the jenkins node for graphical tests by installing VirtualGL and TurboVNC.
+You can run the following script to prepare the node 
+
+    sudo cp ~/jenkins-config/jenkins_setup/scripts/graphicTest/prepareNode.bash
+
+After running the above script, the computer must be restarted.
+
+The graphics driver must be an version of the official nvidia driver. Successfully tested were the versions nvidia-current, nvidia-304 and nvidia-304-experimental. Other nvidia drivers are likely to work as well but are not tested yet.
+
 ___
+
 
 > # Manual Pipeline Generation (deprecated):
 >
