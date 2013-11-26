@@ -119,17 +119,30 @@ def main():
         #    os.mkdir(repo_buildspace)
         os.chdir(repo_sourcespace_wet + "/..")
 
+
+        # get wet repositories test and run dependencies
+        #print "Get test and run dependencies of repo list"
+        (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_dry)
+        # get list of dependencies to test
+        test_repos_list_wet = []
+        for dep, depObj in pipe_repos[build_identifier].dependencies.items():
+            if depObj.test and dep in catkin_packages:
+                test_repos_list_wet.append(dep)
+
+        print "Test the following repositories %s" % test_repos_list_wet
+
         #test_error_msg = None
         try:
-            common.call("/opt/VirtualGL/bin/vglrun catkin_make test", ros_env_repo)
+            test_list = ' '.join( test_repos_list_wet )
+            if test_list:
+                common.call( "/opt/VirtualGL/bin/vglrun catkin_make test -pkg %s" % test_list, ros_env_repo)
+
         except common.BuildException as ex:
             print ex.msg
             #print traceback.format_exc()
         #    test_error_msg = ex.msg
 
-        # get wet repositories test and run dependencies
-        #print "Get test and run dependencies of repo list"
-        #(catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_wet)
+
         #if stacks != {}:
         #    raise common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
         #                                % (build_repo, '- ' + '\n- '.join(stacks)))
@@ -168,15 +181,15 @@ def main():
     (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_dry)
     if build_repo in stacks:
         # get list of dependencies to test
-        test_repos_list = []
+        test_repos_list_dry = []
         for dep, depObj in pipe_repos[build_identifier].dependencies.items():
-            if depObj.test and dep in stacks:  # TODO option to select deps to build
-                test_repos_list.append(dep)
+            if depObj.test and dep in stacks:
+                test_repos_list_dry.append(dep)
 
         # test dry repositories
-        #print "Test repository %s" % build_repo
+        print "Test the following repositories %s" % test_repos_list_dry
         try:
-            build_list = " ".join(test_repos_list + [build_repo])
+            build_list = " ".join(test_repos_list_dry + [build_repo])
             common.call("/opt/VirtualGL/bin/vglrun rosmake -rV --profile --test-only --output=%s %s" %
                         ( dry_build_logs, build_list ), ros_env_repo)
         except common.BuildException as ex:
