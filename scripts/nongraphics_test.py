@@ -122,7 +122,7 @@ def main():
 
         # get wet repositories test and run dependencies
         #print "Get test and run dependencies of repo list"
-        (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_dry)
+        (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_wet)
         # get list of dependencies to test
         test_repos_list_wet = []
         for dep, depObj in pipe_repos[build_identifier].dependencies.items():
