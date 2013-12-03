@@ -47,7 +47,7 @@ def apt_get_install(pkgs, rosdep=None, sudo=False):
     @param sudo: execute command as super-user (default False)
     @type  sudo: bool
     """
-    cmd = "apt-get install --yes "
+    cmd = "apt-get install --yes --force-yes "
     if sudo:
         cmd = "sudo " + cmd
 
