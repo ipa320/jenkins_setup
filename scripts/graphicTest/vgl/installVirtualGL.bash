@@ -19,4 +19,6 @@ sudo apt-get install -y --force-yes libxv1
 # Download the package and install
 sudo dpkg -i $pkg
 
+sudo /opt/VirtualGL/bin/vglserver_config -config +s +f -t
+
 [ -f /opt/VirtualGL/bin/vglrun ]
