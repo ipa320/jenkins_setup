@@ -209,6 +209,8 @@ def call_with_list(command, envir=None, verbose=True):
     """
     print "Executing command '%s'" % ' '.join(command)
     helper = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True, env=envir)
+    for line in iter(helper.stdout.readline, b''):
+        print line,
 
     out, err = helper.communicate()
     if helper.returncode != 0:
