@@ -5,11 +5,11 @@ echo "Installing TurboVNC Virtual GL 2.3.2"
 case "`dpkg --print-architecture`" in
 "amd64")
     echo "Using 64-bit version"
-    pkg="$DIR/vgl/virtualgl_2.3.2_amd64.deb"
+    pkg="$DIR/../vgl/virtualgl_2.3.2_amd64.deb"
     ;;
 *)
     echo "Using 32-bit version"
-    pkg="$DIR/vgl/virtualgl_2.3.2_i386.deb"
+    pkg="$DIR/../vgl/virtualgl_2.3.2_i386.deb"
     ;;
 esac
 
