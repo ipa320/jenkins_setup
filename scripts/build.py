@@ -210,9 +210,9 @@ def main():
     print "Install build dependencies: %s" % (', '.join(repo_build_dependencies))
     common.apt_get_install_also_nonrosdep(repo_build_dependencies, ros_distro, rosdep_resolver)
 
-    print "Install wet rosdep dependencies"
-    for dir in catkin_packages.keys():
-        common.call("rosdep install -y %s" % dir, ros_env_repo)
+    #print "Install wet rosdep dependencies" # TODO: this throws an error if the dependency is not a system dependency or a released package. How can we handle wet dependencies which are in the same local workspace?
+    #for dir in catkin_packages.keys():
+    #    common.call("rosdep install -y %s" % dir, ros_env_repo)
 
     print "Install dry rosdep dependencies"
     for dir in stacks.keys():
