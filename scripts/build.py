@@ -92,8 +92,6 @@ def main():
 
     # get all packages in sourcespace
     (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace)
-    if ros_distro == 'electric' and catkin_packages != {}:
-        raise common.BuildException("Found wet packages while building in ros electric")
 
     # (debug) output
     if options.verbose:
@@ -194,17 +192,20 @@ def main():
 
     # Create rosdep object
     rosdep_resolver = None
-    if ros_distro != 'electric':
-        print "Create rosdep object"
-        try:
-            rosdep_resolver = rosdep.RosDepResolver(ros_distro)
-        except:  # when init fails the first time
-            from time import sleep
-            sleep(10)
-            rosdep_resolver = rosdep.RosDepResolver(ros_distro)
+    print "Create rosdep object"
+    try:
+        rosdep_resolver = rosdep.RosDepResolver(ros_distro)
+    except:  # when init fails the first time
+        from time import sleep
+        sleep(10)
+        rosdep_resolver = rosdep.RosDepResolver(ros_distro)
 
     print "Install build dependencies: %s" % (', '.join(repo_build_dependencies))
     common.apt_get_install_also_nonrosdep(repo_build_dependencies, ros_distro, rosdep_resolver)
+
+    print "Install rosdep dependencies"
+    for stack in stacks.keys():
+        common.call("rosdep install -y %s" % stack, ros_env_repo)
 
     #######################
     ### static analysis ###
@@ -274,12 +275,6 @@ def main():
         ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_sourcespace, ros_package_path])
         if options.verbose:
             common.call("env", ros_env_repo)
-
-        if ros_distro == 'electric':
-            print "Rosdep"
-            common.call("rosmake rosdep", ros_env_repo)
-        for stack in stacks.keys():
-            common.call("rosdep install -y %s" % stack, ros_env_repo)
 
         # build dry repositories
         print "Build repository %s" % build_repo
