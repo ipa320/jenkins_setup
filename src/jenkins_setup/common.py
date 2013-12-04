@@ -222,9 +222,12 @@ def call_with_list(command, envir=None, verbose=True):
         print out, err
         raise BuildException(msg)
 
+    # print output if verbose
     if verbose:
         print out
-        print err
+    
+    # print error always
+    print err
     
     return out, err
 

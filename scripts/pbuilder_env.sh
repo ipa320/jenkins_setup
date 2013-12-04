@@ -13,8 +13,6 @@ export PATH=$PATH:/usr/local/bin
 export ROS_PACKAGE_PATH=/tmp/test_repositories/src_repository:$ROS_PACKAGE_PATH
 export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
 
-
-
 echo "Set up ssh"
 export HOME="/root"
 cp -a $WORKSPACE/.ssh /root &&
@@ -49,18 +47,16 @@ case $JOBTYPE in
         ;;
 esac
 
-echo "======================================================"
-echo " Listing environment variables for debugging purposes "
-echo "======================================================"
-env
+#echo "======================================================"
+#echo " Listing environment variables for debugging purposes "
+#echo "======================================================"
+#env
 
 echo
 echo
 echo "============================================================"
 echo "==== Begin" $SCRIPT "script.    Ignore the output above ===="
 echo "============================================================"
-
-date
 
 $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
 result=$?
@@ -73,7 +69,6 @@ case $JOBTYPE in
         ;;
 esac
 
-date
 echo "============================================================"
 echo "==== End" $SCRIPT "script.    Ignore the output below ======"
 echo "============================================================"
