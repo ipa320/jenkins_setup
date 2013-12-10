@@ -1,6 +1,0 @@
-release-name: electric
-repositories:
-    cob_navigation_intern:
-        type: git
-        url: git@github.com:ipa320/cob_navigation_intern.git
-        version: master
