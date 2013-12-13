@@ -5,6 +5,7 @@ import socket
 import pkg_resources
 import yaml
 import re
+import traceback
 from jenkins import JenkinsException
 
 
@@ -43,6 +44,7 @@ class JenkinsJob(object):
                 self.jenkins_instance.reconfig_job(self.job_name, self.job_config)
                 return "Reconfigured job %s" % self.job_name
             except JenkinsException as ex:
+                print traceback.format_exc()
                 print ex
                 return 'Reconfiguration of %s failed: %s' % (self.job_name, ex)
         else:
@@ -50,6 +52,7 @@ class JenkinsJob(object):
                 self.jenkins_instance.create_job(self.job_name, self.job_config)
                 return "Created job %s" % self.job_name
             except JenkinsException as ex:
+                print traceback.format_exc()
                 print ex
                 return 'Creation of %s failed: %s' % (self.job_name, ex)
 
