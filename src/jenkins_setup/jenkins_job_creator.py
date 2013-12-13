@@ -684,6 +684,9 @@ class PipeStarterJob(JenkinsJob):
         Sets pipe starter job specific job configuration parameters
         """
 
+        self.params['NODE_LABEL'] = 'master'
+        self.params['PROJECT'] = 'project'
+
         self._set_trigger_param('vcs')
 
         # set parameterized triggers
