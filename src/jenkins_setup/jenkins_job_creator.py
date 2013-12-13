@@ -103,7 +103,7 @@ class JenkinsJob(object):
         self.params['SHELL'] = ''
         self.params['VCS'] = self.job_config_params['vcs']['none']
         self.params['MATRIX'] = ''
-        self.params['PARAMETERS'] = ''
+        self.params['PARAMETERIZED_JOB_PARAMETERS'] = ''
         self.params['POSTBUILD_TRIGGER'] = ''
         self.params['JOIN_TRIGGER'] = ''
         self.params['PIPELINE_TRIGGER'] = ''
@@ -128,11 +128,11 @@ class JenkinsJob(object):
 
         for key, value in self.params.iteritems():
             if "@(%s)" % key not in self.job_config:
-                raise KeyError("Parameter %s could not be replaced, because it is not existent" % key)
+                raise KeyError("Parameter %s cannot be replaced, because it is not existent" % key)
             self.job_config = self.job_config.replace("@(%s)" % key, value)
         not_replaced_keys = re.findall(r'@\(([A-Z0-9_]+)\)', self.job_config)
         if not_replaced_keys != []:
-            raise KeyError("The keys %s were not replaced, because the parameters where missing" % (str(not_replaced_keys)))
+            raise KeyError("The keys %s cannot be replaced, because the parameters are missing" % (str(not_replaced_keys)))
 
     def _generate_job_name(self, job_type, suffix=''):
         '''
@@ -591,7 +591,50 @@ class PipeStarterGeneralJob(JenkinsJob):
                                                                        predefined_param='POLL=manually triggered' + '\nREPOSITORY=%s' % repo + '\nREPOSITORY_FILTER=repository=="%s"' % repo))
         self._set_parameterizedtrigger_param(prio_triggers)
 
-        # authorization matrix
+        # set authorization matrix
+        self._set_authorization_matrix_param(['read', 'build', 'workspace'])
+
+class PipeStarterManualJob(PipeStarterGeneralJob):
+    """
+    Object representation of Starter Manual Job
+    """
+    def __init__(self, jenkins_instance, pipeline_config, repo_list):
+        """
+        :param jenkins_instance: object of Jenkins server
+        :param pipeline_config: config dict, ``dict``
+        """
+
+        super(PipeStarterManualJob, self).__init__(jenkins_instance, pipeline_config, repo_list)
+
+        self.job_type = 'pipe_starter'
+        self.job_name = self._generate_job_name(self.job_type, suffix='manual')
+        
+        self.repo_list = repo_list
+
+    def _set_job_type_params(self):
+        """
+        Sets pipe starter manual specific job configuration parameters
+        """
+
+        self.params['NODE_LABEL'] = 'master'
+        self.params['PROJECT'] = 'project'
+
+        # set parameterized job parameters
+        string_list = []
+        for repo in self.repo_list:
+            string_list.append(self.job_config_params['parameters']['string'].replace('@(STRING)', repo))
+        strings = ' '.join(string_list)
+
+        self.params['PARAMETERIZED_JOB_PARAMETERS'] = self.job_config_params['parameters']['choice'].replace('@(CHOICES)', strings)
+
+        # set parameterized trigger
+        prio_triggers = []
+        prio_triggers.append(self._get_single_parameterizedtrigger(['prio_build'],
+                                                                   subset_filter='(repository=="${repository}")',
+                                                                   predefined_param='POLL=manually triggered' + '\nREPOSITORY=$repository'))
+        self._set_parameterizedtrigger_param(prio_triggers)
+
+        # set authorization matrix
         self._set_authorization_matrix_param(['read', 'build', 'workspace'])
 
 
@@ -628,13 +671,15 @@ class PipeStarterJob(PipeStarterGeneralJob):
 
         self._set_trigger_param('vcs')
 
-        # generate parameterized triggers
+        # set parameterized triggers
         prio_triggers = []
         for repo in self.repo_list:
             prio_triggers.append(self._get_single_parameterizedtrigger(['prio_build'], subset_filter='(repository=="%s")' % repo,
                                                                        predefined_param='POLL=' + self.poll + '\nREPOSITORY=%s' % repo))
         self._set_parameterizedtrigger_param(prio_triggers)
 
+        # set authorization matrix
+        self._set_authorization_matrix_param(['read', 'build', 'workspace'])
 
 class BuildJob(JenkinsJob):
     """
