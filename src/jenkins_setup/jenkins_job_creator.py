@@ -620,12 +620,11 @@ class PipeStarterManualJob(PipeStarterGeneralJob):
         self.params['PROJECT'] = 'project'
 
         # set parameterized job parameters
-        string_list = []
+        choice_list = []
         for repo in self.repo_list:
-            string_list.append(self.job_config_params['parameters']['string'].replace('@(STRING)', repo))
-        strings = ' '.join(string_list)
-
-        self.params['PARAMETERIZED_JOB_PARAMETERS'] = self.job_config_params['parameters']['choice'].replace('@(CHOICES)', strings)
+            choice_list.append(self.job_config_params['parameters']['string'].replace('@(STRING)', repo))
+        choices = ' '.join(choice_list)
+        self.params['PARAMETERIZED_JOB_PARAMETERS'] = self.job_config_params['parameters']['choice'].replace('@(CHOICES)', choices)
 
         # set parameterized trigger
         prio_triggers = []
@@ -679,7 +678,7 @@ class PipeStarterJob(PipeStarterGeneralJob):
         self._set_parameterizedtrigger_param(prio_triggers)
 
         # set authorization matrix
-        self._set_authorization_matrix_param(['read', 'build', 'workspace'])
+        self._set_authorization_matrix_param(['read', 'workspace'])
 
 class BuildJob(JenkinsJob):
     """
