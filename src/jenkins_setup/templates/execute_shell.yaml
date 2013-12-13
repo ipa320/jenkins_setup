@@ -3,19 +3,17 @@
 ##################
 'prio_build': '#!/bin/bash -e
 
-date
+echo "==> entering load step at $(date)"
+
+time_load=$(date +%s)
 
 if [ -z "$ROS_DISTRO" ]; then
-
-echo "set ROS_DISTRO"
 
 ROS_DISTRO=$ros_distro
 
 fi
 
 if [ -z "$ros_distro" ]; then
-
-echo "set ros_distro"
 
 ros_distro=$ROS_DISTRO
 
@@ -24,7 +22,6 @@ fi
 new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
-
 
 sudo rm -rf $WORKSPACE/*
 
@@ -43,9 +40,6 @@ scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
-
-ls -lah $WORKSPACE
-
 
 cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
@@ -73,13 +67,9 @@ export BUILD_ID=$BUILD_ID
 
 DELIM
 
+echo "==> entering chroot at $(date)"
 
-ls -lah $WORKSPACE
-
-
-echo "***********ENTER CHROOT************"
-
-date
+time_chroot=$(date +%s)
 
 if [ $arch == "i386" ]; then
 
@@ -91,13 +81,33 @@ else
 
 fi
 
-echo "***********LEAVE CHROOT************"
+echo "==> entering store step at $(date)"
 
-echo "*******CLEANUP WORKSPACE*******"
+time_store=$(date +%s)
 
-echo "STORING CHROOT TARBALL ON @(STORAGE)"
+echo "Storing chroot tarball ${basetgz} at @(STORAGE)/in_use_on__@(SERVERNAME)"
 
 scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use_on__@(SERVERNAME)/
+
+echo
+
+echo "==> finished job at $(date)"
+
+time_end=$(date +%s)
+
+# duration steps: load, chroot, store, end
+
+echo "durations:"
+
+echo "load in        $(( $time_chroot - $time_load )) sec"
+ 
+echo "chroot in      $(( $time_store - $time_chroot )) sec"
+
+echo "store in       $(( $time_end - $time_store )) sec"
+
+echo "total          $(( $time_end - $time_load )) sec"
+
+echo
 '
 
 #####################
@@ -107,15 +117,11 @@ scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use_on__@(SERVERNAME)/
 
 if [ -z "$ROS_DISTRO" ]; then
 
-echo "set ROS_DISTRO"
-
 ROS_DISTRO=$ros_distro
 
 fi
 
 if [ -z "$ros_distro" ]; then
-
-echo "set ros_distro"
 
 ros_distro=$ROS_DISTRO
 
@@ -124,7 +130,6 @@ fi
 new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
-
 
 sudo rm -rf $WORKSPACE/*
 
@@ -136,7 +141,6 @@ fi
 
 mkdir $WORKSPACE/../aux
 
-
 echo "Copying "$new_basetgz" from @(STORAGE)"
 
 scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
@@ -144,9 +148,6 @@ scp @(STORAGE)/$new_basetgz $WORKSPACE/../aux/${basetgz}
 scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
-
-ls -lah $WORKSPACE
-
 
 cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
@@ -173,10 +174,6 @@ export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results
 export BUILD_ID=$BUILD_ID
 
 DELIM
-
-
-ls -lah $WORKSPACE
-
 
 echo "***********ENTER CHROOT************"
 
@@ -206,15 +203,11 @@ scp $WORKSPACE/../aux/${basetgz} @(STORAGE)/in_use_on__@(SERVERNAME)/
 
 if [ -z "$ROS_DISTRO" ]; then
 
-echo "set ROS_DISTRO"
-
 ROS_DISTRO=$ros_distro
 
 fi
 
 if [ -z "$ros_distro" ]; then
-
-echo "set ros_distro"
 
 ros_distro=$ROS_DISTRO
 
@@ -223,7 +216,6 @@ fi
 new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
-
 
 sudo rm -rf $WORKSPACE/*
 
@@ -235,7 +227,6 @@ fi
 
 mkdir $WORKSPACE/../aux
 
-
 echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
 scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
@@ -243,9 +234,6 @@ scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
-
-ls -lah $WORKSPACE
-
 
 cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
@@ -273,12 +261,7 @@ export BUILD_ID=$BUILD_ID
 
 DELIM
 
-
-ls -lah $WORKSPACE
-
-
 echo "***********ENTER CHROOT************"
-
 
 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
@@ -292,15 +275,11 @@ echo "***********LEAVE CHROOT************"
 
 if [ -z "$ROS_DISTRO" ]; then
 
-echo "set ROS_DISTRO"
-
 ROS_DISTRO=$ros_distro
 
 fi
 
 if [ -z "$ros_distro" ]; then
-
-echo "set ros_distro"
 
 ros_distro=$ROS_DISTRO
 
@@ -309,7 +288,6 @@ fi
 new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
-
 
 sudo rm -rf $WORKSPACE/*
 
@@ -321,7 +299,6 @@ fi
 
 mkdir $WORKSPACE/../aux
 
-
 echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
 scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
@@ -329,9 +306,6 @@ scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
-
-ls -lah $WORKSPACE
-
 
 cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
@@ -359,9 +333,6 @@ export BUILD_ID=$BUILD_ID
 
 DELIM
 
-
-ls -lah $WORKSPACE
-
 $WORKSPACE/jenkins_setup/scripts/graphicTest/host/prepareForChroot.bash $WORKSPACE
 
 if [ $? != 0 ]; then
@@ -372,9 +343,7 @@ exit 1
 
 fi
 
-
 echo "***********ENTER CHROOT************"
-
 
 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts "$WORKSPACE /tmp/.X11-unix /tmp/nvidia" -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
@@ -388,15 +357,11 @@ echo "***********LEAVE CHROOT************"
 
 if [ -z "$ROS_DISTRO" ]; then
 
-echo "set ROS_DISTRO"
-
 ROS_DISTRO=$ros_distro
 
 fi
 
 if [ -z "$ros_distro" ]; then
-
-echo "set ros_distro"
 
 ros_distro=$ROS_DISTRO
 
@@ -405,7 +370,6 @@ fi
 new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
-
 
 sudo rm -rf $WORKSPACE/*
 
@@ -417,7 +381,6 @@ fi
 
 mkdir $WORKSPACE/../aux
 
-
 echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
 scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
@@ -425,9 +388,6 @@ scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
 scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
-
-ls -lah $WORKSPACE
-
 
 cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
@@ -455,12 +415,7 @@ export BUILD_ID=$BUILD_ID
 
 DELIM
 
-
-ls -lah $WORKSPACE
-
-
 echo "***********ENTER CHROOT************"
-
 
 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
@@ -471,7 +426,6 @@ echo "*******CLEANUP WORKSPACE*******"
 echo "STORING CHROOT TARBALL ON @(STORAGE)"
 
 scp $WORKSPACE/../aux/${basetgz}_downstream @(STORAGE)/in_use_on__@(SERVERNAME)/
-
 '
 
 #######################
@@ -481,15 +435,11 @@ scp $WORKSPACE/../aux/${basetgz}_downstream @(STORAGE)/in_use_on__@(SERVERNAME)/
 
 if [ -z "$ROS_DISTRO" ]; then
 
-echo "set ROS_DISTRO"
-
 ROS_DISTRO=$ros_distro
 
 fi
 
 if [ -z "$ros_distro" ]; then
-
-echo "set ros_distro"
 
 ros_distro=$ROS_DISTRO
 
@@ -498,7 +448,6 @@ fi
 new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
-
 
 sudo rm -rf $WORKSPACE/*
 
@@ -510,7 +459,6 @@ fi
 
 mkdir $WORKSPACE/../aux
 
-
 echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
 
 scp @(STORAGE)/in_use_on__@(SERVERNAME)/${basetgz}_downstream $WORKSPACE/../aux/${basetgz}
@@ -518,9 +466,6 @@ scp @(STORAGE)/in_use_on__@(SERVERNAME)/${basetgz}_downstream $WORKSPACE/../aux/
 scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
 scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
-
-ls -lah $WORKSPACE
-
 
 cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
@@ -548,12 +493,7 @@ export BUILD_ID=$BUILD_ID
 
 DELIM
 
-
-ls -lah $WORKSPACE
-
-
 echo "***********ENTER CHROOT************"
-
 
 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.bash $WORKSPACE
 
