@@ -121,6 +121,17 @@ class JenkinsJob(object):
     ###########################################################################
     # helper methods - parameter generation
     ###########################################################################
+    def _split_github_url(self, url):
+        """
+        splits a github url into user, name
+        
+        :param url: github url
+        """
+        
+        user = url.split(':', 1)[1].split('/', 1)[0]
+        name = url.split(':', 1)[1].split('/', 1)[1].split('.git')[0]
+        return user, name
+
     def _replace_placeholder(self):
         """
         Replaces placeholder in template with parameters
@@ -652,19 +663,29 @@ class PipeStarterJob(JenkinsJob):
         super(PipeStarterJob, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'pipe_starter'
-        self.job_name = self._generate_job_name(self.job_type, suffix=poll)
-
         self.repo_list = repo_list
         self.poll = repo_list[0]
+        
         if poll != repo_list[0]:
             self.poll = poll
+            user, name = self._split_github_url(self.pipe_inst.repositories[repo_list[0]].dependencies[poll].url)
+            branch = self.pipe_inst.repositories[repo_list[0]].dependencies[poll].version
             if poll in self.pipe_inst.repositories.keys():
                 self.repo_list.append(poll)
+        else:
+            user, name = self._split_github_url(self.pipe_inst.repositories[poll].url)
+            branch = self.pipe_inst.repositories[poll].version
+        
+        # set job name
+        self.job_name = self._generate_job_name(self.job_type, suffix=user + "__" + name + "__" + branch)
 
     def _set_job_type_params(self):
         """
         Sets pipe starter job specific job configuration parameters
         """
+
+        self.params['NODE_LABEL'] = 'master'
+        self.params['PROJECT'] = 'project'
 
         self._set_trigger_param('vcs')
 
