@@ -587,14 +587,14 @@ class PipeStarterGeneralJob(JenkinsJob):
         prio_triggers = []
         for repo in self.repo_list:
             prio_triggers.append(self._get_single_parameterizedtrigger(['prio_build'],
-                                                                       subset_filter=self._generate_matrix_filter(self._get_prio_subset_filter()),
+                                                                       subset_filter='(repository=="%s")' % repo,
                                                                        predefined_param='POLL=manually triggered' + '\nREPOSITORY=%s' % repo + '\nREPOSITORY_FILTER=repository=="%s"' % repo))
         self._set_parameterizedtrigger_param(prio_triggers)
 
         # set authorization matrix
         self._set_authorization_matrix_param(['read', 'build', 'workspace'])
 
-class PipeStarterManualJob(PipeStarterGeneralJob):
+class PipeStarterManualJob(JenkinsJob):
     """
     Object representation of Starter Manual Job
     """
@@ -604,7 +604,7 @@ class PipeStarterManualJob(PipeStarterGeneralJob):
         :param pipeline_config: config dict, ``dict``
         """
 
-        super(PipeStarterManualJob, self).__init__(jenkins_instance, pipeline_config, repo_list)
+        super(PipeStarterManualJob, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'pipe_starter'
         self.job_name = self._generate_job_name(self.job_type, suffix='manual')
@@ -637,7 +637,7 @@ class PipeStarterManualJob(PipeStarterGeneralJob):
         self._set_authorization_matrix_param(['read', 'build', 'workspace'])
 
 
-class PipeStarterJob(PipeStarterGeneralJob):
+class PipeStarterJob(JenkinsJob):
     """
     Object representation of Pipe Starter Job
     """
@@ -649,7 +649,7 @@ class PipeStarterJob(PipeStarterGeneralJob):
         :param poll: name of repository to monitor for changes, ``str``
         """
 
-        super(PipeStarterJob, self).__init__(jenkins_instance, pipeline_config, repo_list)
+        super(PipeStarterJob, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'pipe_starter'
         self.job_name = self._generate_job_name(self.job_type, suffix=poll)
@@ -665,8 +665,6 @@ class PipeStarterJob(PipeStarterGeneralJob):
         """
         Sets pipe starter job specific job configuration parameters
         """
-
-        super(PipeStarterJob, self)._set_job_type_params()
 
         self._set_trigger_param('vcs')
 
