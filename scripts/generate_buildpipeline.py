@@ -119,6 +119,17 @@ def main():
         else:
             modified_jobs.append(job_creator_instance.create_job())
 
+    ### manual pipe starter
+    # this pipe starter job won't poll any repository; it has to be started
+    # manually. It triggers the priority build job with a repositories from 
+    # a pull down menu as parameter
+    job_creator_instance = jenkins_job_creator.PipeStarterManualJob(jenkins_instance, plc_instance, plc_instance.repositories.keys())
+    if options.delete:
+        modified_jobs.append(job_creator_instance.delete_job())
+    else:
+        manual_pipe_starter_name = job_creator_instance.create_job()
+        modified_jobs.append(manual_pipe_starter_name)
+
     ### general pipe starter
     # this pipe starter job won't poll any repository; it has to be started
     # manually. It triggers the priority build job with all defined
