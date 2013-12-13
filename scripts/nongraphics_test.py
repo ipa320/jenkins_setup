@@ -159,6 +159,7 @@ def main():
     print "durations:"
     print "parsing arguments in       ", (time_test - time_parsing)
     print "test in                    ", (time_finish - time_test)
+    print "total                      ", (time_finish - time_parsing)
     print ""
 
 
