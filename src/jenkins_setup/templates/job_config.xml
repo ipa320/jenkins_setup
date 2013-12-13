@@ -11,7 +11,7 @@
   <keepDependencies>false</keepDependencies>
   @(MATRIX)
   <properties>
-    @(PARAMETERS)
+    @(PARAMETERIZED_JOB_PARAMETERS)
     @(AUTHORIZATIONMATRIX)
     <hudson.plugins.trac.TracProjectProperty>
         <tracWebsite>http://www.care-o-bot-research.org/trac</tracWebsite>
