@@ -529,11 +529,13 @@ class JenkinsJob(object):
         Gets and sets up execute shell script template
         """
 
-        shell_temp = pkg_resources.resource_string('jenkins_setup', 'templates/execute_shell.yaml')
-        shell_temp = yaml.load(shell_temp)
         if script_type:
+            shell_temp = pkg_resources.resource_string('jenkins_setup', 'templates/execute_shell_' + script_type + '.yaml')
+            shell_temp = yaml.load(shell_temp)
             shell_script = shell_temp[script_type]
         else:
+            shell_temp = pkg_resources.resource_string('jenkins_setup', 'templates/execute_shell_' + self.job_type + '.yaml')
+            shell_temp = yaml.load(shell_temp)
             shell_script = shell_temp[self.job_type]
         shell_script = shell_script.replace('@(SERVERNAME)', self.pipe_inst.server_name)
         shell_script = shell_script.replace('@(USERNAME)', self.pipe_inst.user_name)
