@@ -98,7 +98,7 @@ def main():
         try:
             test_list = ' '.join( test_repos_list_wet )
             if test_list:
-                common.call( "catkin_make test -pkg %s" % test_list, ros_env_repo)
+                common.call( "catkin_make test --pkg %s" % test_list, ros_env_repo)
 
         except common.BuildException as ex:
             print ex.msg
