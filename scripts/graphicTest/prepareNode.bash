@@ -1,5 +1,5 @@
 #!/bin/bash
-export DIR="$(cd $(dirname $0); pwd -P)/chroot"
+export DIR="$(cd $(dirname $0); pwd -P)"
 
 echo '---------------------------------'
 echo '       Install TurboVNC'

@@ -5,11 +5,11 @@ echo "Installing TurboVNC Version 1.1.95 (1.2rc)"
 case "`dpkg --print-architecture`" in
 "amd64")
     echo "Using 64-bit version"
-    pkg="$DIR/../tvnc/turbovnc_1.1.95_amd64.deb"
+    pkg="$DIR/tvnc/turbovnc_1.1.95_amd64.deb"
     ;;
 *)
     echo "Using 32-bit version"
-    pkg="$DIR/../tvnc/turbovnc_1.1.95_i386.deb"
+    pkg="$DIR/tvnc/turbovnc_1.1.95_i386.deb"
     ;;
 esac
 
