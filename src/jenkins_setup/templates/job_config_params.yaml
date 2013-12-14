@@ -77,8 +77,18 @@
     </hudson.plugins.emailext.ExtendedEmailPublisher>'
 
 'parameters':
-  'block': '<hudson.model.ParametersDefinitionProperty> <parameterDefinitions> @(PARAMS) </parameterDefinitions> </hudson.model.ParametersDefinitionProperty>'
-  'param': '<hudson.model.StringParameterDefinition> <name>@(PARAM)</name> <description> </description> <defaultValue> </defaultValue>  </hudson.model.StringParameterDefinition>'
+  'choice': '<hudson.model.ParametersDefinitionProperty> 
+               <parameterDefinitions>
+                 <hudson.model.ChoiceParameterDefinition>
+                   <name>repository</name>
+                   <description></description>
+                   <choices class="java.util.Arrays$ArrayList">
+                     <a class="string-array"> @(CHOICES) </a>
+                   </choices>
+                 </hudson.model.ChoiceParameterDefinition>
+               </parameterDefinitions> 
+             </hudson.model.ParametersDefinitionProperty>'
+  'string': '<string>@(STRING)</string>'
 
 'authorizationmatrix':
     'basic': '<hudson.security.AuthorizationMatrixProperty> @(PERMISSION) </hudson.security.AuthorizationMatrixProperty>'

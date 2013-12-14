@@ -1,0 +1,8 @@
+######################
+### hardware_build ###
+######################
+'hardware_build': '#!/bin/bash -e
+
+    #TODO
+
+'
