@@ -1,6 +1,6 @@
 export DISPLAY=:0
 type xdpyinfo 1>/dev/null 2>&1
-if [ $? -e 0 ] && [ ! -z "`xdpyinfo 2>&1 | grep -i 'unable to open'`" ]; then
+if [ $? -eq 0 ] && [ ! -z "`xdpyinfo 2>&1 | grep -i 'unable to open'`" ]; then
     echo ''
     echo '------------------------------------'
     echo '     Could not open display :0      '
