@@ -37,7 +37,7 @@ echo "Bag-File-Directory: $bagPath"
 
 # Test if bagFiles-Path can be accessed
 
-touch writeTest; scp writeTest $bagPath; writeResult=$?; rm writeTest
+touch .writeTest; scp .writeTest $bagPath; writeResult=$?; rm .writeTest
 
 if [ $writeResult -ne 0 ]; then 
 
