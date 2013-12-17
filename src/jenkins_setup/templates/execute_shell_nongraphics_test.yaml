@@ -1,0 +1,101 @@
+########################
+### nongraphics_test ###
+########################
+'nongraphics_test': '#!/bin/bash
+
+echo "==> entering load step at $(date)"
+
+time_load=$(date +%s)
+
+if [ -z "$ROS_DISTRO" ]; then
+
+ROS_DISTRO=$ros_distro
+
+fi
+
+if [ -z "$ros_distro" ]; then
+
+ros_distro=$ROS_DISTRO
+
+fi
+
+new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
+
+basetgz=@(USERNAME)__${new_basetgz}__${repository}
+
+sudo rm -rf $WORKSPACE/*
+
+if [ -d $WORKSPACE/../aux ]; then
+
+sudo rm -rf $WORKSPACE/../aux
+
+fi
+
+mkdir $WORKSPACE/../aux
+
+echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
+
+scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
+
+scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
+
+scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
+
+cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
+
+JOBNAME=$JOB_NAME
+
+ROSDISTRO=$ROS_DISTRO
+
+REPOSITORY=$repository
+
+UBUNTUDISTRO=$ubuntu_distro
+
+ARCH=$arch
+
+PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
+
+JENKINS_MASTER=@(SERVERNAME)
+
+JENKINS_USER=@(USERNAME)
+
+JOBTYPE=@(JOB_TYPE_NAME)
+
+export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results
+
+export BUILD_ID=$BUILD_ID
+
+DELIM
+
+echo "==> entering chroot at $(date)"
+
+time_chroot=$(date +%s)
+
+if [ $arch == "i386" ]; then
+
+    setarch i386 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+
+else
+
+sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+
+fi
+
+echo
+
+echo "==> finished job at $(date)"
+
+time_end=$(date +%s)
+
+# duration steps: load, chroot, end
+
+echo "durations:"
+
+echo "load in        $(( $time_chroot - $time_load )) sec"
+ 
+echo "chroot in      $(( $time_end - $time_chroot )) sec"
+
+echo "total          $(( $time_end - $time_load )) sec"
+
+echo
+'

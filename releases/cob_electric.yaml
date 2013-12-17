@@ -1,6 +1,0 @@
-release-name: electric
-repositories:
-    cob_extern:
-        type: git
-        url: git://github.com/ipa320/cob_extern.git
-        version: master

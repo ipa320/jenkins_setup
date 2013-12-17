@@ -5,6 +5,7 @@ import socket
 import pkg_resources
 import yaml
 import re
+import traceback
 from jenkins import JenkinsException
 
 
@@ -43,6 +44,7 @@ class JenkinsJob(object):
                 self.jenkins_instance.reconfig_job(self.job_name, self.job_config)
                 return "Reconfigured job %s" % self.job_name
             except JenkinsException as ex:
+                print traceback.format_exc()
                 print ex
                 return 'Reconfiguration of %s failed: %s' % (self.job_name, ex)
         else:
@@ -50,6 +52,7 @@ class JenkinsJob(object):
                 self.jenkins_instance.create_job(self.job_name, self.job_config)
                 return "Created job %s" % self.job_name
             except JenkinsException as ex:
+                print traceback.format_exc()
                 print ex
                 return 'Creation of %s failed: %s' % (self.job_name, ex)
 
@@ -103,7 +106,7 @@ class JenkinsJob(object):
         self.params['SHELL'] = ''
         self.params['VCS'] = self.job_config_params['vcs']['none']
         self.params['MATRIX'] = ''
-        self.params['PARAMETERS'] = ''
+        self.params['PARAMETERIZED_JOB_PARAMETERS'] = ''
         self.params['POSTBUILD_TRIGGER'] = ''
         self.params['JOIN_TRIGGER'] = ''
         self.params['PIPELINE_TRIGGER'] = ''
@@ -121,6 +124,17 @@ class JenkinsJob(object):
     ###########################################################################
     # helper methods - parameter generation
     ###########################################################################
+    def _split_github_url(self, url):
+        """
+        splits a github url into user, name
+        
+        :param url: github url
+        """
+        
+        user = url.split(':', 1)[1].split('/', 1)[0]
+        name = url.split(':', 1)[1].split('/', 1)[1].split('.git')[0]
+        return user, name
+
     def _replace_placeholder(self):
         """
         Replaces placeholder in template with parameters
@@ -128,11 +142,11 @@ class JenkinsJob(object):
 
         for key, value in self.params.iteritems():
             if "@(%s)" % key not in self.job_config:
-                raise KeyError("Parameter %s could not be replaced, because it is not existent" % key)
+                raise KeyError("Parameter %s cannot be replaced, because it is not existent" % key)
             self.job_config = self.job_config.replace("@(%s)" % key, value)
         not_replaced_keys = re.findall(r'@\(([A-Z0-9_]+)\)', self.job_config)
         if not_replaced_keys != []:
-            raise KeyError("The keys %s were not replaced, because the parameters where missing" % (str(not_replaced_keys)))
+            raise KeyError("The keys %s cannot be replaced, because the parameters are missing" % (str(not_replaced_keys)))
 
     def _generate_job_name(self, job_type, suffix=''):
         '''
@@ -515,11 +529,13 @@ class JenkinsJob(object):
         Gets and sets up execute shell script template
         """
 
-        shell_temp = pkg_resources.resource_string('jenkins_setup', 'templates/execute_shell.yaml')
-        shell_temp = yaml.load(shell_temp)
         if script_type:
+            shell_temp = pkg_resources.resource_string('jenkins_setup', 'templates/execute_shell_' + script_type + '.yaml')
+            shell_temp = yaml.load(shell_temp)
             shell_script = shell_temp[script_type]
         else:
+            shell_temp = pkg_resources.resource_string('jenkins_setup', 'templates/execute_shell_' + self.job_type + '.yaml')
+            shell_temp = yaml.load(shell_temp)
             shell_script = shell_temp[self.job_type]
         shell_script = shell_script.replace('@(SERVERNAME)', self.pipe_inst.server_name)
         shell_script = shell_script.replace('@(USERNAME)', self.pipe_inst.user_name)
@@ -587,15 +603,57 @@ class PipeStarterGeneralJob(JenkinsJob):
         prio_triggers = []
         for repo in self.repo_list:
             prio_triggers.append(self._get_single_parameterizedtrigger(['prio_build'],
-                                                                       subset_filter=self._generate_matrix_filter(self._get_prio_subset_filter()),
+                                                                       subset_filter='(repository=="%s")' % repo,
                                                                        predefined_param='POLL=manually triggered' + '\nREPOSITORY=%s' % repo + '\nREPOSITORY_FILTER=repository=="%s"' % repo))
         self._set_parameterizedtrigger_param(prio_triggers)
 
-        # authorization matrix
+        # set authorization matrix
+        self._set_authorization_matrix_param(['read', 'build', 'workspace'])
+
+class PipeStarterManualJob(JenkinsJob):
+    """
+    Object representation of Starter Manual Job
+    """
+    def __init__(self, jenkins_instance, pipeline_config, repo_list):
+        """
+        :param jenkins_instance: object of Jenkins server
+        :param pipeline_config: config dict, ``dict``
+        """
+
+        super(PipeStarterManualJob, self).__init__(jenkins_instance, pipeline_config)
+
+        self.job_type = 'pipe_starter'
+        self.job_name = self._generate_job_name(self.job_type, suffix='manual')
+        
+        self.repo_list = repo_list
+
+    def _set_job_type_params(self):
+        """
+        Sets pipe starter manual specific job configuration parameters
+        """
+
+        self.params['NODE_LABEL'] = 'master'
+        self.params['PROJECT'] = 'project'
+
+        # set parameterized job parameters
+        choice_list = []
+        for repo in self.repo_list:
+            choice_list.append(self.job_config_params['parameters']['string'].replace('@(STRING)', repo))
+        choices = ' '.join(choice_list)
+        self.params['PARAMETERIZED_JOB_PARAMETERS'] = self.job_config_params['parameters']['choice'].replace('@(CHOICES)', choices)
+
+        # set parameterized trigger
+        prio_triggers = []
+        prio_triggers.append(self._get_single_parameterizedtrigger(['prio_build'],
+                                                                   subset_filter='(repository=="${repository}")',
+                                                                   predefined_param='POLL=manually triggered' + '\nREPOSITORY=$repository'))
+        self._set_parameterizedtrigger_param(prio_triggers)
+
+        # set authorization matrix
         self._set_authorization_matrix_param(['read', 'build', 'workspace'])
 
 
-class PipeStarterJob(PipeStarterGeneralJob):
+class PipeStarterJob(JenkinsJob):
     """
     Object representation of Pipe Starter Job
     """
@@ -607,34 +665,44 @@ class PipeStarterJob(PipeStarterGeneralJob):
         :param poll: name of repository to monitor for changes, ``str``
         """
 
-        super(PipeStarterJob, self).__init__(jenkins_instance, pipeline_config, repo_list)
+        super(PipeStarterJob, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'pipe_starter'
-        self.job_name = self._generate_job_name(self.job_type, suffix=poll)
-
         self.repo_list = repo_list
         self.poll = repo_list[0]
+        
         if poll != repo_list[0]:
             self.poll = poll
+            user, name = self._split_github_url(self.pipe_inst.repositories[repo_list[0]].dependencies[poll].url)
+            branch = self.pipe_inst.repositories[repo_list[0]].dependencies[poll].version
             if poll in self.pipe_inst.repositories.keys():
                 self.repo_list.append(poll)
+        else:
+            user, name = self._split_github_url(self.pipe_inst.repositories[poll].url)
+            branch = self.pipe_inst.repositories[poll].version
+        
+        # set job name
+        self.job_name = self._generate_job_name(self.job_type, suffix=user + "__" + name + "__" + branch)
 
     def _set_job_type_params(self):
         """
         Sets pipe starter job specific job configuration parameters
         """
 
-        super(PipeStarterJob, self)._set_job_type_params()
+        self.params['NODE_LABEL'] = 'master'
+        self.params['PROJECT'] = 'project'
 
         self._set_trigger_param('vcs')
 
-        # generate parameterized triggers
+        # set parameterized triggers
         prio_triggers = []
         for repo in self.repo_list:
             prio_triggers.append(self._get_single_parameterizedtrigger(['prio_build'], subset_filter='(repository=="%s")' % repo,
                                                                        predefined_param='POLL=' + self.poll + '\nREPOSITORY=%s' % repo))
         self._set_parameterizedtrigger_param(prio_triggers)
 
+        # set authorization matrix
+        self._set_authorization_matrix_param(['read', 'workspace'])
 
 class BuildJob(JenkinsJob):
     """

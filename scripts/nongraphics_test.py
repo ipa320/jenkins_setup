@@ -65,22 +65,7 @@ def main():
     #repo_buildspace = os.path.join(tmpdir, 'build_repository')                                        # location for build output
     dry_build_logs = os.path.join(repo_sourcespace_dry, 'build_logs')                                 # location for build logs
 
-    if ros_distro != 'electric':
-        # Create rosdep object
-        print "Create rosdep object"
-        try:
-            rosdep_resolver = rosdep.RosDepResolver(ros_distro)
-        except:  # when init fails the first time
-            from time import sleep
-            sleep(10)
-            rosdep_resolver = rosdep.RosDepResolver(ros_distro)
-
-    ## env
-    #print "Set up ros environment variables"
-    #ros_env = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
-    #if options.verbose:
-    #    common.call("env", ros_env)
-    
+    # get environment variables    
     ros_env_repo = common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
     ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_sourcespace, ros_package_path])
     if options.verbose:
@@ -96,29 +81,7 @@ def main():
     print "test catkin repositories"
     ros_env_repo['ROS_TEST_RESULTS_DIR'] = repo_test_results_wet
     if os.listdir(repo_sourcespace_wet):
-        # set up catkin workspace
-        #if ros_distro == 'fuerte':
-            #if 'catkin' not in catkin_packages.keys():
-                ## add catkin package to rosinstall
-                #rosinstall = "\n- git: {local-name: catkin, uri: 'git://github.com/ros/catkin.git', version: fuerte-devel}"
-                #print "Install catkin"
-                ## rosinstall catkin
-                #common.call("rosinstall --verbose %s %s/repo.rosinstall /opt/ros/%s"
-                            #% (repo_sourcespace_wet, workspace, ros_distro))
-
-            #print "Create a CMakeLists.txt for catkin packages"
-            #common.call("ln -s %s %s" % (os.path.join(repo_sourcespace_wet, 'catkin', 'cmake', 'toplevel.cmake'),
-                                         #os.path.join(repo_sourcespace_wet, 'CMakeLists.txt')))
-        #else:
-            #common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env_repo)
-
-        # test repositories
-        #print "Test wet repository list"
-
-        #if not os.path.isdir(repo_buildspace):
-        #    os.mkdir(repo_buildspace)
         os.chdir(repo_sourcespace_wet + "/..")
-
 
         # get wet repositories test and run dependencies
         #print "Get test and run dependencies of repo list"
@@ -129,36 +92,18 @@ def main():
             if depObj.test and dep in catkin_packages:
                 test_repos_list_wet.append(dep)
 
-        print "Test the following repositories %s" % test_repos_list_wet
+        print "Test the following wet repositories %s" % test_repos_list_wet
 
         #test_error_msg = None
         try:
             test_list = ' '.join( test_repos_list_wet )
             if test_list:
-                common.call( "catkin_make test -pkg %s" % test_list, ros_env_repo)
+                common.call( "catkin_make test --pkg %s" % test_list, ros_env_repo)
 
         except common.BuildException as ex:
             print ex.msg
             #print traceback.format_exc()
         #    test_error_msg = ex.msg
-
-
-        #if stacks != {}:
-        #    raise common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
-        #                                % (build_repo, '- ' + '\n- '.join(stacks)))
-        # take only wet packages
-        #repo_test_dependencies = common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=False, test_depends=True)
-        #if repo_test_dependencies != [] and test_error_msg is None:
-        #    print "Install test and run dependencies of repository list: %s" % (', '.join(repo_test_dependencies))
-        #    common.apt_get_install_also_nonrosdep(repo_test_dependencies, ros_distro, rosdep_resolver)
-
-        #    # run tests
-        #    print "Test repository list"
-        #    try:
-        #        common.call("%smake run_tests" % ("/opt/VirtualGL/bin/vglrun " if graphic_test else ""), ros_env_repo)  # TODO check how to test a list of repos
-        #    except common.BuildException as ex:
-        #        print ex.msg
-        #        test_error_msg = ex.msg
 
         # clean test xml files
         common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
@@ -187,7 +132,7 @@ def main():
                 test_repos_list_dry.append(dep)
 
         # test dry repositories
-        print "Test the following repositories %s" % test_repos_list_dry
+        print "Test the following dry repositories %s" % test_repos_list_dry
         try:
             build_list = " ".join(test_repos_list_dry + [build_repo])
             common.call("rosmake -rV --profile --test-only --output=%s %s" %
@@ -208,18 +153,13 @@ def main():
         # copy dry test results
         common.copy_test_results(repo_test_results_dry, workspace + "/test_results")
     
-    #print datetime.datetime.now()
-    #try:
-    #    shutil.move(dry_build_logs, os.path.join(workspace, "build_logs"))
-    #except IOError as ex:
-    #    print "No build logs found: %s" % ex
-
     # the end (steps: parsing, test)
     time_finish = datetime.datetime.now()
     print "=====> finished script at", time_finish
     print "durations:"
     print "parsing arguments in       ", (time_test - time_parsing)
     print "test in                    ", (time_finish - time_test)
+    print "total                      ", (time_finish - time_parsing)
     print ""
 
 
