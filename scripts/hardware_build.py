@@ -30,14 +30,13 @@ def main():
     server_name = args[1]
     user_name = args[2]
     ros_distro = args[3]
-    build_identifier = args[4] # repository + suffix
-    build_repo = build_identifier.split('__')[0] # only repository to build
+    build_identifier = args[4]                      # repository + suffix
+    build_repo = build_identifier.split('__')[0]    # only repository to build
     # environment variables
     workspace = os.environ['WORKSPACE']
     ros_package_path = os.environ['ROS_PACKAGE_PATH']
 
     # cob_pipe object
-    print "LIST:" + str(cob_pipe.CobPipe()) +"REPOOWN:" + str(pipeline_repos_owner)+ "SERVER:" + str(server_name) + "USER:" + str(user_name)
     cp_instance = cob_pipe.CobPipe()
     cp_instance.load_config_from_url(pipeline_repos_owner, server_name, user_name)
     pipe_repos = cp_instance.repositories
@@ -45,18 +44,18 @@ def main():
 
     # (debug) output
     print "\n", 50 * 'X'
-    print "\nTesting on ros distro: %s" % ros_distro
+    print "\nTesting on ros distro:  %s" % ros_distro
     print "Testing repository: %s" % build_repo
     if build_repo != build_identifier:
-        print " with suffix: %s" % build_identifier.split('__')[1]
+        print "       with suffix: %s" % build_identifier.split('__')[1]
     print "Using source: %s" % pipe_repos[build_identifier].url
     print "Testing branch/version: %s" % pipe_repos[build_identifier].version
     print "\n", 50 * 'X'
 
     #remove old and create new folder
     #while len(os.listdir(workspace)) >= 7:
-    # list = os.listdir(workspace)
-    # shutil.rmtree(workspace + "/" + sorted(list)[0]) #with common.call rm -rf later
+    #    list = os.listdir(workspace)
+    #    shutil.rmtree(workspace + "/" + sorted(list)[0]) #with common.call rm -rf later        
     #workspace = workspace + '/' + str(datetime.datetime.now())
     #print str(workspace)
 
@@ -64,12 +63,12 @@ def main():
     # set up directories variables
     tmpdir = os.path.join(workspace, 'test_repositories') #TODO check for old versions (delete oldest) and create new directory with timestamp
     common.call("rm -rf " + tmpdir)
-    repo_sourcespace = os.path.join(tmpdir, 'src_repository') # location to store repositories in
-    repo_sourcespace_wet = os.path.join(tmpdir, 'src_repository', 'wet', 'src') # wet (catkin) repositories
-    repo_sourcespace_dry = os.path.join(tmpdir, 'src_repository', 'dry') # dry (rosbuild) repositories
+    repo_sourcespace = os.path.join(tmpdir, 'src_repository')                      # location to store repositories in
+    repo_sourcespace_wet = os.path.join(tmpdir, 'src_repository', 'wet', 'src')    # wet (catkin) repositories
+    repo_sourcespace_dry = os.path.join(tmpdir, 'src_repository', 'dry')           # dry (rosbuild) repositories
     repo_static_analysis_results = os.path.join(tmpdir, 'src_repository', 'static_analysis_results') # location for static code test results
-    repo_buildspace = os.path.join(tmpdir, 'build_repository') # location for build output
-    dry_build_logs = os.path.join(repo_sourcespace_dry, 'build_logs') # location for build logs
+    #repo_buildspace = os.path.join(tmpdir, 'build_repository')                     # location for build output
+    dry_build_logs = os.path.join(repo_sourcespace_dry, 'build_logs')              # location for build logs
 
     ################
     ### checkout ###
@@ -80,7 +79,7 @@ def main():
     # download build_repo from source #
     print "Creating rosinstall file for repository %s" % build_repo
     rosinstall = ""
-    if build_identifier in pipe_repos: # check if triggering identifier is really present in pipeline config
+    if build_identifier in pipe_repos:  # check if triggering identifier is really present in pipeline config
         rosinstall += pipe_repos[build_identifier].get_rosinstall()
         rosinstall += "- other: {local-name: /u/robot}" #TODO: not hardcoding (with multiple directories?)
     else:
@@ -110,8 +109,8 @@ def main():
     if options.verbose:
         print "Packages in %s:" % repo_sourcespace
         print "Catkin: ", catkin_packages
-        print "Rosbuild:\n Stacks: ", stacks
-        print " Packages: ", manifest_packages
+        print "Rosbuild:\n  Stacks: ", stacks
+        print "  Packages: ", manifest_packages
 
         # get deps directly for catkin (like in willow code)
         try:
@@ -180,7 +179,7 @@ def main():
                                             % (build_repo, '- ' + '\n- '.join(stacks)))
             # take only wet packages
             repo_build_dependencies = common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
-        else: # dry build repo
+        else:  # dry build repo
             # take all packages
             repo_build_dependencies = common.get_nonlocal_dependencies(catkin_packages, stacks, {}, build_depends=True, test_depends=False)
         repo_build_dependencies = [dep for dep in repo_build_dependencies if dep not in fulfilled_deps]
@@ -209,8 +208,9 @@ def main():
 
     print "Install build dependencies: %s" % (', '.join(repo_build_dependencies))
     #common.apt_get_install_also_nonrosdep(repo_build_dependencies, ros_distro, rosdep_resolver)
-    print "ASK YOUR ADMIN TO INSTALL:" + str(repo_build_dependencies)
-    # check which packages are installed
+    common.apt_get_check_also_nonrosdep(repo_build_dependencies, ros_distro, rosdep_resolver)
+    print "ASK YOUR ADMIN TO INSTALL THE PACKAGES ABOVE"
+    # check which packages are installed (dpkg -l)
     # FAIL WHEN SOMETHING MISSING
     #############
     ### build ###
@@ -281,10 +281,10 @@ def main():
     time_finish = datetime.datetime.now()
     print "=====> finished script at", time_finish
     print "durations:"
-    print "parsing arguments in ", (time_checkout - time_parsing)
-    print "checkout in ", (time_install - time_checkout)
-    print "install dependencies in ", (time_build - time_install)
-    print "build in ", (time_finish - time_build)
+    print "parsing arguments in       ", (time_checkout - time_parsing)
+    print "checkout in                ", (time_install - time_checkout)
+    print "install dependencies in    ", (time_build - time_install)
+    print "build in                   ", (time_finish - time_build)
     print ""
     print "For testing, please run the following line in your testing terminal"
     print "source " + repo_sourcespace + "/setup.bash"

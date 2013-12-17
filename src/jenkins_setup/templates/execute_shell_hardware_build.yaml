@@ -24,7 +24,7 @@ fi
 
 #scp -r jenkins@pyramid-10:.ssh $WORKSPACE/
 
-scp -r jenkins@pyramid-10:/home-local/jenkins/jenkins-config/jenkins_setup $WORKSPACE # TODO activate again after testing is finished
+scp -r jenkins@pyramid-10:/home/jenkins/jenkins-config/jenkins_setup $WORKSPACE # TODO activate again after testing is finished
 
 #git clone https://github.com/ipa-fmw-ms/jenkins_setup.git
 
@@ -43,6 +43,8 @@ ARCH=$arch
 PIPELINE_REPOS_OWNER=ipa320
 
 JENKINS_MASTER=pyramid-10
+
+echo $JENKINS_USER
 
 JENKINS_USER=admin
 
