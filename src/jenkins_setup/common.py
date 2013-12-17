@@ -99,7 +99,7 @@ def apt_get_check(pkgs, rosdep=None):
     @param sudo: execute command as super-user (default False)
     @type  sudo: bool
     """
-    cmd = "dpkg -s nix "
+    cmd = "dpkg -s "
 
     if len(pkgs) > 0:
         if rosdep:
@@ -174,19 +174,17 @@ def apt_get_install_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
     if unavailable_pkgs != []:
         raise BuildException("Some dependencies are not available: %s" % (', '.join(unavailable_pkgs)))
 
-    if aptget_pkgs != []:
-        try:
-            print "Installing apt dependencies"
-            apt_get_install(aptget_pkgs, sudo=sudo)
-        except:
-            raise BuildException("Failed to apt-get install apt dependencies")
-
     if rosdep_pkgs != []:
         try:
-            print "Installing ros dependencies"
             apt_get_install(rosdep_pkgs, rosdep, sudo)
         except:
-            raise BuildException("Failed to apt-get install ros dependencies")
+            raise BuildException("Failed to apt-get install rosdep packages")
+
+    if aptget_pkgs != []:
+        try:
+            apt_get_install(aptget_pkgs, sudo=sudo)
+        except:
+            raise BuildException("Failed to apt-get install ros repositories")
 
 
 def copy_test_results(buildspace_test_results_dir, workspace_test_results_dir, errors=None, prefix='dummy'):
@@ -285,9 +283,8 @@ def call_with_list(command, envir=None, verbose=True):
     """
     print "Executing command '%s'" % ' '.join(command)
     helper = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True, env=envir)
-    if verbose:
-        for line in iter(helper.stdout.readline, b''):
-            print line,
+    for line in iter(helper.stdout.readline, b''):
+        print line,
 
     out, err = helper.communicate()
     if helper.returncode != 0:
@@ -296,12 +293,9 @@ def call_with_list(command, envir=None, verbose=True):
         print out, err
         raise BuildException(msg)
 
-    # print output if verbose
     if verbose:
         print out
-    
-    # print error always
-    print err
+        print err
     
     return out, err
 
