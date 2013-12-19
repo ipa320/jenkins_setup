@@ -98,6 +98,7 @@ Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/plug
 - [View Job Filters](https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters)
 - [Build-timeout Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Build-timeout+Plugin)
 - [Warnings Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Warnings+Plugin)
+- [Cppcheck Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Cppcheck+Plugin)
 - [Multiple SCMs Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Multiple+SCMs+Plugin)
 
 ### Install `jenkins_setup`, `jenkins_config` and the *cob-pipeline* plugin
