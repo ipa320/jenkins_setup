@@ -119,6 +119,8 @@ class JenkinsJob(object):
         self.params['CPPCHECK_PUBLISHER'] = ''
         self._set_authorization_matrix_param(['read', 'workspace'])
         self.params['CONCURRENT_BUILD'] = 'false'
+        self.params['BLOCKING_UPSTREAM'] = 'false'
+        self.params['BLOCKING_DOWNSTREAM'] = 'false'
         self._set_build_timeout()
 
     ###########################################################################
@@ -729,6 +731,8 @@ class BuildJob(JenkinsJob):
 
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
+
+        # set static code analysis publisher
         self.params['WARNINGS_PUBLISHER'] = self.job_config_params['warningspublisher']
         self.params['CPPCHECK_PUBLISHER'] = self.job_config_params['cppcheckpublisher']
 
@@ -795,7 +799,7 @@ class RegularBuildJob(BuildJob):
     """
     def __init__(self, jenkins_instance, pipeline_config, tarball_location):
         """
-        Creates a regular  build job instance
+        Creates a regular build job instance
 
         @param jenkins_instance: Jenkins instance
         @type  jenkins_instance: jenkins.Jenkins
@@ -926,6 +930,10 @@ class TestJob(JenkinsJob):
 
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
+
+        # set blocking behaviour
+        self.params['BLOCKING_UPSTREAM'] = 'true'
+        self.params['BLOCKING_DOWNSTREAM'] = 'false'
 
         # junit test result location
         self._set_junit_testresults_param()
@@ -1359,7 +1367,6 @@ class ReleaseJob(JenkinsJob):
         """
 
         self.params['PROJECT'] = 'project'
-
         self.params['NODE_LABEL'] = 'release'
 
         # email
@@ -1388,7 +1395,6 @@ class CleanUpJob(JenkinsJob):
         """
 
         self.params['PROJECT'] = 'project'
-
         self.params['NODE_LABEL'] = 'clean_up'
 
 # TODO classes: release
