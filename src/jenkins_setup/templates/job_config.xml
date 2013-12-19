@@ -19,6 +19,7 @@
   </properties>
   @(VCS)
   <assignedNode>@(NODE_LABEL)</assignedNode>
+  @(QUIET_PERIOD)
   <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenUpstreamBuilding>@(BLOCKING_UPSTREAM)</blockBuildWhenUpstreamBuilding>
