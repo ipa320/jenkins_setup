@@ -573,9 +573,9 @@ class JenkinsJob(object):
         self.params['BUILD_TIMEOUT'] = self.job_config_params['build_timeout']
 
 
-class PipeStarterGeneralJob(JenkinsJob):
+class PipeStarterManualAllJob(JenkinsJob):
     """
-    Object representation of a general Pipe Starter Job
+    Object representation of a manual Pipe Starter Job to trigger all jobs
     """
     def __init__(self, jenkins_instance, pipeline_config, repo_list):
         """
@@ -584,10 +584,10 @@ class PipeStarterGeneralJob(JenkinsJob):
         :param repo_list: list of names of repository to trigger after change, ``list``
         """
 
-        super(PipeStarterGeneralJob, self).__init__(jenkins_instance, pipeline_config)
+        super(PipeStarterManualAllJob, self).__init__(jenkins_instance, pipeline_config)
 
-        self.job_type = 'pipe_starter'
-        self.job_name = self._generate_job_name(self.job_type, suffix='general')
+        self.job_type = 'pipe_starter_manual'
+        self.job_name = self._generate_job_name(self.job_type, suffix='all')
 
         self.repo_list = repo_list
 
@@ -604,7 +604,7 @@ class PipeStarterGeneralJob(JenkinsJob):
         for repo in self.repo_list:
             prio_triggers.append(self._get_single_parameterizedtrigger(['prio_build'],
                                                                        subset_filter='(repository=="%s")' % repo,
-                                                                       predefined_param='POLL=manually triggered' + '\nREPOSITORY=%s' % repo + '\nREPOSITORY_FILTER=repository=="%s"' % repo))
+                                                                       predefined_param='POLL=manually triggered' + '\nREPOSITORY=%s' % repo))
         self._set_parameterizedtrigger_param(prio_triggers)
 
         # set authorization matrix
@@ -612,7 +612,7 @@ class PipeStarterGeneralJob(JenkinsJob):
 
 class PipeStarterManualJob(JenkinsJob):
     """
-    Object representation of Starter Manual Job
+    Object representation of a manual Pipe Starter Job
     """
     def __init__(self, jenkins_instance, pipeline_config, repo_list):
         """
@@ -622,8 +622,8 @@ class PipeStarterManualJob(JenkinsJob):
 
         super(PipeStarterManualJob, self).__init__(jenkins_instance, pipeline_config)
 
-        self.job_type = 'pipe_starter'
-        self.job_name = self._generate_job_name(self.job_type, suffix='manual')
+        self.job_type = 'pipe_starter_manual'
+        self.job_name = self._generate_job_name(self.job_type)
         
         self.repo_list = repo_list
 
@@ -667,7 +667,7 @@ class PipeStarterJob(JenkinsJob):
 
         super(PipeStarterJob, self).__init__(jenkins_instance, pipeline_config)
 
-        self.job_type = 'pipe_starter'
+        self.job_type = 'pipe_starter_scm'
         self.repo_list = repo_list
         self.poll = repo_list[0]
         
