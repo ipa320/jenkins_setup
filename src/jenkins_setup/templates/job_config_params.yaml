@@ -1,7 +1,3 @@
-'blocking':
-  'upstream': <blockBuildWhenUpstreamBuilding>@(BOOL)</blockBuildWhenUpstreamBuilding>
-  'downstream': <blockBuildWhenDownstreamBuilding>@(BOOL)</blockBuildWhenDownstreamBuilding>
-
 'triggers':
   'none': '<triggers class="vector"/>'
   'periodic':

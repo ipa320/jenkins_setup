@@ -21,8 +21,8 @@
   <assignedNode>@(NODE_LABEL)</assignedNode>
   <canRoam>false</canRoam>
   <disabled>false</disabled>
-  @(BLOCKING_UPSTREAM)
-  @(BLOCKING_DOWNSTREAM)
+  <blockBuildWhenUpstreamBuilding>@(BLOCKING_UPSTREAM)</blockBuildWhenUpstreamBuilding>
+  <blockBuildWhenDownstreamBuilding>@(BLOCKING_DOWNSTREAM)</blockBuildWhenDownstreamBuilding>
   @(TRIGGER)
   <concurrentBuild>@(CONCURRENT_BUILD)</concurrentBuild>
   @(SHELL)

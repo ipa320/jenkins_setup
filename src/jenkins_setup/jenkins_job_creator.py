@@ -119,6 +119,8 @@ class JenkinsJob(object):
         self.params['CPPCHECK_PUBLISHER'] = ''
         self._set_authorization_matrix_param(['read', 'workspace'])
         self.params['CONCURRENT_BUILD'] = 'false'
+        self.params['BLOCKING_UPSTREAM'] = 'false'
+        self.params['BLOCKING_DOWNSTREAM'] = 'false'
         self._set_build_timeout()
 
     ###########################################################################
@@ -599,10 +601,6 @@ class PipeStarterGeneralJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
 
-        # set blocking behaviour
-        self.params['BLOCKING_UPSTREAM'] = self.job_config_params['blocking']['upstream'].replace('@(BOOL)', 'false')
-        self.params['BLOCKING_DOWNSTREAM'] = self.job_config_params['blocking']['downstream'].replace('@(BOOL)', 'false')
-
         # set parameterized trigger
         prio_triggers = []
         for repo in self.repo_list:
@@ -638,10 +636,6 @@ class PipeStarterManualJob(JenkinsJob):
 
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
-
-        # set blocking behaviour
-        self.params['BLOCKING_UPSTREAM'] = self.job_config_params['blocking']['upstream'].replace('@(BOOL)', 'false')
-        self.params['BLOCKING_DOWNSTREAM'] = self.job_config_params['blocking']['downstream'].replace('@(BOOL)', 'false')
 
         # set parameterized job parameters
         choice_list = []
@@ -700,10 +694,6 @@ class PipeStarterJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
 
-        # set blocking behaviour
-        self.params['BLOCKING_UPSTREAM'] = self.job_config_params['blocking']['upstream'].replace('@(BOOL)', 'false')
-        self.params['BLOCKING_DOWNSTREAM'] = self.job_config_params['blocking']['downstream'].replace('@(BOOL)', 'false')
-
         self._set_trigger_param('vcs')
 
         # set parameterized triggers
@@ -741,10 +731,6 @@ class BuildJob(JenkinsJob):
 
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
-
-        # set blocking behaviour
-        self.params['BLOCKING_UPSTREAM'] = self.job_config_params['blocking']['upstream'].replace('@(BOOL)', 'false')
-        self.params['BLOCKING_DOWNSTREAM'] = self.job_config_params['blocking']['downstream'].replace('@(BOOL)', 'false')
 
         # set static code analysis publisher
         self.params['WARNINGS_PUBLISHER'] = self.job_config_params['warningspublisher']
@@ -946,8 +932,8 @@ class TestJob(JenkinsJob):
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
         # set blocking behaviour
-        self.params['BLOCKING_UPSTREAM'] = self.job_config_params['blocking']['upstream'].replace('@(BOOL)', 'true')
-        self.params['BLOCKING_DOWNSTREAM'] = self.job_config_params['blocking']['downstream'].replace('@(BOOL)', 'false')
+        self.params['BLOCKING_UPSTREAM'] = 'true'
+        self.params['BLOCKING_DOWNSTREAM'] = 'false'
 
         # junit test result location
         self._set_junit_testresults_param()
@@ -1196,10 +1182,6 @@ class HardwareBuildTrigger(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
 
-        # set blocking behaviour
-        self.params['BLOCKING_UPSTREAM'] = self.job_config_params['blocking']['upstream'].replace('@(BOOL)', 'false')
-        self.params['BLOCKING_DOWNSTREAM'] = self.job_config_params['blocking']['downstream'].replace('@(BOOL)', 'false')
-
         # set parameterized triggers
         parameterized_triggers = []
         parameterized_triggers.append(self._get_single_parameterizedtrigger(['hardware_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
@@ -1234,10 +1216,6 @@ class HardwareBuildJob(JenkinsJob):
         """
 
         self.params['NODE_LABEL'] = 'master'
-
-        # set blocking behaviour
-        self.params['BLOCKING_UPSTREAM'] = self.job_config_params['blocking']['upstream'].replace('@(BOOL)', 'false')
-        self.params['BLOCKING_DOWNSTREAM'] = self.job_config_params['blocking']['downstream'].replace('@(BOOL)', 'false')
 
         # set matrix
         matrix_filter = self._generate_matrix_filter(self._get_hardware_subset_filter())
@@ -1311,10 +1289,6 @@ class HardwareTestTrigger(JenkinsJob):
 
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
-
-        # set blocking behaviour
-        self.params['BLOCKING_UPSTREAM'] = self.job_config_params['blocking']['upstream'].replace('@(BOOL)', 'false')
-        self.params['BLOCKING_DOWNSTREAM'] = self.job_config_params['blocking']['downstream'].replace('@(BOOL)', 'false')
 
         # set parameterized triggers
         parameterized_triggers = []
@@ -1395,10 +1369,6 @@ class ReleaseJob(JenkinsJob):
         self.params['PROJECT'] = 'project'
         self.params['NODE_LABEL'] = 'release'
 
-        # set blocking behaviour
-        self.params['BLOCKING_UPSTREAM'] = self.job_config_params['blocking']['upstream'].replace('@(BOOL)', 'false')
-        self.params['BLOCKING_DOWNSTREAM'] = self.job_config_params['blocking']['downstream'].replace('@(BOOL)', 'false')
-
         # email
         self._set_mailer_param('Release')
 
@@ -1426,9 +1396,5 @@ class CleanUpJob(JenkinsJob):
 
         self.params['PROJECT'] = 'project'
         self.params['NODE_LABEL'] = 'clean_up'
-
-        # set blocking behaviour
-        self.params['BLOCKING_UPSTREAM'] = self.job_config_params['blocking']['upstream'].replace('@(BOOL)', 'false')
-        self.params['BLOCKING_DOWNSTREAM'] = self.job_config_params['blocking']['downstream'].replace('@(BOOL)', 'false')
 
 # TODO classes: release
