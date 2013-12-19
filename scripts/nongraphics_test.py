@@ -9,7 +9,6 @@ import traceback
 
 from jenkins_setup import common, rosdep, cob_pipe
 
-
 def main():
     #########################
     ### parsing arguments ###
@@ -161,7 +160,6 @@ def main():
     print "test in                    ", (time_finish - time_test)
     print "total                      ", (time_finish - time_parsing)
     print ""
-
 
 if __name__ == "__main__":
     # global try
