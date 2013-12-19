@@ -99,7 +99,7 @@ def main():
     job_type_dict = plc_instance.get_jobs_to_create()
 
     ### create pipeline jobs
-    ### pipe starter
+    ### scm pipe starter
     # for each repository and each polled user-defined dependency a pipe
     # starter job will be generated
     polls_dict = plc_instance.get_custom_dependencies(polled_only=True)
@@ -107,13 +107,13 @@ def main():
     for poll, starts_repo_list in polls_dict.iteritems():
         if poll in pipe_repo_list:
             pipe_repo_list.remove(poll)
-        job_creator_instance = jenkins_job_creator.PipeStarterJob(jenkins_instance, plc_instance, starts_repo_list, poll)
+        job_creator_instance = jenkins_job_creator.PipeStarterSCMJob(jenkins_instance, plc_instance, starts_repo_list, poll)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
             modified_jobs.append(job_creator_instance.create_job())
     for repo in pipe_repo_list:
-        job_creator_instance = jenkins_job_creator.PipeStarterJob(jenkins_instance, plc_instance, [repo], repo)
+        job_creator_instance = jenkins_job_creator.PipeStarterSCMJob(jenkins_instance, plc_instance, [repo], repo)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -150,7 +150,7 @@ def main():
 
     ### regular build
     if 'regular_build' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.RegularBuildJob(jenkins_instance, plc_instance, tarball_location)
+        job_creator_instance = jenkins_job_creator.RegularBuildJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['regular_build'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:

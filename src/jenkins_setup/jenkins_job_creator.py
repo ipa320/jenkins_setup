@@ -655,7 +655,7 @@ class PipeStarterManualJob(JenkinsJob):
         self._set_authorization_matrix_param(['read', 'build', 'workspace'])
 
 
-class PipeStarterJob(JenkinsJob):
+class PipeStarterSCMJob(JenkinsJob):
     """
     Object representation of Pipe Starter Job
     """
@@ -667,7 +667,7 @@ class PipeStarterJob(JenkinsJob):
         :param poll: name of repository to monitor for changes, ``str``
         """
 
-        super(PipeStarterJob, self).__init__(jenkins_instance, pipeline_config)
+        super(PipeStarterSCMJob, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'pipe_starter_scm'
         self.repo_list = repo_list
@@ -710,7 +710,7 @@ class BuildJob(JenkinsJob):
     """
     Class for build jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
         Creates a build job instance
 
@@ -723,6 +723,7 @@ class BuildJob(JenkinsJob):
         super(BuildJob, self).__init__(jenkins_instance, pipeline_config)
 
         self.tarball_location = tarball_location
+        self.repo_list = execute_repo_list
 
     def _set_job_type_params(self, matrix_filter=None, matrix_job_type=None):
         """
@@ -757,9 +758,7 @@ class PriorityBuildJob(BuildJob):
         @type  pipeline_config: dict
         """
 
-        super(PriorityBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
-
-        self.repo_list = execute_repo_list
+        super(PriorityBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
 
         self.job_type = 'prio_build'
         self.job_name = self._generate_job_name(self.job_type)
@@ -797,7 +796,7 @@ class RegularBuildJob(BuildJob):
     """
     Class for regular build jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
         Creates a regular build job instance
 
@@ -807,7 +806,7 @@ class RegularBuildJob(BuildJob):
         @type  pipeline_config: dict
         """
 
-        super(RegularBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
+        super(RegularBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
 
         self.job_type = 'regular_build'
         self.job_name = self._generate_job_name(self.job_type)
@@ -875,8 +874,6 @@ class DownstreamBuildJob(BuildJob):
 
         super(DownstreamBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
 
-        self.repo_list = execute_repo_list
-
         self.job_type = 'downstream_build'
         self.job_name = self._generate_job_name(self.job_type)
 
@@ -917,7 +914,6 @@ class TestJob(JenkinsJob):
         super(TestJob, self).__init__(jenkins_instance, pipeline_config)
 
         self.tarball_location = tarball_location
-
         self.repo_list = execute_repo_list
 
         self.job_type = 'test'
@@ -1142,8 +1138,6 @@ class DownstreamTestJob(TestJob):
         """
 
         super(DownstreamTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
-
-        self.repo_list = execute_repo_list
 
         self.job_type = 'downstream_test'
         self.job_name = self.generate_job_name(self.job_type)
