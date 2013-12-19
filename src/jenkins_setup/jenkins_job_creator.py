@@ -119,6 +119,7 @@ class JenkinsJob(object):
         self.params['CPPCHECK_PUBLISHER'] = ''
         self._set_authorization_matrix_param(['read', 'workspace'])
         self.params['CONCURRENT_BUILD'] = 'false'
+        self.params['QUIET_PERIOD'] = '5'
         self.params['BLOCKING_UPSTREAM'] = 'false'
         self.params['BLOCKING_DOWNSTREAM'] = 'false'
         self._set_build_timeout()
@@ -773,6 +774,9 @@ class PriorityBuildJob(BuildJob):
 
         # no concurrent build
         #self.params['CONCURRENT_BUILD'] = 'false'
+        
+        # quiet period
+        self.params['QUIET_PERIOD'] = self.job_config_params['quiet_period'].replace('@(QUIET_PERIOD_DURATION)', '1')
 
         # email
         self._set_mailer_param('Priority Build')
