@@ -790,7 +790,6 @@ class PriorityBuildJob(BuildJob):
         # set parameterized triggers
         parameterized_triggers = []
         parameterized_triggers.append(self._get_single_parameterizedtrigger(['regular_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['downstream_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
         parameterized_triggers.append(self._get_single_parameterizedtrigger(['prio_nongraphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
         parameterized_triggers.append(self._get_single_parameterizedtrigger(['prio_graphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
         self._set_parameterizedtrigger_param(parameterized_triggers)
@@ -858,45 +857,6 @@ class RegularBuildJob(BuildJob):
                         subset_filter_input.append(subset_filter_input_entry)
 
         return subset_filter_input
-
-
-class DownstreamBuildJob(BuildJob):
-    """
-    Class for downstream build job
-    """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
-        """
-        Creates a downstream build job instance
-
-        @param jenkins_instance: Jenkins instance
-        @type  jenkins_instance: jenkins.Jenkins
-        @param pipeline_config: pipeline configuration
-        @type  pipeline_config: dict
-        @param repo_list: repositories this job will build
-        @type  repo_list: list
-        """
-
-        super(DownstreamBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
-
-        self.job_type = 'downstream_build'
-        self.job_name = self._generate_job_name(self.job_type)
-
-    def _set_job_type_params(self):
-        """
-        Sets downstream build job specific job configuration parameters
-        """
-
-        super(DownstreamBuildJob, self)._set_job_type_params(matrix_job_type='downstream_build')
-
-        # email
-        self._set_mailer_param('Downstream Build')
-
-        # set execute shell
-        shell_script = self._get_shell_script()
-        self._set_shell_param(shell_script)
-
-        # set parameterized triggers
-        self._set_parameterizedtrigger_param([self._get_single_parameterizedtrigger(['downstream_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY')])
 
 
 class TestJob(JenkinsJob):
@@ -1122,44 +1082,6 @@ class RegularGraphicsTestJob(TestJob):
 
         # set execute shell
         shell_script = self._get_shell_script('graphics_test')
-        self._set_shell_param(shell_script)
-
-
-class DownstreamTestJob(TestJob):
-    """
-    Class for downstream test job
-    """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
-        """
-        Creates a downstream test job instance
-
-        @param jenkins_instance: Jenkins instance
-        @type  jenkins_instance: jenkins.Jenkins
-        @param pipeline_config: pipeline configuration
-        @type  pipeline_config: dict
-        @param repo_list: repositories this job will build
-        @type  repo_list: list
-        """
-
-        super(DownstreamTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
-
-        self.job_type = 'downstream_test'
-        self.job_name = self.generate_job_name(self.job_type)
-
-    def _set_job_type_params(self):
-        """
-        Set downstream test job specific job configuration parameters
-        """
-
-        matrix_filter = self._generate_matrix_filter(self._get_prio_subset_filter())
-
-        super(DownstreamTestJob, self)._set_job_type_params(matrix_filter, matrix_job_type='downstream_build')
-
-        # email
-        self._set_mailer_param('Downstream Test')
-
-        # set execute shell
-        shell_script = self._get_shell_script()
         self._set_shell_param(shell_script)
 
 

@@ -156,14 +156,6 @@ def main():
         else:
             modified_jobs.append(job_creator_instance.create_job())
 
-    ### downstream build
-    #if 'downstream_build' in job_type_dict:
-    #    job_creator_instance = jenkins_job_creator.DownstreamBuildJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['downstream_build'])
-    #    if options.delete:
-    #        modified_jobs.append(job_creator_instance.delete_job())
-    #    else:
-    #        modified_jobs.append(job_creator_instance.create_job())
-
     ### priority nongraphics test
     if 'nongraphics_test' in job_type_dict:
         job_creator_instance = jenkins_job_creator.PriorityNongraphicsTestJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['nongraphics_test'])
@@ -224,7 +216,7 @@ def main():
 
     ### release job
     # TODO fix if statement
-    #if ('release' and 'downstream_build' and 'nongraphics_test' and 'graphics_test'
+    #if ('release' and 'nongraphics_test' and 'graphics_test'
     #        and 'hardware_build' and 'interactive_hw_test' in job_type_dict):
     #    print "Create release job"
         # TODO
