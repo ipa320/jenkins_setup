@@ -138,7 +138,7 @@ def main():
     if options.delete:
         modified_jobs.append(job_creator_instance.delete_job())
     else:
-        manuall_all_pipe_starter_name = job_creator_instance.create_job()
+        manual_all_pipe_starter_name = job_creator_instance.create_job()
         modified_jobs.append(manual_all_pipe_starter_name)
 
     ### priority build
