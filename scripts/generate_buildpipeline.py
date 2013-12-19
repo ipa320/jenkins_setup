@@ -130,16 +130,16 @@ def main():
         manual_pipe_starter_name = job_creator_instance.create_job()
         modified_jobs.append(manual_pipe_starter_name)
 
-    ### general pipe starter
+    ### manual all pipe starter
     # this pipe starter job won't poll any repository; it has to be started
     # manually. It triggers the priority build job with all defined
     # repositories as parameters
-    job_creator_instance = jenkins_job_creator.PipeStarterGeneralJob(jenkins_instance, plc_instance, plc_instance.repositories.keys())
+    job_creator_instance = jenkins_job_creator.PipeStarterManualAllJob(jenkins_instance, plc_instance, plc_instance.repositories.keys())
     if options.delete:
         modified_jobs.append(job_creator_instance.delete_job())
     else:
-        general_pipe_starter_name = job_creator_instance.create_job()
-        modified_jobs.append(general_pipe_starter_name)
+        manual_all_pipe_starter_name = job_creator_instance.create_job()
+        modified_jobs.append(manual_all_pipe_starter_name)
 
     ### priority build
     job_creator_instance = jenkins_job_creator.PriorityBuildJob(jenkins_instance, plc_instance, tarball_location, plc_instance.repositories.keys())
@@ -241,9 +241,9 @@ def main():
     if delete_msg != "":
         print "Delete old and no more required jobs:\n" + delete_msg
 
-    # start buildpipeline by general starter job
+    # start buildpipeline by manual all starter job
     #if options.run:
-    #    jenkins_instance.build_job(general_pipe_starter_name)
+    #    jenkins_instance.build_job(manual_all_pipe_starter_name)
 
 if __name__ == "__main__":
     main()
