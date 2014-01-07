@@ -119,6 +119,9 @@ class JenkinsJob(object):
         self.params['CPPCHECK_PUBLISHER'] = ''
         self._set_authorization_matrix_param(['read', 'workspace'])
         self.params['CONCURRENT_BUILD'] = 'false'
+        self.params['QUIET_PERIOD'] = '5'
+        self.params['BLOCKING_UPSTREAM'] = 'false'
+        self.params['BLOCKING_DOWNSTREAM'] = 'false'
         self._set_build_timeout()
 
     ###########################################################################
@@ -573,9 +576,9 @@ class JenkinsJob(object):
         self.params['BUILD_TIMEOUT'] = self.job_config_params['build_timeout']
 
 
-class PipeStarterGeneralJob(JenkinsJob):
+class PipeStarterManualAllJob(JenkinsJob):
     """
-    Object representation of a general Pipe Starter Job
+    Object representation of a manual Pipe Starter Job to trigger all jobs
     """
     def __init__(self, jenkins_instance, pipeline_config, repo_list):
         """
@@ -584,10 +587,10 @@ class PipeStarterGeneralJob(JenkinsJob):
         :param repo_list: list of names of repository to trigger after change, ``list``
         """
 
-        super(PipeStarterGeneralJob, self).__init__(jenkins_instance, pipeline_config)
+        super(PipeStarterManualAllJob, self).__init__(jenkins_instance, pipeline_config)
 
-        self.job_type = 'pipe_starter'
-        self.job_name = self._generate_job_name(self.job_type, suffix='general')
+        self.job_type = 'pipe_starter_manual'
+        self.job_name = self._generate_job_name(self.job_type, suffix='all')
 
         self.repo_list = repo_list
 
@@ -604,7 +607,7 @@ class PipeStarterGeneralJob(JenkinsJob):
         for repo in self.repo_list:
             prio_triggers.append(self._get_single_parameterizedtrigger(['prio_build'],
                                                                        subset_filter='(repository=="%s")' % repo,
-                                                                       predefined_param='POLL=manually triggered' + '\nREPOSITORY=%s' % repo + '\nREPOSITORY_FILTER=repository=="%s"' % repo))
+                                                                       predefined_param='POLL=manually triggered' + '\nREPOSITORY=%s' % repo))
         self._set_parameterizedtrigger_param(prio_triggers)
 
         # set authorization matrix
@@ -612,7 +615,7 @@ class PipeStarterGeneralJob(JenkinsJob):
 
 class PipeStarterManualJob(JenkinsJob):
     """
-    Object representation of Starter Manual Job
+    Object representation of a manual Pipe Starter Job
     """
     def __init__(self, jenkins_instance, pipeline_config, repo_list):
         """
@@ -622,8 +625,8 @@ class PipeStarterManualJob(JenkinsJob):
 
         super(PipeStarterManualJob, self).__init__(jenkins_instance, pipeline_config)
 
-        self.job_type = 'pipe_starter'
-        self.job_name = self._generate_job_name(self.job_type, suffix='manual')
+        self.job_type = 'pipe_starter_manual'
+        self.job_name = self._generate_job_name(self.job_type)
         
         self.repo_list = repo_list
 
@@ -653,7 +656,7 @@ class PipeStarterManualJob(JenkinsJob):
         self._set_authorization_matrix_param(['read', 'build', 'workspace'])
 
 
-class PipeStarterJob(JenkinsJob):
+class PipeStarterSCMJob(JenkinsJob):
     """
     Object representation of Pipe Starter Job
     """
@@ -665,9 +668,9 @@ class PipeStarterJob(JenkinsJob):
         :param poll: name of repository to monitor for changes, ``str``
         """
 
-        super(PipeStarterJob, self).__init__(jenkins_instance, pipeline_config)
+        super(PipeStarterSCMJob, self).__init__(jenkins_instance, pipeline_config)
 
-        self.job_type = 'pipe_starter'
+        self.job_type = 'pipe_starter_scm'
         self.repo_list = repo_list
         self.poll = repo_list[0]
         
@@ -708,7 +711,7 @@ class BuildJob(JenkinsJob):
     """
     Class for build jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
         Creates a build job instance
 
@@ -721,6 +724,7 @@ class BuildJob(JenkinsJob):
         super(BuildJob, self).__init__(jenkins_instance, pipeline_config)
 
         self.tarball_location = tarball_location
+        self.repo_list = execute_repo_list
 
     def _set_job_type_params(self, matrix_filter=None, matrix_job_type=None):
         """
@@ -729,6 +733,8 @@ class BuildJob(JenkinsJob):
 
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
+
+        # set static code analysis publisher
         self.params['WARNINGS_PUBLISHER'] = self.job_config_params['warningspublisher']
         self.params['CPPCHECK_PUBLISHER'] = self.job_config_params['cppcheckpublisher']
 
@@ -753,9 +759,7 @@ class PriorityBuildJob(BuildJob):
         @type  pipeline_config: dict
         """
 
-        super(PriorityBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
-
-        self.repo_list = execute_repo_list
+        super(PriorityBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
 
         self.job_type = 'prio_build'
         self.job_name = self._generate_job_name(self.job_type)
@@ -769,6 +773,9 @@ class PriorityBuildJob(BuildJob):
 
         # no concurrent build
         #self.params['CONCURRENT_BUILD'] = 'false'
+        
+        # quiet period
+        self.params['QUIET_PERIOD'] = self.job_config_params['quiet_period'].replace('@(QUIET_PERIOD_DURATION)', '1')
 
         # email
         self._set_mailer_param('Priority Build')
@@ -793,9 +800,9 @@ class RegularBuildJob(BuildJob):
     """
     Class for regular build jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
         """
-        Creates a regular  build job instance
+        Creates a regular build job instance
 
         @param jenkins_instance: Jenkins instance
         @type  jenkins_instance: jenkins.Jenkins
@@ -803,7 +810,7 @@ class RegularBuildJob(BuildJob):
         @type  pipeline_config: dict
         """
 
-        super(RegularBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
+        super(RegularBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
 
         self.job_type = 'regular_build'
         self.job_name = self._generate_job_name(self.job_type)
@@ -871,8 +878,6 @@ class DownstreamBuildJob(BuildJob):
 
         super(DownstreamBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
 
-        self.repo_list = execute_repo_list
-
         self.job_type = 'downstream_build'
         self.job_name = self._generate_job_name(self.job_type)
 
@@ -913,7 +918,6 @@ class TestJob(JenkinsJob):
         super(TestJob, self).__init__(jenkins_instance, pipeline_config)
 
         self.tarball_location = tarball_location
-
         self.repo_list = execute_repo_list
 
         self.job_type = 'test'
@@ -926,6 +930,10 @@ class TestJob(JenkinsJob):
 
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
+
+        # set blocking behaviour
+        self.params['BLOCKING_UPSTREAM'] = 'true'
+        self.params['BLOCKING_DOWNSTREAM'] = 'false'
 
         # junit test result location
         self._set_junit_testresults_param()
@@ -1134,8 +1142,6 @@ class DownstreamTestJob(TestJob):
         """
 
         super(DownstreamTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location)
-
-        self.repo_list = execute_repo_list
 
         self.job_type = 'downstream_test'
         self.job_name = self.generate_job_name(self.job_type)
@@ -1359,7 +1365,6 @@ class ReleaseJob(JenkinsJob):
         """
 
         self.params['PROJECT'] = 'project'
-
         self.params['NODE_LABEL'] = 'release'
 
         # email
@@ -1388,7 +1393,6 @@ class CleanUpJob(JenkinsJob):
         """
 
         self.params['PROJECT'] = 'project'
-
         self.params['NODE_LABEL'] = 'clean_up'
 
 # TODO classes: release

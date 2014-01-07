@@ -3,7 +3,7 @@
 #####################
 'regular_build': '#!/bin/bash -e
 
-echo "==> entering load step at $(date)"
+echo "==> entering step for loading chroot at $(date)"
 
 time_load=$(date +%s)
 
@@ -67,7 +67,7 @@ export BUILD_ID=$BUILD_ID
 
 DELIM
 
-echo "==> entering chroot at $(date)"
+echo "==> entering step for proccessing inside chroot at $(date)"
 
 time_chroot=$(date +%s)
 
@@ -81,7 +81,7 @@ else
 
 fi
 
-echo "==> entering store step at $(date)"
+echo "==> entering step for storing chroot tarball at $(date)"
 
 time_store=$(date +%s)
 
@@ -99,13 +99,13 @@ time_end=$(date +%s)
 
 echo "durations:"
 
-echo "load in        $(( $time_chroot - $time_load )) sec"
+echo "loading chroot in             " $(date -d @`expr $time_chroot - $time_load` +%M:%S)
  
-echo "chroot in      $(( $time_store - $time_chroot )) sec"
+echo "processing inside chroot in   " $(date -d @`expr $time_store - $time_chroot` +%M:%S)
 
-echo "store in       $(( $time_end - $time_store )) sec"
+echo "storing chroot tarball in     " $(date -d @`expr $time_end - $time_store` +%M:%S)
 
-echo "total          $(( $time_end - $time_load )) sec"
+echo "total                         " $(date -d @`expr $time_end - $time_load` +%M:%S)
 
 echo
 '

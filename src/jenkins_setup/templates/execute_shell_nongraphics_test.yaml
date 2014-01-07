@@ -3,7 +3,7 @@
 ########################
 'nongraphics_test': '#!/bin/bash
 
-echo "==> entering load step at $(date)"
+echo "==> entering step for loading chroot at $(date)"
 
 time_load=$(date +%s)
 
@@ -67,7 +67,7 @@ export BUILD_ID=$BUILD_ID
 
 DELIM
 
-echo "==> entering chroot at $(date)"
+echo "==> entering step for proccessing inside chroot at $(date)"
 
 time_chroot=$(date +%s)
 
@@ -77,7 +77,7 @@ if [ $arch == "i386" ]; then
 
 else
 
-sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+    sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 fi
 
@@ -91,11 +91,11 @@ time_end=$(date +%s)
 
 echo "durations:"
 
-echo "load in        $(( $time_chroot - $time_load )) sec"
+echo "loading chroot in             " $(date -d @`expr $time_chroot - $time_load` +%M:%S)
  
-echo "chroot in      $(( $time_end - $time_chroot )) sec"
+echo "processing inside chroot in   " $(date -d @`expr $time_end - $time_chroot` +%M:%S)
 
-echo "total          $(( $time_end - $time_load )) sec"
+echo "total                         " $(date -d @`expr $time_end - $time_load` +%M:%S)
 
 echo
 '
