@@ -18,7 +18,7 @@ apt-get install -y \
     python-all gccxml python-empy python-nose python-mock python-minimock \
     lsb-release python-numpy python-wxgtk2.8 python-argparse python-networkx \
     graphviz python-sphinx doxygen python-epydoc cmake pkg-config openssh-client python-paramiko \
-    cppcheck
+    cppcheck x11-utils
 
 echo -e "\n***GET KEY***"
 wget http://packages.ros.org/ros.key -O - | apt-key add -

@@ -1,6 +1,6 @@
 export DISPLAY=:0
-type xdpyinfo 1>/dev/null 2>&1 || apt-get install x11-utils -y --force-yes
-if [ ! -z "`xdpyinfo 2>&1 | grep -i 'unable to open'`" ]; then
+type xdpyinfo 1>/dev/null 2>&1
+if [ $? -eq 0 ] && [ ! -z "`xdpyinfo 2>&1 | grep -i 'unable to open'`" ]; then
     echo ''
     echo '------------------------------------'
     echo '     Could not open display :0      '
