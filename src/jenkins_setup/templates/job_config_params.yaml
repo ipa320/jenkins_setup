@@ -1,3 +1,5 @@
+'quiet_period': '<quietPeriod>@(QUIET_PERIOD_DURATION)</quietPeriod>'
+
 'triggers':
   'none': '<triggers class="vector"/>'
   'periodic':

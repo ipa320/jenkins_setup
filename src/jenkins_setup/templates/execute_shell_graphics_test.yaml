@@ -3,7 +3,7 @@
 #####################
 'graphics_test': '#!/bin/bash
 
-echo "==> entering load step at $(date)"
+echo "==> entering step for loading chroot at $(date)"
 
 time_load=$(date +%s)
 
@@ -77,7 +77,7 @@ exit 1
 
 fi
 
-echo "==> entering chroot at $(date)"
+echo "==> entering step for proccessing inside chroot at $(date)"
 
 time_chroot=$(date +%s)
 
@@ -101,11 +101,11 @@ time_end=$(date +%s)
 
 echo "durations:"
 
-echo "load in        $(( $time_chroot - $time_load )) sec"
+echo "loading chroot in             " $(date -d @`expr $time_chroot - $time_load` +%M:%S)
  
-echo "chroot in      $(( $time_end - $time_chroot )) sec"
+echo "processing inside chroot in   " $(date -d @`expr $time_end - $time_chroot` +%M:%S)
 
-echo "total          $(( $time_end - $time_load )) sec"
+echo "total                         " $(date -d @`expr $time_end - $time_load` +%M:%S)
 
 echo
 '

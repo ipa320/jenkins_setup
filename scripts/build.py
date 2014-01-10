@@ -123,16 +123,20 @@ def main():
 
     # check if build_repo is wet or dry and get all corresponding deps
     build_repo_type = ''
-    if build_repo in catkin_packages:
+    if build_repo in catkin_packages: # wet repo with metapackage
         print "repo %s is wet" % build_repo
         build_repo_type = 'wet'
         repo_build_dependencies = common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
-    elif build_repo in stacks:
+    elif (build_repo not in catkin_packages) and (build_repo not in stacks) and (catkin_packages != []): # wet repo without metapackage
+        print "repo %s is wet without metapackage" % build_repo
+        build_repo_type = 'wet'
+        repo_build_dependencies = common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
+    elif build_repo in stacks: # dry repo with stack
         print "repo %s is dry" % build_repo
         build_repo_type = 'dry'
         repo_build_dependencies = common.get_nonlocal_dependencies({}, stacks, {})
-    else:
-        # build_repo is neither wet nor dry
+    #TODO elif : # dry repo without stack
+    else: # build_repo is neither wet nor dry
         raise common.BuildException("Repository %s to build not found in sourcespace" % build_repo)
 
     # install user-defined/customized dependencies of build_repo from source
@@ -186,10 +190,15 @@ def main():
     # get all folders in repo_sourcespace
     sourcespace_dirs = [name for name in os.listdir(repo_sourcespace) if os.path.isdir(os.path.join(repo_sourcespace, name))]
     for dir in sourcespace_dirs:
-        if dir in catkin_packages.keys():
+        if dir in catkin_packages.keys(): # wet repo with metapackage
             shutil.move(os.path.join(repo_sourcespace, dir), os.path.join(repo_sourcespace_wet, dir))
-        if dir in stacks.keys():
+        elif build_repo_type == 'wet' and dir == build_repo: # wet repo without metapackage
+            shutil.move(os.path.join(repo_sourcespace, dir), os.path.join(repo_sourcespace_wet, dir))
+        elif dir in stacks.keys(): # dry repo with stack
             shutil.move(os.path.join(repo_sourcespace, dir), os.path.join(repo_sourcespace_dry, dir))
+        #TODO elif: # dry repo without stack
+        #else:
+        #    raise common.BuildException("Could not separate %s into wet or dry sourcespace." %dir) 
 
     ############################
     ### install dependencies ###
