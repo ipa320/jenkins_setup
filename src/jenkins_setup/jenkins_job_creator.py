@@ -683,6 +683,9 @@ class PipeStarterSCMJob(JenkinsJob):
         else:
             user, name = self._split_github_url(self.pipe_inst.repositories[poll].url)
             branch = self.pipe_inst.repositories[poll].version
+
+        # substitute "/" in branch namens with "", because jenkins job name is not allowed to contain "/"
+        branch = branch.replace("/", "")
         
         # set job name
         self.job_name = self._generate_job_name(self.job_type, suffix=user + "__" + name + "__" + branch)
