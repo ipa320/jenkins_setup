@@ -638,9 +638,12 @@ class PipeStarterManualJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
 
+        # sort repo list alphabetical
+        repo_list_sorted = sorted(self.repo_list)
+
         # set parameterized job parameters
         choice_list = []
-        for repo in self.repo_list:
+        for repo in repo_list_sorted:
             choice_list.append(self.job_config_params['parameters']['string'].replace('@(STRING)', repo))
         choices = ' '.join(choice_list)
         self.params['PARAMETERIZED_JOB_PARAMETERS'] = self.job_config_params['parameters']['choice'].replace('@(CHOICES)', choices)
