@@ -711,7 +711,7 @@ class PipeStarterSCMJob(JenkinsJob):
         self._set_parameterizedtrigger_param(prio_triggers)
 
         # set authorization matrix
-        self._set_authorization_matrix_param(['read', 'workspace'])
+        self._set_authorization_matrix_param(['read'])
 
 class BuildJob(JenkinsJob):
     """
