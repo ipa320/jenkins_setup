@@ -19,14 +19,13 @@ fi
 
 case $JOBTYPE in
     regular_graphics_test|prio_graphics_test)
-        echo "Set up graphic"
+        echo "Set up graphic" # TODO: this step takes a long time, can we shorten it? Maybe move some parts into the initial generation of the chroot tarballs?
 
         export DIR=$WORKSPACE/jenkins_setup/scripts/graphicTest/chroot
         $DIR/checkDisplayNull.bash &&
         $DIR/setupSources.bash &&
         $DIR/../tvnc/installTurboVNC.bash &&
         $DIR/../vgl/installVirtualGL.bash &&
-        $DIR/installSimulationPrerequisites.bash &&
         $DIR/distUpgrade.bash &&
         $DIR/installNvidia.bash &&
         $DIR/setupOGRE.bash
@@ -37,7 +36,7 @@ case $JOBTYPE in
 
         $DIR/remoteX.py start
         export DISPLAY=`cat /tmp/vncDisplay`
-        echo "Using Display: $DISPLAY"
+        echo "Using Display $DISPLAY. Start vncviewer to see the X environment: vncviewer $HOSTNAME:$DISPLAY"
         ;;
 esac
 
