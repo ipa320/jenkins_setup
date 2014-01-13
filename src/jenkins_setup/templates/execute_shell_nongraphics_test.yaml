@@ -3,9 +3,9 @@
 ########################
 'nongraphics_test': '#!/bin/bash
 
-echo "==> entering step for loading chroot at $(date)"
+echo "==> entering step for copying chroot at $(date)"
 
-time_load=$(date +%s)
+time_copy=$(date +%s)
 
 if [ -z "$ROS_DISTRO" ]; then
 
@@ -87,15 +87,15 @@ echo "==> finished job at $(date)"
 
 time_end=$(date +%s)
 
-# duration steps: load, chroot, end
+# duration steps: copy, chroot, end
 
 echo "durations:"
 
-echo "loading chroot in             " $(date -d @`expr $time_chroot - $time_load` +%M:%S)
+echo "copying chroot in             " $(date -d @`expr $time_chroot - $time_copy` +%M:%S)
  
 echo "processing inside chroot in   " $(date -d @`expr $time_end - $time_chroot` +%M:%S)
 
-echo "total                         " $(date -d @`expr $time_end - $time_load` +%M:%S)
+echo "total                         " $(date -d @`expr $time_end - $time_copy` +%M:%S)
 
 echo
 '
