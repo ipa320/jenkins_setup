@@ -107,7 +107,7 @@ echo "durations:"
 
 echo "copying chroot in             " $(date -d @`expr $time_xenv - $time_copy` +%M:%S)
 
-echo "preparing X environment        " $(date -d @`expr $time_chroot - $time_xenv` +%M:%S)
+echo "preparing X environment       " $(date -d @`expr $time_chroot - $time_xenv` +%M:%S)
  
 echo "processing inside chroot in   " $(date -d @`expr $time_end - $time_chroot` +%M:%S)
 
