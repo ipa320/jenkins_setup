@@ -36,7 +36,7 @@ case $JOBTYPE in
 
         $DIR/remoteX.py start
         export DISPLAY=`cat /tmp/vncDisplay`
-        echo "Using Display $DISPLAY. Start vncviewer to see the X environment: vncviewer $HOSTNAME:$DISPLAY"
+        echo "Using Display $DISPLAY. Start vncviewer to see the X environment: vncviewer $HOSTNAME$DISPLAY"
         ;;
 esac
 
