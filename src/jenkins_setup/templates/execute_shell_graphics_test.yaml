@@ -31,6 +31,22 @@ sudo rm -rf $WORKSPACE/../aux
 
 fi
 
+bagPath=@(STORAGE)/../bagFiles/
+
+echo "Bag-File-Directory: $bagPath"
+
+# Test if bagFiles-Path can be accessed
+
+touch .writeTest; scp .writeTest $bagPath; writeResult=$?; rm .writeTest
+
+if [ $writeResult -ne 0 ]; then 
+
+   echo "BagPath cannot be written";
+
+   exit 1;
+
+fi
+
 mkdir $WORKSPACE/../aux
 
 echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
@@ -64,6 +80,33 @@ JOBTYPE=@(JOB_TYPE_NAME)
 export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results
 
 export BUILD_ID=$BUILD_ID
+
+export BAGPATH=$bagPath
+
+scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
+
+scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
+
+cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
+
+JOBNAME=$JOB_NAME
+
+ROSDISTRO=$ROS_DISTRO
+
+REPOSITORY=$repository
+
+UBUNTUDISTRO=$ubuntu_distro
+
+ARCH=$arch
+
+PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
+
+JENKINS_MASTER=@(SERVERNAME)
+
+JENKINS_USER=@(USERNAME)
+
+JOBTYPE=@(JOB_TYPE_NAME)
+
 
 DELIM
 
