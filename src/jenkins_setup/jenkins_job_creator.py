@@ -1094,11 +1094,12 @@ class RegularGraphicsTestJob(TestJob):
 class HardwareBuildTrigger(JenkinsJob):
     """
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, repo_list):
         super(HardwareBuildTrigger, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'hardware_build_trigger'
         self.job_name = self._generate_job_name(self.job_type)
+        self.repo_list = repo_list
 
     def _set_job_type_params(self):
         """
@@ -1108,12 +1109,24 @@ class HardwareBuildTrigger(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
 
-        # set parameterized triggers
-        parameterized_triggers = []
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['hardware_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
-        self._set_parameterizedtrigger_param(parameterized_triggers)
+        # sort repo list alphabetical
+        repo_list_sorted = sorted(self.repo_list)
 
-        # authorization matrix
+        # set parameterized job parameters
+        choice_list = []
+        for repo in repo_list_sorted:
+            choice_list.append(self.job_config_params['parameters']['string'].replace('@(STRING)', repo))
+        choices = ' '.join(choice_list)
+        self.params['PARAMETERIZED_JOB_PARAMETERS'] = self.job_config_params['parameters']['choice'].replace('@(CHOICES)', choices)
+
+        # set parameterized trigger
+        prio_triggers = []
+        prio_triggers.append(self._get_single_parameterizedtrigger(['hardware_build'],
+                                                                   subset_filter='(repository=="${repository}")',
+                                                                   predefined_param='POLL=manually triggered' + '\nREPOSITORY=$repository'))
+        self._set_parameterizedtrigger_param(prio_triggers)
+
+        # set authorization matrix
         self._set_authorization_matrix_param(['read', 'build', 'workspace'])
 
 
@@ -1121,7 +1134,7 @@ class HardwareBuildJob(JenkinsJob):
     """
     Class for hardware build jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
         Creates a hardware build job
 
@@ -1135,6 +1148,7 @@ class HardwareBuildJob(JenkinsJob):
 
         self.job_type = 'hardware_build'
         self.job_name = self._generate_job_name(self.job_type)
+        self.repo_list = execute_repo_list
 
     def _set_job_type_params(self):
         """
@@ -1174,9 +1188,13 @@ class HardwareBuildJob(JenkinsJob):
         for repo in self.pipe_inst.repositories.keys():
             if 'hardware_build' in self.pipe_inst.repositories[repo].jobs:
                 repositories.append(repo)
-                for robot in self.pipe_inst.repositories[repo].robots:
-                    if robot not in robots:
-                        robots.append(robot)
+                print "self.pipe_inst.repositories[repo].robots", self.pipe_inst.repositories[repo].robots
+                robot = self.pipe_inst.repositories[repo].robots
+                #for robot in self.pipe_inst.repositories[repo].robots:
+                #    if robot not in robots:
+                #        robots.append(robot)
+                if robot not in robots:
+                    robots.append(robot)
 
         dict_list.append({'repository': repositories})
 
@@ -1192,7 +1210,7 @@ class HardwareBuildJob(JenkinsJob):
             if 'hardware_build' in self.pipe_inst.repositories[repo].jobs:
                 subset_filter_input_entry = {}
                 subset_filter_input_entry['repository'] = repo
-                subset_filter_input_entry['label'] = self.pipe_inst.repositories[repo].robots[0]  # FIXME hack as long as robots attribute is list not str
+                subset_filter_input_entry['label'] = self.pipe_inst.repositories[repo].robots#[0]  # FIXME hack as long as robots attribute is list not str
                 subset_filter_input.append(subset_filter_input_entry)
 
         return subset_filter_input
@@ -1202,7 +1220,7 @@ class HardwareTestTrigger(JenkinsJob):
     """
     Class for hardware test trigger jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         super(HardwareTestTrigger, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'hardware_test_trigger'
@@ -1229,7 +1247,7 @@ class HardwareTestJob(HardwareBuildJob):
     """
     Class for hardware test jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
         Creates a hardware test job
 
@@ -1239,7 +1257,7 @@ class HardwareTestJob(HardwareBuildJob):
         @type  pipeline_config: dict
         """
 
-        super(HardwareTestJob, self).__init__(jenkins_instance, pipeline_config)
+        super(HardwareTestJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
 
         self.job_type = 'hardware_test'
         self.job_name = self._generate_job_name(self.job_type)

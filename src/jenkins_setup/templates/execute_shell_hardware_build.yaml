@@ -3,6 +3,8 @@
 ######################
 'hardware_build': '#!/bin/bash -e
 
-    #TODO
+echo "this is a hardware_build"
+
+sleep 10
 
 '
