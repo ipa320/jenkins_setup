@@ -208,8 +208,10 @@ def main():
 
     print "Install build dependencies: %s" % (', '.join(repo_build_dependencies))
     #common.apt_get_install_also_nonrosdep(repo_build_dependencies, ros_distro, rosdep_resolver)
-    common.apt_get_check_also_nonrosdep(repo_build_dependencies, ros_distro, rosdep_resolver)
-    print "ASK YOUR ADMIN TO INSTALL THE PACKAGES ABOVE"
+    not_installed = common.apt_get_check_also_nonrosdep(repo_build_dependencies, ros_distro, rosdep_resolver)
+    if len(not_installed) > 0:        
+        print "ASK YOUR ADMIN TO INSTALL THESE PACKAGES: ",not_installed
+        common.BuildException("Some dependencies are missing. Please ask your administrator to install the following packages: %s", missing_packages)
     # check which packages are installed (dpkg -l)
     # FAIL WHEN SOMETHING MISSING
     #############

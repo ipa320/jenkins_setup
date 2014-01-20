@@ -35,7 +35,37 @@ def apt_get_update(sudo=False):
     else:
         call("sudo apt-get update")
 
-def apt_get_check_also_nonrosdep(pkgs, ros_distro, rosdep=None):
+def apt_get_check(pkgs, rosdep=None, sudo=False):
+    """
+    Install the corresponding apt packages from a list of ROS repositories.
+
+    @param pkgs: names of ros repositories
+    @type  pkgs: list
+    @param rosdep: rosdep resolver object (default None)
+    @type  rosdep: rosdep.RosDepResolver
+    @param sudo: execute command as super-user (default False)
+    @type  sudo: bool
+    """
+    import apt
+    
+    apt_cache = apt.Cache()
+    not_installed = []
+
+    if len(pkgs) > 0:
+        if rosdep:
+            pkgs= rosdep.to_aptlist(pkgs)
+        else:
+            pkgs = pkgs
+    
+    for i in pkgs: #better way?
+        pkg = apt_cache[i]
+        if not pkg.is_installed:
+            not_installed.append(i)
+    
+    return not_installed
+
+
+def apt_get_check_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
     """
     Extend common.apt_get_install by trying to guess Debian package names
     of packages not included in rosdep
@@ -77,37 +107,22 @@ def apt_get_check_also_nonrosdep(pkgs, ros_distro, rosdep=None):
 
     if rosdep_pkgs != []:
         try:
-            apt_get_check(rosdep_pkgs, rosdep)
+            r = apt_get_check(rosdep_pkgs, rosdep, sudo)
+            print r
+            return r
         except:
-            raise BuildException("Failed to find rosdep packages")
+            raise BuildException("Failed to apt-get install rosdep packages")
 
     if aptget_pkgs != []:
         try:
-            apt_get_check(aptget_pkgs)
+            a = apt_get_check(aptget_pkgs, sudo=sudo)
+            print a
+            return a
         except:
-            raise BuildException("Failed to find ros repositories")
-            
+            raise BuildException("Failed to apt-get install ros repositories")
 
-def apt_get_check(pkgs, rosdep=None):
-    """
-    Install the corresponding apt packages from a list of ROS repositories.
 
-    @param pkgs: names of ros repositories
-    @type  pkgs: list
-    @param rosdep: rosdep resolver object (default None)
-    @type  rosdep: rosdep.RosDepResolver
-    @param sudo: execute command as super-user (default False)
-    @type  sudo: bool
-    """
-    cmd = "dpkg -s "
-
-    if len(pkgs) > 0:
-        if rosdep:
-            call(cmd + ' '.join(rosdep.to_aptlist(pkgs)))
-        else:
-            call(cmd + ' '.join(pkgs))
-    else:
-        print "Not installing anything from apt right now."
+    
 
 
 def apt_get_install(pkgs, rosdep=None, sudo=False):
