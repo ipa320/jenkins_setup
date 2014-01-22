@@ -1188,7 +1188,6 @@ class HardwareBuildJob(JenkinsJob):
         for repo in self.pipe_inst.repositories.keys():
             if 'hardware_build' in self.pipe_inst.repositories[repo].jobs:
                 repositories.append(repo)
-                print "self.pipe_inst.repositories[repo].robots", self.pipe_inst.repositories[repo].robots
                 robot = self.pipe_inst.repositories[repo].robots
                 #for robot in self.pipe_inst.repositories[repo].robots:
                 #    if robot not in robots:
