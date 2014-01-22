@@ -3,8 +3,60 @@
 #####################
 'hardware_test': '#!/bin/bash -e
 
-echo "this is a hardware_build"
+if [ -z "$ROS_DISTRO" ]; then
 
-sleep 10
+echo "set ROS_DISTRO"
 
+ROS_DISTRO=$ros_distro
+
+fi
+
+if [ -z "$ros_distro" ]; then
+
+echo "set ros_distro"
+
+ros_distro=$ROS_DISTRO
+
+fi
+
+
+#scp -r jenkins@pyramid-10:.ssh $WORKSPACE/
+
+#scp -r jenkins@pyramid-10:/home/jenkins/jenkins-config/jenkins_setup $WORKSPACE # TODO activate again after testing is finished
+
+
+
+JOBNAME=$JOB_NAME
+
+ROSDISTRO=groovy # TODO: this is input from plugin
+
+REPOSITORY=cob_common # TODO: where do we get this from?
+
+UBUNTUDISTRO=$ubuntu_distro
+
+ARCH=$arch
+
+PIPELINE_REPOS_OWNER=ipa320
+
+JENKINS_MASTER=pyramid-10
+
+JENKINS_USER=admin
+
+JOBTYPE=hardware_test
+
+export BUILD_ID=$BUILD_ID
+
+
+. /opt/ros/$ROSDISTRO/setup.sh
+
+export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
+
+
+echo "start building"
+
+echo  $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
+
+python $WORKSPACE/jenkins_setup/scripts/hardware_test.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
+
+echo "finished building"
 '

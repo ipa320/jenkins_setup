@@ -35,6 +35,95 @@ def apt_get_update(sudo=False):
     else:
         call("sudo apt-get update")
 
+def apt_get_check(pkgs, rosdep=None, sudo=False):
+    """
+    Install the corresponding apt packages from a list of ROS repositories.
+
+    @param pkgs: names of ros repositories
+    @type  pkgs: list
+    @param rosdep: rosdep resolver object (default None)
+    @type  rosdep: rosdep.RosDepResolver
+    @param sudo: execute command as super-user (default False)
+    @type  sudo: bool
+    """
+    import apt
+    
+    apt_cache = apt.Cache()
+    not_installed = []
+
+    if len(pkgs) > 0:
+        if rosdep:
+            pkgs= rosdep.to_aptlist(pkgs)
+        else:
+            pkgs = pkgs
+    
+    for i in pkgs: #better way?
+        pkg = apt_cache[i]
+        if not pkg.is_installed:
+            not_installed.append(i)
+    
+    return not_installed
+
+
+def apt_get_check_also_nonrosdep(pkgs, ros_distro, rosdep=None, sudo=False):
+    """
+    Extend common.apt_get_install by trying to guess Debian package names
+    of packages not included in rosdep
+
+    @param pkgs: names of ros repositories
+    @type  pkgs: list
+    @param ros_distro: name of ros release, e.g. fuerte
+    @type  ros_distro: str
+    @param rosdep: rosdep resolver object (default None)
+    @type  rosdep: rosdep.RosDepResolver
+    @param sudo: execute command as super-user (default False)
+    @type  sudo: bool
+    """
+    rosdep_pkgs = []
+    aptget_pkgs = []
+    unavailable_pkgs = []
+
+    import apt
+    for pkg in pkgs:
+        if rosdep and rosdep.has_ros(pkg):
+            debian_pkgs = rosdep.to_apt(pkg)
+            rosdep_pkgs.append(pkg)
+        else:
+            debian_pkgs = ['-'.join(['ros', ros_distro, pkg.replace('_', '-')])]
+            aptget_pkgs += debian_pkgs
+        # use python apt module to check if Debian package exists
+        for debian_pkg in debian_pkgs:
+            if debian_pkg not in apt.Cache():
+                unavailable_pkgs.append(debian_pkg)
+
+    print ""
+    print "apt dependencies: ", aptget_pkgs
+    print "ros dependencies: ", rosdep_pkgs
+    print "unavailable dependencies: ", unavailable_pkgs
+    print ""
+
+    if unavailable_pkgs != []:
+        raise BuildException("Some dependencies are not available: %s" % (', '.join(unavailable_pkgs)))
+
+    if rosdep_pkgs != []:
+        try:
+            r = apt_get_check(rosdep_pkgs, rosdep, sudo)
+            print r
+            return r
+        except:
+            raise BuildException("Failed to apt-get install rosdep packages")
+
+    if aptget_pkgs != []:
+        try:
+            a = apt_get_check(aptget_pkgs, sudo=sudo)
+            print a
+            return a
+        except:
+            raise BuildException("Failed to apt-get install ros repositories")
+
+
+    
+
 
 def apt_get_install(pkgs, rosdep=None, sudo=False):
     """
