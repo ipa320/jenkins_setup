@@ -27,8 +27,8 @@ class RosDepResolver(object):
         self.env = os.environ
         self.env['ROS_DISTRO'] = ros_distro
 
-        print "Initalize rosdep database"
-        apt_get_install(['lsb-release', 'python-rosdep'], sudo=sudo)
+        print "Initialize rosdep database"
+        #apt_get_install(['lsb-release', 'python-rosdep'], sudo=sudo)
         try:
             call("rosdep init", self.env)
         except:

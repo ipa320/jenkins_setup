@@ -1,5 +1,7 @@
 'quiet_period': '<quietPeriod>@(QUIET_PERIOD_DURATION)</quietPeriod>'
 
+'custom_workspace': '<customWorkspace>@(CUSTOM_WORKSPACE_DIR)</customWorkspace><childCustomWorkspace>@(CUSTOM_WORKSPACE_CHILD_DIR)</childCustomWorkspace>'
+
 'triggers':
   'none': '<triggers class="vector"/>'
   'periodic':

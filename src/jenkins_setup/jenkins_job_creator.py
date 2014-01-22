@@ -119,6 +119,7 @@ class JenkinsJob(object):
         self.params['CPPCHECK_PUBLISHER'] = ''
         self._set_authorization_matrix_param(['read', 'workspace'])
         self.params['CONCURRENT_BUILD'] = 'false'
+        self.params['CUSTOM_WORKSPACE'] = ''
         self.params['QUIET_PERIOD'] = '5'
         self.params['BLOCKING_UPSTREAM'] = 'false'
         self.params['BLOCKING_DOWNSTREAM'] = 'false'
@@ -1161,6 +1162,9 @@ class HardwareBuildJob(JenkinsJob):
         matrix_filter = self._generate_matrix_filter(self._get_hardware_subset_filter())
         (matrix_entries_dict_list, robots) = self._get_hardware_matrix_entries()
         self._set_matrix_param(matrix_entries_dict_list, labels=robots, filter_=matrix_filter)
+
+        # set custom workspace
+        self.params['CUSTOM_WORKSPACE'] = self.job_config_params['custom_workspace'].replace('@(CUSTOM_WORKSPACE_DIR)', 'workspace_hardware_build').replace('@(CUSTOM_WORKSPACE_CHILD_DIR)', self.pipe_inst.user_name)
 
         # email
         self._set_mailer_param('Hardware Build')

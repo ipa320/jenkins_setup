@@ -3,9 +3,15 @@
 ######################
 'hardware_build': '#!/bin/bash -e
 
-if [ -z "$ROS_DISTRO" ]; then
+datedir="$(date +"%Y-%m-%d-%H-%M-%S")"
 
-echo "set ROS_DISTRO"
+WORKSPACE_ORIG=$WORKSPACE
+
+WORKSPACE="$WORKSPACE/$repository/$datedir"
+
+mkdir -p $WORKSPACE
+
+if [ -z "$ROS_DISTRO" ]; then
 
 ROS_DISTRO=$ros_distro
 
@@ -13,54 +19,76 @@ fi
 
 if [ -z "$ros_distro" ]; then
 
-echo "set ros_distro"
-
 ros_distro=$ROS_DISTRO
 
 fi
 
+scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
-#scp -r jenkins@pyramid-10:.ssh $WORKSPACE/
+scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
-scp -r jenkins@pyramid-10:/home/jenkins/jenkins-config/jenkins_setup $WORKSPACE # TODO activate again after testing is finished
-
-#git clone https://github.com/ipa-fmw-ms/jenkins_setup.git
-
-
+cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-ROSDISTRO=groovy # TODO: this is input from plugin
+ROSDISTRO=groovy # TODO: this should be input from plugin
 
-REPOSITORY=cob_robots # TODO: where do we get this from?
+REPOSITORY=$repository
 
 UBUNTUDISTRO=$ubuntu_distro
 
 ARCH=$arch
 
-PIPELINE_REPOS_OWNER=ipa320
+PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
 
-JENKINS_MASTER=pyramid-10
+JENKINS_MASTER=@(SERVERNAME)
 
-echo $JENKINS_USER
+JENKINS_USER=jenkins # TODO: this is the robot jenkins account and should be input from admin plugin
 
-JENKINS_USER=admin
-
-JOBTYPE=hardware_build
+JOBTYPE=@(JOB_TYPE_NAME)
 
 export BUILD_ID=$BUILD_ID
 
+DELIM
 
-. /opt/ros/$ROSDISTRO/setup.sh
+#. /opt/ros/$ROSDISTRO/setup.sh
 
-export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
+#export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
 
+echo $WORKSPACE
 
 echo "start building"
 
-echo  $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
+. $WORKSPACE/env_vars.sh
 
-python $WORKSPACE/jenkins_setup/scripts/hardware_build.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
+#export PATH=$PATH:/usr/local/bin
+
+. /opt/ros/$ROSDISTRO/setup.sh
+
+export ROS_PACKAGE_PATH=$WORKSPACE/src:$ROS_PACKAGE_PATH
+
+export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
+
+echo
+
+echo "==============================================="
+
+echo "==== Begin script. Ignore the output above ===="
+
+echo "==============================================="
+
+
+python $WORKSPACE/jenkins_setup/scripts/hardware_build.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER @(USERNAME) $ROSDISTRO $REPOSITORY
+
+result=$?
 
 echo "finished building"
+
+echo "==============================================="
+
+echo "==== End script. Ignore the output below ======"
+
+echo "==============================================="
+
+exit $result
 '
