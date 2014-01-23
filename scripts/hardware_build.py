@@ -201,19 +201,18 @@ def main():
 
     # setup ros workspace
     print "Set up ros workspace and setup environment variables"
-    ros_env_repo = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro) # source ros_distro
     # init catkin workspace
-    os.chdir(repo_sourcespace)
-    common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env_repo)
-    
-    common.call("rosws init . /opt/ros/%s" %ros_distro)     # init workspace for ros_distro
+    ros_env_repo = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)                            # source ros_distro (needed to do a catkin_init_workspace)
+    common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env_repo, verbose=False)
+    common.call("rosws init %s /opt/ros/%s" %(repo_sourcespace, ros_distro), verbose=False)             # init workspace for ros_distro
 
     # for hardware build: merge workspace with robot account #FIXME: this should be parameterisable in plugin (select a path to a setup.bash file in the admin config and mark a checkbox for the user config)
-    common.call("rosws merge /u/robot/git/care-o-bot")      # merge robot account workspace
+    common.call("rosws merge -t %s /u/robot/git/care-o-bot" %repo_sourcespace, verbose=False)      # merge robot account workspace
 
-    common.call("rosws merge wet/src")                      # merge wet workspace
-    common.call("rosws merge dry")                          # merge dry workspace
-    ros_env_repo = common.get_ros_env('setup.bash')         # source wet and dry workspace
+    common.call("rosws merge -t %s %s/wet/src" % (repo_sourcespace, repo_sourcespace), verbose=False)   # merge wet workspace
+    common.call("rosws merge -t %s %s/dry" % (repo_sourcespace, repo_sourcespace), verbose=False)        # merge dry workspace
+    
+    ros_env_repo = common.get_ros_env(repo_sourcespace + '/setup.bash')                                 # source wet and dry workspace
 
     ############################
     ### install dependencies ###
@@ -257,10 +256,10 @@ def main():
         print "Build repository %s" % build_repo
         try:
             common.call("rosmake -i -rV --skip-blacklist --profile --pjobs=8 --output=%s %s" %
-                        (build_logs, build_repo), ros_env_repo)
+                        (repo_build_logs, build_repo), ros_env_repo)
         except common.BuildException as ex:
             try:
-                shutil.move(build_logs, os.path.join(workspace, "build_logs"))
+                shutil.move(repo_build_logs, os.path.join(workspace, "build_logs"))
             finally:
                 print ex.msg
                 raise common.BuildException("Failed to rosmake %s" % build_repo)
@@ -282,7 +281,7 @@ def main():
     print "build in                   ", (time_finish - time_build)
     print "total                      ", (time_finish - time_parsing)
     print ""
-    print "For testing, please run the following line in your testing terminal"
+    print "For manual testing, please run the following line in your testing terminal"
     print "source " + repo_sourcespace + "/setup.bash"
     print ""
 

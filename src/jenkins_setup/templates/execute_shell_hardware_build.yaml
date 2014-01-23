@@ -3,6 +3,22 @@
 ######################
 'hardware_build': '#!/bin/bash -e
 
+echo "==> entering step for preparing build $(date)"
+
+time_load=$(date +%s)
+
+if [ -z "$ROS_DISTRO" ]; then
+
+    ROS_DISTRO=$ros_distro
+
+fi
+
+if [ -z "$ros_distro" ]; then
+
+    ros_distro=$ROS_DISTRO
+
+fi
+
 datedir="$(date +"%Y-%m-%d-%H-%M-%S")"
 
 WORKSPACE_ORIG=$WORKSPACE
@@ -10,18 +26,6 @@ WORKSPACE_ORIG=$WORKSPACE
 WORKSPACE="$WORKSPACE/$repository/$datedir"
 
 mkdir -p $WORKSPACE
-
-if [ -z "$ROS_DISTRO" ]; then
-
-ROS_DISTRO=$ros_distro
-
-fi
-
-if [ -z "$ros_distro" ]; then
-
-ros_distro=$ROS_DISTRO
-
-fi
 
 scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
 
@@ -31,7 +35,7 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-ROSDISTRO=groovy # TODO: this should be input from plugin
+ROSDISTRO=groovy # TODO: this should be a parameterized input to the job and later on input from user plugin
 
 REPOSITORY=$repository
 
@@ -51,23 +55,15 @@ export BUILD_ID=$BUILD_ID
 
 DELIM
 
-#. /opt/ros/$ROSDISTRO/setup.sh
-
-#export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
-
-echo $WORKSPACE
-
-echo "start building"
-
 . $WORKSPACE/env_vars.sh
-
-#export PATH=$PATH:/usr/local/bin
 
 . /opt/ros/$ROSDISTRO/setup.sh
 
-export ROS_PACKAGE_PATH=$WORKSPACE/src:$ROS_PACKAGE_PATH
-
 export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
+
+echo "==> entering step for proccessing build at $(date)"
+
+time_processing=$(date +%s)
 
 echo
 
@@ -77,12 +73,7 @@ echo "==== Begin script. Ignore the output above ===="
 
 echo "==============================================="
 
-
 python $WORKSPACE/jenkins_setup/scripts/hardware_build.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER @(USERNAME) $ROSDISTRO $REPOSITORY
-
-result=$?
-
-echo "finished building"
 
 echo "==============================================="
 
@@ -90,5 +81,21 @@ echo "==== End script. Ignore the output below ======"
 
 echo "==============================================="
 
-exit $result
+echo
+
+echo "==> finished job at $(date)"
+
+time_end=$(date +%s)
+
+# duration steps: load, processing, end
+
+echo "durations:"
+
+echo "preparation in                " $(date -d @`expr $time_processing - $time_load` +%M:%S)
+ 
+echo "processing build in           " $(date -d @`expr $time_end - $time_processing` +%M:%S)
+
+echo "total                         " $(date -d @`expr $time_end - $time_load` +%M:%S)
+
+echo
 '

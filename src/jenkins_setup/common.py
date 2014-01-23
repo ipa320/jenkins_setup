@@ -220,15 +220,17 @@ def copy_test_results(buildspace_test_results_dir, workspace_test_results_dir, e
     os.chdir(workspace_test_results_dir)
     print "Copy all test results to " + workspace_test_results_dir
 
-    # copy all rostest test reports nested in their packagename's directory    
-    count = 0
+    # copy all rostest test reports nested in their packagename's directory
     for root, dirnames, filenames in os.walk(buildspace_test_results_dir):
         for filename in fnmatch.filter(filenames, '*.xml'):
             call("cp %s %s" % (os.path.join(root, filename), workspace_test_results_dir))
-            count += 1
 
-	# create dummy test if no rostest result exists
-    if count == 0:
+    # create dummy test if no rostest result exists in workspace_test_results_dir
+    generate_dummy_test = False
+    for root, dirnames, filenames in os.walk(workspace_test_results_dir):
+        if len(filenames) == 0:
+            generate_dummy_test = True
+    if generate_dummy_test:
         print "No test results, so I'll create a dummy test result xml file, with errors %s" % errors
         with open(os.path.join(workspace_test_results_dir, 'dummy.xml'), 'w') as f:
             if errors:

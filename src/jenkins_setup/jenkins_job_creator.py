@@ -120,7 +120,7 @@ class JenkinsJob(object):
         self._set_authorization_matrix_param(['read', 'workspace'])
         self.params['CONCURRENT_BUILD'] = 'false'
         self.params['CUSTOM_WORKSPACE'] = ''
-        self.params['QUIET_PERIOD'] = '5'
+        self.params['QUIET_PERIOD'] = self.job_config_params['quiet_period'].replace('@(QUIET_PERIOD_DURATION)', '5')
         self.params['BLOCKING_UPSTREAM'] = 'false'
         self.params['BLOCKING_DOWNSTREAM'] = 'false'
         self._set_build_timeout()
@@ -778,6 +778,16 @@ class PriorityBuildJob(BuildJob):
 
         super(PriorityBuildJob, self)._set_job_type_params()
 
+        # sort repo list alphabetical
+        repo_list_sorted = sorted(self.repo_list)
+
+        # set parameterized job parameters
+        choice_list = []
+        for repo in repo_list_sorted:
+            choice_list.append(self.job_config_params['parameters']['string'].replace('@(STRING)', repo))
+        choices = ' '.join(choice_list)
+        self.params['PARAMETERIZED_JOB_PARAMETERS'] = self.job_config_params['parameters']['choice'].replace('@(CHOICES)', choices)
+
         # no concurrent build
         #self.params['CONCURRENT_BUILD'] = 'false'
         
@@ -979,6 +989,16 @@ class PriorityNongraphicsTestJob(TestJob):
 
         super(PriorityNongraphicsTestJob, self)._set_job_type_params(matrix_job_type='nongraphics_test')
 
+        # sort repo list alphabetical
+        repo_list_sorted = sorted(self.repo_list)
+
+        # set parameterized job parameters
+        choice_list = []
+        for repo in repo_list_sorted:
+            choice_list.append(self.job_config_params['parameters']['string'].replace('@(STRING)', repo))
+        choices = ' '.join(choice_list)
+        self.params['PARAMETERIZED_JOB_PARAMETERS'] = self.job_config_params['parameters']['choice'].replace('@(CHOICES)', choices)
+
         # email
         self._set_mailer_param('Priority Non-Graphics Test')
 
@@ -1047,6 +1067,16 @@ class PriorityGraphicsTestJob(TestJob):
 
         super(PriorityGraphicsTestJob, self)._set_job_type_params(matrix_job_type='graphics_test')
 
+        # sort repo list alphabetical
+        repo_list_sorted = sorted(self.repo_list)
+
+        # set parameterized job parameters
+        choice_list = []
+        for repo in repo_list_sorted:
+            choice_list.append(self.job_config_params['parameters']['string'].replace('@(STRING)', repo))
+        choices = ' '.join(choice_list)
+        self.params['PARAMETERIZED_JOB_PARAMETERS'] = self.job_config_params['parameters']['choice'].replace('@(CHOICES)', choices)
+
         # email
         self._set_mailer_param('Priority Graphics Test')
 
@@ -1095,12 +1125,12 @@ class RegularGraphicsTestJob(TestJob):
 class HardwareBuildTrigger(JenkinsJob):
     """
     """
-    def __init__(self, jenkins_instance, pipeline_config, repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         super(HardwareBuildTrigger, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'hardware_build_trigger'
         self.job_name = self._generate_job_name(self.job_type)
-        self.repo_list = repo_list
+        self.repo_list = execute_repo_list
 
     def _set_job_type_params(self):
         """
