@@ -243,6 +243,9 @@ def main():
     time_build = datetime.datetime.now()
     print "=====> entering build step at", time_build
 
+    # get amount of cores available on host system
+    cores = multiprocessing.cpu_count()
+
     ### catkin repositories
     if catkin_packages != {}:
         os.chdir(repo_sourcespace_wet + "/..")
@@ -257,8 +260,8 @@ def main():
         # build dry repositories
         print "Build repository %s" % build_repo
         try:
-            common.call("rosmake -rV --skip-blacklist --profile --pjobs=8 --output=%s %s" %
-                        (repo_build_logs, build_repo), ros_env_repo)
+            common.call("rosmake -rV --skip-blacklist --profile --pjobs=%s --output=%s %s" %
+                        (cores, repo_build_logs, build_repo), ros_env_repo)
         except common.BuildException as ex:
             try:
                 shutil.move(repo_build_logs, os.path.join(workspace, "build_logs"))

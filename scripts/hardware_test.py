@@ -53,7 +53,6 @@ def main():
 
     # set up directories variables
     tmpdir = workspace
-    print 'workspace', workspace
     repo_sourcespace = os.path.join(tmpdir, 'src')                                 # location to build repositories in
     repo_sourcespace_wet = os.path.join(repo_sourcespace, 'wet', 'src')            # wet (catkin) repositories
     repo_sourcespace_dry = os.path.join(repo_sourcespace, 'dry')                   # dry (rosbuild) repositories
@@ -71,6 +70,9 @@ def main():
     ############
     time_test = datetime.datetime.now()
     print "=====> entering testing step at", time_test
+
+    # get amount of cores available on host system
+    cores = multiprocessing.cpu_count()
 
     ### catkin repositories
     print "test catkin repositories"
@@ -124,8 +126,8 @@ def main():
         print "Test the following dry repositories %s" % test_repos_list_dry
         try:
             build_list = " ".join(test_repos_list_dry)
-            common.call("rosmake -rV --profile --test-only --output=%s %s" %
-                        ( repo_build_logs, build_list ), ros_env_repo)
+            common.call("rosmake -rV --skip-blacklist --profile --pjobs=%s --test-only --output=%s %s" %
+                        ( cores, repo_build_logs, build_list ), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
 

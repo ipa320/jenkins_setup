@@ -57,7 +57,8 @@ def main():
     repo_sourcespace_wet = os.path.join(repo_sourcespace, 'wet', 'src')            # wet (catkin) repositories
     repo_sourcespace_dry = os.path.join(repo_sourcespace, 'dry')                   # dry (rosbuild) repositories
     repo_test_results = os.path.join(tmpdir, 'test_results')                       # location for test results
-    os.makedirs(repo_test_results)
+    if not os.path.exists(repo_test_results):
+        os.makedirs(repo_test_results)
     repo_build_logs = os.path.join(tmpdir, 'build_logs')                           # location for build logs
 
     # source wet and dry workspace
@@ -69,6 +70,9 @@ def main():
     ############
     time_test = datetime.datetime.now()
     print "=====> entering testing step at", time_test
+
+    # get amount of cores available on host system
+    cores = multiprocessing.cpu_count()
 
     ### catkin repositories
     print "test catkin repositories"
@@ -113,7 +117,7 @@ def main():
     (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_dry)
     if build_repo in stacks:
         # get list of dependencies to test
-        test_repos_list_dry = []
+        test_repos_list_dry = [build_repo]
         for dep, depObj in pipe_repos[build_identifier].dependencies.items():
             if depObj.test and dep in stacks:
                 test_repos_list_dry.append(dep)
@@ -121,9 +125,9 @@ def main():
         # test dry repositories
         print "Test the following dry repositories %s" % test_repos_list_dry
         try:
-            build_list = " ".join(test_repos_list_dry + [build_repo])
-            common.call("/opt/VirtualGL/bin/vglrun rosmake -rV --profile --test-only --output=%s %s" %
-                        ( repo_build_logs, build_list ), ros_env_repo)
+            build_list = " ".join(test_repos_list_dry)
+            common.call("/opt/VirtualGL/bin/vglrun rosmake -rV --skip-blacklist --profile --pjobs=%s --test-only --output=%s %s" %
+                        ( cores, repo_build_logs, build_list ), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
 
