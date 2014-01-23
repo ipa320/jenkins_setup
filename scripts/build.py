@@ -43,7 +43,7 @@ def main():
 
     # (debug) output
     print "\n", 50 * 'X'
-    print "\nTesting on ros distro:  %s" % ros_distro
+    print "\nTesting on ros distro: %s" % ros_distro
     print "Testing repository: %s" % build_repo
     if build_repo != build_identifier:
         print "       with suffix: %s" % build_identifier.split('__')[1]
@@ -52,7 +52,7 @@ def main():
     print "\n", 50 * 'X'
 
     # set up directories variables
-    tmpdir='/tmp'
+    tmpdir = '/tmp'
     repo_checkoutspace = os.path.join(tmpdir, 'checkout')                          # location to store repositories in (will be separated in wet and dry later on)
     os.makedirs(repo_checkoutspace)
     repo_sourcespace = os.path.join(tmpdir, 'src')                                 # location to build repositories in

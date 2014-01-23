@@ -43,7 +43,7 @@ def main():
 
     # (debug) output
     print "\n", 50 * 'X'
-    print "\nTesting on ros distro:  %s" % ros_distro
+    print "\nTesting on ros distro: %s" % ros_distro
     print "Testing repository: %s" % build_repo
     if build_repo != build_identifier:
         print "       with suffix: %s" % build_identifier.split('__')[1]
@@ -59,15 +59,17 @@ def main():
         shutil.rmtree(workspace + "/../" + sorted(list)[0])
 
     # set up directories variables
-    repo_checkoutspace = os.path.join(workspace, 'checkout')               # location to store repositories in
+    tmpdir = workspace
+    repo_checkoutspace = os.path.join(tmpdir, 'checkout')                          # location to store repositories in (will be separated in wet and dry later on)
     os.makedirs(repo_checkoutspace)
-    repo_sourcespace = os.path.join(workspace, 'src')
-    repo_sourcespace_wet = os.path.join(repo_sourcespace, 'wet', 'src')    # wet (catkin) repositories
+    repo_sourcespace = os.path.join(tmpdir, 'src')                                 # location to build repositories in
+    os.makedirs(repo_sourcespace)
+    repo_sourcespace_wet = os.path.join(repo_sourcespace, 'wet', 'src')            # wet (catkin) repositories
     os.makedirs(repo_sourcespace_wet)
-    repo_sourcespace_dry = os.path.join(repo_sourcespace, 'dry')           # dry (rosbuild) repositories
+    repo_sourcespace_dry = os.path.join(repo_sourcespace, 'dry')                   # dry (rosbuild) repositories
     os.makedirs(repo_sourcespace_dry)
-    build_logs = os.path.join(workspace, 'build_logs')                     # location for build logs
-    os.makedirs(build_logs)
+    repo_build_logs = os.path.join(tmpdir, 'build_logs')                           # location for build logs
+    os.makedirs(repo_build_logs)
 
     ################
     ### checkout ###
@@ -269,7 +271,7 @@ def main():
     ###########
     # for hardware builds: create sym link to new build
     common.call("rm -f %s/../current" % workspace)
-    common.call("ln -sf %s/src %s/../current" %(workspace, workspace))
+    common.call("ln -sf %s %s/../current" %(workspace, workspace))
     
     # steps: parsing, checkout, install, analysis, build, finish
     time_finish = datetime.datetime.now()

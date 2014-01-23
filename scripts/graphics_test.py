@@ -43,7 +43,7 @@ def main():
 
     # (debug) output
     print "\n", 50 * 'X'
-    print "\nTesting on ros distro:  %s" % ros_distro
+    print "\nTesting on ros distro: %s" % ros_distro
     print "Testing repository: %s" % build_repo
     if build_repo != build_identifier:
         print "       with suffix: %s" % build_identifier.split('__')[1]
@@ -52,16 +52,17 @@ def main():
     print "\n", 50 * 'X'
 
     # set up directories variables
-    tmpdir = os.path.join('/tmp')
-    repo_sourcespace = os.path.join(tmpdir, 'src')
+    tmpdir = '/tmp'
+    repo_sourcespace = os.path.join(tmpdir, 'src')                                 # location to build repositories in
     repo_sourcespace_wet = os.path.join(repo_sourcespace, 'wet', 'src')            # wet (catkin) repositories
     repo_sourcespace_dry = os.path.join(repo_sourcespace, 'dry')                   # dry (rosbuild) repositories
     repo_test_results = os.path.join(tmpdir, 'test_results')                       # location for test results
     os.makedirs(repo_test_results)
-    repo_build_logs = os.path.join(tmpdir, 'repo_build_logs')                      # location for build logs
+    repo_build_logs = os.path.join(tmpdir, 'build_logs')                           # location for build logs
 
     # source wet and dry workspace
     ros_env_repo = common.get_ros_env(repo_sourcespace + '/setup.bash')
+    ros_env_repo['ROS_TEST_RESULTS_DIR'] = repo_test_results
 
     ############
     ### test ###
@@ -71,10 +72,7 @@ def main():
 
     ### catkin repositories
     print "test catkin repositories"
-    ros_env_repo['ROS_TEST_RESULTS_DIR'] = repo_test_results
     if os.listdir(repo_sourcespace_wet):
-        os.chdir(repo_sourcespace_wet + "/..")
-
         # get wet repositories test and run dependencies
         #print "Get test and run dependencies of repo list"
         (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_wet)
@@ -112,9 +110,6 @@ def main():
 
     ### rosbuild repositories
     print "test rosbuild repositories"
-    if not os.path.isdir(repo_test_results):
-        os.mkdir(repo_test_results)
-    ros_env_repo['ROS_TEST_RESULTS_DIR'] = repo_test_results
     (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_dry)
     if build_repo in stacks:
         # get list of dependencies to test
