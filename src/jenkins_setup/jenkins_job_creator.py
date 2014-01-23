@@ -471,12 +471,12 @@ class JenkinsJob(object):
 
         self.params['AUTHORIZATIONMATRIX'] = authorizations.replace('@(PERMISSION)', authorization)
 
-    def _set_junit_testresults_param(self):
+    def _set_junit_testresults_param(self, test_results_dir):
         """
         Sets config for junit test result report
         """
 
-        self.params['JUNIT_TESTRESULTS'] = self.job_config_params['junit_testresults']
+        self.params['JUNIT_TESTRESULTS'] = self.job_config_params['junit_testresults'].replace('@(TEST_RESULTS_DIR)', test_results_dir)
 
     def _set_trigger_param(self, trigger_type):
         """
@@ -1009,7 +1009,7 @@ class TestJob(JenkinsJob):
         self.params['BLOCKING_DOWNSTREAM'] = 'false'
 
         # junit test result location
-        self._set_junit_testresults_param()
+        self._set_junit_testresults_param('test_results')
 
         # set matrix
         if not matrix_filter:
@@ -1360,7 +1360,7 @@ class HardwareTestJob(HardwareJob):
         self.params['NODE_LABEL'] = 'master'
 
         # junit test result location
-        self._set_junit_testresults_param()
+        self._set_junit_testresults_param(self.pipe_inst.user_name + '/test_results')
 
         # set custom workspace
         self.params['CUSTOM_WORKSPACE'] = self.job_config_params['custom_workspace'].replace('@(CUSTOM_WORKSPACE_DIR)', 'workspace_hardware_build').replace('@(CUSTOM_WORKSPACE_CHILD_DIR)', self.pipe_inst.user_name)

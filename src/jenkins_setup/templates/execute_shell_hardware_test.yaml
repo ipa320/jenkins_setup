@@ -51,6 +51,8 @@ echo "==============================================="
 
 echo
 
+WORKSPACE=$WORKSPACE_ORIG
+
 echo "==> finished job at $(date)"
 
 time_end=$(date +%s)

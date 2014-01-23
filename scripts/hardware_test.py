@@ -57,8 +57,9 @@ def main():
     repo_sourcespace = os.path.join(tmpdir, 'src')                                 # location to build repositories in
     repo_sourcespace_wet = os.path.join(repo_sourcespace, 'wet', 'src')            # wet (catkin) repositories
     repo_sourcespace_dry = os.path.join(repo_sourcespace, 'dry')                   # dry (rosbuild) repositories
-    repo_test_results = os.path.join(tmpdir, '.test_results')                      # location for test results
-    os.makedirs(repo_test_results)
+    repo_test_results = os.path.join(tmpdir, 'test_results')                       # location for test results
+    if not os.path.exists(repo_test_results):
+        os.makedirs(repo_test_results)
     repo_build_logs = os.path.join(tmpdir, 'build_logs')                           # location for build logs
 
     # source wet and dry workspace
@@ -139,7 +140,7 @@ def main():
                 print e
 
         # copy dry test results
-        common.copy_test_results(repo_test_results, workspace + "/test_results")
+        common.copy_test_results(repo_test_results, workspace + "/../../test_results")
 
     ###########
     ### end ###
