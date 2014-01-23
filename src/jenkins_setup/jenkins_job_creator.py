@@ -1314,6 +1314,10 @@ class HardwareBuildJob(HardwareJob):
 
         self.params['NODE_LABEL'] = 'master'
 
+        # set blocking behaviour
+        self.params['BLOCKING_UPSTREAM'] = 'true'
+        self.params['BLOCKING_DOWNSTREAM'] = 'true'
+
         # set matrix
         matrix_filter = self._generate_matrix_filter(self._get_hardware_subset_filter())
         (matrix_entries_dict_list, robots) = self._get_hardware_matrix_entries()
