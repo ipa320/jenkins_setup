@@ -6,6 +6,7 @@ import os
 import shutil
 import datetime
 import traceback
+import multiprocessing
 
 from jenkins_setup import common, rosdep, cob_pipe, cppcheck
 
