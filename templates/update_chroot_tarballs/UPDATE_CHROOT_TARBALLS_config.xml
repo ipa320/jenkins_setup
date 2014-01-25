@@ -55,7 +55,7 @@ SERVERNAME=localhost
 # TODO: Adapt to the name of your apt cacher (e.g. http://localhost:3142)
 APT_CACHER_ADDRESS=
 
-scp -r jenkins@$SERVERNAME:jenkins-config/jenkins_setup $WORKSPACE/jenkins_setup
+nice -n19 ionice -c2 -n7 scp -r jenkins@$SERVERNAME:jenkins-config/jenkins_setup $WORKSPACE/jenkins_setup
 
 cd $WORKSPACE/jenkins_setup/scripts
 
