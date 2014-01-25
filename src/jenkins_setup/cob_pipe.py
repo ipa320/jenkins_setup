@@ -77,28 +77,46 @@ class CobPipe(object):
 
         return job_type_dict
 
-    def get_custom_dependencies(self, polled_only=False):
+    def split_github_url(self, url):
         """
-        Get all dependencies defined in the pipeline and their corresponding
-        repositories
+        splits a github url into user and repository name
+        
+        :param url: github url
+        """
+        
+        user = url.split(':', 1)[1].split('/', 1)[0]
+        name = url.split(':', 1)[1].split('/', 1)[1].split('.git')[0]
+        return user, name
 
-        @param polled_only: if set only polled dependencies will be considered
-        @type  polled_only: bool
+    def get_scm_triggers(self):
+        """
+        Get all scm triggers with jobs_to_trigger
+
         @return type: dict
         """
+        #TODO: add repos not only deps
+        
+        pipe_repo_list = self.repositories.keys()
+        scm_triggers = {}
+        for pipe_repo in pipe_repo_list:
+            for dependency in self.repositories[pipe_repo].data['dependencies'].keys():
+                if self.repositories[pipe_repo].data['dependencies'][dependency]['poll']:
+                    scm_trigger = {}
+                    scm_trigger['url'] = self.repositories[pipe_repo].data['dependencies'][dependency]['url']
+                    user, repo_name = self.split_github_url(scm_trigger['url'])
+                    scm_trigger['user'] = user
+                    scm_trigger['name'] = repo_name
+                    scm_trigger['version'] = self.repositories[pipe_repo].data['dependencies'][dependency]['version']
+                    scm_trigger['jobs_to_trigger'] = [pipe_repo]
+                    scm_trigger_name = scm_trigger['user'] + '__' + scm_trigger['name'] + '__' + scm_trigger['version']
 
-        deps = {}
-        for repo in self.repositories.keys():
-            for dep in self.repositories[repo].dependencies.keys():
-                if polled_only:
-                    if not self.repositories[repo].dependencies[dep].poll:
-                        continue
-                if dep in deps:
-                    deps[dep].append(repo)
-                else:
-                    deps[dep] = [repo]
-
-        return deps
+                    # if dependency is already listed in dependencies then extend the jobs_to_trigger with the current repository
+                    if scm_trigger_name in scm_triggers.keys():
+                        scm_triggers[scm_trigger_name]['jobs_to_trigger'].append(pipe_repo)
+                    # if not listed in dependencies then add a new entry
+                    else: 
+                        scm_triggers[scm_trigger_name] = scm_trigger
+        return scm_triggers
 
 
 class CobPipeDependencyRepo(object):
@@ -169,6 +187,7 @@ class CobPipeRepo(CobPipeDependencyRepo):
         self.ros_distro = data['ros_distro']
         self.prio_ubuntu_distro = data['prio_ubuntu_distro']
         self.prio_arch = data['prio_arch']
+        self.data = data
 
         self.regular_matrix = {}
         if data['regular_matrix']:

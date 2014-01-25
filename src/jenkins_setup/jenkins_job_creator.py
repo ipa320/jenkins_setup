@@ -129,7 +129,7 @@ class JenkinsJob(object):
     ###########################################################################
     def _split_github_url(self, url):
         """
-        splits a github url into user, name
+        splits a github url into user and repository name
         
         :param url: github url
         """
