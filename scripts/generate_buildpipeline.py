@@ -10,6 +10,11 @@ from jenkins_setup import jenkins_job_creator, cob_pipe
 
 
 def get_master_name(url):
+    """
+    gets the name of a jenkins instance from its url
+    
+    :param url: jenkins url
+    """
     name = url.replace('http://', '')
     name = name.replace(':8080/', '')
     name = name.replace(':8080', '')
@@ -98,22 +103,14 @@ def main():
     # get jobs to create
     job_type_dict = plc_instance.get_jobs_to_create()
 
-    ### create pipeline jobs
+############################
+### create pipeline jobs ###
+############################
     ### scm pipe starter
-    # for each repository and each polled user-defined dependency a pipe
-    # starter job will be generated
-    polls_dict = plc_instance.get_custom_dependencies(polled_only=True)
-    pipe_repo_list = plc_instance.repositories.keys()
-    for poll, starts_repo_list in polls_dict.iteritems():
-        if poll in pipe_repo_list:
-            pipe_repo_list.remove(poll)
-        job_creator_instance = jenkins_job_creator.PipeStarterSCMJob(jenkins_instance, plc_instance, starts_repo_list, poll)
-        if options.delete:
-            modified_jobs.append(job_creator_instance.delete_job())
-        else:
-            modified_jobs.append(job_creator_instance.create_job())
-    for repo in pipe_repo_list:
-        job_creator_instance = jenkins_job_creator.PipeStarterSCMJob(jenkins_instance, plc_instance, [repo], repo)
+    # create scm pipe starter for all scm triggers (all repos and polled deps)
+    scm_triggers = plc_instance.get_scm_triggers()
+    for scm_trigger_name, scm_trigger in scm_triggers.items():
+        job_creator_instance = jenkins_job_creator.PipeStarterSCMJob(jenkins_instance, plc_instance, scm_trigger_name, scm_trigger)
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
