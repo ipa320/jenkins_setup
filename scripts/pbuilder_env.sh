@@ -5,8 +5,6 @@ export WORKSPACE=$1
 . $WORKSPACE/env_vars.sh
 
 export PATH=$PATH:/usr/local/bin
-. /opt/ros/$ROSDISTRO/setup.sh
-export ROS_PACKAGE_PATH=/tmp/test_repositories/src_repository:$ROS_PACKAGE_PATH
 export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
 
 export HOME="/root"
@@ -45,7 +43,7 @@ echo "==============================================="
 echo "==== Begin script. Ignore the output above ===="
 echo "==============================================="
 
-$WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
+nice -n19 ionice -c2 -n7 $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
 result=$?
 
 case $JOBTYPE in
