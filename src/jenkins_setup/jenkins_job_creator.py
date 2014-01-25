@@ -477,36 +477,24 @@ class JenkinsJob(object):
 
         self.params['JUNIT_TESTRESULTS'] = self.job_config_params['junit_testresults']
 
-    def _set_trigger_param(self, trigger_type):
+    def _set_vcs_trigger_param(self, vcs_type, url, version = None):
         """
         Sets config for trigger parameter
 
-        @param trigger_type: name of trigger type
-        @type  trigger_type: str
+        @param vcs_type: name of vcs type
+        @type  vcs_type: str
+        @param url: url of vcs repositoy
+        @type  url: str
+        @param version: version (branch) of vcs repositoy
+        @type  version: str, default=None
         """
 
-        self.params['TRIGGER'] = self.job_config_params['triggers'][trigger_type]
+        self.params['TRIGGER'] = self.job_config_params['triggers']['vcs']
 
-        if trigger_type == 'resulttrigger':
-            pass  # TODO
-        if trigger_type == 'vcs':
-            self._set_vcs_param()
-
-    def _set_vcs_param(self):
-        """
-        Sets config for vcs parameter
-        """
-
-        if self.poll != self.repo_list[0]:
-            vcs_config = self.job_config_params['vcs'][self.pipe_inst.repositories[self.repo_list[0]].dependencies[self.poll].type]
-            vcs_config = vcs_config.replace('@(URI)', self.pipe_inst.repositories[self.repo_list[0]].dependencies[self.poll].url)
-            if self.pipe_inst.repositories[self.repo_list[0]].dependencies[self.poll].type != 'svn':
-                vcs_config = vcs_config.replace('@(BRANCH)', self.pipe_inst.repositories[self.repo_list[0]].dependencies[self.poll].version)
-        else:
-            vcs_config = self.job_config_params['vcs'][self.pipe_inst.repositories[self.repo_list[0]].type]
-            vcs_config = vcs_config.replace('@(URI)', self.pipe_inst.repositories[self.repo_list[0]].url)
-            if self.pipe_inst.repositories[self.repo_list[0]].type != 'svn':
-                vcs_config = vcs_config.replace('@(BRANCH)', self.pipe_inst.repositories[self.repo_list[0]].version)
+        vcs_config = self.job_config_params['vcs'][vcs_type]
+        vcs_config = vcs_config.replace('@(URI)', url)
+        if vcs_type != 'svn':
+            vcs_config = vcs_config.replace('@(BRANCH)', version)
 
         self.params['VCS'] = vcs_config
 
@@ -663,35 +651,27 @@ class PipeStarterSCMJob(JenkinsJob):
     """
     Object representation of Pipe Starter Job
     """
-    def __init__(self, jenkins_instance, pipeline_config, repo_list, poll):
+    def __init__(self, jenkins_instance, pipeline_config, scm_trigger_name, scm_trigger):
         """
         :param jenkins_instance: object of Jenkins server
         :param pipeline_config: config dict, ``dict``
-        :param repo_list: list of names of repository to trigger after change, ``list``
-        :param poll: name of repository to monitor for changes, ``str``
+        :param scm_trigger_name: string with scm trigger name
+        :param scm_trigger: ``dict`` with scm trigger items
         """
 
         super(PipeStarterSCMJob, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'pipe_starter_scm'
-        self.repo_list = repo_list
-        self.poll = repo_list[0]
-        
-        if poll != repo_list[0]:
-            self.poll = poll
-            user, name = self._split_github_url(self.pipe_inst.repositories[repo_list[0]].dependencies[poll].url)
-            branch = self.pipe_inst.repositories[repo_list[0]].dependencies[poll].version
-            if poll in self.pipe_inst.repositories.keys():
-                self.repo_list.append(poll)
-        else:
-            user, name = self._split_github_url(self.pipe_inst.repositories[poll].url)
-            branch = self.pipe_inst.repositories[poll].version
+        self.scm_trigger_name = scm_trigger_name
+        self.scm_trigger = scm_trigger
+        self.poll = scm_trigger['repo']
+        self.repo_list = scm_trigger['jobs_to_trigger']
 
         # substitute "/" in branch namens with "", because jenkins job name is not allowed to contain "/"
-        branch = branch.replace("/", "")
+        branch = self.scm_trigger['version'].replace("/", "")
         
         # set job name
-        self.job_name = self._generate_job_name(self.job_type, suffix=user + "__" + name + "__" + branch)
+        self.job_name = self._generate_job_name(self.job_type, suffix=self.scm_trigger['user'] + "__" + self.scm_trigger['repo'] + "__" + branch)
 
     def _set_job_type_params(self):
         """
@@ -701,13 +681,14 @@ class PipeStarterSCMJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
 
-        self._set_trigger_param('vcs')
+        vcs_type = 'git' # FIXME currently hardcoded to git only
+        self._set_vcs_trigger_param( vcs_type, self.scm_trigger['url'], self.scm_trigger['version'])
 
         # set parameterized triggers
         prio_triggers = []
         for repo in self.repo_list:
             prio_triggers.append(self._get_single_parameterizedtrigger(['prio_build'], subset_filter='(repository=="%s")' % repo,
-                                                                       predefined_param='POLL=' + self.poll + '\nREPOSITORY=%s' % repo))
+                                                                       predefined_param='POLL=' + self.scm_trigger['repo'] + '\nREPOSITORY=%s' % repo))
         self._set_parameterizedtrigger_param(prio_triggers)
 
         # set authorization matrix

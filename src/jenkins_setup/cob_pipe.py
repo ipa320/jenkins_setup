@@ -88,33 +88,49 @@ class CobPipe(object):
         name = url.split(':', 1)[1].split('/', 1)[1].split('.git')[0]
         return user, name
 
+    def create_scm_trigger(self, url, version, jobs_to_trigger = []):
+        """
+        Create a scm trigger with a name and content
+
+        @return type: string
+        @return type: dict
+        """    
+    
+        scm_trigger = {}
+        scm_trigger['url'] = url
+        user, repo_name = self.split_github_url(scm_trigger['url'])
+        scm_trigger['user'] = user
+        scm_trigger['repo'] = repo_name
+        scm_trigger['version'] = version
+        scm_trigger['jobs_to_trigger'] = jobs_to_trigger
+        scm_trigger_name = scm_trigger['user'] + '__' + scm_trigger['repo'] + '__' + scm_trigger['version']
+        return scm_trigger_name, scm_trigger
+
     def get_scm_triggers(self):
         """
         Get all scm triggers with jobs_to_trigger
 
         @return type: dict
         """
-        #TODO: add repos not only deps
-        
+
         pipe_repo_list = self.repositories.keys()
         scm_triggers = {}
         for pipe_repo in pipe_repo_list:
+            # always add pipe_repo to scm triggers
+            scm_trigger_name, scm_trigger = self.create_scm_trigger(self.repositories[pipe_repo].data['url'], self.repositories[pipe_repo].data['version'], [pipe_repo])
+            if scm_trigger_name in scm_triggers.keys(): # if dependency is already listed in dependencies: extend the jobs_to_trigger with the current repository
+                scm_triggers[scm_trigger_name]['jobs_to_trigger'].append(pipe_repo)
+
+            else: # if not listed in scm_triggers: add a new entry
+                scm_triggers[scm_trigger_name] = scm_trigger
+
+            # add dependencies to scm triggers if they are marked with poll=true
             for dependency in self.repositories[pipe_repo].data['dependencies'].keys():
                 if self.repositories[pipe_repo].data['dependencies'][dependency]['poll']:
-                    scm_trigger = {}
-                    scm_trigger['url'] = self.repositories[pipe_repo].data['dependencies'][dependency]['url']
-                    user, repo_name = self.split_github_url(scm_trigger['url'])
-                    scm_trigger['user'] = user
-                    scm_trigger['name'] = repo_name
-                    scm_trigger['version'] = self.repositories[pipe_repo].data['dependencies'][dependency]['version']
-                    scm_trigger['jobs_to_trigger'] = [pipe_repo]
-                    scm_trigger_name = scm_trigger['user'] + '__' + scm_trigger['name'] + '__' + scm_trigger['version']
-
-                    # if dependency is already listed in dependencies then extend the jobs_to_trigger with the current repository
-                    if scm_trigger_name in scm_triggers.keys():
+                    scm_trigger_name, scm_trigger = self.create_scm_trigger(self.repositories[pipe_repo].data['dependencies'][dependency]['url'], self.repositories[pipe_repo].data['dependencies'][dependency]['version'], [pipe_repo])
+                    if scm_trigger_name in scm_triggers.keys(): # if dependency is already listed in dependencies: extend the jobs_to_trigger with the current repository
                         scm_triggers[scm_trigger_name]['jobs_to_trigger'].append(pipe_repo)
-                    # if not listed in dependencies then add a new entry
-                    else: 
+                    else: # if not listed in dependencies: add a new entry
                         scm_triggers[scm_trigger_name] = scm_trigger
         return scm_triggers
 
