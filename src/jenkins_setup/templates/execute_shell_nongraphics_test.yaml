@@ -9,13 +9,13 @@ time_copy=$(date +%s)
 
 if [ -z "$ROS_DISTRO" ]; then
 
-ROS_DISTRO=$ros_distro
+    ROS_DISTRO=$ros_distro
 
 fi
 
 if [ -z "$ros_distro" ]; then
 
-ros_distro=$ROS_DISTRO
+    ros_distro=$ROS_DISTRO
 
 fi
 
@@ -27,7 +27,7 @@ sudo rm -rf $WORKSPACE/*
 
 if [ -d $WORKSPACE/../aux ]; then
 
-sudo rm -rf $WORKSPACE/../aux
+    sudo rm -rf $WORKSPACE/../aux
 
 fi
 
@@ -61,15 +61,13 @@ JENKINS_USER=@(USERNAME)
 
 JOBTYPE=@(JOB_TYPE_NAME)
 
-export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results
-
 export BUILD_ID=$BUILD_ID
 
 DELIM
 
-echo "==> entering step for proccessing inside chroot at $(date)"
+echo "==> entering step for proccessing test inside chroot at $(date)"
 
-time_chroot=$(date +%s)
+time_processing=$(date +%s)
 
 if [ $arch == "i386" ]; then
 
@@ -87,13 +85,13 @@ echo "==> finished job at $(date)"
 
 time_end=$(date +%s)
 
-# duration steps: copy, chroot, end
+# duration steps: copy, processing, end
 
 echo "durations:"
 
-echo "copying chroot in             " $(date -d @`expr $time_chroot - $time_copy` +%M:%S)
+echo "copying chroot in             " $(date -d @`expr $time_processing - $time_copy` +%M:%S)
  
-echo "processing inside chroot in   " $(date -d @`expr $time_end - $time_chroot` +%M:%S)
+echo "processing inside chroot in   " $(date -d @`expr $time_end - $time_processing` +%M:%S)
 
 echo "total                         " $(date -d @`expr $time_end - $time_copy` +%M:%S)
 

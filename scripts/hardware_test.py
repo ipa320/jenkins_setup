@@ -53,7 +53,7 @@ def main():
     print "\n", 50 * 'X'
 
     # set up directories variables
-    tmpdir = '/tmp'
+    tmpdir = workspace
     repo_sourcespace = os.path.join(tmpdir, 'src')                                 # location to build repositories in
     repo_sourcespace_wet = os.path.join(repo_sourcespace, 'wet', 'src')            # wet (catkin) repositories
     repo_sourcespace_dry = os.path.join(repo_sourcespace, 'dry')                   # dry (rosbuild) repositories
@@ -143,7 +143,7 @@ def main():
                 print e
 
         # copy dry test results
-        common.copy_test_results(repo_test_results, workspace + "/test_results")
+        common.copy_test_results(repo_test_results, workspace + "/../../test_results")
 
     ###########
     ### end ###
