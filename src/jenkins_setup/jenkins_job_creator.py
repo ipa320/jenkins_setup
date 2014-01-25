@@ -127,17 +127,6 @@ class JenkinsJob(object):
     ###########################################################################
     # helper methods - parameter generation
     ###########################################################################
-    def _split_github_url(self, url):
-        """
-        splits a github url into user and repository name
-        
-        :param url: github url
-        """
-        
-        user = url.split(':', 1)[1].split('/', 1)[0]
-        name = url.split(':', 1)[1].split('/', 1)[1].split('.git')[0]
-        return user, name
-
     def _replace_placeholder(self):
         """
         Replaces placeholder in template with parameters
