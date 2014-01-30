@@ -1,7 +1,7 @@
 # This file contains the target platforms for 'cob' repositories depending on
 # the ros release (derived from REP 3 http://www.ros.org/reps/rep-0003.html)
 # in a computer readable form
-- electric: ['lucid', 'natty', 'oneiric']
-- fuerte: ['lucid', 'oneiric', 'precise']
+#- electric: ['lucid', 'natty', 'oneiric']
+#- fuerte: ['lucid', 'oneiric', 'precise']
 - groovy: ['oneiric', 'precise', 'quantal']
 - hydro: ['precise', 'quantal', 'raring']
