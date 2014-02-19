@@ -1268,6 +1268,32 @@ class HardwareTestJob(HardwareBuildJob):
         self._set_authorization_matrix_param(['read', 'workspace'])
 
 
+class DeploymentJob(JenkinsJob):
+    """
+    """
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
+        super(DeploymentJob, self).__init__(jenkins_instance, pipeline_config)
+
+        self.job_type = 'deployment'
+        self.job_name = self._generate_job_name(self.job_type)
+        self.tarball_location = tarball_location
+
+    def _set_job_type_params(self):
+        """
+        Sets deployment job specific job configuration parameters
+        """
+
+        self.params['NODE_LABEL'] = 'master'
+        self.params['PROJECT'] = 'project' #TODO what do we need this for???
+
+        # set execute shell
+        shell_script = self._get_shell_script()
+        self._set_shell_param(shell_script)
+
+        # authorization matrix
+        self._set_authorization_matrix_param(['read', 'build', 'workspace'])
+
+
 class ReleaseJob(JenkinsJob):
     """
     Class for release jobs
