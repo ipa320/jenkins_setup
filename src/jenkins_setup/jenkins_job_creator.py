@@ -120,7 +120,7 @@ class JenkinsJob(object):
         self._set_authorization_matrix_param(['read', 'workspace'])
         self.params['CONCURRENT_BUILD'] = 'false'
         self.params['QUIET_PERIOD'] = '5'
-        self.params['BLOCKING_UPSTREAM'] = 'false'
+        self.params['BLOCKING_UPSTREAM'] = 'true'
         self.params['BLOCKING_DOWNSTREAM'] = 'false'
         self._set_build_timeout()
         self.params['WS_CLEANUP'] = self.job_config_params['ws_cleanup']

@@ -8,8 +8,8 @@ stored or on an GitHub account.
 """
 
 import yaml
-
-from jenkins_setup import common
+import paramiko
+import os
 
 
 class CobPipe(object):
@@ -42,7 +42,7 @@ class CobPipe(object):
             repo = CobPipeRepo(repo_name, data)
             self.repositories[repo_name] = repo
 
-    def load_config_from_url(self, pipeline_repos_owner, server_name, user_name):
+    def load_config_from_url(self, pipeline_repos_owner, server_name, user_name, url):
         """
         Get the buildpipeline configuration by the given server and user name
         and set up the pipeline object
@@ -55,7 +55,59 @@ class CobPipe(object):
         @type  user_name: str
         """
 
-        pipeline_config = common.get_buildpipeline_configs(server_name, user_name)
+        pipeconfig_url = url.replace(".git", "")
+        pipeconfig_url = pipeconfig_url.replace("https://github.com/", "https://raw.github.com/")
+        pipeconfig_url = pipeconfig_url.replace("git://github.com/", "https://raw.github.com/")
+        pipeconfig_url = pipeconfig_url.replace("git@github.com:", "https://raw.github.com/")
+        pipeconfig_url = pipeconfig_url + "/master/%s/%s/pipeline_config.yaml" % (server_name, user_name)
+        print "Parsing buildpipeline configuration file from github for %s stored at:\n%s" % (user_name, pipeconfig_url)
+        with contextlib.closing(urllib2.urlopen(pipeconfig_url)) as f:
+            pipeline_config = yaml.load(f.read())
+        self.load_config_from_dict(pipeline_config)
+        self.pipeline_repos_owner = pipeline_repos_owner
+
+    def load_config_from_sftp(self, pipeline_repos_owner, server_name, user_name):
+        """
+        Get the buildpipeline configuration by the given server and user name
+        and set up the pipeline object
+
+        @param pipeline_repos_owner: address of config repo
+        @type  pipeline_repos_owner: str
+        @param server_name: name of server
+        @type  server_name: str
+        @param user_name: name of user
+        @type  user_name: str
+        """
+
+        client = paramiko.SSHClient()
+        client.load_system_host_keys()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.connect(hostname=server_name, username="jenkins", key_filename=os.path.expanduser("~/.ssh/id_rsa"))
+        sftp = client.open_sftp()
+        fileObject = sftp.file("jenkins-config/jenkins_config/" + server_name + "/" + user_name + "/pipeline_config.yaml", 'rb')
+        pipeline_config = yaml.load(fileObject.read())
+        self.load_config_from_dict(pipeline_config)
+        self.pipeline_repos_owner = pipeline_repos_owner
+
+    def load_config_from_file(self, pipeline_repos_owner, server_name, user_name, file_location):
+        """
+        Get the buildpipeline configuration by the given server and user name
+        and set up the pipeline object
+
+        @param pipeline_repos_owner: address of config repo
+        @type  pipeline_repos_owner: str
+        @param server_name: name of server
+        @type  server_name: str
+        @param user_name: name of user
+        @type  user_name: str
+        """
+
+        if file_location == None:
+            file_location = os.environ['WORKSPACE']
+        fileObject = open( file_location + "/jenkins_config/" + server_name + "/" + user_name + "/pipeline_config.yaml", 'rb')
+        pipeline_config = yaml.load(fileObject.read())
+
+
         self.load_config_from_dict(pipeline_config)
         self.pipeline_repos_owner = pipeline_repos_owner
 
