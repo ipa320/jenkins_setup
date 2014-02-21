@@ -72,6 +72,11 @@ def main():
     repo_build_logs = os.path.join(tmpdir, 'build_logs')                           # location for build logs
     os.makedirs(repo_build_logs)
 
+    # init catkin workspace
+    ros_env_repo = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)                            # source ros_distro (needed to do a catkin_init_workspace)
+    common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env_repo, verbose=False)         # init wet workspace
+    common.call("catkin_make --directory %s/wet" % repo_sourcespace, ros_env_repo, verbose=False)       # build wet workspace to generate a setup.bash
+
     ################
     ### checkout ###
     ################
@@ -204,18 +209,14 @@ def main():
 
     # setup ros workspace
     print "Set up ros workspace and setup environment variables"
-    # init catkin workspace
-    ros_env_repo = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)                            # source ros_distro (needed to do a catkin_init_workspace)
-    common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env_repo, verbose=False)
-    common.call("rosws init %s /opt/ros/%s" %(repo_sourcespace, ros_distro), verbose=False)             # init workspace for ros_distro
+    common.call("rosws init %s /opt/ros/%s" %(repo_sourcespace, ros_distro), verbose=False)             # init workspace pointing to ros_distro
 
     # for hardware build: merge workspace with robot account #FIXME: this should be parameterisable in plugin (select a path to a setup.bash file in the admin config and mark a checkbox for the user config)
     if os.path.isdir("/u/robot/git/care-o-bot"):
         common.call("rosws merge -t %s /u/robot/git/care-o-bot" %repo_sourcespace, verbose=False)      # merge robot account workspace
 
-    common.call("rosws merge -t %s %s/wet/src" % (repo_sourcespace, repo_sourcespace), verbose=False)   # merge wet workspace
-    common.call("rosws merge -t %s %s/dry" % (repo_sourcespace, repo_sourcespace), verbose=False)        # merge dry workspace
-    
+    common.call("rosws merge -t %s %s/wet/devel" % (repo_sourcespace, repo_sourcespace), verbose=False) # merge wet workspace
+    common.call("rosws merge -t %s %s/dry" % (repo_sourcespace, repo_sourcespace), verbose=False)       # merge dry workspace
     ros_env_repo = common.get_ros_env(repo_sourcespace + '/setup.bash')                                 # source wet and dry workspace
 
     ############################
@@ -250,9 +251,8 @@ def main():
 
     ### catkin repositories
     if catkin_packages != {}:
-        os.chdir(repo_sourcespace_wet + "/..")
         try:
-            common.call("catkin_make", ros_env_repo)
+            common.call("catkin_make --directory %s/wet" % repo_sourcespace, ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
             raise common.BuildException("Failed to catkin_make wet repositories")

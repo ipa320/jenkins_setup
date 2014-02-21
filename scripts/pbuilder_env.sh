@@ -4,6 +4,8 @@ export WORKSPACE=$1
 
 . $WORKSPACE/env_vars.sh
 
+. /opt/ros/$ROSDISTRO/setup.bash
+
 export PATH=$PATH:/usr/local/bin
 export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
 
