@@ -30,5 +30,6 @@ echo -e "\n***UPDATE***"
 apt-get update
 echo -e "\n***INSTALL ROS***"
 apt-get install -y ros-$2-ros
-echo -e "\n***INSTALL BASIC ROS PACKAGES***"
-apt-get install -y python-rosinstall python-rosdistro python-rosdep python-rospkg python-catkin-pkg
+
+echo -e "\n***INSTALL ROS PYTHON TOOLS***"
+apt-get install -y python-ros*
