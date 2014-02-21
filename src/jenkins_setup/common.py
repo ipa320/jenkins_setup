@@ -206,9 +206,11 @@ def clean_and_copy_test_results(input_dir, output_dir, errors=None, prefix='dumm
     that tend to cause Hudson/Jenkins trouble.
     """
     
-    if not os.path.exists(output_dir):
-        print "creating directory", output_dir
-        os.makedirs(output_dir)
+    if os.path.exists(output_dir):
+        print "deleting old test results directory", output_dir
+        shutil.rmtree(output_dir)
+    print "creating new test results directory", output_dir
+    os.makedirs(output_dir)
 
     print "Copy all test results to " + output_dir
     for d in os.listdir(input_dir):

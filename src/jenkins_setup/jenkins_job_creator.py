@@ -1380,7 +1380,7 @@ class HardwareTestJob(HardwareJob):
         self._set_matrix_param(matrix_entries_dict_list, labels=robots, filter_=matrix_filter)
 
         # junit test result location
-        self._set_junit_testresults_param(self.pipe_inst.user_name + '/test_results')
+        self._set_junit_testresults_param('${repository}/current/test_results')
 
         # set custom workspace
         self.params['CUSTOM_WORKSPACE'] = self.job_config_params['custom_workspace'].replace('@(CUSTOM_WORKSPACE_DIR)', 'workspace_hardware_build').replace('@(CUSTOM_WORKSPACE_CHILD_DIR)', self.pipe_inst.user_name)
