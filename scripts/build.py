@@ -102,25 +102,6 @@ def main():
     # get all packages in checkoutspace
     (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_checkoutspace)
 
-    # (debug) output
-    if options.verbose:
-        print "Packages in %s:" % repo_checkoutspace
-        print "Catkin: ", catkin_packages
-        print "Rosbuild:\n  Stacks: ", stacks
-        print "  Packages: ", manifest_packages
-
-        # get deps directly for catkin (like in willow code)
-        try:
-            print "Found wet build dependencies:\n%s" % '- ' + '\n- '.join(sorted(common.get_dependencies(repo_checkoutspace, build_depends=True, test_depends=False)))
-        except:
-            pass
-        # deps catkin
-        repo_build_dependencies = common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
-        print "Found wet dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
-        # deps stacks
-        repo_build_dependencies = common.get_nonlocal_dependencies({}, stacks, {})
-        print "Found dry dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
-
     # check if build_repo is wet or dry and get all corresponding deps
     build_repo_type = ''
     if build_repo in catkin_packages: # wet repo with metapackage
@@ -174,6 +155,14 @@ def main():
 
         # get also deps of just installed user-defined/customized dependencies
         (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_checkoutspace)
+
+        print ""
+        print "Found the following packages"
+        print "  wet packages:     ", catkin_packages.keys()
+        print "  dry stacks:       ", stacks.keys()
+        print "  dry packages:     ", manifest_packages.keys()
+        print ""
+          
         if build_repo_type == 'wet':
             if stacks != {}:
                 raise common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
