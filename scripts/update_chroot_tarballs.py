@@ -119,30 +119,29 @@ def process_basic_tarball(ssh, basic, local_abs, remote_abs, extended_tarballs, 
     sys.stdout.flush()
 
     if basic in existent_tarballs:
-        print "Update %s" % basic
+#        print "Update %s" % basic
         existent_tarballs.remove(basic)
 
-        try:
-            # copy tarball to slave for update process
-            get_tarball(ssh, basic, remote_abs_basic, local_abs_basic)
+#        try:
+#            # copy tarball to slave for update process
+#            get_tarball(ssh, basic, remote_abs_basic, local_abs_basic)
+#
+#            # update tarball
+#            call("./pbuilder_calls.sh update %s" % local_abs_basic)
+#
+#        except Exception as ex:
+#            return ["%s: %s" % (basic, ex)]
+#
+#    else:
+    print "Create %s" % basic
+    try:
+        # create tarball on slave
+        call("./pbuilder_calls.sh create %s %s %s"
+             % (local_abs_basic, tarball_params['ubuntu_distro'],
+                tarball_params['arch']))
 
-            # update tarball
-            call("./pbuilder_calls.sh update %s" % local_abs_basic)
-
-        except Exception as ex:
-            return ["%s: %s" % (basic, ex)]
-
-    else:
-        print "Create %s" % basic
-
-        try:
-            # create tarball on slave
-            call("./pbuilder_calls.sh create %s %s %s"
-                 % (local_abs_basic, tarball_params['ubuntu_distro'],
-                    tarball_params['arch']))
-
-        except Exception as ex:
-            return ["%s: %s" % (basic, ex)]
+    except Exception as ex:
+        return ["%s: %s" % (basic, ex)]
 
     sys.stdout.flush()
 
