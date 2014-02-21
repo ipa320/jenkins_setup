@@ -38,8 +38,11 @@
     @(MAILER)
     @(WARNINGS_PUBLISHER)
     @(CPPCHECK_PUBLISHER)
+    @(COPY_TO_MASTER)
   </publishers>
   <buildWrappers>
+    @(WS_CLEANUP)
     @(BUILD_TIMEOUT)
+    @(COPY_TO_SLAVE)
   </buildWrappers>
 </@(PROJECT)>

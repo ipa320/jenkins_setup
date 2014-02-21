@@ -10,6 +10,8 @@ export ROS_PACKAGE_PATH=/tmp/test_repositories/src_repository:$ROS_PACKAGE_PATH
 export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
 
 export HOME="/root"
+chmod go-rw $WORKSPACE/.ssh/authorized_keys
+chmod go-rw $WORKSPACE/.ssh/id_rsa
 cp -a $WORKSPACE/.ssh /root &&
 chown -R root.root /root/.ssh
 if [ $? != 0 ]; then
@@ -45,7 +47,7 @@ echo "==============================================="
 echo "==== Begin script. Ignore the output above ===="
 echo "==============================================="
 
-$WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
+python $WORKSPACE/jenkins_setup/scripts/${JOBTYPE}.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER $JENKINS_USER $ROSDISTRO $REPOSITORY
 result=$?
 
 case $JOBTYPE in

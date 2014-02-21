@@ -1,11 +1,11 @@
 #####################
 ### graphics_test ###
 #####################
-'graphics_test': '#!/bin/bash
+'graphics_test': '#!/bin/bash -e
 
-echo "==> entering step for copying chroot at $(date)"
+echo "==> entering step for loading chroot at $(date)"
 
-time_copy=$(date +%s)
+time_load=$(date +%s)
 
 if [ -z "$ROS_DISTRO" ]; then
 
@@ -23,14 +23,6 @@ new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
-sudo rm -rf $WORKSPACE/*
-
-if [ -d $WORKSPACE/../aux ]; then
-
-sudo rm -rf $WORKSPACE/../aux
-
-fi
-
 bagPath=@(STORAGE)/../bagFiles/
 
 echo "Bag-File-Directory: $bagPath"
@@ -46,16 +38,6 @@ if [ $writeResult -ne 0 ]; then
    exit 1;
 
 fi
-
-mkdir $WORKSPACE/../aux
-
-echo "Copying "$basetgz" from @(STORAGE)/in_use_on__@(SERVERNAME)"
-
-scp @(STORAGE)/in_use_on__@(SERVERNAME)/$basetgz $WORKSPACE/../aux/${basetgz}
-
-scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
-
-scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
 
 cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
@@ -83,31 +65,6 @@ export BUILD_ID=$BUILD_ID
 
 export BAGPATH=$bagPath
 
-scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
-
-scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
-
-cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
-
-JOBNAME=$JOB_NAME
-
-ROSDISTRO=$ROS_DISTRO
-
-REPOSITORY=$repository
-
-UBUNTUDISTRO=$ubuntu_distro
-
-ARCH=$arch
-
-PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
-
-JENKINS_MASTER=@(SERVERNAME)
-
-JENKINS_USER=@(USERNAME)
-
-JOBTYPE=@(JOB_TYPE_NAME)
-
-
 DELIM
 
 echo "==> entering step for preparing graphical X environment at $(date)"
@@ -130,31 +87,33 @@ time_chroot=$(date +%s)
 
 if [ $arch == "i386" ]; then
 
-    setarch i386 sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts "$WORKSPACE /tmp/.X11-unix /tmp/nvidia" -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+    setarch i386 sudo pbuilder execute --basetgz $WORKSPACE/chroot_tarballs/in_use_on__@(SERVERNAME)/${basetgz} --bindmounts "$WORKSPACE /tmp/.X11-unix /tmp/nvidia" -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 else
 
-    sudo pbuilder execute --basetgz $WORKSPACE/../aux/${basetgz} --bindmounts "$WORKSPACE /tmp/.X11-unix /tmp/nvidia" -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+    sudo pbuilder execute --basetgz $WORKSPACE/chroot_tarballs/in_use_on__@(SERVERNAME)/${basetgz} --bindmounts "$WORKSPACE /tmp/.X11-unix /tmp/nvidia" -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 fi
 
-echo
+# change file ownership to "jenkins" user (files generated out of chroot have owner "root") (TODO: maybe in post-build step to make sure that also aborted jobs have correct ownership)
+
+sudo chown -R $(id -un):$(id -gn) $WORKSPACE
 
 echo "==> finished job at $(date)"
 
 time_end=$(date +%s)
 
-# duration steps: copy, xenv, chroot, end
+# duration steps: load, xenv, chroot, end
 
 echo "durations:"
 
-echo "copying chroot in             " $(date -d @`expr $time_xenv - $time_copy` +%M:%S)
+echo "loading chroot in             " $(date -d @`expr $time_xenv - $time_load` +%M:%S)
 
 echo "preparing X environment       " $(date -d @`expr $time_chroot - $time_xenv` +%M:%S)
  
 echo "processing inside chroot in   " $(date -d @`expr $time_end - $time_chroot` +%M:%S)
 
-echo "total                         " $(date -d @`expr $time_end - $time_copy` +%M:%S)
+echo "total                         " $(date -d @`expr $time_end - $time_load` +%M:%S)
 
 echo
 '

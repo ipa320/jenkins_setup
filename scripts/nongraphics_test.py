@@ -38,13 +38,12 @@ def main():
 
     # cob_pipe object
     cp_instance = cob_pipe.CobPipe()
-    cp_instance.load_config_from_url(pipeline_repos_owner, server_name, user_name)
+    cp_instance.load_config_from_file(pipeline_repos_owner, server_name, user_name, file_location=os.environ["WORKSPACE"])
     pipe_repos = cp_instance.repositories
     common.output("Pipeline configuration successfully loaded", blankline='b')
 
     # (debug) output
     print "\n", 50 * 'X'
-    print datetime.datetime.now()
     print "\nTesting on ros distro:  %s" % ros_distro
     print "Testing repository: %s" % build_repo
     print "Graphic Test: False"
@@ -67,8 +66,6 @@ def main():
     # get environment variables    
     ros_env_repo = common.get_ros_env(os.path.join(repo_sourcespace, 'setup.bash'))
     ros_env_repo['ROS_PACKAGE_PATH'] = ':'.join([repo_sourcespace, ros_package_path])
-    if options.verbose:
-        common.call("env", ros_env_repo)
 
     ############
     ### test ###
