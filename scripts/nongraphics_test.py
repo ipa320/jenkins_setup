@@ -127,6 +127,9 @@ def main():
 
         # clean and copy test xml files
         common.clean_and_copy_test_results(repo_test_results, workspace + "/test_results")
+        
+    # in case we have no tests executed (neither wet nor dry), we'll generate some dummy test result
+    common.clean_and_copy_test_results(repo_test_results, workspace + "/test_results")
 
     ###########
     ### end ###
