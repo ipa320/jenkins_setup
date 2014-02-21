@@ -35,6 +35,89 @@ def apt_get_update(sudo=False):
     else:
         call("sudo apt-get update")
 
+def apt_get_check(pkgs, rosdep=None):
+    """
+    Install the corresponding apt packages from a list of ROS repositories.
+
+    @param pkgs: names of ros repositories
+    @type  pkgs: list
+    @param rosdep: rosdep resolver object (default None)
+    @type  rosdep: rosdep.RosDepResolver
+    """
+    import apt
+    
+    apt_cache = apt.Cache()
+    not_installed = []
+
+    if len(pkgs) > 0:
+        if rosdep:
+            pkgs= rosdep.to_aptlist(pkgs)
+        else:
+            pkgs = pkgs
+    
+    for i in pkgs: #better way?
+        pkg = apt_cache[i]
+        if not pkg.is_installed:
+            not_installed.append(i)
+    
+    return not_installed
+
+
+def apt_get_check_also_nonrosdep(pkgs, ros_distro, rosdep=None):
+    """
+    Extend common.apt_get_install by trying to guess Debian package names
+    of packages not included in rosdep
+
+    @param pkgs: names of ros repositories
+    @type  pkgs: list
+    @param ros_distro: name of ros release, e.g. fuerte
+    @type  ros_distro: str
+    @param rosdep: rosdep resolver object (default None)
+    @type  rosdep: rosdep.RosDepResolver
+    """
+    rosdep_pkgs = []
+    aptget_pkgs = []
+    unavailable_pkgs = []
+
+    import apt
+    for pkg in pkgs:
+        if rosdep and rosdep.has_ros(pkg):
+            debian_pkgs = rosdep.to_apt(pkg)
+            rosdep_pkgs.append(pkg)
+        else:
+            debian_pkgs = ['-'.join(['ros', ros_distro, pkg.replace('_', '-')])]
+            aptget_pkgs += debian_pkgs
+        # use python apt module to check if Debian package exists
+        for debian_pkg in debian_pkgs:
+            if debian_pkg not in apt.Cache():
+                unavailable_pkgs.append(debian_pkg)
+
+    print ""
+    print "apt dependencies: ", aptget_pkgs
+    print "ros dependencies: ", rosdep_pkgs
+    print "unavailable dependencies: ", unavailable_pkgs
+    print ""
+
+    missing_apt_packages = []
+
+    if unavailable_pkgs != []:
+        raise BuildException("Some dependencies are not available: %s" % (', '.join(unavailable_pkgs)))
+
+    if rosdep_pkgs != []:
+        try:
+            missing_apt_packages += apt_get_check(rosdep_pkgs, rosdep)
+        except:
+            raise BuildException("Failed to apt-get check rosdep packages")
+
+    if aptget_pkgs != []:
+        try:
+            missing_apt_packages += apt_get_check(aptget_pkgs)
+        except:
+            raise BuildException("Failed to apt-get check ros repositories")
+
+    return missing_apt_packages
+    
+
 
 def apt_get_install(pkgs, rosdep=None, sudo=False):
     """
@@ -137,15 +220,17 @@ def copy_test_results(buildspace_test_results_dir, workspace_test_results_dir, e
     os.chdir(workspace_test_results_dir)
     print "Copy all test results to " + workspace_test_results_dir
 
-    # copy all rostest test reports nested in their packagename's directory    
-    count = 0
+    # copy all rostest test reports nested in their packagename's directory
     for root, dirnames, filenames in os.walk(buildspace_test_results_dir):
         for filename in fnmatch.filter(filenames, '*.xml'):
             call("cp %s %s" % (os.path.join(root, filename), workspace_test_results_dir))
-            count += 1
 
-	# create dummy test if no rostest result exists
-    if count == 0:
+    # create dummy test if no rostest result exists in workspace_test_results_dir
+    generate_dummy_test = False
+    for root, dirnames, filenames in os.walk(workspace_test_results_dir):
+        if len(filenames) == 0:
+            generate_dummy_test = True
+    if generate_dummy_test:
         print "No test results, so I'll create a dummy test result xml file, with errors %s" % errors
         with open(os.path.join(workspace_test_results_dir, 'dummy.xml'), 'w') as f:
             if errors:

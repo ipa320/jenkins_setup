@@ -31,5 +31,5 @@ apt-get update
 echo -e "\n***INSTALL ROS***"
 apt-get install -y ros-$2-ros
 
-echo -e "\n***INSTALL ROS VERSION SPECIFIC PACKAGES***"
+echo -e "\n***INSTALL ROS PYTHON TOOLS***"
 apt-get install -y python-ros*

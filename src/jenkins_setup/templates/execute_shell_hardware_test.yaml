@@ -3,6 +3,69 @@
 #####################
 'hardware_test': '#!/bin/bash -e
 
-    #TODO
+echo "==> entering step for preparing build $(date)"
 
+time_load=$(date +%s)
+
+if [ -z "$ROS_DISTRO" ]; then
+
+    ROS_DISTRO=$ros_distro
+
+fi
+
+if [ -z "$ros_distro" ]; then
+
+    ros_distro=$ROS_DISTRO
+
+fi
+
+WORKSPACE_ORIG=$WORKSPACE
+
+WORKSPACE="$WORKSPACE/$repository/current"
+
+. $WORKSPACE/env_vars.sh
+
+. /opt/ros/$ROSDISTRO/setup.sh
+
+export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
+
+echo "==> entering step for proccessing test at $(date)"
+
+time_processing=$(date +%s)
+
+echo
+
+echo "==============================================="
+
+echo "==== Begin script. Ignore the output above ===="
+
+echo "==============================================="
+
+python $WORKSPACE/jenkins_setup/scripts/hardware_test.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER @(USERNAME) $ROSDISTRO $REPOSITORY
+
+echo "==============================================="
+
+echo "==== End script. Ignore the output below ======"
+
+echo "==============================================="
+
+echo
+
+WORKSPACE=$WORKSPACE_ORIG
+
+echo "==> finished job at $(date)"
+
+time_end=$(date +%s)
+
+# duration steps: load, processing, end
+
+echo "durations:"
+
+echo "preparation in                " $(date -d @`expr $time_processing - $time_load` +%M:%S)
+ 
+echo "processing test in            " $(date -d @`expr $time_end - $time_processing` +%M:%S)
+
+echo "total                         " $(date -d @`expr $time_end - $time_load` +%M:%S)
+
+echo
 '
