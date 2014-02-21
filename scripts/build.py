@@ -38,7 +38,7 @@ def main():
 
     # cob_pipe object
     cp_instance = cob_pipe.CobPipe()
-    cp_instance.load_config_from_url(pipeline_repos_owner, server_name, user_name)
+    cp_instance.load_config_from_file(pipeline_repos_owner, server_name, user_name, file_location=os.environ["WORKSPACE"])
     pipe_repos = cp_instance.repositories
     common.output("Pipeline configuration successfully loaded", blankline='b')
 
@@ -88,7 +88,7 @@ def main():
         f.write(rosinstall)
     print "Install repository from source:"
     # rosinstall repos
-    common.call("rosinstall -j 8 --verbose --continue-on-error %s %s/repo.rosinstall /opt/ros/%s"
+    common.call("rosinstall -j 8 --verbose %s %s/repo.rosinstall /opt/ros/%s"
                 % (repo_checkoutspace, workspace, ros_distro))
 
     # get the repositories build dependencies
@@ -164,7 +164,7 @@ def main():
             f.write(rosinstall)
         print "Install user-defined build dependencies from source"
         # rosinstall depends
-        common.call("rosinstall -j 8 --verbose --continue-on-error %s %s/repo.rosinstall /opt/ros/%s"
+        common.call("rosinstall -j 8 --verbose %s %s/repo.rosinstall /opt/ros/%s"
                     % (repo_checkoutspace, workspace, ros_distro))
 
         # get also deps of just installed user-defined/customized dependencies

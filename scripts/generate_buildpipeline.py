@@ -97,7 +97,7 @@ def main():
 
     # get pipeline configs object from url
     plc_instance = cob_pipe.CobPipe()
-    plc_instance.load_config_from_url(options.pipeline_repos_owner, master_name, options.username)
+    plc_instance.load_config_from_sftp(options.pipeline_repos_owner, master_name, options.username)
     plc_instance.config_folder = options.config_folder
 
     # get jobs to create
@@ -210,6 +210,14 @@ def main():
             modified_jobs.append(job_creator_instance.delete_job())
         else:
             modified_jobs.append(job_creator_instance.create_job())
+
+    ### deployment job
+    #FIXME, TODO: add check if deployment job is activated --> needs to be an option in the plugin
+    job_creator_instance = jenkins_job_creator.DeploymentJob(jenkins_instance, plc_instance, tarball_location)
+    if options.delete:
+        modified_jobs.append(job_creator_instance.delete_job())
+    else:
+        modified_jobs.append(job_creator_instance.create_job())
 
     ### release job
     # TODO fix if statement

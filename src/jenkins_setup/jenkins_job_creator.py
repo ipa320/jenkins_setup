@@ -121,9 +121,12 @@ class JenkinsJob(object):
         self.params['CONCURRENT_BUILD'] = 'false'
         self.params['CUSTOM_WORKSPACE'] = ''
         self.params['QUIET_PERIOD'] = self.job_config_params['quiet_period'].replace('@(QUIET_PERIOD_DURATION)', '5')
-        self.params['BLOCKING_UPSTREAM'] = 'false'
+        self.params['BLOCKING_UPSTREAM'] = 'true'
         self.params['BLOCKING_DOWNSTREAM'] = 'false'
         self._set_build_timeout()
+        self.params['WS_CLEANUP'] = self.job_config_params['ws_cleanup']
+        self.params['COPY_TO_SLAVE'] = ''
+        self.params['COPY_TO_MASTER'] = ''
 
     ###########################################################################
     # helper methods - parameter generation
@@ -800,6 +803,17 @@ class BuildJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['POSTBUILD_TASK'] = self.job_config_params['postbuildtask']
 
+        # set copy-to-slave plugin parameters
+        copy_to_slave = self.job_config_params['copy_to_slave']
+        copy_to_slave = copy_to_slave.replace('@(BASETGZ)', '${ubuntu_distro}__${arch}__${ros_distro}')
+        self.params['COPY_TO_SLAVE'] = copy_to_slave
+        
+        # set copy-to-slave plugin parameters for copying back to master
+        copy_to_master = self.job_config_params['copy_to_master']
+        copy_to_master = copy_to_master.replace('@(SERVERNAME)', self.params['HOSTNAME'])
+        copy_to_master = copy_to_master.replace('@(BASETGZ)', self.pipe_inst.user_name + '__${ubuntu_distro}__${arch}__${ros_distro}__${REPOSITORY}')
+        self.params['COPY_TO_MASTER'] = copy_to_master
+
         # set static code analysis publisher
         self.params['WARNINGS_PUBLISHER'] = self.job_config_params['warningspublisher']
         self.params['CPPCHECK_PUBLISHER'] = self.job_config_params['cppcheckpublisher']
@@ -990,6 +1004,11 @@ class TestJob(JenkinsJob):
         # set blocking behaviour
         self.params['BLOCKING_UPSTREAM'] = 'true'
         self.params['BLOCKING_DOWNSTREAM'] = 'false'
+
+        # set copy-to-slave plugin parameters
+        copy_to_slave = self.job_config_params['copy_to_slave']
+        copy_to_slave = copy_to_slave.replace('@(BASETGZ)', self.pipe_inst.user_name + '__${ubuntu_distro}__${arch}__${ros_distro}__${REPOSITORY}')
+        self.params['COPY_TO_SLAVE'] = copy_to_slave
 
         # junit test result location
         self._set_junit_testresults_param('test_results')
@@ -1364,6 +1383,40 @@ class HardwareTestJob(HardwareJob):
 
         # authorization matrix
         self._set_authorization_matrix_param(['read', 'workspace'])
+
+#######################
+### deployment jobs ###
+#######################
+class DeploymentJob(JenkinsJob):
+    """
+    """
+    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
+        super(DeploymentJob, self).__init__(jenkins_instance, pipeline_config)
+
+        self.job_type = 'deployment'
+        self.job_name = self._generate_job_name(self.job_type)
+        self.tarball_location = tarball_location
+
+    def _set_job_type_params(self):
+        """
+        Sets deployment job specific job configuration parameters
+        """
+
+        #self.params['NODE_LABEL'] = 'master'
+        self.params['PROJECT'] = 'project' #TODO what do we need this for???
+        
+        # set copy-to-slave plugin parameters
+        copy_to_slave = self.job_config_params['copy_to_slave']
+        copy_to_slave = copy_to_slave.replace('@(SERVERNAME)', 'fmw-xps') # FIXME: replace servername with real data
+        copy_to_slave = copy_to_slave.replace('@(BASETGZ)', 'ipa-fmw__precise__amd64__hydro__fiad_scenario') # FIXME: replace basetgz with real data
+        self.params['COPY_TO_SLAVE'] = copy_to_slave
+
+        # set execute shell
+        shell_script = self._get_shell_script()
+        self._set_shell_param(shell_script)
+
+        # authorization matrix
+        self._set_authorization_matrix_param(['read', 'build', 'workspace'])
 
 
 class ReleaseJob(JenkinsJob):
