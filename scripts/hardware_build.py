@@ -38,7 +38,7 @@ def main():
 
     # cob_pipe object
     cp_instance = cob_pipe.CobPipe()
-    cp_instance.load_config_from_url(pipeline_repos_owner, server_name, user_name)
+    cp_instance.load_config_from_sftp(pipeline_repos_owner, server_name, user_name)
     pipe_repos = cp_instance.repositories
     common.output("Pipeline configuration successfully loaded", blankline='b')
 
@@ -93,7 +93,7 @@ def main():
         f.write(rosinstall)
     print "Install repository from source:"
     # rosinstall repos
-    common.call("rosinstall -j 8 --verbose --continue-on-error %s %s/repo.rosinstall /opt/ros/%s"
+    common.call("rosinstall -j 8 --verbose %s %s/repo.rosinstall /opt/ros/%s"
                 % (repo_checkoutspace, workspace, ros_distro))
 
     # get the repositories build dependencies
@@ -169,7 +169,7 @@ def main():
             f.write(rosinstall)
         print "Install user-defined build dependencies from source"
         # rosinstall depends
-        common.call("rosinstall -j 8 --verbose --continue-on-error %s %s/repo.rosinstall /opt/ros/%s"
+        common.call("rosinstall -j 8 --verbose %s %s/repo.rosinstall /opt/ros/%s"
                     % (repo_checkoutspace, workspace, ros_distro))
 
         # get also deps of just installed user-defined/customized dependencies
@@ -210,7 +210,8 @@ def main():
     common.call("rosws init %s /opt/ros/%s" %(repo_sourcespace, ros_distro), verbose=False)             # init workspace for ros_distro
 
     # for hardware build: merge workspace with robot account #FIXME: this should be parameterisable in plugin (select a path to a setup.bash file in the admin config and mark a checkbox for the user config)
-    common.call("rosws merge -t %s /u/robot/git/care-o-bot" %repo_sourcespace, verbose=False)      # merge robot account workspace
+    if os.path.isdir("/u/robot/git/care-o-bot"):
+        common.call("rosws merge -t %s /u/robot/git/care-o-bot" %repo_sourcespace, verbose=False)      # merge robot account workspace
 
     common.call("rosws merge -t %s %s/wet/src" % (repo_sourcespace, repo_sourcespace), verbose=False)   # merge wet workspace
     common.call("rosws merge -t %s %s/dry" % (repo_sourcespace, repo_sourcespace), verbose=False)        # merge dry workspace

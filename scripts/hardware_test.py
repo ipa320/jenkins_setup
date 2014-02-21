@@ -38,7 +38,7 @@ def main():
 
     # cob_pipe object
     cp_instance = cob_pipe.CobPipe()
-    cp_instance.load_config_from_url(pipeline_repos_owner, server_name, user_name)
+    cp_instance.load_config_from_sftp(pipeline_repos_owner, server_name, user_name)
     pipe_repos = cp_instance.repositories
     common.output("Pipeline configuration successfully loaded", blankline='b')
 
@@ -131,6 +131,7 @@ def main():
                         ( cores, repo_build_logs, build_list ), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
+            raise common.BuildException("Failed to catkin_make test wet repositories")
 
         # clean test xml files
         common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
