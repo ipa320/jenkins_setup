@@ -262,7 +262,7 @@ def main():
         print "Build repository %s" % build_repo
         try:
             common.call("rosmake -rV --skip-blacklist --profile --pjobs=%s --output=%s %s" %
-                        (cores, repo_build_logs, build_repo), ros_env_repo)
+                        (cores + 1, repo_build_logs, build_repo), ros_env_repo)
         except common.BuildException as ex:
             try:
                 shutil.move(repo_build_logs, os.path.join(workspace, "build_logs"))

@@ -596,7 +596,7 @@ class PipeStarterManualJob(JenkinsJob):
         prio_triggers = []
         prio_triggers.append(self._get_single_parameterizedtrigger(['prio_build'],
                                                                    subset_filter='(repository=="${repository}")',
-                                                                   predefined_param='POLL=manually triggered' + '\nREPOSITORY=$repository'))
+                                                                   predefined_param='repository=$repository'))
         self._set_parameterizedtrigger_param(prio_triggers)
 
         # set authorization matrix
@@ -634,7 +634,7 @@ class PipeStarterManualAllJob(JenkinsJob):
         for repo in self.repo_list:
             prio_triggers.append(self._get_single_parameterizedtrigger(['prio_build'],
                                                                        subset_filter='(repository=="%s")' % repo,
-                                                                       predefined_param='POLL=manually triggered' + '\nREPOSITORY=%s' % repo))
+                                                                       predefined_param='repository=%s' % repo))
         self._set_parameterizedtrigger_param(prio_triggers)
 
         # set authorization matrix
@@ -674,7 +674,7 @@ class HardwareBuildTrigger(JenkinsJob):
         prio_triggers = []
         prio_triggers.append(self._get_single_parameterizedtrigger(['hardware_build'],
                                                                    subset_filter='(repository=="${repository}")',
-                                                                   predefined_param='POLL=manually triggered' + '\nREPOSITORY=$repository'))
+                                                                   predefined_param='repository=$repository'))
         self._set_parameterizedtrigger_param(prio_triggers)
 
         # set authorization matrix
@@ -714,7 +714,7 @@ class HardwareTestTrigger(JenkinsJob):
         prio_triggers = []
         prio_triggers.append(self._get_single_parameterizedtrigger(['hardware_test'],
                                                                    subset_filter='(repository=="${repository}")',
-                                                                   predefined_param='POLL=manually triggered' + '\nREPOSITORY=$repository'))
+                                                                   predefined_param='repository=$repository'))
         self._set_parameterizedtrigger_param(prio_triggers)
 
         # authorization matrix
@@ -761,8 +761,9 @@ class PipeStarterSCMJob(JenkinsJob):
         # set parameterized triggers
         prio_triggers = []
         for repo in self.repo_list:
-            prio_triggers.append(self._get_single_parameterizedtrigger(['prio_build'], subset_filter='(repository=="%s")' % repo,
-                                                                       predefined_param='POLL=' + self.scm_trigger['repo'] + '\nREPOSITORY=%s' % repo))
+            prio_triggers.append(self._get_single_parameterizedtrigger(['prio_build'], 
+                                                                       subset_filter='(repository=="%s")' % repo,
+                                                                       predefined_param='repository=%s' % repo))
         self._set_parameterizedtrigger_param(prio_triggers)
 
         # set authorization matrix
@@ -864,10 +865,18 @@ class PriorityBuildJob(BuildJob):
 
         # set parameterized triggers
         parameterized_triggers = []
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['regular_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['prio_nongraphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['prio_graphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['hardware_build'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['regular_build'],
+                                                                            subset_filter='(repository=="$repository")',
+                                                                            predefined_param='repository=$repository'))
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['prio_nongraphics_test'],
+                                                                            subset_filter='(repository=="$repository")',
+                                                                            predefined_param='repository=$repository'))
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['prio_graphics_test'],
+                                                                            subset_filter='(repository=="$repository")',
+                                                                            predefined_param='repository=$repository'))
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['hardware_build'],
+                                                                            subset_filter='(repository=="$repository")',
+                                                                            predefined_param='repository=$repository'))
         self._set_parameterizedtrigger_param(parameterized_triggers)
 
 
@@ -915,8 +924,12 @@ class RegularBuildJob(BuildJob):
 
         # set parameterized triggers
         parameterized_triggers = []
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['regular_nongraphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
-        parameterized_triggers.append(self._get_single_parameterizedtrigger(['regular_graphics_test'], subset_filter='(repository=="$REPOSITORY")', predefined_param='REPOSITORY=$REPOSITORY'))
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['regular_nongraphics_test'],
+                                                                            subset_filter='(repository=="$repository")',
+                                                                            predefined_param='repository=$repository'))
+        parameterized_triggers.append(self._get_single_parameterizedtrigger(['regular_graphics_test'],
+                                                                            subset_filter='(repository=="$repository")',
+                                                                            predefined_param='repository=$repository'))
         self._set_parameterizedtrigger_param(parameterized_triggers)
 
     def _get_regular_subset_filter(self):
