@@ -38,7 +38,7 @@ def main():
 
     # cob_pipe object
     cp_instance = cob_pipe.CobPipe()
-    cp_instance.load_config_from_url(pipeline_repos_owner, server_name, user_name)
+    cp_instance.load_config_from_file(pipeline_repos_owner, server_name, user_name, file_location=os.environ["WORKSPACE"])
     pipe_repos = cp_instance.repositories
     common.output("Pipeline configuration successfully loaded", blankline='b')
 
@@ -75,48 +75,40 @@ def main():
     # get amount of cores available on host system
     cores = multiprocessing.cpu_count()
 
+    # get current repository name    
+    user, repo_name = cp_instance.split_github_url(pipe_repos[build_identifier].data['url'])
+
     ### catkin repositories
-    print "test catkin repositories"
-    if os.listdir(repo_sourcespace_wet):
-        # get wet repositories test and run dependencies
-        #print "Get test and run dependencies of repo list"
-        (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_wet)
+    (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_wet)
+    if (len(catkin_packages) > 0) and (repo_name in catkin_packages):
         # get list of dependencies to test
         test_repos_list_wet = []
-        for dep, depObj in pipe_repos[build_identifier].dependencies.items():
-            if depObj.test and dep in catkin_packages:
-                test_repos_list_wet.append(dep)
 
-        print "Test the following wet repositories %s" % test_repos_list_wet
+        # add all packages in main repository
+        (catkin_test_packages, stacks, manifest_packages) = common.get_all_packages(catkin_packages[repo_name] + '/..')
+        for pkg_name, pkg_dir in catkin_test_packages.items():
+            test_repos_list_wet.append(pkg_name)
 
-        #test_error_msg = None
+        # add all oackages in dep repositories (if "test" is set to True)
+        for dep in pipe_repos[build_identifier].dependencies.keys():
+            if pipe_repos[build_identifier].dependencies[dep].test:
+                (catkin_test_dep_packages, stacks, manifest_packages) = common.get_all_packages(catkin_packages[dep] + '/..')
+                for pkg_name, pkg_dir in catkin_test_dep_packages.items():
+                    test_repos_list_wet.append(pkg_name)
+
+        print "Testing the following wet repositories %s" % test_repos_list_wet
         try:
             test_list = ' '.join( test_repos_list_wet )
-            if test_list:
-                common.call( "/opt/VirtualGL/bin/vglrun catkin_make test --pkg %s" % test_list, ros_env_repo)
-
+            common.call( "catkin_make --directory %s/wet test --pkg %s" % (repo_sourcespace, test_list), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
-            #print traceback.format_exc()
-        #    test_error_msg = ex.msg
 
-        # clean test xml files
-        common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
-        for file in os.listdir(os.path.join(repo_test_results)):
-            file_path = os.path.join(repo_test_results, file)
-            try:
-                if not file.startswith("_hudson"):
-                    shutil.rmtree(file_path)
-            except Exception as e:
-                print e
-
-        # copy wet test results
-        common.copy_test_results(repo_test_results, workspace + "/test_results")
+        # clean and copy test xml files
+        common.clean_and_copy_test_results(repo_sourcespace + "/wet/build/test_results", workspace + "/test_results") # FIXME: is there a way to let catkin write test results to repo_test_results
 
     ### rosbuild repositories
-    print "test rosbuild repositories"
     (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_dry)
-    if build_repo in stacks:
+    if (len(stacks) > 0) and (repo_name in stacks):
         # get list of dependencies to test
         test_repos_list_dry = [build_repo]
         for dep, depObj in pipe_repos[build_identifier].dependencies.items():
@@ -127,23 +119,17 @@ def main():
         print "Test the following dry repositories %s" % test_repos_list_dry
         try:
             build_list = " ".join(test_repos_list_dry)
-            common.call("/opt/VirtualGL/bin/vglrun rosmake -rV --skip-blacklist --profile --pjobs=%s --test-only --output=%s %s" %
+            common.call("rosmake -rV --skip-blacklist --profile --pjobs=%s --test-only --output=%s %s" %
                         ( cores, repo_build_logs, build_list ), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
+            raise common.BuildException("Failed to catkin_make test wet repositories")
 
-        # clean test xml files
-        common.call("rosrun rosunit clean_junit_xml.py", ros_env_repo)
-        for file in os.listdir(os.path.join(repo_test_results)):
-            file_path = os.path.join(repo_test_results, file)
-            try:
-                if not file.startswith("_hudson"):
-                    shutil.rmtree(file_path)
-            except Exception as e:
-                print e
-
-        # copy dry test results
-        common.copy_test_results(repo_test_results, workspace + "/test_results")
+        # clean and copy test xml files
+        common.clean_and_copy_test_results(repo_test_results, workspace + "/test_results")
+        
+    # in case we have no tests executed (neither wet nor dry), we'll generate some dummy test result
+    common.clean_and_copy_test_results(repo_test_results, workspace + "/test_results")
 
     ###########
     ### end ###

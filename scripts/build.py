@@ -38,7 +38,7 @@ def main():
 
     # cob_pipe object
     cp_instance = cob_pipe.CobPipe()
-    cp_instance.load_config_from_url(pipeline_repos_owner, server_name, user_name)
+    cp_instance.load_config_from_file(pipeline_repos_owner, server_name, user_name, file_location=os.environ["WORKSPACE"])
     pipe_repos = cp_instance.repositories
     common.output("Pipeline configuration successfully loaded", blankline='b')
 
@@ -67,6 +67,11 @@ def main():
     repo_build_logs = os.path.join(tmpdir, 'build_logs')                           # location for build logs
     os.makedirs(repo_build_logs)
 
+    # init catkin workspace
+    ros_env_repo = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)                            # source ros_distro (needed to do a catkin_init_workspace)
+    common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env_repo, verbose=False)         # init wet workspace
+    common.call("catkin_make --directory %s/wet" % repo_sourcespace, ros_env_repo, verbose=False)       # build wet workspace to generate a setup.bash
+
     ################
     ### checkout ###
     ################
@@ -88,7 +93,7 @@ def main():
         f.write(rosinstall)
     print "Install repository from source:"
     # rosinstall repos
-    common.call("rosinstall -j 8 --verbose --continue-on-error %s %s/repo.rosinstall /opt/ros/%s"
+    common.call("rosinstall -j 8 --verbose %s %s/repo.rosinstall /opt/ros/%s"
                 % (repo_checkoutspace, workspace, ros_distro))
 
     # get the repositories build dependencies
@@ -96,25 +101,6 @@ def main():
 
     # get all packages in checkoutspace
     (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_checkoutspace)
-
-    # (debug) output
-    if options.verbose:
-        print "Packages in %s:" % repo_checkoutspace
-        print "Catkin: ", catkin_packages
-        print "Rosbuild:\n  Stacks: ", stacks
-        print "  Packages: ", manifest_packages
-
-        # get deps directly for catkin (like in willow code)
-        try:
-            print "Found wet build dependencies:\n%s" % '- ' + '\n- '.join(sorted(common.get_dependencies(repo_checkoutspace, build_depends=True, test_depends=False)))
-        except:
-            pass
-        # deps catkin
-        repo_build_dependencies = common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
-        print "Found wet dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
-        # deps stacks
-        repo_build_dependencies = common.get_nonlocal_dependencies({}, stacks, {})
-        print "Found dry dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
 
     # check if build_repo is wet or dry and get all corresponding deps
     build_repo_type = ''
@@ -164,11 +150,19 @@ def main():
             f.write(rosinstall)
         print "Install user-defined build dependencies from source"
         # rosinstall depends
-        common.call("rosinstall -j 8 --verbose --continue-on-error %s %s/repo.rosinstall /opt/ros/%s"
+        common.call("rosinstall -j 8 --verbose %s %s/repo.rosinstall /opt/ros/%s"
                     % (repo_checkoutspace, workspace, ros_distro))
 
         # get also deps of just installed user-defined/customized dependencies
         (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_checkoutspace)
+
+        print ""
+        print "Found the following packages"
+        print "  wet packages:     ", catkin_packages.keys()
+        print "  dry stacks:       ", stacks.keys()
+        print "  dry packages:     ", manifest_packages.keys()
+        print ""
+          
         if build_repo_type == 'wet':
             if stacks != {}:
                 raise common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
@@ -199,13 +193,9 @@ def main():
 
     # setup ros workspace
     print "Set up ros workspace and setup environment variables"
-    # init catkin workspace
-    ros_env_repo = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)                            # source ros_distro (needed to do a catkin_init_workspace)
-    common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env_repo, verbose=False)
-    common.call("rosws init %s /opt/ros/%s" %(repo_sourcespace, ros_distro), verbose=False)             # init workspace for ros_distro
-    common.call("rosws merge -t %s %s/wet/src" % (repo_sourcespace, repo_sourcespace), verbose=False)   # merge wet workspace
-    common.call("rosws merge -t %s %s/dry" % (repo_sourcespace, repo_sourcespace), verbose=False)        # merge dry workspace
-    
+    common.call("rosws init %s /opt/ros/%s" %(repo_sourcespace, ros_distro), verbose=False)             # init workspace pointing to ros_distro
+    common.call("rosws merge -t %s %s/wet/devel" % (repo_sourcespace, repo_sourcespace), verbose=False) # merge wet workspace
+    common.call("rosws merge -t %s %s/dry" % (repo_sourcespace, repo_sourcespace), verbose=False)       # merge dry workspace
     ros_env_repo = common.get_ros_env(repo_sourcespace + '/setup.bash')                                 # source wet and dry workspace
 
     ############################
@@ -265,9 +255,8 @@ def main():
 
     ### catkin repositories
     if catkin_packages != {}:
-        os.chdir(repo_sourcespace_wet + "/..")
         try:
-            common.call("catkin_make", ros_env_repo)
+            common.call("catkin_make --directory %s/wet" % repo_sourcespace, ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
             raise common.BuildException("Failed to catkin_make wet repositories")
