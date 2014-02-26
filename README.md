@@ -85,8 +85,10 @@ Go to [http://localhost:8080/configure](http://localhost:8080/configure)
 
 You can keep the default values for all other entries.
 
-### Master node configuration
-Go to [http://localhost:8080/computer/(master)/configure](http://localhost:8080/computer/%28master%29/configure) and add `prio_build regular_build update_tarballs prio_nongraphics_test regular_nongraphics_test` to *Labels*
+### Master and slave node configuration
+Go to [http://localhost:8080/computer/(master)/configure](http://localhost:8080/computer/%28master%29/configure) and add `update_tarballst` to labels
+
+TODO: add master-build slave with `prio_build regular_build prio_nongraphics_test regular_nongraphics_test` labels
 
 ### Jenkins plugin installation
 Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/pluginManager/available) and install the following plugins:
@@ -100,6 +102,8 @@ Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/plug
 - [Warnings Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Warnings+Plugin)
 - [Cppcheck Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Cppcheck+Plugin)
 - [Multiple SCMs Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Multiple+SCMs+Plugin)
+- [Copy To Slave Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Copy+To+Slave+Plugin)
+- [Workspace Cleanup Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Workspace+Cleanup+Plugin)
 
 ### Install `jenkins_setup`, `jenkins_config` and the *cob-pipeline* plugin
 Download the *.hpi* file from [https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases](https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases) ([latest](https://github.com/ipa320/cob-pipeline-plugin/raw/master/releases/v0.9.6/cob-pipeline.hpi)) and place it in `/var/lib/jenkins/plugins`.
@@ -141,6 +145,13 @@ Add the `jenkins_setup` module to the `$PYTHONPATH` (adapt the *ROS_RELEASE*).
 
     sudo su -c 'echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh'
     sudo su -c 'echo "source /opt/ros/groovy/setup.sh" >> /etc/profile.d/python_path.sh'
+
+Create softlinks in userContent directory pointing to `jenkins_setup`, `jenkins_config`, `chroot_tarballs` and `.ssh`
+
+    ln -s ~/jenkins-config/jenkins_setup /var/lib/jenkins/userContent/jenkins_setup
+    ln -s ~/jenkins-config-jenkins_config /var/lib/jenkins/userContent/jenkins_config
+    ln -s ~/chroot_tarballs /var/lib/jenkins/userContent/chroot_tarballs
+    ln -s ~/.ssh /var/lib/jenkins/userContent/.ssh
 
 Enable passwordless sudo rights for the jenkins user by adding the following line at the end of `/etc/sudoers` (open with `sudo visudo -f /etc/sudoers`).
 
