@@ -100,6 +100,8 @@ Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/plug
 - [Warnings Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Warnings+Plugin)
 - [Cppcheck Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Cppcheck+Plugin)
 - [Multiple SCMs Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Multiple+SCMs+Plugin)
+- [Copy To Slave Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Copy+To+Slave+Plugin)
+- [Workspace Cleanup Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Workspace+Cleanup+Plugin)
 
 ### Install `jenkins_setup`, `jenkins_config` and the *cob-pipeline* plugin
 Download the *.hpi* file from [https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases](https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases) ([latest](https://github.com/ipa320/cob-pipeline-plugin/raw/master/releases/v0.9.6/cob-pipeline.hpi)) and place it in `/var/lib/jenkins/plugins`.
