@@ -813,7 +813,7 @@ class BuildJob(JenkinsJob):
         
         # set copy-to-slave plugin parameters for copying back to master
         copy_to_master = self.job_config_params['copy_to_master']
-        copy_to_master = copy_to_master.replace('@(SERVERNAME)', self.params['HOSTNAME'])
+        copy_to_master = copy_to_master.replace('@(SERVERNAME)', self.pipe_inst.server_name)
         copy_to_master = copy_to_master.replace('@(BASETGZ)', self.pipe_inst.user_name + '__${ubuntu_distro}__${arch}__${ros_distro}__${REPOSITORY}')
         self.params['COPY_TO_MASTER'] = copy_to_master
 
