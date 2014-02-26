@@ -142,6 +142,13 @@ Add the `jenkins_setup` module to the `$PYTHONPATH` (adapt the *ROS_RELEASE*).
     sudo su -c 'echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh'
     sudo su -c 'echo "source /opt/ros/groovy/setup.sh" >> /etc/profile.d/python_path.sh'
 
+Create softlinks in userContent directory pointing to `jenkins_setup`, `jenkins_config`, `chroot_tarballs` and `.ssh`
+
+    ln -s ~/jenkins-config/jenkins_setup /var/lib/jenkins/userContent/jenkins_setup
+    ln -s ~/jenkins-config-jenkins_config /var/lib/jenkins/userContent/jenkins_config
+    ln -s ~/chroot_tarballs /var/lib/jenkins/userContent/chroot_tarballs
+    ln -s ~/.ssh /var/lib/jenkins/userContent/.ssh
+
 Enable passwordless sudo rights for the jenkins user by adding the following line at the end of `/etc/sudoers` (open with `sudo visudo -f /etc/sudoers`).
 
     jenkins    ALL=(ALL) NOPASSWD: ALL
