@@ -149,7 +149,7 @@ Add the `jenkins_setup` module to the `$PYTHONPATH` (adapt the *ROS_RELEASE*).
 Create softlinks in userContent directory pointing to `jenkins_setup`, `jenkins_config`, `chroot_tarballs` and `.ssh`
 
     ln -s ~/jenkins-config/jenkins_setup /var/lib/jenkins/userContent/jenkins_setup
-    ln -s ~/jenkins-config-jenkins_config /var/lib/jenkins/userContent/jenkins_config
+    ln -s ~/jenkins-config/jenkins_config /var/lib/jenkins/userContent/jenkins_config
     ln -s ~/chroot_tarballs /var/lib/jenkins/userContent/chroot_tarballs
     ln -s ~/.ssh /var/lib/jenkins/userContent/.ssh
 
