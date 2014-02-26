@@ -31,7 +31,7 @@ def main():
     """
 
     # parse options
-    usage = "Usage: %prog [masterURL login password configFolder tarballLocation | jenkinsConfigFile] pipelineReposOwner username"
+    usage = "Usage: %prog [masterURL login password configFolder | jenkinsConfigFile] pipelineReposOwner username"
     parser = optparse.OptionParser(usage)
     parser.add_option("-m", "--masterURL", action="store", type="string", dest="master_url",
                       metavar="URL", help="URL of Jenkins server/master")
@@ -42,11 +42,11 @@ def main():
     parser.add_option("-c", "--configFolder", action="store", type="string", dest="config_folder",
                       metavar="CONFIGFOLDER", help="Folder where '.gitconfig', '.ssh', 'jenkins_setup' and 'jenkins_config' are stored")
     parser.add_option("-t", "--tarballLocation", action="store", type="string", dest="tarball_location",
-                      metavar="USER@SERVERADDRESS:PATH", help="Place where the Tarballs are located")
+                      metavar="USER@SERVERADDRESS:PATH", help="Place where the Tarballs are located") #TODO: not used any more: delete
 
     parser.add_option("--jenkinsConfigFile", action="store", type="string", dest="jenkinsConfigFile",
                       metavar="FILE", help="YAML file that replaces the Jenkins config options and contains values for:\
-                                            masterURL, login, password, configFolder, tarballLocation")
+                                            masterURL, login, password, configFolder")
 
     parser.add_option("-o", "--pipelineReposOwner", action="store", type="string", dest="pipeline_repos_owner",
                       metavar="PIPELINE_REPOS_OWNER", help="Owner of the GitHub repositories 'jenkins_setup' and 'jenkins_config'")
@@ -57,7 +57,7 @@ def main():
     (options, args) = parser.parse_args()
 
     if len(args) != 0:
-        print "Usage: %s [masterURL login password configFolder tarballLocation | jenkinsConfigFile] pipelineReposOwner username" % (sys.argv[0])
+        print "Usage: %s [masterURL login password configFolder | jenkinsConfigFile] pipelineReposOwner username" % (sys.argv[0])
         sys.exit()
 
     if options.jenkinsConfigFile:
@@ -66,25 +66,23 @@ def main():
             jenkins_conf = yaml.load(f)
 
         master_name = get_master_name(jenkins_conf['masterURL'])
-        tarball_location = jenkins_conf['tarballLocation']
 
         # create jenkins instance
         jenkins_instance = jenkins.Jenkins(jenkins_conf['masterURL'], jenkins_conf['login'],
                                            jenkins_conf['password'])
 
-    elif options.master_url and options.jenkins_login and options.jenkins_pw and options.tarball_location:
+    elif options.master_url and options.jenkins_login and options.jenkins_pw:
         master_name = get_master_name(options.master_url)
-        tarball_location = options.tarball_location
 
         # create jenkins instance
         jenkins_instance = jenkins.Jenkins(options.master_url, options.jenkins_login, options.jenkins_pw)
 
     else:
-        print "Usage: %s [masterURL login password configFolder tarballLocation | jenkinsConfigFolder] pipelineReposOwner username" % (sys.argv[0])
+        print "Usage: %s [masterURL login password configFolder | jenkinsConfigFolder] pipelineReposOwner username" % (sys.argv[0])
         sys.exit()
 
     if not options.pipeline_repos_owner or not options.username:
-        print "Usage: %s [masterURL login password configFolder tarballLocation | jenkinsConfigFolder] pipelineReposOwner username" % (sys.argv[0])
+        print "Usage: %s [masterURL login password configFolder | jenkinsConfigFolder] pipelineReposOwner username" % (sys.argv[0])
         sys.exit()
 
     # get all existent jobs for user
@@ -139,7 +137,7 @@ def main():
         modified_jobs.append(manual_all_pipe_starter_name)
 
     ### priority build
-    job_creator_instance = jenkins_job_creator.PriorityBuildJob(jenkins_instance, plc_instance, tarball_location, plc_instance.repositories.keys())
+    job_creator_instance = jenkins_job_creator.PriorityBuildJob(jenkins_instance, plc_instance, plc_instance.repositories.keys())
     if options.delete:
         modified_jobs.append(job_creator_instance.delete_job())
     else:
@@ -147,7 +145,7 @@ def main():
 
     ### regular build
     if 'regular_build' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.RegularBuildJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['regular_build'])
+        job_creator_instance = jenkins_job_creator.RegularBuildJob(jenkins_instance, plc_instance, job_type_dict['regular_build'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -155,7 +153,7 @@ def main():
 
     ### priority nongraphics test
     if 'nongraphics_test' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.PriorityNongraphicsTestJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['nongraphics_test'])
+        job_creator_instance = jenkins_job_creator.PriorityNongraphicsTestJob(jenkins_instance, plc_instance, job_type_dict['nongraphics_test'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -163,7 +161,7 @@ def main():
 
     ### regular nongraphics test
     if 'nongraphics_test' in job_type_dict and 'regular_build' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.RegularNongraphicsTestJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['nongraphics_test'])
+        job_creator_instance = jenkins_job_creator.RegularNongraphicsTestJob(jenkins_instance, plc_instance, job_type_dict['nongraphics_test'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -171,7 +169,7 @@ def main():
 
     ### priority graphics test
     if 'graphics_test' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.PriorityGraphicsTestJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['graphics_test'])
+        job_creator_instance = jenkins_job_creator.PriorityGraphicsTestJob(jenkins_instance, plc_instance, job_type_dict['graphics_test'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -179,7 +177,7 @@ def main():
 
     ### regular graphics test
     if 'graphics_test' in job_type_dict and 'regular_build' in job_type_dict:
-        job_creator_instance = jenkins_job_creator.RegularGraphicsTestJob(jenkins_instance, plc_instance, tarball_location, job_type_dict['graphics_test'])
+        job_creator_instance = jenkins_job_creator.RegularGraphicsTestJob(jenkins_instance, plc_instance, job_type_dict['graphics_test'])
         if options.delete:
             modified_jobs.append(job_creator_instance.delete_job())
         else:
@@ -213,7 +211,7 @@ def main():
 
     ### deployment job
     #FIXME, TODO: add check if deployment job is activated --> needs to be an option in the plugin
-    #job_creator_instance = jenkins_job_creator.DeploymentJob(jenkins_instance, plc_instance, tarball_location)
+    #job_creator_instance = jenkins_job_creator.DeploymentJob(jenkins_instance, plc_instance)
     #if options.delete:
     #    modified_jobs.append(job_creator_instance.delete_job())
     #else:

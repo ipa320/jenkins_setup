@@ -31,7 +31,6 @@ class JenkinsJob(object):
         self.job_type = None
         self.poll = None
         self.repo_list = None
-        self.tarball_location = ""
 
     def schedule_job(self):
         """
@@ -527,10 +526,6 @@ class JenkinsJob(object):
         shell_script = shell_script.replace('@(PIPELINEREPOSOWNER)', self.pipe_inst.pipeline_repos_owner)
         shell_script = shell_script.replace('@(CONFIG_FOLDER)', self.pipe_inst.config_folder)
 
-        # if not a hardware job where no chroot is used
-        if 'hardware' not in self.job_type:
-            shell_script = shell_script.replace('@(STORAGE)', self.tarball_location)
-
         return shell_script
 
     def _get_prio_subset_filter(self):
@@ -780,7 +775,7 @@ class BuildJob(JenkinsJob):
     """
     Class for build jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
         Creates a build job instance
 
@@ -792,7 +787,6 @@ class BuildJob(JenkinsJob):
 
         super(BuildJob, self).__init__(jenkins_instance, pipeline_config)
 
-        self.tarball_location = tarball_location
         self.repo_list = execute_repo_list
 
     def _set_job_type_params(self, matrix_filter=None, matrix_job_type=None):
@@ -832,7 +826,7 @@ class PriorityBuildJob(BuildJob):
     """
     Class for priority build jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
         Creates a priority build job instance
 
@@ -842,7 +836,7 @@ class PriorityBuildJob(BuildJob):
         @type  pipeline_config: dict
         """
 
-        super(PriorityBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
+        super(PriorityBuildJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
 
         self.job_type = 'prio_build'
         self.job_name = self._generate_job_name(self.job_type)
@@ -901,7 +895,7 @@ class RegularBuildJob(BuildJob):
     """
     Class for regular build jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
         Creates a regular build job instance
 
@@ -911,7 +905,7 @@ class RegularBuildJob(BuildJob):
         @type  pipeline_config: dict
         """
 
-        super(RegularBuildJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
+        super(RegularBuildJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
 
         self.job_type = 'regular_build'
         self.job_name = self._generate_job_name(self.job_type)
@@ -976,7 +970,7 @@ class TestJob(JenkinsJob):
     """
     Class for test jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
         Creates a test job instance
 
@@ -990,7 +984,6 @@ class TestJob(JenkinsJob):
 
         super(TestJob, self).__init__(jenkins_instance, pipeline_config)
 
-        self.tarball_location = tarball_location
         self.repo_list = execute_repo_list
 
         self.job_type = 'test'
@@ -1074,7 +1067,7 @@ class PriorityNongraphicsTestJob(TestJob):
     """
     Class for priority nongraphics test job
     """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
         Creates a nongraphics test job instance for the priority builds
 
@@ -1084,7 +1077,7 @@ class PriorityNongraphicsTestJob(TestJob):
         @type  pipeline_config: dict
         """
 
-        super(PriorityNongraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
+        super(PriorityNongraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
 
         self.job_type = 'prio_nongraphics_test'
         self.job_name = self._generate_job_name(self.job_type)
@@ -1118,7 +1111,7 @@ class RegularNongraphicsTestJob(TestJob):
     """
     Class for regular nongraphics test job
     """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
         Creates a nongraphics test job instance for the regular builds
 
@@ -1128,7 +1121,7 @@ class RegularNongraphicsTestJob(TestJob):
         @type  pipeline_config: dict
         """
 
-        super(RegularNongraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
+        super(RegularNongraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
 
         self.job_type = 'regular_nongraphics_test'
         self.job_name = self._generate_job_name(self.job_type)
@@ -1155,7 +1148,7 @@ class PriorityGraphicsTestJob(TestJob):
     """
     Class for priority graphics test job
     """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
         Creates a graphics test job instance for the priority builds
 
@@ -1165,7 +1158,7 @@ class PriorityGraphicsTestJob(TestJob):
         @type  pipeline_config: dict
         """
 
-        super(PriorityGraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
+        super(PriorityGraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
 
         self.job_type = 'prio_graphics_test'
         self.job_name = self._generate_job_name(self.job_type)
@@ -1202,7 +1195,7 @@ class RegularGraphicsTestJob(TestJob):
     """
     Class for regular graphics test job
     """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location, execute_repo_list):
+    def __init__(self, jenkins_instance, pipeline_config, execute_repo_list):
         """
         Creates a graphics test job instance for the regular builds
 
@@ -1212,7 +1205,7 @@ class RegularGraphicsTestJob(TestJob):
         @type  pipeline_config: dict
         """
 
-        super(RegularGraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, tarball_location, execute_repo_list)
+        super(RegularGraphicsTestJob, self).__init__(jenkins_instance, pipeline_config, execute_repo_list)
 
         self.job_type = 'regular_graphics_test'
         self.job_name = self._generate_job_name(self.job_type)
@@ -1404,12 +1397,11 @@ class HardwareTestJob(HardwareJob):
 class DeploymentJob(JenkinsJob):
     """
     """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
+    def __init__(self, jenkins_instance, pipeline_config):
         super(DeploymentJob, self).__init__(jenkins_instance, pipeline_config)
 
         self.job_type = 'deployment'
         self.job_name = self._generate_job_name(self.job_type)
-        self.tarball_location = tarball_location
 
     def _set_job_type_params(self):
         """
@@ -1437,7 +1429,7 @@ class ReleaseJob(JenkinsJob):
     """
     Class for release jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
+    def __init__(self, jenkins_instance, pipeline_config):
         """
         Creates a release job
 
@@ -1468,7 +1460,7 @@ class CleanUpJob(JenkinsJob):
     """
     Class for clean up jobs
     """
-    def __init__(self, jenkins_instance, pipeline_config, tarball_location):
+    def __init__(self, jenkins_instance, pipeline_config):
         """
         Creates a clean up job
 

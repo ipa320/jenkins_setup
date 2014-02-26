@@ -23,7 +23,7 @@ new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
-bagPath=@(STORAGE)/../bagFiles
+bagPath=/home/jenkins/bagFiles
 
 echo "Bag-File-Directory: $bagPath"
 
