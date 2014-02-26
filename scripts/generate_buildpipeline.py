@@ -213,11 +213,11 @@ def main():
 
     ### deployment job
     #FIXME, TODO: add check if deployment job is activated --> needs to be an option in the plugin
-    job_creator_instance = jenkins_job_creator.DeploymentJob(jenkins_instance, plc_instance, tarball_location)
-    if options.delete:
-        modified_jobs.append(job_creator_instance.delete_job())
-    else:
-        modified_jobs.append(job_creator_instance.create_job())
+    #job_creator_instance = jenkins_job_creator.DeploymentJob(jenkins_instance, plc_instance, tarball_location)
+    #if options.delete:
+    #    modified_jobs.append(job_creator_instance.delete_job())
+    #else:
+    #    modified_jobs.append(job_creator_instance.create_job())
 
     ### release job
     # TODO fix if statement
