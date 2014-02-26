@@ -102,6 +102,7 @@ def main():
             common.call( "catkin_make --directory %s/wet test --pkg %s" % (repo_sourcespace, test_list), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
+            raise common.BuildException("Failed to catkin_make test wet repositories")
 
         # clean and copy test xml files
         common.clean_and_copy_test_results(repo_sourcespace + "/wet/build/test_results", workspace + "/test_results") # FIXME: is there a way to let catkin write test results to repo_test_results
@@ -123,7 +124,7 @@ def main():
                         ( cores, repo_build_logs, build_list ), ros_env_repo)
         except common.BuildException as ex:
             print ex.msg
-            raise common.BuildException("Failed to catkin_make test wet repositories")
+            raise common.BuildException("Failed to rosmake test dry repositories")
 
         # clean and copy test xml files
         common.clean_and_copy_test_results(repo_test_results, workspace + "/test_results")
