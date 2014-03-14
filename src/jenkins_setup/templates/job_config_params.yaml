@@ -221,6 +221,15 @@
       <relativeTo>userContent</relativeTo>
     </com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper>'
 
+'copy_to_slave_hwjobs': '<com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper plugin="copy-to-slave@1.4.3">
+      <includes>jenkins_setup/**, jenkins_config/**, .ssh/**</includes>
+      <excludes></excludes>
+      <flatten>false</flatten>
+      <includeAntExcludes>false</includeAntExcludes>
+      <hudsonHomeRelative>false</hudsonHomeRelative>
+      <relativeTo>userContent</relativeTo>
+    </com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper>'
+
 'copy_to_master': '<com.michelin.cio.hudson.plugins.copytoslave.CopyToMasterNotifier plugin="copy-to-slave@1.4.3">
       <includes>chroot_tarballs/in_use_on__@(SERVERNAME)/@(BASETGZ)</includes>
       <excludes></excludes>

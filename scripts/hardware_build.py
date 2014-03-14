@@ -38,7 +38,7 @@ def main():
 
     # cob_pipe object
     cp_instance = cob_pipe.CobPipe()
-    cp_instance.load_config_from_sftp(pipeline_repos_owner, server_name, user_name)
+    cp_instance.load_config_from_file(pipeline_repos_owner, server_name, user_name, file_location=os.environ["WORKSPACE"])
     pipe_repos = cp_instance.repositories
     common.output("Pipeline configuration successfully loaded", blankline='b')
 
@@ -179,6 +179,7 @@ def main():
 
         # get also deps of just installed user-defined/customized dependencies
         (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_checkoutspace)
+
         if build_repo_type == 'wet':
             if stacks != {}:
                 raise common.BuildException("Catkin (wet) package %s depends on (dry) stack(s):\n%s"
@@ -189,6 +190,13 @@ def main():
             # take all packages
             repo_build_dependencies = common.get_nonlocal_dependencies(catkin_packages, stacks, {}, build_depends=True, test_depends=False)
         repo_build_dependencies = [dep for dep in repo_build_dependencies if dep not in fulfilled_deps]
+
+    print ""
+    print "Found the following packages"
+    print "  wet packages:     ", catkin_packages.keys()
+    print "  dry stacks:       ", stacks.keys()
+    print "  dry packages:     ", manifest_packages.keys()
+    print ""
 
     # separate installed repos in wet and dry
     print "Separate installed repositories in wet and dry"
