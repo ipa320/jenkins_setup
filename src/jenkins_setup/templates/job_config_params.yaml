@@ -209,7 +209,7 @@
 'ws_cleanup': '<hudson.plugins.ws__cleanup.PreBuildCleanup plugin="ws-cleanup@0.20">
       <deleteDirs>false</deleteDirs>
       <cleanupParameter></cleanupParameter>
-      <externalDelete></externalDelete>
+      <externalDelete>sudo rm -rf $WORKSPACE</externalDelete>
     </hudson.plugins.ws__cleanup.PreBuildCleanup>'
 
 'copy_to_slave': '<com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper plugin="copy-to-slave@1.4.3">

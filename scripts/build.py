@@ -239,7 +239,10 @@ def main():
     # Coverage
 
     # create tests results directory in workspace
-    os.mkdir(workspace + "/static_analysis_results")
+    try:
+        os.mkdir(workspace + "/static_analysis_results")
+    except:
+        pass
     
     # copy test results
     common.copy_static_analysis_results(repo_static_analysis_results, workspace + "/static_analysis_results")
