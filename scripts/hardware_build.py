@@ -107,25 +107,6 @@ def main():
     # get all packages in checkoutspace
     (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_checkoutspace)
 
-    # (debug) output
-    if options.verbose:
-        print "Packages in %s:" % repo_checkoutspace
-        print "Catkin: ", catkin_packages
-        print "Rosbuild:\n  Stacks: ", stacks
-        print "  Packages: ", manifest_packages
-
-        # get deps directly for catkin (like in willow code)
-        try:
-            print "Found wet build dependencies:\n%s" % '- ' + '\n- '.join(sorted(common.get_dependencies(repo_checkoutspace, build_depends=True, test_depends=False)))
-        except:
-            pass
-        # deps catkin
-        repo_build_dependencies = common.get_nonlocal_dependencies(catkin_packages, {}, {}, build_depends=True, test_depends=False)
-        print "Found wet dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
-        # deps stacks
-        repo_build_dependencies = common.get_nonlocal_dependencies({}, stacks, {})
-        print "Found dry dependencies:\n%s" % '- ' + '\n- '.join(sorted(repo_build_dependencies))
-
     # check if build_repo is wet or dry and get all corresponding deps
     build_repo_type = ''
     if build_repo in catkin_packages: # wet repo with metapackage
@@ -260,6 +241,7 @@ def main():
 
     ### catkin repositories
     if catkin_packages != {}:
+        print "Build wet packages: ", catkin_packages.keys()
         try:
             common.call("catkin_make --directory %s/wet" % repo_sourcespace, ros_env_repo)
         except common.BuildException as ex:
@@ -269,16 +251,18 @@ def main():
     ### rosbuild repositories
     if build_repo_type == 'dry':
         # build dry repositories
-        print "Build repository %s" % build_repo
+        print "Build dry stacks:   ", stacks.keys()
+        print "Build dry packages: ", manifest_packages.keys()
+        packages_to_build = " ".join(stacks.keys()) + " ".join(manifest_packages.keys())
         try:
             common.call("rosmake -rV --skip-blacklist --profile --pjobs=%s --output=%s %s" %
-                        (cores + 1, repo_build_logs, build_repo), ros_env_repo)
+                        (cores + 1, repo_build_logs, packages_to_build), ros_env_repo)
         except common.BuildException as ex:
             try:
                 shutil.move(repo_build_logs, os.path.join(workspace, "build_logs"))
             finally:
                 print ex.msg
-                raise common.BuildException("Failed to rosmake %s" % build_repo)
+                raise common.BuildException("Failed to rosmake dry repositories")
 
     ###########
     ### end ###

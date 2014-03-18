@@ -258,6 +258,7 @@ def main():
 
     ### catkin repositories
     if catkin_packages != {}:
+        print "Build wet packages: ", catkin_packages.keys()
         try:
             common.call("catkin_make --directory %s/wet" % repo_sourcespace, ros_env_repo)
         except common.BuildException as ex:
@@ -267,16 +268,18 @@ def main():
     ### rosbuild repositories
     if build_repo_type == 'dry':
         # build dry repositories
-        print "Build repository %s" % build_repo
+        print "Build dry stacks:   ", stacks.keys()
+        print "Build dry packages: ", manifest_packages.keys()
+        packages_to_build = " ".join(stacks.keys()) + " ".join(manifest_packages.keys())
         try:
             common.call("rosmake -rV --skip-blacklist --profile --pjobs=%s --output=%s %s" %
-                        (cores + 1, repo_build_logs, build_repo), ros_env_repo)
+                        (cores + 1, repo_build_logs, packages_to_build), ros_env_repo)
         except common.BuildException as ex:
             try:
                 shutil.move(repo_build_logs, os.path.join(workspace, "build_logs"))
             finally:
                 print ex.msg
-                raise common.BuildException("Failed to rosmake %s" % build_repo)
+                raise common.BuildException("Failed to rosmake dry repositories")
 
     ###########
     ### end ###

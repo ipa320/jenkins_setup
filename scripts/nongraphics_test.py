@@ -109,16 +109,19 @@ def main():
     if (len(stacks) > 0) and (repo_name in stacks):
         # get list of dependencies to test
         test_repos_list_dry = [build_repo]
-        
         for dep, depObj in pipe_repos[build_identifier].dependencies.items():
             if depObj.test and dep in stacks:
                 test_repos_list_dry.append(dep)
 
         # test dry repositories
-        print "Test the following dry repositories %s" % test_repos_list_dry
-        test_list = " ".join(test_repos_list_dry)
+        packages_to_test_list = test_repos_list_dry
+        for repo in test_repos_list_dry:
+            (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_dry + "/" + repo)
+            packages_to_test_list = packages_to_test_list + manifest_packages.keys()
+        print "Test dry packages: ", packages_to_test_list
+        packages_to_test = " ".join(test_repos_list_dry) + " " + " ".join(packages_to_test_list)
         common.call("rosmake -rV --skip-blacklist --profile --pjobs=%s --test-only --output=%s %s" %
-                    ( cores, repo_build_logs, test_list ), ros_env_repo)
+                    ( cores, repo_build_logs, packages_to_test ), ros_env_repo)
 
         # clean and copy test xml files
         common.clean_and_copy_test_results(repo_test_results, workspace + "/test_results")
