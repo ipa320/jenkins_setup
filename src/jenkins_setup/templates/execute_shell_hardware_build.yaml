@@ -27,9 +27,11 @@ WORKSPACE="$WORKSPACE/$repository/$datedir"
 
 mkdir -p $WORKSPACE
 
-scp -r jenkins@@(SERVERNAME):.ssh $WORKSPACE/
+ln -s $WORKSPACE_ORIG/.ssh $WORKSPACE/.ssh
 
-scp -r jenkins@@(SERVERNAME):@(CONFIG_FOLDER)/jenkins_setup $WORKSPACE/
+ln -s $WORKSPACE_ORIG/jenkins_setup $WORKSPACE/jenkins_setup
+
+ln -s $WORKSPACE_ORIG/jenkins_config $WORKSPACE/jenkins_config
 
 cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 

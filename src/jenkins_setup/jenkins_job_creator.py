@@ -1314,6 +1314,13 @@ class HardwareBuildJob(HardwareJob):
 
         self.params['NODE_LABEL'] = 'master'
 
+        # cleanup workspace
+        #self.params['WS_CLEANUP'] = self.job_config_params['ws_cleanup']
+
+        # set copy-to-slave plugin parameters
+        copy_to_slave = self.job_config_params['copy_to_slave_hwjobs']
+        self.params['COPY_TO_SLAVE'] = copy_to_slave
+
         # set blocking behaviour
         self.params['BLOCKING_UPSTREAM'] = 'false'
         self.params['BLOCKING_DOWNSTREAM'] = 'true'
@@ -1362,6 +1369,10 @@ class HardwareTestJob(HardwareJob):
         """
 
         self.params['NODE_LABEL'] = 'master'
+
+        # set copy-to-slave plugin parameters
+        copy_to_slave = self.job_config_params['copy_to_slave_hwjobs']
+        self.params['COPY_TO_SLAVE'] = copy_to_slave
         
         # set blocking behaviour
         self.params['BLOCKING_UPSTREAM'] = 'true'
