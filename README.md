@@ -53,62 +53,6 @@ restart jenkins
 
 After a successful installation you can access the jenkins server in your browser at [http://localhost:8080](http://localhost:8080).
 
-
-## Jenkins configuration
-
-### Global security
-Go to [http://localhost:8080/configureSecurity](http://localhost:8080/configureSecurity)
-
-- Check *enable security*
-- Check *Jenkins's own user database* under *Access Control*/*Security Realm*. And check **Allow users to sign up**.
-- Set *Authorization* to **Project-based Matrix Authorization Strategy**.
-- Add an `admin`-user and give him all rights.
-- Add an `anonymous`-group and an `authenticated`-group and give them rights according to the screentshot.
-
-After click save the Server will throw you to a Login screen. Just register with the username `admin`.
-
-![Project-based Matrix Authorization Strategy](pictures/authentication.png "Example for Project-based Matrix Authorization Strategy")
-
-> * **Github Authentication Plugin**<br/>
->   Another way is to use the GitHub user database for user identification.
->   The [Github OAuth Plugin](#install-required-jenkins-plugins) has to be installed.
->   Configure the plugin as described
->   [here](https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin) for an 'omnipotent' GitHub user.
-
-### Basic configuration
-Go to [http://localhost:8080/configure](http://localhost:8080/configure)
-
-- Set *# of executors* to `1`.
-
-##### Jenkins Location
-- Set *Jenkins URL* to your servers name.
-- Set your *System Admin e-mail address*.
-
-##### E-mail Notification
-- Set *SMTP server*
-
-You can keep the default values for all other entries.
-
-### Master and slave node configuration
-Go to [http://localhost:8080/computer/(master)/configure](http://localhost:8080/computer/%28master%29/configure) and add `update_tarballst` to labels
-
-TODO: add master-build slave with `prio_build regular_build prio_nongraphics_test regular_nongraphics_test` labels
-
-### Jenkins plugin installation
-Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/pluginManager/available) and install the following plugins:
-
-- [Git Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin)
-- [Parameterized Trigger Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin)
-- [Build Pipeline Plugin](http://code.google.com/p/build-pipeline-plugin/)
-- [Mailer](https://wiki.jenkins-ci.org/display/JENKINS/Mailer)
-- [View Job Filters](https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters)
-- [Build-timeout Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Build-timeout+Plugin)
-- [Warnings Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Warnings+Plugin)
-- [Cppcheck Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Cppcheck+Plugin)
-- [Multiple SCMs Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Multiple+SCMs+Plugin)
-- [Copy To Slave Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Copy+To+Slave+Plugin)
-- [Workspace Cleanup Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Workspace+Cleanup+Plugin)
-
 ### Install `jenkins_setup`, `jenkins_config` and the *cob-pipeline* plugin
 Download the *.hpi* file from [https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases](https://github.com/ipa320/cob-pipeline-plugin/tree/master/releases) ([latest](https://github.com/ipa320/cob-pipeline-plugin/raw/master/releases/v0.9.6/cob-pipeline.hpi)) and place it in `/var/lib/jenkins/plugins`.
 
@@ -169,6 +113,59 @@ Enable password-less ssh login from master to slave and slave to master (even if
 Afterwards reboot your machine
 
     sudo reboot now
+
+## Jenkins configuration
+
+### Global security
+Go to [http://localhost:8080/configureSecurity](http://localhost:8080/configureSecurity)
+
+- Check *enable security*
+- Check *Jenkins's own user database* under *Access Control*/*Security Realm*. And check **Allow users to sign up**.
+- Set *Authorization* to **Project-based Matrix Authorization Strategy**.
+- Add an `admin`-user and give him all rights.
+- Add an `anonymous`-group and an `authenticated`-group and give them rights according to the screentshot.
+
+After click save the Server will throw you to a Login screen. Just register with the username `admin`.
+
+![Project-based Matrix Authorization Strategy](pictures/authentication.png "Example for Project-based Matrix Authorization Strategy")
+
+> * **Github Authentication Plugin**<br/>
+>   Another way is to use the GitHub user database for user identification.
+>   The [Github OAuth Plugin](#install-required-jenkins-plugins) has to be installed.
+>   Configure the plugin as described
+>   [here](https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin) for an 'omnipotent' GitHub user.
+
+### Basic configuration
+Go to [http://localhost:8080/configure](http://localhost:8080/configure)
+
+- Set *# of executors* to `1`.
+
+##### Jenkins Location
+- Set *Jenkins URL* to your servers name.
+- Set your *System Admin e-mail address*.
+
+> ##### E-mail Notification (optional)
+> - Set *SMTP server*
+
+You can keep the default values for all other entries.
+
+### Master and slave node configuration
+Go to [http://localhost:8080/computer](http://localhost:8080/computer) and add new slave called `master-build` with the labels `update_tarballs prio_build regular_build prio_nongraphics_test regular_nongraphics_test`.
+
+### Jenkins plugin installation
+Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/pluginManager/available) and install the following plugins:
+
+- [Git Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin)
+- [Parameterized Trigger Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin)
+- [Build Pipeline Plugin](http://code.google.com/p/build-pipeline-plugin/)
+- [Mailer](https://wiki.jenkins-ci.org/display/JENKINS/Mailer)
+- [View Job Filters](https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters)
+- [Build-timeout Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Build-timeout+Plugin)
+- [Warnings Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Warnings+Plugin)
+- [Cppcheck Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Cppcheck+Plugin)
+- [Multiple SCMs Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Multiple+SCMs+Plugin)
+- [Copy To Slave Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Copy+To+Slave+Plugin)
+- [Workspace Cleanup Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Workspace+Cleanup+Plugin)
 
 #### Performance improvements (optional)
 Using RAM for chroot environment and parallel compression.
