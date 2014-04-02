@@ -743,7 +743,7 @@ class PipeStarterSCMJob(JenkinsJob):
         branch = self.scm_trigger['version'].replace("/", "")
         
         # set job name
-        self.job_name = self._generate_job_name(self.job_type, suffix=self.scm_trigger['user'] + "__" + self.scm_trigger['repo'] + "__" + branch)
+        self.job_name = self._generate_job_name(self.job_type, suffix= self.scm_trigger['vcs_type'] + "__" + self.scm_trigger['user'] + "__" + self.scm_trigger['repo'] + "__" + branch)
 
     def _set_job_type_params(self):
         """
@@ -753,8 +753,7 @@ class PipeStarterSCMJob(JenkinsJob):
         self.params['NODE_LABEL'] = 'master'
         self.params['PROJECT'] = 'project'
 
-        vcs_type = 'git' # FIXME currently hardcoded to git only
-        self._set_vcs_trigger_param( vcs_type, self.scm_trigger['url'], self.scm_trigger['version'])
+        self._set_vcs_trigger_param( self.scm_trigger['vcs_type'], self.scm_trigger['url'], self.scm_trigger['version'])
 
         # set parameterized triggers
         prio_triggers = []
