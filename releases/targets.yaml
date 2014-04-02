@@ -5,3 +5,4 @@
 #- fuerte: ['lucid', 'oneiric', 'precise']
 - groovy: ['oneiric', 'precise', 'quantal']
 - hydro: ['precise', 'quantal', 'raring']
+- indigo: ['saucy', 'trusty']
