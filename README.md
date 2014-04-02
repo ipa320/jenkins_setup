@@ -69,7 +69,11 @@ After click save the Server will throw you to a Login screen. Just register with
 
 ![Project-based Matrix Authorization Strategy](pictures/authentication.png "Example for Project-based Matrix Authorization Strategy")
 
-> There are two [more *Security Realm* setups](README_DETAILED.md#security-realm) descriped in the [detailed Jenkins Guide](README_DETAILED.md).
+> * **Github Authentication Plugin**<br/>
+>   Another way is to use the GitHub user database for user identification.
+>   The [Github OAuth Plugin](#install-required-jenkins-plugins) has to be installed.
+>   Configure the plugin as described
+>   [here](https://wiki.jenkins-ci.org/display/JENKINS/Github+OAuth+Plugin) for an 'omnipotent' GitHub user.
 
 ### Basic configuration
 Go to [http://localhost:8080/configure](http://localhost:8080/configure)
