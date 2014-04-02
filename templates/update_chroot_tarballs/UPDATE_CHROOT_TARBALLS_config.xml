@@ -25,6 +25,8 @@
         <string>precise</string>
         <string>quantal</string>
         <string>raring</string>
+        <string>saucy</string>
+        <string>trusty</string>
         <!--<string>UBUNTU</string>-->
       </values>
     </hudson.matrix.TextAxis>
