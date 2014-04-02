@@ -158,7 +158,6 @@ Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/plug
 - [Git Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin)
 - [Parameterized Trigger Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin)
 - [Build Pipeline Plugin](http://code.google.com/p/build-pipeline-plugin/)
-- [Mailer](https://wiki.jenkins-ci.org/display/JENKINS/Mailer)
 - [View Job Filters](https://wiki.jenkins-ci.org/display/JENKINS/View+Job+Filters)
 - [Build-timeout Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Build-timeout+Plugin)
 - [Warnings Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Warnings+Plugin)
