@@ -209,6 +209,9 @@ Afterwards reboot the Jenkins-Server
 Go to the *cob pipeline configuration* section at [http://localhost:8080/configure](http://localhost:8080/configure) and fill the following fields (As soon as you fill out the fields, the values will be validated in the background.):
 
 - Jenkins Admin Login/Password (This is the user you configured before in the Configure Security part with all the permissions. Enter its login name and password.)
+ 
+> - in case of using github oauth plugin: copy the API Token from [http://localhost:8080/me/configure](http://localhost:8080/me/configure).
+
 - Configuration Folder (Enter the path of the cob-pipeline configuration folder.)
 
     ```
