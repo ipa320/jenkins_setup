@@ -92,7 +92,7 @@ Clone the `jenkins_setup` and `jenkins_config` repositories
 Add the `jenkins_setup` module to the `$PYTHONPATH` (adapt the *ROS_RELEASE*).
 
     sudo su -c 'echo "export PYTHONPATH=~/jenkins-config/jenkins_setup/src" > /etc/profile.d/python_path.sh'
-    sudo su -c 'echo "source /opt/ros/groovy/setup.sh" >> /etc/profile.d/python_path.sh'
+    sudo su -c 'echo "source /opt/ros/hydro/setup.sh" >> /etc/profile.d/python_path.sh'
 
 Create softlinks in userContent directory pointing to `jenkins_setup`, `jenkins_config`, `chroot_tarballs` and `.ssh`
 
