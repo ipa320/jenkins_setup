@@ -274,18 +274,18 @@ Login as `admin` and create a new view by pressing the '+'.
 
 ![Create View](pictures/new_view.png "Create a new view in Jenkins")
 
-Name it 'current\_user' and select **List View**. **Add Job Filter** in the *Job Filter* section and select **User Permissions for Jobs**. Configure as shown in the picture and press OK.
+Name it `current\_user` and select **List View**. **Add Job Filter** in the *Job Filter* section and select **User Permissions for Jobs**. Configure as shown in the picture and press OK.
 
 ![Job Filter configuration](pictures/job_filter.png "Configuration example for View Job Filter")
 
 Go to [http://localhost:8080/configure](http://localhost:8080/configure) and select 'current\_user' as **Default view**.
 
-### configure mailer
-Copy the jelly template for the email generation:
-
-    sudo mkdir /var/lib/jenkins/email-templates
-    sudo cp ~/jenkins-config/jenkins_setup/templates/email-templates/html-with-health-builds-tests.jelly /var/lib/jenkins/email-templates/
-    sudo chown -R jenkins:jenkins /var/lib/jenkins/email-templates
+> ### configure mailer (optional)
+> Copy the jelly template for the email generation:
+> 
+>     sudo mkdir /var/lib/jenkins/email-templates
+>     sudo cp ~/jenkins-config/jenkins_setup/templates/email-templates/html-with-health-builds-tests.jelly /var/lib/jenkins/email-templates/
+>     sudo chown -R jenkins:jenkins /var/lib/jenkins/email-templates
 
 
 ## For graphics tests
