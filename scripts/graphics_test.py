@@ -89,20 +89,17 @@ def main():
         for pkg_name, pkg_dir in catkin_test_packages.items():
             test_repos_list_wet.append(pkg_name)
 
-        # add all oackages in dep repositories (if "test" is set to True)
+        # add all packages in dep repositories (if "test" is set to True)
         for dep in pipe_repos[build_identifier].dependencies.keys():
             if pipe_repos[build_identifier].dependencies[dep].test:
                 (catkin_test_dep_packages, stacks, manifest_packages) = common.get_all_packages(catkin_packages[dep] + '/..')
                 for pkg_name, pkg_dir in catkin_test_dep_packages.items():
                     test_repos_list_wet.append(pkg_name)
 
+        # test wet repositories
         print "Testing the following wet repositories %s" % test_repos_list_wet
-        try:
-            test_list = ' '.join( test_repos_list_wet )
-            common.call( "catkin_make --directory %s/wet test --pkg %s" % (repo_sourcespace, test_list), ros_env_repo)
-        except common.BuildException as ex:
-            print ex.msg
-            raise common.BuildException("Failed to catkin_make test wet repositories")
+        test_list = ' '.join( test_repos_list_wet )
+        common.call( "/opt/VirtualGL/bin/vglrun catkin_make --directory %s/wet test --pkg %s" % (repo_sourcespace, test_list), ros_env_repo)
 
         # clean and copy test xml files
         common.clean_and_copy_test_results(repo_sourcespace + "/wet/build/test_results", workspace + "/test_results") # FIXME: is there a way to let catkin write test results to repo_test_results
@@ -117,14 +114,14 @@ def main():
                 test_repos_list_dry.append(dep)
 
         # test dry repositories
-        print "Test the following dry repositories %s" % test_repos_list_dry
-        try:
-            build_list = " ".join(test_repos_list_dry)
-            common.call("rosmake -rV --skip-blacklist --profile --pjobs=%s --test-only --output=%s %s" %
-                        ( cores, repo_build_logs, build_list ), ros_env_repo)
-        except common.BuildException as ex:
-            print ex.msg
-            raise common.BuildException("Failed to rosmake test dry repositories")
+        packages_to_test_list = test_repos_list_dry
+        for repo in test_repos_list_dry:
+            (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_dry + "/" + repo)
+            packages_to_test_list = packages_to_test_list + manifest_packages.keys()
+        print "Test dry packages: ", packages_to_test_list
+        packages_to_test = " ".join(test_repos_list_dry) + " " + " ".join(packages_to_test_list)
+        common.call("/opt/VirtualGL/bin/vglrun rosmake -rV --skip-blacklist --profile --pjobs=%s --test-only --output=%s %s" %
+                    ( cores, repo_build_logs, packages_to_test ), ros_env_repo)
 
         # clean and copy test xml files
         common.clean_and_copy_test_results(repo_test_results, workspace + "/test_results")
