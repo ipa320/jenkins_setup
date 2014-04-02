@@ -255,8 +255,8 @@ To set up the necessary chroot tarballs and keep them up-to-date an additional j
     sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/update_chroot_tarballs
 
 Open `/var/lib/jenkins/jobs/update_chroot_tarballs/config.xml` and adjust it to your demands:
-* set the `SERVERNAME` to your Jenkins server
-* set the `APT_CACHER_ADDRESS` to your apt-cacher
+* set the `SERVERNAME` to your Jenkins server (e.g. localhost)
+* set the `APT_CACHER_ADDRESS` to your apt-cacher (e.g. http://localhost:3142)
 
 Afterwards **Reload Configuration from Disk** under [http://localhost:8080/manage](http://localhost:8080/manage) and run the job to create the tarballs.
 
