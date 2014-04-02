@@ -109,6 +109,7 @@ Enable password-less ssh login from master to slave and slave to master (even if
 
     ssh-copy-id localhost
     ssh localhost
+    ssh <JENKINS_MASTER_NAME>
 
 Afterwards reboot your machine
 
