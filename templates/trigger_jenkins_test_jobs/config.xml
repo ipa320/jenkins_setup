@@ -11,9 +11,9 @@
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.security.AuthorizationMatrixProperty>
-      <permission>hudson.model.Item.Workspace:ipa-fmw</permission>
-      <permission>hudson.model.Item.Read:ipa-fmw</permission>
-      <permission>hudson.model.Item.Build:ipa-fmw</permission>
+      <permission>hudson.model.Item.Workspace:ipa-jenkins</permission>
+      <permission>hudson.model.Item.Read:ipa-jenkins</permission>
+      <permission>hudson.model.Item.Build:ipa-jenkins</permission>
     </hudson.security.AuthorizationMatrixProperty>
   </properties>
   <scm class="hudson.plugins.git.GitSCM" plugin="git@1.5.0">
