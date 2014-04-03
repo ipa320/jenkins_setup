@@ -1282,6 +1282,7 @@ class HardwareJob(JenkinsJob):
             if 'hardware_build' in self.pipe_inst.repositories[repo].jobs:
                 subset_filter_input_entry = {}
                 subset_filter_input_entry['repository'] = repo
+                subset_filter_input_entry['ros_distro'] = rosdistro
                 subset_filter_input_entry['label'] = self.pipe_inst.repositories[repo].robots#[0]  # FIXME hack as long as robots attribute is list not str
                 subset_filter_input.append(subset_filter_input_entry)
 
