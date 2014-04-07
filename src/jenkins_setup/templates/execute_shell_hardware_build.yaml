@@ -37,8 +37,6 @@ cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
 JOBNAME=$JOB_NAME
 
-ROSDISTRO=groovy # TODO: this should be a parameterized input to the job and later on input from user plugin
-
 REPOSITORY=$repository
 
 UBUNTUDISTRO=$ubuntu_distro
@@ -59,7 +57,7 @@ DELIM
 
 . $WORKSPACE/env_vars.sh
 
-. /opt/ros/$ROSDISTRO/setup.sh
+. /opt/ros/$ROS_DISTRO/setup.sh
 
 export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
 
@@ -75,7 +73,7 @@ echo "==== Begin script. Ignore the output above ===="
 
 echo "==============================================="
 
-python $WORKSPACE/jenkins_setup/scripts/hardware_build.py $PIPELINE_REPOS_OWNER @(SERVERNAME) @(USERNAME) $ROSDISTRO $REPOSITORY
+python $WORKSPACE/jenkins_setup/scripts/hardware_build.py $PIPELINE_REPOS_OWNER @(SERVERNAME) @(USERNAME) $ROS_DISTRO $REPOSITORY
 
 echo "==============================================="
 
