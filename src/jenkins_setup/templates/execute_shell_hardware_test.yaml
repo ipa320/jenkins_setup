@@ -25,7 +25,7 @@ WORKSPACE="$WORKSPACE/$repository/current"
 
 . $WORKSPACE/env_vars.sh
 
-. /opt/ros/$ROSDISTRO/setup.sh
+. /opt/ros/$ROS_DISTRO/setup.sh
 
 export PYTHONPATH=$WORKSPACE/jenkins_setup/src:$PYTHONPATH
 
