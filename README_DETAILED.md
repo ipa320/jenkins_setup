@@ -396,7 +396,7 @@ The tarball server stores all the chroot tarball which will be used during the b
 It can be the Jenkins master or another server.
 In both cases you have to create a ```chroot_tarballs```-folder in `$HOME` which contains another folder where the used chroot tarballs will be stored:
 ```bash
-mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>
+mkdir -p ~/chroot_tarballs/in_use
 ```
 
 If you store the tarball on another server than your Jenkins master you have to enable a passwordless SSH connection between them both:

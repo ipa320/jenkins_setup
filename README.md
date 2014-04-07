@@ -63,10 +63,10 @@ All scripts and configurations will be stored in `/home/jenkins/jenkins-config`.
 
     mkdir ~/jenkins-config
 
-All tarballs will be stored in ~/chroot_tarballs (adapt the *JENKINS_MASTER_NAME*)
+All tarballs will be stored in ~/chroot_tarballs
 
     mkdir -p ~/chroot_tarballs
-    mkdir -p ~/chroot_tarballs/in_use_on__<JENKINS_MASTER_NAME>
+    mkdir -p ~/chroot_tarballs/in_use
 
 Setup ssh configuration (create ssh-key if it doesn't exist already and add github.com and localhost to known hosts)
 

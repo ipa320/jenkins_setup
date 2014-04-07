@@ -23,11 +23,11 @@ new_basetgz=${ubuntu_distro}__${arch}__${ROS_DISTRO}
 
 basetgz=@(USERNAME)__${new_basetgz}__${repository}
 
-echo "Copying $new_basetgz to $WORKSPACE/chroot_tarballs/in_use_on__@(SERVERNAME)/$basetgz"
+echo "Copying $new_basetgz to $WORKSPACE/chroot_tarballs/in_use/$basetgz"
 
-mkdir -p $WORKSPACE/chroot_tarballs/in_use_on__@(SERVERNAME)
+mkdir -p $WORKSPACE/chroot_tarballs/in_use
 
-cp $WORKSPACE/chroot_tarballs/$new_basetgz $WORKSPACE/chroot_tarballs/in_use_on__@(SERVERNAME)/${basetgz}
+cp $WORKSPACE/chroot_tarballs/$new_basetgz $WORKSPACE/chroot_tarballs/in_use/${basetgz}
 
 cat &gt; $WORKSPACE/env_vars.sh &lt;&lt;DELIM
 
@@ -43,8 +43,6 @@ ARCH=$arch
 
 PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
 
-JENKINS_MASTER=@(SERVERNAME)
-
 JENKINS_USER=@(USERNAME)
 
 JOBTYPE=@(JOB_TYPE_NAME)
@@ -59,17 +57,27 @@ time_processing=$(date +%s)
 
 if [ $arch == "i386" ]; then
 
-    setarch i386 sudo pbuilder execute --basetgz $WORKSPACE/chroot_tarballs/in_use_on__@(SERVERNAME)/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+    setarch i386 sudo pbuilder execute --basetgz $WORKSPACE/chroot_tarballs/in_use/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 else
 
-    sudo pbuilder execute --basetgz $WORKSPACE/chroot_tarballs/in_use_on__@(SERVERNAME)/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+    sudo pbuilder execute --basetgz $WORKSPACE/chroot_tarballs/in_use/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 fi
 
 # change file ownership to "jenkins" user (files generated out of chroot have owner "root") (TODO: maybe in post-build step to make sure that also aborted jobs have correct ownership)
 
 sudo chown -R $(id -un):$(id -gn) $WORKSPACE
+
+echo
+
+echo "For manual testing use the following commands:"
+
+echo "sudo apt-get install pbuilder debootstrap"
+
+echo "wget http://@(SERVERNAME):8080/userContent/chroot_tarballs/in_use/$basetgz"
+
+echo "sudo pbuilder login --basetgz ${basetgz}"
 
 echo
 

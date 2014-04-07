@@ -1257,6 +1257,7 @@ class HardwareJob(JenkinsJob):
 
         dict_list = []
         repositories = []
+        ros_distros = []
         robots = []
         for repo in self.pipe_inst.repositories.keys():
             if 'hardware_build' in self.pipe_inst.repositories[repo].jobs:
@@ -1268,7 +1269,13 @@ class HardwareJob(JenkinsJob):
                 if robot not in robots:
                     robots.append(robot)
 
+                ros_distro = self.pipe_inst.repositories[repo].ros_distro
+                for rd in ros_distro:
+                    if rd not in ros_distros:
+                        ros_distros.append(rd)
+
         dict_list.append({'repository': repositories})
+        dict_list.append({'ros_distro': ros_distros})
 
         return (dict_list, robots)
 
@@ -1279,12 +1286,13 @@ class HardwareJob(JenkinsJob):
 
         subset_filter_input = []
         for repo in self.pipe_inst.repositories.keys():
-            if 'hardware_build' in self.pipe_inst.repositories[repo].jobs:
-                subset_filter_input_entry = {}
-                subset_filter_input_entry['repository'] = repo
-                subset_filter_input_entry['ros_distro'] = rosdistro
-                subset_filter_input_entry['label'] = self.pipe_inst.repositories[repo].robots#[0]  # FIXME hack as long as robots attribute is list not str
-                subset_filter_input.append(subset_filter_input_entry)
+            for rosdistro in self.pipe_inst.repositories[repo].ros_distro:
+                if 'hardware_build' in self.pipe_inst.repositories[repo].jobs:
+                    subset_filter_input_entry = {}
+                    subset_filter_input_entry['repository'] = repo
+                    subset_filter_input_entry['ros_distro'] = rosdistro
+                    subset_filter_input_entry['label'] = self.pipe_inst.repositories[repo].robots#[0]  # FIXME hack as long as robots attribute is list not str
+                    subset_filter_input.append(subset_filter_input_entry)
 
         return subset_filter_input
 

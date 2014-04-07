@@ -23,13 +23,13 @@ repository=fiad_scenario
 
 if [ -z "$ROS_DISTRO" ]; then
 
-ROS_DISTRO=$ros_distro
+    ROS_DISTRO=$ros_distro
 
 fi
 
 if [ -z "$ros_distro" ]; then
 
-ros_distro=$ROS_DISTRO
+    ros_distro=$ROS_DISTRO
 
 fi
 
@@ -51,13 +51,7 @@ ARCH=$arch
 
 PIPELINE_REPOS_OWNER=@(PIPELINEREPOSOWNER)
 
-JENKINS_MASTER=@(SERVERNAME)
-
-JENKINS_USER=@(USERNAME)
-
 JOBTYPE=@(JOB_TYPE_NAME)
-
-export ROS_TEST_RESULTS_DIR=/tmp/test_repositories/src_repository/test_results
 
 export BUILD_ID=$BUILD_ID
 
@@ -65,15 +59,15 @@ DELIM
 
 echo "==> entering step for proccessing inside chroot at $(date)"
 
-time_chroot=$(date +%s)
+time_processing=$(date +%s)
 
 if [ $arch == "i386" ]; then
 
-    setarch i386 sudo pbuilder execute --basetgz $WORKSPACE/chroot_tarballs/in_use_on__@(SERVERNAME)/${basetgz} --bindmounts /dev $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+    setarch i386 sudo pbuilder execute --basetgz $WORKSPACE/chroot_tarballs/in_use/${basetgz} --bindmounts /dev $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 else
 
-    sudo pbuilder execute --basetgz $WORKSPACE/chroot_tarballs/in_use_on__@(SERVERNAME)/${basetgz} --bindmounts /dev $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
+    sudo pbuilder execute --basetgz $WORKSPACE/chroot_tarballs/in_use/${basetgz} --bindmounts /dev $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
 fi
 
@@ -81,17 +75,19 @@ fi
 
 sudo chown -R $(id -un):$(id -gn) $WORKSPACE
 
+echo
+
 echo "==> finished job at $(date)"
 
 time_end=$(date +%s)
 
-# duration steps: load, chroot, end
+# duration steps: load, processing, end
 
 echo "durations:"
 
-echo "loading chroot in             " $(date -d @`expr $time_chroot - $time_load` +%M:%S)
+echo "loading chroot in             " $(date -d @`expr $time_processing - $time_load` +%M:%S)
  
-echo "processing inside chroot in   " $(date -d @`expr $time_end - $time_chroot` +%M:%S)
+echo "processing inside chroot in   " $(date -d @`expr $time_end - $time_processing` +%M:%S)
 
 echo "total                         " $(date -d @`expr $time_end - $time_load` +%M:%S)
 

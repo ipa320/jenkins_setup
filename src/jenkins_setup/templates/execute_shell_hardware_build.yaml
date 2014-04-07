@@ -75,7 +75,7 @@ echo "==== Begin script. Ignore the output above ===="
 
 echo "==============================================="
 
-python $WORKSPACE/jenkins_setup/scripts/hardware_build.py $PIPELINE_REPOS_OWNER $JENKINS_MASTER @(USERNAME) $ROSDISTRO $REPOSITORY
+python $WORKSPACE/jenkins_setup/scripts/hardware_build.py $PIPELINE_REPOS_OWNER @(SERVERNAME) @(USERNAME) $ROSDISTRO $REPOSITORY
 
 echo "==============================================="
 

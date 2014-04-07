@@ -231,7 +231,7 @@
     </com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper>'
 
 'copy_to_master': '<com.michelin.cio.hudson.plugins.copytoslave.CopyToMasterNotifier plugin="copy-to-slave@1.4.3">
-      <includes>chroot_tarballs/in_use_on__@(SERVERNAME)/@(BASETGZ)</includes>
+      <includes>chroot_tarballs/in_use/@(BASETGZ)</includes>
       <excludes></excludes>
       <overrideDestinationFolder>true</overrideDestinationFolder>
       <destinationFolder>$JENKINS_HOME/userContent</destinationFolder>
