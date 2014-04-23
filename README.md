@@ -166,6 +166,7 @@ Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/plug
 - [Multiple SCMs Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Multiple+SCMs+Plugin)
 - [Copy To Slave Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Copy+To+Slave+Plugin)
 - [Workspace Cleanup Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Workspace+Cleanup+Plugin)
+- [Build Blocker Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Build+Blocker+Plugin)
 
 #### Performance improvements (optional)
 Using RAM for chroot environment and parallel compression.
