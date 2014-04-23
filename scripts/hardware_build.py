@@ -52,6 +52,10 @@ def main():
     print "Testing branch/version: %s" % pipe_repos[build_identifier].version
     print "\n", 50 * 'X'
 
+    # for hardware build: only support hydro
+    if ros_distro == "groovy":
+        sys.exit(False)
+
     # for hardware build: remove old build artifacts 
     limit = 3 # limit amount of old builds
     print workspace
@@ -74,6 +78,9 @@ def main():
 
     # init catkin workspace
     ros_env_repo = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)                            # source ros_distro (needed to do a catkin_init_workspace)
+    # for hardware build: merge workspace with robot account #FIXME: this should be parameterisable in plugin (select a path to a setup.bash file in the admin config and mark a checkbox for the user config)
+    if os.path.isdir("/u/robot/git/care-o-bot/devel"):
+        ros_env_repo = common.get_ros_env('/u/robot/git/care-o-bot/devel/setup.bash')
     common.call("catkin_init_workspace %s" % repo_sourcespace_wet, ros_env_repo, verbose=False)         # init wet workspace
     common.call("catkin_make --directory %s/wet" % repo_sourcespace, ros_env_repo, verbose=False)       # build wet workspace to generate a setup.bash
 
@@ -198,6 +205,7 @@ def main():
 
     # setup ros workspace
     print "Set up ros workspace and setup environment variables"
+    ros_env_repo = common.get_ros_env('/opt/ros/%s/setup.bash' % ros_distro)
     common.call("rosws init %s /opt/ros/%s" %(repo_sourcespace, ros_distro), verbose=False)             # init workspace pointing to ros_distro
 
     # for hardware build: merge workspace with robot account #FIXME: this should be parameterisable in plugin (select a path to a setup.bash file in the admin config and mark a checkbox for the user config)
