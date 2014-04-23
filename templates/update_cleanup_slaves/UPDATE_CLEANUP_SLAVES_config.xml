@@ -29,8 +29,9 @@
   <builders>
     <hudson.tasks.Shell>
       <command>#!/bin/bash -e
-
-sudo rm -rf $JENKINS_HOME/workspace/*</command>
+echo &quot;Deleting $HOME/workspace&quot;
+ls $HOME/workspace
+sudo rm -rf $HOME/workspace/*</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
