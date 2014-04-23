@@ -166,6 +166,7 @@ Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/plug
 - [Multiple SCMs Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Multiple+SCMs+Plugin)
 - [Copy To Slave Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Copy+To+Slave+Plugin)
 - [Workspace Cleanup Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Workspace+Cleanup+Plugin)
+- [Build Blocker Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Build+Blocker+Plugin)
 
 #### Performance improvements (optional)
 Using RAM for chroot environment and parallel compression.
@@ -269,6 +270,13 @@ To update all pipelines (e.g. after a general configuration change) an additiona
     sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/update_pipelines
 
 Afterwards **Reload Configuration from Disk** under [http://localhost:8080/manage](http://localhost:8080/manage) and run the job to create the tarballs. you will have to start this job manually and give it the admin user and password (if using github OAuth, the use the token from [http://localhost:8080/me/configure](http://localhost:8080/me/configure) when logged in as the admin user.
+
+### configure cleanup_slaves job
+To cleanup the workspaces of all slaves an additional job is needed. Copy the prepared job `config.xml` into the job folder and make the jenkins user own it.
+
+    sudo mkdir /var/lib/jenkins/jobs/update_cleanup_slaves
+    sudo cp ~/jenkins-config/jenkins_setup/templates/update_pipelines/UPDATE_CLEANUP_SLAVES_config.xml /var/lib/jenkins/jobs/update_cleanup_slaves/config.xml
+    sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/update_cleanup_slaves
 
 ### configure default view
 Login as `admin` and create a new view by pressing the '+'.
