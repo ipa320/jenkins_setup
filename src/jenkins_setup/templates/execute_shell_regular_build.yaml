@@ -1,7 +1,7 @@
 #####################
 ### regular_build ###
 #####################
-'regular_build': '#!/bin/bash -e
+'regular_build': '#!/bin/bash
 
 echo "==> entering step for loading chroot at $(date)"
 
@@ -61,11 +61,16 @@ if [ $arch == "i386" ]; then
 
     setarch i386 sudo pbuilder execute --basetgz $WORKSPACE/chroot_tarballs/in_use/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
+    res=$?
+
 else
 
     sudo pbuilder execute --basetgz $WORKSPACE/chroot_tarballs/in_use/${basetgz} --save-after-exec --bindmounts $WORKSPACE -- $WORKSPACE/jenkins_setup/scripts/pbuilder_env.sh $WORKSPACE
 
+    res=$?
+
 fi
+
 
 # change file ownership to "jenkins" user (files generated out of chroot have owner "root") (TODO: maybe in post-build step to make sure that also aborted jobs have correct ownership)
 
@@ -98,4 +103,10 @@ echo "processing inside chroot in   " $(date -d @`expr $time_end - $time_process
 echo "total                         " $(date -d @`expr $time_end - $time_load` +%M:%S)
 
 echo
+
+if [ $res != 0 ]; then
+
+exit 1
+
+fi
 '
