@@ -39,12 +39,12 @@ Install `apt-cacher`
 
     sudo apt-get install apt-cacher-ng
 
-### Up or downgrade jenkins to version v1.514
-We've tested the setup on Jenkins version v1.514. You can find the war file [here](http://mirrors.jenkins-ci.org/war).
+### Up or downgrade jenkins to version v1.544
+We've tested the setup on Jenkins version v1.544. You can find the war file [here](http://mirrors.jenkins-ci.org/war).
 
     cd /usr/share/jenkins/
     sudo rm -rf jenkins.war
-    sudo wget http://mirrors.jenkins-ci.org/war/1.514/jenkins.war
+    sudo wget http://mirrors.jenkins-ci.org/war/1.544/jenkins.war
 
 restart jenkins
 
