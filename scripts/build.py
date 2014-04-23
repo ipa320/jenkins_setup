@@ -270,7 +270,7 @@ def main():
         # build dry repositories
         print "Build dry stacks:   ", stacks.keys()
         print "Build dry packages: ", manifest_packages.keys()
-        packages_to_build = " ".join(stacks.keys()) + " ".join(manifest_packages.keys())
+        packages_to_build = " ".join(stacks.keys()) + " " + " ".join(manifest_packages.keys())
         try:
             common.call("rosmake -rV --skip-blacklist --profile --pjobs=%s --output=%s %s" %
                         (cores + 1, repo_build_logs, packages_to_build), ros_env_repo)
