@@ -93,7 +93,7 @@ def main():
         f.write(rosinstall)
     print "Install repository from source:"
     # rosinstall repos
-    common.call("rosinstall -j 8 --verbose %s %s/repo.rosinstall /opt/ros/%s"
+    common.call("rosinstall --delete-changed-uris -j 8 --verbose %s %s/repo.rosinstall /opt/ros/%s"
                 % (repo_checkoutspace, workspace, ros_distro))
 
     # get the repositories build dependencies
@@ -150,7 +150,7 @@ def main():
             f.write(rosinstall)
         print "Install user-defined build dependencies from source"
         # rosinstall depends
-        common.call("rosinstall -j 8 --verbose %s %s/repo.rosinstall /opt/ros/%s"
+        common.call("rosinstall --delete-changed-uris -j 8 --verbose %s %s/repo.rosinstall /opt/ros/%s"
                     % (repo_checkoutspace, workspace, ros_distro))
 
         # get also deps of just installed user-defined/customized dependencies

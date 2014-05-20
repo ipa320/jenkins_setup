@@ -95,7 +95,7 @@ def main():
 
     # get pipeline configs object from url
     plc_instance = cob_pipe.CobPipe()
-    plc_instance.load_config_from_sftp(options.pipeline_repos_owner, master_name, options.username)
+    plc_instance.load_config_from_file(options.pipeline_repos_owner, master_name, options.username, file_location = options.config_folder)
     plc_instance.config_folder = options.config_folder
 
     # get jobs to create

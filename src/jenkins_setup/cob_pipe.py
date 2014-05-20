@@ -10,6 +10,7 @@ stored or on an GitHub account.
 import yaml
 import paramiko
 import os
+import sys
 
 
 class CobPipe(object):
@@ -33,6 +34,7 @@ class CobPipe(object):
         @type  pipeline_config: dict
         """
 
+        self.pipeline_config = pipeline_config
         self.user_name = pipeline_config['user_name']
         self.server_name = pipeline_config['server_name']
         self.email = pipeline_config['email']
@@ -107,7 +109,6 @@ class CobPipe(object):
         fileObject = open( file_location + "/jenkins_config/" + server_name + "/" + user_name + "/pipeline_config.yaml", 'rb')
         pipeline_config = yaml.load(fileObject.read())
 
-
         self.load_config_from_dict(pipeline_config)
         self.pipeline_repos_owner = pipeline_repos_owner
 
@@ -138,9 +139,23 @@ class CobPipe(object):
         
         user = url.split(':', 1)[1].split('/', 1)[0]
         name = url.split(':', 1)[1].split('/', 1)[1].split('.git')[0]
+
+        return user, name
+        
+        
+    def split_hg_url(self, url):
+        """
+        splits a hg url into user and repository name
+        
+        :param url: hg url
+        """
+        # example ssh://user@server://path/repo1 
+        user = url.split('@')[0].split('//')[1]
+        name = url.split('/')[8]
+
         return user, name
 
-    def create_scm_trigger(self, url, version, jobs_to_trigger = []):
+    def create_scm_trigger(self, vcs_type, url, version, jobs_to_trigger = []):
         """
         Create a scm trigger with a name and content
 
@@ -150,12 +165,19 @@ class CobPipe(object):
     
         scm_trigger = {}
         scm_trigger['url'] = url
-        user, repo_name = self.split_github_url(scm_trigger['url'])
+        scm_trigger['vcs_type'] = vcs_type
+        if vcs_type == "git": 
+            user, repo_name = self.split_github_url(scm_trigger['url'])
+        elif vcs_type == "hg":
+            user, repo_name = self.split_hg_url(scm_trigger['url'])
+        else:
+            print "scm type" + vcs_type + "not supported"
+            sys.exit()
         scm_trigger['user'] = user
         scm_trigger['repo'] = repo_name
         scm_trigger['version'] = version
         scm_trigger['jobs_to_trigger'] = jobs_to_trigger
-        scm_trigger_name = scm_trigger['user'] + '__' + scm_trigger['repo'] + '__' + scm_trigger['version']
+        scm_trigger_name = scm_trigger['vcs_type'] + '__' + scm_trigger['user'] + '__' + scm_trigger['repo'] + '__' + scm_trigger['version']
         return scm_trigger_name, scm_trigger
 
     def get_scm_triggers(self):
@@ -169,7 +191,8 @@ class CobPipe(object):
         scm_triggers = {}
         for pipe_repo in pipe_repo_list:
             # always add pipe_repo to scm triggers
-            scm_trigger_name, scm_trigger = self.create_scm_trigger(self.repositories[pipe_repo].data['url'], self.repositories[pipe_repo].data['version'], [pipe_repo])
+            vcs_type = self.pipeline_config['repositories'][pipe_repo]['type']
+            scm_trigger_name, scm_trigger = self.create_scm_trigger(vcs_type, self.repositories[pipe_repo].data['url'], self.repositories[pipe_repo].data['version'], [pipe_repo])
             if scm_trigger_name in scm_triggers.keys(): # if dependency is already listed in dependencies: extend the jobs_to_trigger with the current repository
                 scm_triggers[scm_trigger_name]['jobs_to_trigger'].append(pipe_repo)
 
@@ -179,7 +202,8 @@ class CobPipe(object):
             # add dependencies to scm triggers if they are marked with poll=true
             for dependency in self.repositories[pipe_repo].data['dependencies'].keys():
                 if self.repositories[pipe_repo].data['dependencies'][dependency]['poll']:
-                    scm_trigger_name, scm_trigger = self.create_scm_trigger(self.repositories[pipe_repo].data['dependencies'][dependency]['url'], self.repositories[pipe_repo].data['dependencies'][dependency]['version'], [pipe_repo])
+                    vcs_type = self.pipeline_config['repositories'][pipe_repo]['type']
+                    scm_trigger_name, scm_trigger = self.create_scm_trigger(vcs_type, self.repositories[pipe_repo].data['dependencies'][dependency]['url'], self.repositories[pipe_repo].data['dependencies'][dependency]['version'], [pipe_repo])
                     if scm_trigger_name in scm_triggers.keys(): # if dependency is already listed in dependencies: extend the jobs_to_trigger with the current repository
                         scm_triggers[scm_trigger_name]['jobs_to_trigger'].append(pipe_repo)
                     else: # if not listed in dependencies: add a new entry
