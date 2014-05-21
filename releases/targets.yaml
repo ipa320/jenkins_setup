@@ -3,6 +3,7 @@
 # in a computer readable form
 #- electric: ['lucid', 'natty', 'oneiric']
 #- fuerte: ['lucid', 'oneiric', 'precise']
-- groovy: ['oneiric', 'precise', 'quantal']
+#- groovy: ['oneiric', 'precise', 'quantal']
+- groovy: ['precise', 'quantal']
 - hydro: ['precise', 'quantal', 'raring']
 - indigo: ['saucy', 'trusty']
