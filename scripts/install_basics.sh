@@ -31,5 +31,28 @@ apt-get update
 echo -e "\n***INSTALL ROS***"
 apt-get install -y ros-$2-ros
 
-echo -e "\n***INSTALL ROS PYTHON TOOLS***"
-apt-get install -y python-ros*
+echo -e "\n***PYPASSING BROKEN DEPENDENCY - INSTALL ROS***"
+
+echo -e "\n### INSTALLING ROS ###"
+apt-get install -y python-vcstools python-rospkg python-routes python-rosdistro python-ropemacs python-rosinstall-generator python-rope python-rosrelease python-rosdep python-roman
+echo -e "\n### DOWNLOAD python-wstool ###"
+apt-get download -y python-wstool
+
+echo -e "\n### REMOVING BROKEN DEPENDECY IN PACKAGE python-wstool AND INSTALLING IT ###"
+dpkg-deb -x python-wstool_0.1.4-1_all.deb changedeb
+dpkg-deb --control python-wstool_0.1.4-1_all.deb changedeb/DEBIAN
+mv changedeb/DEBIAN/control changedeb/DEBIAN/control_old
+cat changedeb/DEBIAN/control_old | sed -e 's/, python:any (>= 2.7.1-0ubuntu2)//g' > changedeb/DEBIAN/control
+rm changedeb/DEBIAN/control_old
+dpkg -b changedeb python-wstool_0.1.4-1_all_rmdeb.deb
+rm -rf changedeb/
+rm python-wstool_0.1.4-1_all.deb
+dpkg -i python-wstool_0.1.4-1_all_rmdeb.deb 
+rm python-wstool_0.1.4-1_all_rmdeb.deb
+
+echo -e "\n### INSTALLING python-rosinstall ###"
+apt-get install -y python-rosinstall
+
+
+#echo -e "\n***INSTALL ROS PYTHON TOOLS***"
+#apt-get install -y python-ros*
