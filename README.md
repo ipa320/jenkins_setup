@@ -86,7 +86,7 @@ Setup git configuration on master
 
 Clone the `jenkins_setup` and `jenkins_config` repositories
 
-    git clone git@github.com:ipa320/jenkins_config.git ~/jenkins-config/jenkins_config
+    git clone git@github.com:ipa320/jenkins_config_example.git ~/jenkins-config/jenkins_config
     git clone git@github.com:ipa320/jenkins_setup.git ~/jenkins-config/jenkins_setup
 
 Add the `jenkins_setup` module to the `$PYTHONPATH` (adapt the *ROS_RELEASE*).
@@ -155,6 +155,12 @@ Go to [http://localhost:8080/computer](http://localhost:8080/computer) and add n
 - Use `/home/jenkins` as Remote FS root.
 - Enter the labels `update_tarballs prio_build regular_build prio_nongraphics_test regular_nongraphics_test`. 
 - Add `localhost` as Host.
+- Add Credentials 
+  - Set *Kind* to **SSH Username with private key**
+  - Set *Scope* to **System**
+  - Set *Username* to **jenkins** 
+  - Check **From the Jenkins master ~/.ssh** under *Private Key*
+
 
 ### Jenkins plugin installation
 Go to [http://localhost:8080/pluginManager/available](http://localhost:8080/pluginManager/available) and install the following plugins:
@@ -278,7 +284,7 @@ Afterwards **Reload Configuration from Disk** under [http://localhost:8080/manag
 To cleanup the workspaces of all slaves an additional job is needed. Copy the prepared job `config.xml` into the job folder and make the jenkins user own it.
 
     sudo mkdir /var/lib/jenkins/jobs/update_cleanup_slaves
-    sudo cp ~/jenkins-config/jenkins_setup/templates/update_pipelines/UPDATE_CLEANUP_SLAVES_config.xml /var/lib/jenkins/jobs/update_cleanup_slaves/config.xml
+    sudo cp ~/jenkins-config/jenkins_setup/templates/update_cleanup_slaves/UPDATE_CLEANUP_SLAVES_config.xml /var/lib/jenkins/jobs/update_cleanup_slaves/config.xml
     sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/update_cleanup_slaves
 
 ### configure default view
