@@ -112,6 +112,8 @@ def process_basic_tarball(ssh, basic, local_abs, remote_abs, extended_tarballs, 
     local_abs_basic = os.path.join(local_abs, basic)
     remote_abs_basic = os.path.join(remote_abs, basic)
 
+    sys.stdout.flush()
+
     # get tarball parameter
     tarball_params = get_tarball_params(basic)
     print "tarball parameter: ", tarball_params
@@ -127,16 +129,20 @@ def process_basic_tarball(ssh, basic, local_abs, remote_abs, extended_tarballs, 
 #            get_tarball(ssh, basic, remote_abs_basic, local_abs_basic)
 #
 #            # update tarball
-#            call("./pbuilder_calls.sh update %s" % local_abs_basic)
+#            call("./pbuilder_calls.py update %s" % local_abs_basic)
 #
 #        except Exception as ex:
 #            return ["%s: %s" % (basic, ex)]
 #
 #    else:
+
+    sys.stdout.flush()
     print "Create %s" % basic
+
+    sys.stdout.flush()
     try:
         # create tarball on slave
-        call("./pbuilder_calls.sh create %s %s %s"
+        call("./pbuilder_calls.py create %s %s %s"
              % (local_abs_basic, tarball_params['ubuntu_distro'],
                 tarball_params['arch']))
 
@@ -194,9 +200,9 @@ def process_extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend
             get_tarball(ssh, extend, remote_abs_extend, local_abs_extend)
 
             # update tarball
-            #call("./pbuilder_calls.sh update %s" % local_abs_extend)
+            #call("./pbuilder_calls.py update %s" % local_abs_extend)
 
-            call("./pbuilder_calls.sh execute %s install_basics.sh %s %s %s"
+            call("./pbuilder_calls.py execute %s install_basics.sh %s %s %s"
                  % (local_abs_extend, tarball_params['ubuntu_distro'],
                     tarball_params['ros_distro'], apt_cacher_proxy))
 
@@ -208,7 +214,7 @@ def process_extend_tarball(ssh, basic, local_abs_basic, extend, local_abs_extend
         try:
             call("cp %s %s" % (local_abs_basic, local_abs_extend))
 
-            call("./pbuilder_calls.sh execute %s install_basics.sh %s %s %s"
+            call("./pbuilder_calls.py execute %s install_basics.sh %s %s %s"
                  % (local_abs_extend, tarball_params['ubuntu_distro'],
                     tarball_params['ros_distro'], apt_cacher_proxy))
 
@@ -295,17 +301,27 @@ def call_with_list(command, envir=None, verbose=True):
     print "\n********************************************************************"
     print "Executing command '%s'" % ' '.join(command)
     print "********************************************************************"
+
+    sys.stdout.flush()
+
     helper = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True, env=envir)
     res, err = helper.communicate()
+    #res = subprocess.check_output(command, close_fds=True, env=envir)
+    #err = ''
     if verbose:
         print str(res)
     print str(err)
+
+    sys.stdout.flush()
+
+
     if helper.returncode != 0:
         msg = "Failed to execute command '%s'" % command
         print "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
         print "/!\  %s" % msg
         print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
         raise BuildException(msg)
+
     return res
 
 
