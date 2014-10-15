@@ -32,6 +32,9 @@ echo -e "\n***WRITE SOURCE***"
 sh -c 'echo "deb http://packages.ros.org/ros/ubuntu '$1' main" > /etc/apt/sources.list.d/ros-latest.list'
 cat /etc/apt/sources.list.d/ros-latest.list
 
+sh -c 'echo "deb http://doc.openrobotino.org/download/packages/amd64 ./" > /etc/apt/sources.list.d/robotino.list'
+cat /etc/apt/sources.list.d/robotino.list
+
 echo -e "\n***UPDATE***"
 apt-get update
 echo -e "\n***INSTALL ROS***"
