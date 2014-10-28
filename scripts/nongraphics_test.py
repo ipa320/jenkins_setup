@@ -123,6 +123,8 @@ def main():
             packages_to_test_list = packages_to_test_list + manifest_packages.keys()
         print "Test dry packages: ", packages_to_test_list
         packages_to_test = " ".join(test_repos_list_dry) + " " + " ".join(packages_to_test_list)
+        common.call("rosmake -rV --skip-blacklist --profile --pjobs=%s --test-only --output=%s %s" %
+                    ( cores, repo_build_logs, packages_to_test ), ros_env_repo)
 
         # clean and copy test xml files
         common.clean_and_copy_test_results(repo_test_results, workspace + "/test_results")
