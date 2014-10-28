@@ -1,3 +1,7 @@
+#ide spesific
+.idea
+
+#other stuff
 build/
 *~
 *.pyc

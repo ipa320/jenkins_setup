@@ -81,6 +81,8 @@ def main():
     ### catkin repositories
     (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_wet)
     if (len(catkin_packages) > 0) and (repo_name in catkin_packages):
+        os.environ['ROS_TEST_RESULTS_DIR'] = os.environ['CATKIN_TEST_RESULTS_DIR']
+        
         # get list of dependencies to test
         test_repos_list_wet = []
 
@@ -99,10 +101,11 @@ def main():
         # test wet repositories
         print "Testing the following wet repositories %s" % test_repos_list_wet
         test_list = ' '.join( test_repos_list_wet )
-        common.call( "catkin_make --directory %s/wet test --pkg %s" % (repo_sourcespace, test_list), ros_env_repo)
-
-        # clean and copy test xml files
-        common.clean_and_copy_test_results(repo_sourcespace + "/wet/build/test_results", workspace + "/test_results") # FIXME: is there a way to let catkin write test results to repo_test_results
+        try:
+            common.call("catkin_make --directory %s/wet test --pkg %s" % (repo_sourcespace, test_list), ros_env_repo)
+        finally:
+            # clean and copy test xml files
+            common.clean_and_copy_test_results(repo_sourcespace + "/wet/build/test_results", workspace + "/test_results") # FIXME: is there a way to let catkin write test results to repo_test_results
 
     ### rosbuild repositories
     (catkin_packages, stacks, manifest_packages) = common.get_all_packages(repo_sourcespace_dry)
@@ -120,8 +123,6 @@ def main():
             packages_to_test_list = packages_to_test_list + manifest_packages.keys()
         print "Test dry packages: ", packages_to_test_list
         packages_to_test = " ".join(test_repos_list_dry) + " " + " ".join(packages_to_test_list)
-        common.call("rosmake -rV --skip-blacklist --profile --pjobs=%s --test-only --output=%s %s" %
-                    ( cores, repo_build_logs, packages_to_test ), ros_env_repo)
 
         # clean and copy test xml files
         common.clean_and_copy_test_results(repo_test_results, workspace + "/test_results")
@@ -140,6 +141,36 @@ def main():
     print "test in                    ", (time_finish - time_test)
     print "total                      ", (time_finish - time_parsing)
     print ""
+
+
+def listDir(dirname):
+    """
+    helper function for debuging
+    print given directory if exists
+    """
+    try:
+        print 'DIRCONTENT OF', dirname
+        print '-'*50
+        print os.listdir(dirname)
+        print '-'*150
+    except: pass
+
+def listDirFiles(dirname):
+    """
+    helper function for debuging
+    print all files if possible in given directory if exists
+    """
+    try:
+        if not dirname.endswith('/'):
+                dirname += '/'
+
+        for file in os.listdir(dirname):
+            print 'FILECONTENT OF', dirname + file
+            print '*'*50
+            with open(dirname + file) as f:
+                for line in f:
+                    print line
+    except: pass
 
 if __name__ == "__main__":
     # global try
