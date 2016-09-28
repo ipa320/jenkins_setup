@@ -234,9 +234,9 @@ if __name__ == "__main__":
         default=None,
         help="Please give github token, this is different than one found on your github profile")
 	parser.add_option("-d", "--device",
-		dest="device",
-		default=None,
-		help="Use device with serial number 'x' for the next operations")
+	    dest="device",
+	    default=None,
+	    help="Use device with serial number 'x' for the next operations")
 	(options, args) = parser.parse_args()
 	if len(args) != 0:
 		parser.error("no arguments supported.")
@@ -247,7 +247,7 @@ if __name__ == "__main__":
 	ampel.set_state(ampel_state)
 	if options.token == None:
 	    options.token = "8SejjXqqq1WHebgRttQF"  ### assigning a default token
-	    
+
 	while True:
 	    try:
 	        travis_state = extract_travis_build_states(options.path, options.token)
