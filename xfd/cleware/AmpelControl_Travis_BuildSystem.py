@@ -11,19 +11,19 @@ import json
 
 
 class ampel_state:
-	def __init__(self):
-		# modes
-		self.off = 0
-		self.on = 1
-		self.flash = 2
-		# state
-		self.state = [self.off,self.off,self.off]
+    def __init__(self):
+        # modes
+        self.off = 0
+        self.on = 1
+        self.flash = 2
+        # state
+        self.state = [self.off,self.off,self.off]
 
-	def set_state(self, state):
-		self.state = state
+    def set_state(self, state):
+        self.state = state
 
-	def get_state(self):
-		return self.state
+    def get_state(self):
+        return self.state
 
 
 # color: (0=red, 1=yellow, 2=blue/green)
@@ -33,64 +33,64 @@ class ampel_state:
 # green: if all repo build state Success
 # all flash: if any of the build url is invalid/no internet connection
 def extract_ampel_state(state):
-	message = "Ampel is "
-	state_out = [0,0,0]
-	if "red_anime" in state:
-		message += "flashing red"
-		state_out[0] = 2
-	elif "red" in state:
-		message += "red"
-		state_out[0] = 1
-	else:
-		message += "no red"
-		state_out[0] = 0
+    message = "Ampel is "
+    state_out = [0,0,0]
+    if "red_anime" in state:
+        message += "flashing red"
+        state_out[0] = 2
+    elif "red" in state:
+        message += "red"
+        state_out[0] = 1
+    else:
+        message += "no red"
+        state_out[0] = 0
 
-	message += ", "
-	if "yellow_anime" in state:
-		message += "flashing yellow"
-		state_out[1] = 2
-	elif "yellow" in state:
-		message += "yellow"
-		state_out[1] = 1
-	else:
-		message += "no yellow"
-		state_out[1] = 0
+    message += ", "
+    if "yellow_anime" in state:
+        message += "flashing yellow"
+        state_out[1] = 2
+    elif "yellow" in state:
+        message += "yellow"
+        state_out[1] = 1
+    else:
+        message += "no yellow"
+        state_out[1] = 0
 
-	message += " and "
-	if "blue_anime" in state or "grey_anime" in state:
-		message += "flashing green"
-		state_out[2] = 2
-	elif "blue" in state:
-		message += "green"
-		state_out[2] = 1
-	else:
-		message += "no green"
-		state_out[2] = 0
+    message += " and "
+    if "blue_anime" in state or "grey_anime" in state:
+        message += "flashing green"
+        state_out[2] = 2
+    elif "blue" in state:
+        message += "green"
+        state_out[2] = 1
+    else:
+        message += "no green"
+        state_out[2] = 0
 
-	if state_out == [0, 0, 0]:
-		message = "Error: invalid state. state = " + str(state)
-		state_out = [2,2,2]
-	return state_out, message
+    if state_out == [0, 0, 0]:
+        message = "Error: invalid state. state = " + str(state)
+        state_out = [2,2,2]
+    return state_out, message
 
 def run_ampel():
-	global ampel
-	on = [False, False, False]
-	default_options = ["-c", "1"]
-	if options.device != None:
-		default_options += ["-d", str(options.device)]
-	while True:
-		state = ampel.get_state()
-		for color in [0,1,2]:
-			if state[color] == 2 and not on[color]:
-				p = subprocess.Popen(["clewarecontrol"] + default_options + ["-as", str(color), "1"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-				on[color] = True
-			elif state[color] == 2 and on[color]:
-				p = subprocess.Popen(["clewarecontrol"] + default_options + [ "-as", str(color), "0"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-				on[color] = False
-			else:
-				p = subprocess.Popen(["clewarecontrol"] + default_options + [ "-as", str(color), str(state[color])], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-			p.wait()
-		time.sleep(1)
+    global ampel
+    on = [False, False, False]
+    default_options = ["-c", "1"]
+    if options.device != None:
+        default_options += ["-d", str(options.device)]
+    while True:
+        state = ampel.get_state()
+        for color in [0,1,2]:
+            if state[color] == 2 and not on[color]:
+                p = subprocess.Popen(["clewarecontrol"] + default_options + ["-as", str(color), "1"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+                on[color] = True
+            elif state[color] == 2 and on[color]:
+                p = subprocess.Popen(["clewarecontrol"] + default_options + [ "-as", str(color), "0"], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+                on[color] = False
+            else:
+                p = subprocess.Popen(["clewarecontrol"] + default_options + [ "-as", str(color), str(state[color])], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+            p.wait()
+        time.sleep(1)
 
 
 def extract_build_query(file_path):
@@ -219,44 +219,44 @@ def extract_travis_build_states(path, auth_token):
 
 
 if __name__ == "__main__":
-	global ampel
-	ampel = ampel_state()
+    global ampel
+    ampel = ampel_state()
 
-	_usage = """%prog [options]
-	type %prog -h for more info."""
-	parser = OptionParser(usage=_usage, prog=os.path.basename(sys.argv[0]))
-	parser.add_option("-p", "--path",
-		dest="path",
-		default=None,
-		help="The ROSInstall file path for parsing repositories URLs to monitor build states.")
-	parser.add_option("-t", "--token",
+    _usage = """%prog [options]
+    type %prog -h for more info."""
+    parser = OptionParser(usage=_usage, prog=os.path.basename(sys.argv[0]))
+    parser.add_option("-p", "--path",
+        dest="path",
+        default=None,
+        help="The ROSInstall file path for parsing repositories URLs to monitor build states.")
+    parser.add_option("-t", "--token",
         dest="token",
         default=None,
         help="Please give github token, this is different than one found on your github profile")
-	parser.add_option("-d", "--device",
-	    dest="device",
-	    default=None,
-	    help="Use device with serial number 'x' for the next operations")
-	(options, args) = parser.parse_args()
-	if len(args) != 0:
-		parser.error("no arguments supported.")
+    parser.add_option("-d", "--device",
+        dest="device",
+        default=None,
+        help="Use device with serial number 'x' for the next operations")
+    (options, args) = parser.parse_args()
+    if len(args) != 0:
+        parser.error("no arguments supported.")
 
-	start_new_thread(run_ampel,())
-	# initial reset the ample states
-	ampel_state = [0,0,0]
-	ampel.set_state(ampel_state)
-	if options.token == None:
-	    options.token = "8SejjXqqq1WHebgRttQF"  ### assigning a default token
+    start_new_thread(run_ampel,())
+    # initial reset the ample states
+    ampel_state = [0,0,0]
+    ampel.set_state(ampel_state)
+    if options.token == None:
+        options.token = "8SejjXqqq1WHebgRttQF"  ### assigning a default token
 
-	while True:
-	    try:
-	        travis_state = extract_travis_build_states(options.path, options.token)
-	        ampel_state, message = extract_ampel_state(travis_state)
-	        print "\n[",message,"]" , "Ample States:",ampel_state
-	        ampel.set_state(ampel_state)
-	    except Exception, e:
-	        print e
-	        ampel.set_state([2, 2, 2])
-	        pass
-	    time.sleep(10)
+    while True:
+        try:
+            travis_state = extract_travis_build_states(options.path, options.token)
+            ampel_state, message = extract_ampel_state(travis_state)
+            print "\n[",message,"]" , "Ample States:",ampel_state
+            ampel.set_state(ampel_state)
+        except Exception, e:
+            print e
+            ampel.set_state([2, 2, 2])
+            pass
+        time.sleep(10)
 
