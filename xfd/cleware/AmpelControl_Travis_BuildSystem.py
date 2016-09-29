@@ -182,6 +182,10 @@ def extract_travis_build_states(path, auth_token):
                 build_data = json.loads(response_data.read())
                 for entry in build_data.items():
                     if entry[0]:
+                        if entry[0] == "last_build_id":
+                            if entry[1] == None:
+                                checker_invalid_state =  True
+                                break
                         #if entry[0] == "last_build_status":
                         if entry[0] == "last_build_result":
                             if entry[1] == 1: ### build falied/error
