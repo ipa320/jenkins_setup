@@ -199,7 +199,7 @@ if __name__ == "__main__":
         help="The ROSInstall file path for parsing repositories URLs to monitor build states.")
     parser.add_option("-t", "--token",
         dest="token",
-        default="2078123cc42d20b6ca72c044378fd90ea2b8a594",
+        default=None,
         help="Please give github token, this is different than one found on your github profile")
     parser.add_option("-d", "--device",
         dest="device",
