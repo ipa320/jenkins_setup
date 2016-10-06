@@ -7,7 +7,7 @@ import subprocess
 from optparse import OptionParser
 from thread import start_new_thread
 import travispy
-
+from pygithub3 import Github
 
 class ampel_state:
     def __init__(self):
@@ -119,17 +119,20 @@ def extract_travis_build_states(path, t_public, t_private):
 
     build_states = []
     for data in build_query_data:
+        print "repo:", data['user'] + '/' + data['repo']
         invalid_state = False
         # try public server
         try:
             branch = t_public.branch(data['branch'], data['user'] + '/' + data['repo'])
             build_states.append(branch.state)
+            t = t_public
         except travispy.errors.TravisError, e:
             # try private server
             try:
                 #print "no public repo, trying private url. error:", e
                 branch = t_private.branch(data['branch'], data['user'] + '/' + data['repo'])
                 build_states.append(branch.state)
+                t = t_private
             except Exception, e:
                 invalid_state = True
         except Exception, e:
@@ -142,6 +145,24 @@ def extract_travis_build_states(path, t_public, t_private):
             state_store.append('yellow_anime')
             state_store.append('green_anime')
             return state_store
+
+        # check PRs
+        gh = Github(token=options.token, user=data['user'], repo=data['repo'])
+        gh_prs = []
+        prs = t.builds(slug=data['user'] + '/' + data['repo'], event_type="pull_request")
+        for gh_pr in gh.pull_requests.list().all():
+            #print "gh_pr:", gh_pr.number, gh_pr.title
+            gh_prs.append(gh_pr.number)
+            for pr in prs:
+                if pr.pull_request_number == gh_pr.number:
+                    print "--> open pr:", pr.pull_request_number, pr.pull_request_title, pr.state
+                    if pr.state == "passed":
+                        print "----> merge"
+                        state_store.append('yellow_anime')
+                    else:
+                        print "----> review"
+                        state_store.append('yellow')
+                    break
 
     print "build_states", build_states
 
@@ -178,7 +199,7 @@ if __name__ == "__main__":
         help="The ROSInstall file path for parsing repositories URLs to monitor build states.")
     parser.add_option("-t", "--token",
         dest="token",
-        default="9e525c41759d9c95919308d92a6747088c580661",
+        default="2078123cc42d20b6ca72c044378fd90ea2b8a594",
         help="Please give github token, this is different than one found on your github profile")
     parser.add_option("-d", "--device",
         dest="device",
@@ -198,14 +219,14 @@ if __name__ == "__main__":
     t_private = travispy.TravisPy.github_auth(options.token, travispy.travispy.PRIVATE)
 
     while True:
-#        try:
-        travis_state = extract_travis_build_states(options.path, t_public, t_private)
-        ampel_state, message = extract_ampel_state(travis_state)
-        print "\n[",message,"]" , "Ample States:",ampel_state
-        ampel.set_state(ampel_state)
-#        except Exception, e:
-#            print e
-#            ampel.set_state([2, 2, 2])
-#            pass
+        try:
+            travis_state = extract_travis_build_states(options.path, t_public, t_private)
+            ampel_state, message = extract_ampel_state(travis_state)
+            print "\n[",message,"]" , "Ample States:",ampel_state
+            ampel.set_state(ampel_state)
+        except Exception, e:
+            print e
+            ampel.set_state([2, 2, 2])
+            pass
         time.sleep(10)
 
