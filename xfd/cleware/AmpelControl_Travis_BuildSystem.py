@@ -168,7 +168,7 @@ def extract_travis_build_states(path, t_public, t_private):
 
     ### set red ###
     # check for failed builds
-    if 'failed' in build_states:
+    if 'failed' in build_states or 'errored' in build_states or 'canceled' in build_states:
         state_store.append("red")
     
     ### set yellow ###
