@@ -7,10 +7,10 @@ This guide is designed for Cob-Pipeline developers, those who want to setup a ef
 Below you will find a detailed description of the purposes of the Cob-Pipeline and the setup for **one master** and **multiple slave** nodes.
 Nevertheless, reading the short description of the setup process in the [minimal Jenkins Guide](README.md) first may help to understand the whole system better.
 
-###Version
+### Version
 The plugin and this manual are designed and tested for Jenkins CI v1.514.
 
-###Table of Contents
+### Table of Contents
 * [Software Structure](#software-structure)
 * [Pipeline Structure](#pipeline-structure)
     * [Job Types](#job-types)
@@ -36,7 +36,7 @@ The plugin and this manual are designed and tested for Jenkins CI v1.514.
 * [Manual Pipeline Generation (deprecated)](#manual-pipeline-generation-deprecated)
 
 
-##Software Structure
+## Software Structure
 
 For the usage of the Cob-Pipeline three parts are necessary:
 * [Cob-Pipeline-Plugin](https://github.com/ipa320/cob-pipeline-plugin) for Jenkins<br/>
@@ -50,7 +50,7 @@ For the usage of the Cob-Pipeline three parts are necessary:
     In this repository all the pipeline configurations are stored.
 
 
-##Pipeline Structure
+## Pipeline Structure
 
 The pipeline is made of multiple, differing Jenkins jobs which monitor the source code and build or test it in various envirements.
 An authorized Jenkins user can configure its individual pipeline in its Jenkins user configurations.
@@ -61,13 +61,13 @@ A fully configured pipeline has always the structure shown in the picture below.
 
 All build and test processes take place in [`chroot`s](http://help.ubuntu.com/community/BasicChroot) to garanty a clean and controlled environment.
 
-###Job Types
-####Starter Jobs
+### Job Types
+#### Starter Jobs
 * **Pipestarter Job**<br/>
     Every *Pipestarter Job* polls one GitHub repository for source code changes.
     When a change is detected the *Priority-Build Job* gets triggered for the corresponding repository.
 
-####Build Jobs
+#### Build Jobs
 * **Priority-Build Job**<br/>
     The *Priority-Build Job* is the first real job in every pipeline.
     First of all it gets the corresponding `chroot` tarball depending on the environment to build the repository for.
@@ -83,7 +83,7 @@ All build and test processes take place in [`chroot`s](http://help.ubuntu.com/co
 * **Downstream-Build Job**<br/>
     In contrast to the two previous build jobs the *Downstream-Build Job* builds all the ROS-packages that depend directly on the configured repository.
 
-####Test Jobs
+#### Test Jobs
 The following jobs run the tests given in the repository.
 First of all the `chroot` tarball, created by the before executed *Build Job*, is downloaded.
 The tests are executed inside this chroot.
@@ -92,7 +92,7 @@ The tests are executed inside this chroot.
 * **Graphics-Test Job**<br/>
     If graphics are required for the tests this job is the right one.
 
-####Hardware Jobs
+#### Hardware Jobs
 * **Hardware-Build Job**<br/>
     This job builds the code again on the selected hardware/robot.
     The environment (Ubuntu version, system architecture) is given by the hardware.
@@ -171,11 +171,11 @@ After a successful installation you can access the jenkins server in your browse
 To manage your Jenkins server, go to [http://localhost:8080/manage](http://localhost:8080/manage) or follow "Manage Jenkins" in the sidebar.
 There you can configure everything.
 
-###Configure Security
+### Configure Security
 There are multiple ways to configure the global security of your Jenkins server.
 First of all go to [**Configure Global Security**](http://localhost:8080/configureSecurity) and check *Enable Security*.
 
-####Security Realm
+#### Security Realm
 The **Access Control** section gives the opportunity to select the **Security Realm** which defines how the users can login.
 
 * **Jenkins's own user database**<br/>
@@ -201,7 +201,7 @@ The **Access Control** section gives the opportunity to select the **Security Re
 >   An example is given [here](pictures/LDAP_config.png).
 
 
-####Authorization
+#### Authorization
 In the **Authorization** subsection you can define the permission a specific user or a user group gets granted.
 Therefore choose the 'Project-based Matrix Authorization Strategy'.
 
@@ -314,7 +314,7 @@ It can be found in the section **API Token**. Press *Show API Token...*.
 
 
 ### Jenkins plugin installation
-####Install required Jenkins plugins
+#### Install required Jenkins plugins
 Go to [Jenkins plugin manager](http://localhost:8080/pluginManager/available) and install the following plugins:
 * **Git Plugin** ([website](https://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin))<br/>
     Monitors the repositories to build and triggers pipeline when a change is detected.
@@ -333,7 +333,7 @@ Go to [Jenkins plugin manager](http://localhost:8080/pluginManager/available) an
 * **Build-timeout Plugin** ([website](https://wiki.jenkins-ci.org/display/JENKINS/Build-timeout+Plugin))<br/>
     Aborts a job if it takes too long.
 
-####Install supplementary Jenkins plugins
+#### Install supplementary Jenkins plugins
 * *Matrix Reloaded Plugin*
   ([website](http://wiki.jenkins-ci.org/display/JENKINS/Matrix+Reloaded+Plugin))<br/>
     To start one or more entries of a matrix job.
@@ -412,18 +412,18 @@ ___
 
 Slaves are useful to distribute the load if many jobs get triggered and the run specific jobs on exclusive computers.
 
-###Configure a build slave/node
+### Configure a build slave/node
 To use a computer as Jenkins slave-node same preparations have to be done.
 All configurations will be made for an admin user called 'jenkins'.
 
-####Enable password-less sudo commands
+#### Enable password-less sudo commands
 To be able to run sudo commands without the need to enter the password each time, enter ```sudo visudo -f /etc/sudoers``` and add the following at the end of the `/etc/sudoers`-file:
 
     jenkins    ALL=(ALL) NOPASSWD: ALL
 
 Exit with `CTRL-X`. After re-login you won't need a password anymore.
 
-####Enable password-less ssh login from master to slave and slave to master.
+#### Enable password-less ssh login from master to slave and slave to master.
 The slave has to be able the access the master via SSH without a password (and the otherway around).
 Enter the following command on each slave, login to the master and run the command again.
 
@@ -437,17 +437,17 @@ Go back with twice `CTRL-D`.
 
 > If your tarball server differs from your Jenkins master, do the same for the tarball server.
 
-####Pbuilder
+#### Pbuilder
 Pbuilder is required! If not present, install it:
 ```bash
 apt-get install pbuilder devscripts
 ```
 
-#####Performance improvement
+##### Performance improvement
 For the configurations a file called `~/.pbuilderrc` in the slaves `$HOME`-folder is
 needed (`/etc/pbuilder/pbuilderrc` is an alternative).
 
-######Don't use pbuilders aptcache
+###### Don't use pbuilders aptcache
 The aptcach of pbuilder is very useful but when the cache is getting
 bigger gradually it takes quite a while to open a chroot from the
 tarball. If you don't want to use it (for instance if you use an
@@ -458,7 +458,7 @@ external apt-cacher), add the following to
 APTCACHE=""
 ```
 
-######Use ccache for build
+###### Use ccache for build
 To use ccache inside the pbuilder add the following to `~/.pbuilderrc`:
 ```conf
 # ccache
@@ -470,7 +470,7 @@ EXTRAPACKAGES=ccache
 BINDMOUNTS="${CCACHE_DIR}"
 ```
 
-######Use multi-core zipping
+###### Use multi-core zipping
 To speedup the zipping and unzipping of the chroot tarballs, install `pigz`:
 ```bash
 apt-get install pigz
@@ -482,7 +482,7 @@ And add the following to .pbuilderrc:
 COMPRESSPROG=pigz
 ```
 
-######Mount memory to run the pbuilder chroots in it
+###### Mount memory to run the pbuilder chroots in it
 Installations and builds inside the chroot need quite a lot write accesses. If you don't have a SSD installed, you can use the memory for this. Therefore you have to create a filesystem in your RAM, using `tmpfs` by adding the following to the slaves `/etc/fstab`:
 ```conf
 # pbuilder
